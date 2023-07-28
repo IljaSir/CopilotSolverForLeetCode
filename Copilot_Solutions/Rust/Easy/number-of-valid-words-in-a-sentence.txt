@@ -1,0 +1,339 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = 0;
+        let mut is_valid = true;
+        let mut has_hyphen = false;
+        let mut has_punctuation = false;
+        for c in sentence.chars() {
+            if c == ' ' {
+                if is_valid {
+                    count += 1;
+                }
+                is_valid = true;
+                has_hyphen = false;
+                has_punctuation = false;
+            } else if c == '-' {
+                if has_hyphen || !is_valid {
+                    is_valid = false;
+                }
+                has_hyphen = true;
+            } else if c == '!' || c == '.' || c == ',' {
+                if has_punctuation || !is_valid {
+                    is_valid = false;
+                }
+                has_punctuation = true;
+            } else if c.is_digit(10) {
+                is_valid = false;
+            }
+        }
+        if is_valid {
+            count += 1;
+        }
+        count
+    }
+}
+
+=======
+
+        let mut count = 0;
+        for word in sentence.split_whitespace() {
+            let mut hyphen = false;
+            let mut punc = false;
+            let mut valid = true;
+            for c in word.chars() {
+                if c.is_lowercase() {
+                    continue;
+                } else if c == '-' {
+                    if hyphen || punc {
+                        valid = false;
+                        break;
+                    }
+                    hyphen = true;
+                } else if c == '!' || c == '.' || c == ',' {
+                    if punc {
+                        valid = false;
+                        break;
+                    }
+                    punc = true;
+                } else {
+                    valid = false;
+                    break;
+                }
+            }
+            if valid {
+                count += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut is_valid = true;
+        let mut has_hyphen = false;
+        let mut has_punctuation = false;
+        for ch in sentence.chars() {
+            if ch == ' ' {
+                count += is_valid as i32;
+                is_valid = true;
+                has_hyphen = false;
+                has_punctuation = false;
+            } else if ch == '-' {
+                if has_hyphen || !is_valid {
+                    is_valid = false;
+                }
+                has_hyphen = true;
+            } else if ch == '.' || ch == '!' || ch == ',' {
+                if has_punctuation || !is_valid {
+                    is_valid = false;
+                }
+                has_punctuation = true;
+            } else if !ch.is_ascii_lowercase() {
+                is_valid = false;
+            }
+        }
+        count += is_valid as i32;
+        count
+
+=======
+
+        let mut valid = 0;
+        let mut hyphen = false;
+        let mut punctuation = false;
+        for c in sentence.chars() {
+            if c.is_ascii_lowercase() {
+                hyphen = false;
+                punctuation = false;
+            } else if c == '-' {
+                if hyphen || punctuation {
+                    valid -= 1;
+                    break;
+                }
+                hyphen = true;
+            } else if c == '.' || c == ',' || c == '!' {
+                if punctuation || hyphen {
+                    valid -= 1;
+                    break;
+                }
+                punctuation = true;
+            } else if c == ' ' {
+                if hyphen || punctuation {
+                    valid -= 1;
+                    break;
+                }
+                valid += 1;
+            } else {
+                valid -= 1;
+                break;
+            }
+        }
+        if valid < 0 {
+            0
+        } else {
+            valid + 1
+        }
+    }
+}
+
+=======
+
+        let mut count = 0;
+        for word in sentence.split(' ') {
+            let mut hyphen = false;
+            let mut punc = false;
+            for c in word.chars() {
+                if c == '-' {
+                    if hyphen || punc {
+                        break;
+                    }
+                    hyphen = true;
+                } else if c == '.' || c == '!' || c == ',' {
+                    if punc {
+                        break;
+                    }
+                    punc = true;
+                } else if c < 'a' || c > 'z' {
+                    break;
+                }
+            }
+            if !hyphen && !punc {
+                count += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut last = ' ';
+        let mut hyphen = false;
+        let mut punctuation = false;
+        for c in sentence.chars() {
+            if c == ' ' {
+                if last != ' ' && !hyphen && !punctuation {
+                    count += 1;
+                }
+                hyphen = false;
+                punctuation = false;
+            } else if c == '-' {
+                if last == ' ' || hyphen || punctuation || last == '-' {
+                    return 0;
+                }
+                hyphen = true;
+            } else if c == '!' || c == '.' || c == ',' {
+                if punctuation || last == ' ' {
+                    return 0;
+                }
+                punctuation = true;
+            } else {
+                if c < 'a' || c > 'z' {
+                    return 0;
+                }
+            }
+            last = c;
+        }
+        if last != ' ' && !hyphen && !punctuation {
+            count += 1;
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut hyphen = false;
+        let mut punct = false;
+        let mut valid = true;
+        for c in sentence.chars() {
+            if c == ' ' {
+                if hyphen || punct {
+                    valid = false;
+                }
+                if valid {
+                    count += 1;
+                }
+                hyphen = false;
+                punct = false;
+                valid = true;
+            } else if c.is_lowercase() {
+                continue;
+            } else if c == '-' {
+                if hyphen || punct {
+                    valid = false;
+                }
+                hyphen = true;
+            } else if c == '!' || c == '.' || c == ',' {
+                if punct {
+                    valid = false;
+                }
+                punct = true;
+            } else {
+                valid = false;
+            }
+        }
+        if hyphen || punct {
+            valid = false;
+        }
+        if valid {
+            count += 1;
+        }
+        count
+
+=======
+
+        sentence.split_whitespace().filter(|w| {
+            let mut hyphen = false;
+            let mut punct = false;
+            for c in w.chars() {
+                if c.is_digit(10) { return false; }
+                if c == '-' {
+                    if hyphen { return false; }
+                    if punct { return false; }
+                    hyphen = true;
+                }
+                if c == '!' || c == '.' || c == ',' {
+                    if punct { return false; }
+                    punct = true;
+                }
+            }
+            true
+        }).count() as i32
+    }
+}
+
+=======
+
+        let mut words = sentence.split(' ');
+        let mut count = 0;
+        for word in words {
+            let mut hyphen = false;
+            let mut punc = false;
+            for c in word.chars() {
+                if !c.is_ascii_lowercase() && !c.is_ascii_digit() {
+                    if c == '-' {
+                        if hyphen {
+                            break;
+                        } else {
+                            hyphen = true;
+                        }
+                    } else if c == '!' || c == '.' || c == ',' {
+                        if punc {
+                            break;
+                        } else {
+                            punc = true;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if !hyphen && !punc {
+                count += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut is_valid = true;
+        for word in sentence.split_whitespace() {
+            is_valid = true;
+            if word.len() == 1 {
+                if !word.chars().nth(0).unwrap().is_ascii_lowercase() {
+                    is_valid = false;
+                }
+            } else {
+                for (i, c) in word.chars().enumerate() {
+                    if i == 0 || i == word.len() - 1 {
+                        if !c.is_ascii_lowercase() {
+                            is_valid = false;
+                            break;
+                        }
+                    } else {
+                        if c.is_ascii_digit() {
+                            is_valid = false;
+                            break;
+                        }
+                        if c == '-' {
+                            if !word.chars().nth(i - 1).unwrap().is_ascii_lowercase()
+                                || !word.chars().nth(i + 1).unwrap().is_ascii_lowercase() {
+                                is_valid = false;
+                                break;
+                            }
+                        }
+                        if c == '!' || c == '.' || c == ',' {
+                            if i != word.len() - 1 {
+                                is_valid = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if is_valid {
+                count += 1;
+            }
+        }
+        count

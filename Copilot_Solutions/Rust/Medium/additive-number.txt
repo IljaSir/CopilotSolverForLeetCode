@@ -1,0 +1,248 @@
+Synthesizing 6/10 solutions
+
+=======
+Suggestion 1
+
+        let num = num.as_bytes();
+        let n = num.len();
+        let mut a = 0;
+        let mut b = 0;
+        for i in 0..n {
+            a = a * 10 + (num[i] - b'0') as i32;
+            b = 0;
+            for j in i + 1..n {
+                b = b * 10 + (num[j] - b'0') as i32;
+                if Self::dfs(&num, j + 1, a, b) {
+                    return true;
+                }
+                if b == 0 {
+                    break;
+                }
+            }
+            if a == 0 {
+                break;
+            }
+        }
+        false
+    }
+    fn dfs(num: &[u8], i: usize, a: i32, b: i32) -> bool {
+        if i == num.len() {
+            return true;
+        }
+        let mut c = 0;
+        for j in i..num.len() {
+            c = c * 10 + (num[j] - b'0') as i32;
+            if c == a + b && Self::dfs(num, j + 1, b, c) {
+                return true;
+            }
+            if c == 0 {
+                break;
+            }
+        }
+        false
+
+=======
+Suggestion 2
+
+        let num = num.as_bytes();
+        let n = num.len();
+        let mut ans = false;
+        for i in 1..n {
+            if num[0] == b'0' && i > 1 {
+                break;
+            }
+            for j in i+1..n {
+                if num[i] == b'0' && j > i + 1 {
+                    break;
+                }
+                let a = num[..i].iter().fold(0, |a, b| a * 10 + (b - b'0') as i64);
+                let b = num[i..j].iter().fold(0, |a, b| a * 10 + (b - b'0') as i64);
+                ans = ans || Self::dfs(&num[j..], a, b);
+                if ans {
+                    break;
+                }
+            }
+            if ans {
+                break;
+            }
+        }
+        ans
+    }
+    fn dfs(num: &[u8], a: i64, b: i64) -> bool {
+        if num.len() == 0 {
+            return true;
+        }
+        let c = a + b;
+        let s = c.to_string().into_bytes();
+        if s.len() > num.len() {
+            return false;
+        }
+        if s != num[..s.len()] {
+            return false;
+        }
+        Self::dfs(&num[s.len()..], b, c)
+
+=======
+Suggestion 3
+
+        let n = num.len();
+        if n < 3 { return false; }
+        for i in 0..n - 2 {
+            for j in i + 1..n - 1 {
+                if i > 0 && num.as_bytes()[0] == b'0' { break; }
+                if j - i > 1 && num.as_bytes()[i] == b'0' { break; }
+                let mut a = num[..i + 1].parse::<i64>().unwrap();
+                let mut b = num[i + 1..j + 1].parse::<i64>().unwrap();
+                let mut k = j + 1;
+                while k < n {
+                    let c = a + b;
+                    let mut c_str = c.to_string();
+                    let c_len = c_str.len();
+                    if k + c_len > n || num[k..k + c_len] != c_str { break; }
+                    k += c_len;
+                    a = b;
+                    b = c;
+                }
+                if k == n { return true; }
+            }
+        }
+        false
+
+=======
+Suggestion 4
+
+        let num = num.as_bytes();
+        let n = num.len();
+        let mut a = 0;
+        let mut b = 0;
+        for i in 0..n/2 {
+            a = a * 10 + (num[i] - b'0') as i64;
+            b = 0;
+            for j in i+1..n {
+                b = b * 10 + (num[j] - b'0') as i64;
+                if Self::dfs(num, n, j+1, a, b) {
+                    return true;
+                }
+                if b == 0 {
+                    break;
+                }
+            }
+            if a == 0 {
+                break;
+            }
+        }
+        false
+    }
+    pub fn dfs(num: &[u8], n: usize, i: usize, a: i64, b: i64) -> bool {
+        if i == n {
+            return true;
+        }
+        let c = a + b;
+        let mut k = i;
+        let mut x = 0;
+        while k < n && x < c {
+            x = x * 10 + (num[k] - b'0') as i64;
+            k += 1;
+        }
+        if x == c {
+            return Self::dfs(num, n, k, b, c);
+        }
+        false
+
+=======
+Suggestion 5
+
+        let num = num.as_bytes();
+        let n = num.len();
+        for i in 0..n {
+            for j in i+1..n {
+                let mut a = num[..i+1].to_vec();
+                let mut b = num[i+1..j+1].to_vec();
+                if a[0] == b'0' && a.len() > 1 { continue; }
+                if b[0] == b'0' && b.len() > 1 { continue; }
+                if Self::check(&a, &b, &num[j+1..]) { return true; }
+            }
+        }
+        false
+    }
+    fn check(a: &[u8], b: &[u8], c: &[u8]) -> bool {
+        if c.is_empty() { return true; }
+        let mut sum = vec![];
+        let mut carry = 0;
+        let mut i = a.len();
+        let mut j = b.len();
+        while i > 0 || j > 0 {
+            let x = if i > 0 { a[i-1] - b'0' } else { 0 };
+            let y = if j > 0 { b[j-1] - b'0' } else { 0 };
+            let s = x + y + carry;
+            sum.push(b'0' + s % 10);
+            carry = s / 10;
+            i -= 1;
+            j -= 1;
+        }
+        if carry > 0 { sum.push(b'0' + carry); }
+        sum.reverse();
+        if c.starts_with(&sum) {
+            Self::check(b, &sum, &c[sum.len()..])
+        } else {
+            false
+        }
+
+=======
+Suggestion 6
+
+        let mut i = 1;
+        let mut j = 1;
+        let mut num: Vec<char> = num.chars().collect();
+        if num.len() < 3 {
+            return false;
+        }
+        while i <= num.len() / 2 {
+            while j <= num.len() / 2 {
+                let mut a = num[..i].to_vec();
+                let mut b = num[i..i + j].to_vec();
+                let mut k = i + j;
+                let mut c = Self::add(a, b);
+                let mut c_str = c.iter().collect::<String>();
+                let mut c_len = c_str.len();
+                while k + c_len <= num.len() && c_str == num[k..k + c_len].iter().collect::<String>() {
+                    k += c_len;
+                    a = b;
+                    b = c;
+                    c = Self::add(a, b);
+                    c_str = c.iter().collect::<String>();
+                    c_len = c_str.len();
+                }
+                if k == num.len() {
+                    return true;
+                }
+                j += 1;
+            }
+            i += 1;
+            j = 1;
+        }
+        false
+    }
+    fn add(a: Vec<char>, b: Vec<char>) -> Vec<char> {
+        let mut i = a.len() - 1;
+        let mut j = b.len() - 1;
+        let mut carry = 0;
+        let mut result: Vec<char> = Vec::new();
+        while i >= 0 || j >= 0 {
+            let mut sum = carry;
+            if i >= 0 {
+                sum += a[i] as u8 - '0' as u8;
+                i -= 1;
+            }
+            if j >= 0 {
+                sum += b[j] as u8 - '0' as u8;
+                j -= 1;
+            }
+            carry = sum / 10;
+            result.push((sum % 10 + '0' as u8) as char);
+        }
+        if carry > 0 {
+            result.push((carry + '0' as u8) as char);
+        }
+        result.reverse();
+        result

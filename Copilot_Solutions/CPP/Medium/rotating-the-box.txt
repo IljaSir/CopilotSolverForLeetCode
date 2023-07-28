@@ -1,0 +1,247 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> res(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; ++i) {
+            int j = n - 1;
+            while (j >= 0 && box[i][j] == '.') --j;
+            int k = j - 1;
+            while (k >= 0) {
+                if (box[i][k] == '.') {
+                    --k;
+                } else if (box[i][k] == '*') {
+                    j = k - 1;
+                    k = j - 1;
+                } else {
+                    box[i][j] = '#';
+                    box[i][k] = '.';
+                    --j;
+                    --k;
+                }
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                res[j][i] = box[i][j];
+            }
+        }
+        return res;
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> res(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; i++) {
+            int k = n - 1;
+            for (int j = n - 1; j >= 0; j--) {
+                if (box[i][j] == '*') {
+                    res[j][m - i - 1] = '*';
+                    k = j - 1;
+                } else if (box[i][j] == '#') {
+                    res[k--][m - i - 1] = '#';
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = box.size(), n = box[0].size();
+        vector<vector<char>> res(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; ++i) {
+            int cnt = 0;
+            for (int j = 0; j < n; ++j) {
+                if (box[i][j] == '.') {
+                    ++cnt;
+                } else if (box[i][j] == '*') {
+                    for (int k = 1; k <= cnt; ++k) {
+                        res[j - k][i] = '#';
+                    }
+                    cnt = 0;
+                } else {
+                    for (int k = 1; k <= cnt; ++k) {
+                        res[j - k][i] = '#';
+                    }
+                    res[j - cnt - 1][i] = '.';
+                    cnt = 0;
+                }
+            }
+            for (int k = 1; k <= cnt; ++k) {
+                res[n - k][i] = '#';
+            }
+        }
+        return res;
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> ans(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; ++i) {
+            int j = n - 1;
+            while (j >= 0 && box[i][j] == '.') --j;
+            int k = j;
+            while (j >= 0 && box[i][j] != '*') {
+                if (box[i][j] == '#') {
+                    ans[k][i] = '#';
+                    --k;
+                }
+                --j;
+            }
+            while (j >= 0) {
+                ans[j][i] = box[i][j];
+                --j;
+            }
+        }
+        return ans;
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> result(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; ++i) {
+            int j = 0;
+            while (j < n) {
+                if (box[i][j] == '.') {
+                    j++;
+                    continue;
+                }
+                if (box[i][j] == '*') {
+                    j++;
+                    continue;
+                }
+                int k = j + 1;
+                while (k < n && box[i][k] == '.') {
+                    k++;
+                }
+                if (k == n) {
+                    break;
+                }
+                if (box[i][k] == '*') {
+                    j = k + 1;
+                    continue;
+                }
+                // box[i][k] == '#'
+                result[k][m - i - 1] = '#';
+                j = k + 1;
+            }
+            for (int k = 0; k < j; ++k) {
+                result[k][m - i - 1] = box[i][k];
+            }
+        }
+        return result;
+
+=======
+
+        int m = box.size(), n = box[0].size();
+        vector<vector<char>> ans(n, vector<char>(m));
+        for (int i = 0; i < m; ++i) {
+            int j = n - 1, k = n - 1;
+            while (j >= 0) {
+                if (box[i][j] != '.') {
+                    if (box[i][j] == '*') {
+                        k = j - 1;
+                    } else {
+                        ans[k][m - 1 - i] = '#';
+                        --k;
+                    }
+                }
+                --j;
+            }
+        }
+        return ans;
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> res(n, vector<char>(m, '.'));
+        for(int i = 0; i < m; i++) {
+            int j = n - 1;
+            while(j >= 0 && box[i][j] == '.') {
+                j--;
+            }
+            if(j < 0) {
+                continue;
+            }
+            int k = j;
+            while(k >= 0) {
+                if(box[i][k] == '#') {
+                    res[k][m - i - 1] = '#';
+                } else if(box[i][k] == '*') {
+                    for(int l = k + 1; l <= j; l++) {
+                        res[l][m - i - 1] = '#';
+                    }
+                    res[k][m - i - 1] = '*';
+                    j = k;
+                }
+                k--;
+            }
+            for(int l = 0; l <= j; l++) {
+                res[l][m - i - 1] = '#';
+            }
+        }
+        return res;
+
+=======
+
+        int m = box.size();
+        int n = box[0].size();
+        vector<vector<char>> res(n, vector<char>(m, '.'));
+        for(int i = 0; i < m; i++) {
+            int j = n-1;
+            for(; j >= 0; j--) {
+                if(box[i][j] == '*') {
+                    break;
+                }
+            }
+            int k = j-1;
+            for(; k >= 0; k--) {
+                if(box[i][k] == '*') {
+                    continue;
+                }
+                if(box[i][k] == '#') {
+                    int l = k;
+                    while(l < j && box[i][l+1] == '.') {
+                        l++;
+                    }
+                    box[i][l] = '#';
+                    box[i][k] = '.';
+                    j = l;
+                }
+            }
+            for(int j = 0; j < n; j++) {
+                res[j][m-1-i] = box[i][j];
+            }
+        }
+        return res;
+
+=======
+
+        int m = box.size(), n = box[0].size();
+        vector<vector<char>> ans(n, vector<char>(m, '.'));
+        for (int i = 0; i < m; i++) {
+            int j = n - 1, k = n - 1;
+            while (j >= 0) {
+                if (box[i][j] == '.') {
+                    j--;
+                } else if (box[i][j] == '*') {
+                    for (int p = j; p <= k; p++) {
+                        ans[p][m - 1 - i] = box[i][p];
+                    }
+                    k = j - 1;
+                    j--;
+                } else {
+                    box[i][k--] = box[i][j--];
+                }
+            }
+            for (int p = 0; p <= k; p++) {
+                ans[p][m - 1 - i] = box[i][p];
+            }
+        }
+        return ans;

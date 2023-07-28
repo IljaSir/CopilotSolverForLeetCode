@@ -1,0 +1,271 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = nums1.length;
+        int[] diff = new int[n];
+        for (int i = 0; i < n; ++i) {
+            diff[i] = nums1[i] - nums2[i];
+        }
+        Arrays.sort(diff);
+        long sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += diff[i] * diff[i];
+        }
+        long res = sum;
+        for (int i = 0; i < n; ++i) {
+            sum -= diff[i] * diff[i];
+            int d = k1 - i;
+            if (d > 0) {
+                sum += d * d;
+            }
+            d = k2 - (n - 1 - i);
+            if (d > 0) {
+                sum += d * d;
+            }
+            res = Math.min(res, sum);
+        }
+        return res;
+
+=======
+
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        long res = 0;
+        for (int i = 0; i < nums1.length; i++) {
+            res += (long) Math.pow(nums1[i] - nums2[i], 2);
+        }
+        long[] dp = new long[k1 + 1];
+        Arrays.fill(dp, Long.MAX_VALUE);
+        dp[0] = res;
+        for (int i = 0; i < nums1.length; i++) {
+            int[] count = new int[2];
+            for (int j = 0; j < nums2.length; j++) {
+                if (nums1[i] > nums2[j] && count[0] < k1) {
+                    count[0]++;
+                    long diff = (long) Math.pow(nums1[i] - nums2[j], 2);
+                    for (int k = k1; k > 0; k--) {
+                        dp[k] = Math.min(dp[k], dp[k - 1] + diff);
+                    }
+                }
+                if (nums1[i] < nums2[j] && count[1] < k2) {
+                    count[1]++;
+                    long diff = (long) Math.pow(nums1[i] - nums2[j], 2);
+                    for (int k = k1; k > 0; k--) {
+                        dp[k] = Math.min(dp[k], dp[k - 1] - diff);
+                    }
+                }
+            }
+        }
+        return dp[k1];
+
+=======
+
+        int n = nums1.length;
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        long[][] dp = new long[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (i > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j] + (nums1[i - 1] - nums2[j]) * (long) (nums1[i - 1] - nums2[j]));
+                }
+                if (j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - 1] + (nums1[i] - nums2[j - 1]) * (long) (nums1[i] - nums2[j - 1]));
+                }
+            }
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; i++) {
+            ans = Math.min(ans, dp[i][n - i]);
+        }
+        return ans;
+
+=======
+
+        long ans = 0;
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        for (int i = 0; i < nums1.length; i++) {
+            ans += Math.pow(nums1[i] - nums2[i], 2);
+        }
+        int i = 0, j = nums1.length - 1;
+        for (int k = 0; k < k1; k++) {
+            if (i == nums1.length) break;
+            if (nums1[i] < nums2[j]) {
+                ans += Math.pow(nums2[j] - nums1[i], 2) - Math.pow(nums1[i] - nums2[i], 2);
+                i++;
+            } else {
+                ans += Math.pow(nums1[i] - nums2[j], 2) - Math.pow(nums1[i] - nums2[i], 2);
+                j--;
+            }
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int n = nums1.length;
+        long[] dp = new long[n + 1];
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += (long) (nums1[i] - nums2[i]) * (nums1[i] - nums2[i]);
+        }
+        dp[0] = ans;
+        for (int i = 0; i < n; i++) {
+            ans -= (long) (nums1[i] - nums2[i]) * (nums1[i] - nums2[i]);
+            dp[i + 1] = ans;
+        }
+        long res = dp[n];
+        for (int i = 0; i < n; i++) {
+            int l = 0, r = n;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (nums2[mid] <= nums1[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            if (l < n) {
+                res = Math.min(res, dp[i] + (long) (nums1[i] - nums2[l]) * (nums1[i] - nums2[l]));
+            }
+            if (l > 0) {
+                res = Math.min(res, dp[i] + (long) (nums2[l - 1] - nums1[i]) * (nums2[l - 1] - nums1[i]));
+            }
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        int n = nums1.length;
+        int[] a = new int[n];
+        int[] b = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = nums1[i] - nums2[i];
+            b[i] = nums2[i] - nums1[i];
+        }
+        Arrays.sort(a);
+        Arrays.sort(b);
+        long[] sum = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + a[i - 1];
+        }
+        long[] sum2 = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum2[i] = sum2[i - 1] + b[i - 1];
+        }
+        for (int i = 1; i <= n; i++) {
+            res += (long) a[i - 1] * a[i - 1];
+        }
+        for (int i = 1; i <= n; i++) {
+            res += (long) b[i - 1] * b[i - 1];
+        }
+        long min = res;
+        for (int i = 1; i <= n; i++) {
+            long v = (long) a[i - 1] * (n - i) - (sum[n] - sum[i]);
+            long v2 = (long) b[i - 1] * (n - i) - (sum2[n] - sum2[i]);
+            if (k1 >= i) {
+                min = Math.min(min, res - v - (long) a[i - 1] * a[i - 1] + (long) b[i - 1] * b[i - 1]);
+            }
+            if (k2 >= i) {
+                min = Math.min(min, res - v2 - (long) a[i - 1] * a[i - 1] + (long) b[i - 1] * b[i - 1]);
+            }
+        }
+        return min;
+
+=======
+
+        int n = nums1.length;
+        long[][] dp = new long[n][n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Long.MAX_VALUE);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = Math.abs(nums1[i] - nums2[j]);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            Arrays.sort(dp[i]);
+        }
+        long[][] minSum = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                minSum[i][j] = dp[i][j] + (j == 0 ? 0 : minSum[i][j - 1]);
+            }
+        }
+        long[][] minSum2 = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                minSum2[i][j] = dp[i][j] * (j + 1) - minSum[i][j];
+            }
+        }
+        long[][] minSum3 = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                minSum3[i][j] = minSum2[i][j] + (j == 0 ? 0 : minSum3[i][j - 1]);
+            }
+        }
+        long[][] minSum4 = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                minSum4[i][j] = dp[i][j] * (j + 1) - minSum2[i][j];
+            }
+        }
+        long[][] minSum5 = new long[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                minSum5[i][j] = minSum4[i][j]
+
+=======
+
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        Map<Integer, Integer> map = new HashMap<>();
+        int i = 0, j = 0, n = nums1.length;
+        while (i < n && j < n) {
+            if (nums1[i] < nums2[j]) {
+                map.put(nums1[i], map.getOrDefault(nums1[i], 0) + 1);
+                i++;
+            } else {
+                map.put(nums2[j], map.getOrDefault(nums2[j], 0) - 1);
+                j++;
+            }
+        }
+        while (i < n) {
+            map.put(nums1[i], map.getOrDefault(nums1[i], 0) + 1);
+            i++;
+        }
+        while (j < n) {
+            map.put(nums2[j], map.getOrDefault(nums2[j], 0) - 1);
+            j++;
+        }
+        i = 0;
+        j = n - 1;
+        long res = 0;
+        while (i < n) {
+            int val = map.get(nums1[i]);
+            if (val > 0) {
+                res += (long) (nums1[i] - nums2[j]) * (nums1[i] - nums2[j]);
+                k2 -= val;
+                if (k2 < 0) {
+                    break;
+                }
+                j--;
+            } else if (val < 0) {
+                res += (long) (nums1[i] - nums2[i]) * (nums1[i] - nums2[i]);
+                k1 += val;
+                if (k1 < 0) {
+                    break;
+                }
+            }
+            i++;
+        }
+        return res;

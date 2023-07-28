@@ -1,0 +1,188 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> res;
+        int level = log2(label);
+        while (label > 0) {
+            res.push_back(label);
+            label = (1 << level) + (1 << (level + 1)) - 1 - label;
+            label >>= 1;
+            level--;
+        }
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        vector<int> res;
+        int h = 0;
+        while (label > 0) {
+            res.push_back(label);
+            label /= 2;
+            h++;
+        }
+        reverse(res.begin(), res.end());
+        for (int i = 1; i < h; i += 2) {
+            int n = 1 << i;
+            int m = 1 << (i+1);
+            for (int j = 0; j < n; j++) {
+                res[j+i] = m - 1 - res[j+i];
+            }
+        }
+        return res;
+
+=======
+
+        int n = 1;
+        while (n * 2 - 1 < label) n *= 2;
+        vector<int> res;
+        while (n > 0) {
+            res.push_back(label);
+            label = n + n - 1 - label / 2;
+            n /= 2;
+        }
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        int level = 0;
+        for (int i = 1; i <= label; i <<= 1) {
+            level++;
+        }
+        vector<int> res;
+        while (label > 0) {
+            res.push_back(label);
+            int start = 1 << (level - 1);
+            int end = (1 << level) - 1;
+            label = (start + end - label) / 2;
+            level--;
+        }
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        int level = 1;
+        while (pow(2, level) - 1 < label) level++;
+        vector<int> res(level);
+        while (level > 0) {
+            res[level - 1] = label;
+            label = (pow(2, level) - 1 + pow(2, level - 1) - label) / 2;
+            level--;
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        int level = 0;
+        int n = 1;
+        while (n <= label) {
+            level++;
+            n *= 2;
+        }
+        ans.push_back(label);
+        while (level > 1) {
+            int min = 1 << (level - 1);
+            int max = (1 << level) - 1;
+            int parent = (min + max - label) / 2;
+            ans.push_back(parent);
+            label = parent;
+            level--;
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        vector<int> ret;
+        int level = 0;
+        int base = 1;
+        while (label >= base) {
+            base <<= 1;
+            level++;
+        }
+        base >>= 1;
+        level--;
+        while (level >= 0) {
+            ret.push_back(label);
+            label = (base + (base - 1 - label) / 2);
+            base >>= 1;
+            level--;
+        }
+        reverse(ret.begin(), ret.end());
+        return ret;
+
+=======
+
+        vector<int> res;
+        int level = 0;
+        while ((1 << level) <= label) {
+            level++;
+        }
+        while (label != 1) {
+            res.push_back(label);
+            int start = (1 << (level - 1));
+            int end = (1 << level) - 1;
+            label = start + end - label;
+            label /= 2;
+            level--;
+        }
+        res.push_back(1);
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        int row = 0;
+        int sum = 0;
+        while (sum < label) {
+            sum += pow(2, row);
+            row++;
+        }
+        int left = sum - pow(2, row - 1) + 1;
+        int right = sum;
+        int mid = (left + right) / 2;
+        if (row % 2 == 0) {
+            if (label < mid) {
+                label = right - (label - left);
+            } else {
+                label = left + (right - label);
+            }
+        }
+        vector<int> result;
+        for (int i = row; i > 0; i--) {
+            result.push_back(label);
+            label = label / 2;
+            left = pow(2, i - 2);
+            right = pow(2, i - 1) - 1;
+            mid = (left + right) / 2;
+            if (i % 2 == 0) {
+                if (label < mid) {
+                    label = right - (label - left);
+                } else {
+                    label = left + (right - label);
+                }
+            }
+        }
+        reverse(result.begin(), result.end());
+        return result;
+
+=======
+
+        vector<int> ans;
+        int level = 0;
+        while ((1 << level) <= label) level++;
+        int n = 1 << level;
+        int m = 1 << (level - 1);
+        while (label != 1) {
+            ans.push_back(label);
+            label = n - label / 2 - 1;
+            n = m;
+            m >>= 1;
+        }
+        ans.push_back(1);
+        reverse(ans.begin(), ans.end());
+        return ans;

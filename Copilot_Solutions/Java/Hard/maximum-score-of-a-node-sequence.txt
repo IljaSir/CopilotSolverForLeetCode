@@ -1,0 +1,372 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = scores.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {
+            g[e[0]][e[1]] = g[e[1]][e[0]] = 1;
+        }
+        int[][][] dp = new int[n][n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    dp[i][j][k] = -1;
+                }
+            }
+        }
+        return dfs(scores, g, dp, 0, 0, 0);
+    }
+
+    private int dfs(int[] scores, int[][] g, int[][][] dp, int i, int j, int k) {
+        if (dp[i][j][k] != -1) {
+            return dp[i][j][k];
+        }
+        int n = scores.length;
+        int res = 0;
+        if (i > 0 && g[i - 1][j] == 1 && g[i - 1][k] == 1) {
+            res = Math.max(res, dfs(scores, g, dp, i - 1, j, k));
+        }
+        if (j > 0 && g[j - 1][i] == 1 && g[j - 1][k] == 1) {
+            res = Math.max(res, dfs(scores, g, dp, i, j - 1, k));
+        }
+        if (k > 0 && g[k - 1][i] == 1 && g[k - 1][j] == 1) {
+            res = Math.max(res, dfs(scores, g, dp, i, j, k - 1));
+        }
+        dp[i][j][k] = res + scores[i] + scores[j] + scores[k];
+        return dp[i][j][k];
+
+=======
+
+        int n = scores.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] edge : edges) {
+            int x = find(parent, edge[0]);
+            int y = find(parent, edge[1]);
+            if (x != y) {
+                parent[x] = y;
+            }
+        }
+        int[] score = new int[n];
+        for (int i = 0; i < n; i++) {
+            int x = find(parent, i);
+            score[x] += scores[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, score[i]);
+        }
+        return ans;
+    }
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = scores.length;
+        int[] parents = new int[n];
+        for (int i = 0; i < n; i++) {
+            parents[i] = i;
+        }
+        for (int[] edge : edges) {
+            int a = find(parents, edge[0]);
+            int b = find(parents, edge[1]);
+            if (a != b) {
+                parents[a] = b;
+            }
+        }
+        int[] dp = new int[n];
+        int ans = -1;
+        for (int i = n - 1; i >= 0; i--) {
+            int p = find(parents, i);
+            dp[p] = Math.max(dp[p], dp[i] + scores[i]);
+            ans = Math.max(ans, dp[p]);
+        }
+        return ans;
+
+=======
+
+        int n = scores.length;
+        int[] parent = new int[n];
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        for (int[] edge: edges) {
+            int x = find(parent, edge[0]);
+            int y = find(parent, edge[1]);
+            if (x != y) {
+                if (size[x] > size[y]) {
+                    size[x] += size[y];
+                    parent[y] = x;
+                } else {
+                    size[y] += size[x];
+                    parent[x] = y;
+                }
+            }
+        }
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (find(parent, i) == i) {
+                max = Math.max(max, dfs(dp, parent, size, scores, i));
+            }
+        }
+        return max;
+    }
+    public int dfs(int[] dp, int[] parent, int[] size, int[] scores, int i) {
+        if (dp[i] != -1) return dp[i];
+        int max = 0;
+        for (int j = 0; j < parent.length; j++) {
+            if (parent[j] == i) {
+                max = Math.max(max, dfs(dp, parent, size, scores, j));
+            }
+        }
+        return dp[i] = max + scores[i];
+
+=======
+
+        int n = scores.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            int pu = find(parent, u);
+            int pv = find(parent, v);
+            if (pu != pv) {
+                parent[pu] = pv;
+                scores[pv] += scores[pu];
+            }
+        }
+        int ans = -1;
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            int pu = find(parent, u);
+            int pv = find(parent, v);
+            if (pu != pv) {
+                ans = Math.max(ans, scores[pu] * scores[pv]);
+            }
+        }
+        return ans;
+    }
+    
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = scores.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] rank = new int[n];
+        for (int[] edge : edges) {
+            int p1 = find(parent, edge[0]);
+            int p2 = find(parent, edge[1]);
+            if (p1 != p2) {
+                if (rank[p1] < rank[p2]) {
+                    parent[p1] = p2;
+                } else if (rank[p2] < rank[p1]) {
+                    parent[p2] = p1;
+                } else {
+                    parent[p1] = p2;
+                    rank[p2]++;
+                }
+            }
+        }
+        int[] dp = new int[n];
+        int[] max = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = scores[i];
+            max[i] = scores[i];
+        }
+        for (int[] edge : edges) {
+            int p1 = find(parent, edge[0]);
+            int p2 = find(parent, edge[1]);
+            if (p1 == p2) {
+                continue;
+            }
+            dp[p2] = Math.max(dp[p2], dp[p1] + scores[p2]);
+            max[p2] = Math.max(max[p2], max[p1]);
+            parent[p1] = p2;
+        }
+        int res = -1;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == max[i]) {
+                res = Math.max(res, dp[i]);
+            }
+        }
+        return res;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int n = scores.length;
+        int[] parent = new int[n];
+        int[] size = new int[n];
+        int[] score = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+            score[i] = scores[i];
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            union(u, v, parent, size, score);
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, score[i]);
+        }
+        return max;
+    }
+    
+    private int find(int x, int[] parent) {
+        if (parent[x] == x) {
+            return x;
+        }
+        return parent[x] = find(parent[x], parent);
+    }
+    
+    private void union(int x, int y, int[] parent, int[] size, int[] score) {
+        int px = find(x, parent);
+        int py = find(y, parent);
+        if (px != py) {
+            if (size[px] > size[py]) {
+                parent[py] = px;
+                size[px] += size[py];
+                score[px] += score[py];
+            } else {
+                parent[px] = py;
+                size[py] += size[px];
+                score[py] += score[px];
+            }
+        }
+
+=======
+
+        int n = scores.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(edge[0]);
+        }
+        int max = -1;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, dfs(i, i, scores, graph, dp));
+        }
+        return max;
+    }
+    
+    private int dfs(int start, int cur, int[] scores, Map<Integer, List<Integer>> graph, int[] dp) {
+        if (dp[cur] != -1) {
+            return dp[cur];
+        }
+        int res = scores[cur];
+        for (int next : graph.getOrDefault(cur, Collections.emptyList())) {
+            if (next == start) {
+                continue;
+            }
+            res = Math.max(res, dfs(start, next, scores, graph, dp) + scores[cur]);
+        }
+        dp[cur] = res;
+        return res;
+
+=======
+
+        int n = scores.length;
+        int[] dp = new int[n];
+        int[] in = new int[n];
+        List<Integer>[] g = new List[n];
+        for (int i = 0; i < n; i++) {
+            g[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            g[e[0]].add(e[1]);
+            g[e[1]].add(e[0]);
+            in[e[0]]++;
+            in[e[1]]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 1) {
+                q.offer(i);
+            }
+        }
+        int ans = 0;
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            for (int v : g[u]) {
+                if (in[v] > 0) {
+                    in[v]--;
+                    dp[v] = Math.max(dp[v], dp[u] + scores[u]);
+                    if (in[v] == 1) {
+                        q.offer(v);
+                    }
+                }
+            }
+            ans = Math.max(ans, dp[u] + scores[u]);
+        }
+        return ans;
+
+=======
+
+        int n = scores.length;
+        int[] dp = new int[1 << n];
+        int[] sum = new int[1 << n];
+        int[] indegree = new int[n];
+        for (int[] e : edges) {
+            int u = e[0], v = e[1];
+            indegree[u]++;
+            indegree[v]++;
+        }
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 1) {
+                dp[1 << i] = scores[i];
+            }
+        }
+        for (int mask = 1; mask < (1 << n); mask++) {
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    sum[mask] = sum[mask ^ (1 << i)] + scores[i];
+                    break;
+                }
+            }
+        }
+        for (int mask = 1; mask < (1 << n); mask++) {
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    for (int j = i + 1; j < n; j++) {
+                        if (((mask >> j) & 1) == 1) {
+                            for (int[] e : edges) {
+                                int u = e[0], v = e[1];
+                                if ((u == i && v == j) || (u == j && v == i)) {
+                                    dp[mask] = Math.max(dp[mask], dp[mask ^ (1 << i) ^ (1 << j)] + sum[mask]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];

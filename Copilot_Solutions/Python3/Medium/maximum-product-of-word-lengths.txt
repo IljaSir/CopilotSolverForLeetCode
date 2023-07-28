@@ -1,0 +1,172 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        n = len(words)
+        res = 0
+        for i in range(n):
+            for j in range(i+1, n):
+                if not set(words[i]) & set(words[j]):
+                    res = max(res, len(words[i]) * len(words[j]))
+        return res
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        bitmasks = []
+        for word in words:
+            bitmask = 0
+            for letter in word:
+                bitmask |= 1 << (ord(letter) - ord('a'))
+            bitmasks.append(bitmask)
+        ans = 0
+        for i, bitmask1 in enumerate(bitmasks):
+            for bitmask2 in bitmasks[i + 1:]:
+                if bitmask1 & bitmask2 == 0:
+                    ans = max(ans, len(words[i]) * len(words[bitmasks.index(bitmask2)]))
+        return ans
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        def get_mask(word):
+            mask = 0
+            for c in word:
+                mask |= 1 << (ord(c) - ord('a'))
+            return mask
+        words = sorted(words, key=lambda x: len(x), reverse=True)
+        masks = [get_mask(word) for word in words]
+        for i, word in enumerate(words):
+            for j in range(i):
+                if masks[i] & masks[j] == 0:
+                    return len(word) * len(words[j])
+        return 0
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        def get_mask(word):
+            mask = 0
+            for c in word:
+                mask |= 1 << (ord(c) - ord('a'))
+            return mask
+        words.sort(key=len)
+        masks = [get_mask(word) for word in words]
+        n = len(words)
+        ans = 0
+        for i in range(n):
+            for j in range(i+1, n):
+                if masks[i] & masks[j] == 0:
+                    ans = max(ans, len(words[i]) * len(words[j]))
+        return ans
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        # Convert words to bitmasks
+        bitmasks = []
+        for word in words:
+            bitmask = 0
+            for letter in word:
+                bitmask |= 1 << (ord(letter) - ord('a'))
+            bitmasks.append(bitmask)
+        
+        # Find maximum product
+        max_product = 0
+        for i, bitmask1 in enumerate(bitmasks):
+            for j, bitmask2 in enumerate(bitmasks):
+                if not bitmask1 & bitmask2:
+                    max_product = max(max_product, len(words[i]) * len(words[j]))
+        return max_product
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        n = len(words)
+        if n == 2:
+            return len(words[0]) * len(words[1])
+        words.sort(key=len, reverse=True)
+        ans = 0
+        for i in range(n):
+            for j in range(i+1, n):
+                if set(words[i]) & set(words[j]) == set():
+                    ans = max(ans, len(words[i]) * len(words[j]))
+                    break
+        return ans
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        n = len(words)
+        words = sorted(words, key = lambda x: len(x), reverse=True)
+        words = [set(word) for word in words]
+        ans = 0
+        for i in range(n):
+            for j in range(i):
+                if not words[i] & words[j]:
+                    ans = max(ans, len(words[i]) * len(words[j]))
+                    break
+        return ans
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        words.sort(key = lambda word: len(word), reverse = True)
+        n = len(words)
+        bitmasks = [0] * n
+        for i in range(n):
+            for c in words[i]:
+                bitmasks[i] |= 1 << (ord(c) - ord('a'))
+        
+        ans = 0
+        for i in range(n):
+            if len(words[i]) ** 2 <= ans:
+                break
+            for j in range(i + 1, n):
+                if bitmasks[i] & bitmasks[j] == 0:
+                    ans = max(ans, len(words[i]) * len(words[j]))
+        return ans
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        # n = len(words)
+        # m = len(words[0])
+        # for i in range(n):
+        #     for j in range(i+1,n):
+        #         for k in range(m):
+        #             if words[i][k] in words[j]:
+        #                 break
+        #         else:
+        #             return max(len(words[i])*len(words[j]),self.maxProduct(words[:i]+words[i+1:j]+words[j+1:]))
+        # return 0
+        n = len(words)
+        m = len(words[0])
+        words = sorted(words,key = lambda x:len(x),reverse = True)
+        for i in range(n):
+            for j in range(i+1,n):
+                for k in range(m):
+                    if words[i][k] in words[j]:
+                        break
+                else:
+                    return len(words[i])*len(words[j])
+        return 0
+
+=======
+
+def maxProduct(self, words: List[str]) -> int:
+        # sort the list by length
+        words.sort(key=len)
+        # create a list of bitmasks
+        masks = [0] * len(words)
+        for i, word in enumerate(words):
+            for char in word:
+                masks[i] |= 1 << (ord(char) - ord('a'))
+        # compare each word with the next ones
+        max_product = 0
+        for i in range(len(words)):
+            for j in range(i + 1, len(words)):
+                if masks[i] & masks[j] == 0:
+                    max_product = max(max_product, len(words[i]) * len(words[j]))
+        return max_product

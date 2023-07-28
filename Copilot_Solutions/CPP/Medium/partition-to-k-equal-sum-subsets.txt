@@ -1,0 +1,221 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum % k != 0) {
+            return false;
+        }
+        int target = sum / k;
+        vector<int> groups(k);
+        sort(nums.begin(), nums.end(), greater<int>());
+        return dfs(nums, groups, 0, target);
+    }
+
+    bool dfs(vector<int>& nums, vector<int>& groups, int index, int target) {
+        if (index == nums.size()) {
+            return true;
+        }
+        int num = nums[index];
+        for (int i = 0; i < groups.size(); ++i) {
+            if (groups[i] + num <= target) {
+                groups[i] += num;
+                if (dfs(nums, groups, index + 1, target)) {
+                    return true;
+                }
+                groups[i] -= num;
+            }
+            if (groups[i] == 0) {
+                break;
+            }
+        }
+        return false;
+
+=======
+
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum % k != 0) {
+            return false;
+        }
+        int target = sum / k;
+        vector<int> used(nums.size());
+        return dfs(nums, used, 0, k, 0, 0, target);
+    }
+    bool dfs(vector<int>& nums, vector<int>& used, int start_index, int k, int cur_sum, int cur_num, int target) {
+        if (k == 1) {
+            return true;
+        }
+        if (cur_sum == target && cur_num > 0) {
+            return dfs(nums, used, 0, k - 1, 0, 0, target);
+        }
+        for (int i = start_index; i < nums.size(); i++) {
+            if (!used[i]) {
+                used[i] = 1;
+                if (dfs(nums, used, i + 1, k, cur_sum + nums[i], cur_num++, target)) {
+                    return true;
+                }
+                used[i] = 0;
+            }
+        }
+        return false;
+
+=======
+
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        sort(nums.rbegin(), nums.rend());
+        if (nums[0] > target) return false;
+        vector<int> bucket(k, 0);
+        return dfs(nums, bucket, 0, target);
+    }
+    bool dfs(vector<int>& nums, vector<int>& bucket, int idx, int target) {
+        if (idx == nums.size()) {
+            return true;
+        }
+        for (int i = 0; i < bucket.size(); i++) {
+            if (bucket[i] + nums[idx] > target) continue;
+            bucket[i] += nums[idx];
+            if (dfs(nums, bucket, idx + 1, target)) return true;
+            bucket[i] -= nums[idx];
+        }
+        return false;
+
+=======
+
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        vector<bool> used(nums.size(), false);
+        return canPartition(nums, used, 0, k, 0, target);
+    }
+    
+    bool canPartition(vector<int>& nums, vector<bool>& used, int start_index, int k, int cur_sum, int target) {
+        if (k == 1) return true;
+        if (cur_sum == target) return canPartition(nums, used, 0, k - 1, 0, target);
+        for (int i = start_index; i < nums.size(); i++) {
+            if (used[i]) continue;
+            used[i] = true;
+            if (canPartition(nums, used, i + 1, k, cur_sum + nums[i], target)) return true;
+            used[i] = false;
+        }
+        return false;
+
+=======
+
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        vector<bool> used(nums.size(), false);
+        return dfs(nums, k, 0, 0, target, used);
+    }
+    
+    bool dfs(vector<int>& nums, int k, int start, int curSum, int target, vector<bool>& used) {
+        if (k == 1) return true;
+        if (curSum == target) return dfs(nums, k-1, 0, 0, target, used);
+        for (int i = start; i < nums.size(); ++i) {
+            if (used[i]) continue;
+            used[i] = true;
+            if (dfs(nums, k, i+1, curSum+nums[i], target, used)) return true;
+            used[i] = false;
+        }
+        return false;
+
+=======
+
+        int sum = 0;
+        for (auto n : nums) sum += n;
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        sort(nums.begin(), nums.end());
+        if (nums.back() > target) return false;
+        vector<bool> visited(nums.size());
+        return search(nums, visited, 0, k, 0, target);
+
+=======
+
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        int n = nums.size();
+        vector<bool> used(n, false);
+        return dfs(nums, used, 0, k, 0, 0, target);
+    }
+
+    bool dfs(vector<int>& nums, vector<bool>& used, int start_index, int k, int cur_sum, int cur_num, int target) {
+        if (k == 1) return true;
+        if (cur_sum == target && cur_num > 0) {
+            return dfs(nums, used, 0, k - 1, 0, 0, target);
+        }
+        for (int i = start_index; i < nums.size(); i++) {
+            if (!used[i]) {
+                used[i] = true;
+                if (dfs(nums, used, i + 1, k, cur_sum + nums[i], cur_num++, target)) {
+                    return true;
+                }
+                used[i] = false;
+            }
+        }
+        return false;
+
+=======
+
+        int sum = 0;
+        for (auto n : nums) sum += n;
+        if (sum % k != 0) return false;
+        int target = sum / k;
+        vector<int> used(nums.size(), 0);
+        return search(nums, used, 0, k, 0, 0, target);
+    }
+    bool search(vector<int>& nums, vector<int>& used, int start_index, int k, int cur_sum, int cur_num, int target) {
+        if (k == 1) return true;
+        if (cur_sum == target && cur_num > 0) return search(nums, used, 0, k - 1, 0, 0, target);
+        for (int i = start_index; i < nums.size(); i++) {
+            if (used[i] == 0) {
+                used[i] = 1;
+                if (search(nums, used, i + 1, k, cur_sum + nums[i], cur_num++, target)) return true;
+                used[i] = 0;
+            }
+        }
+        return false;
+
+=======
+
+        vector<int> sum(k, 0);
+        int total = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            total += nums[i];
+        }
+        if (total % k != 0) {
+            return false;
+        }
+        int target = total / k;
+        sort(nums.begin(), nums.end());
+        if (nums.back() > target) {
+            return false;
+        }
+        return helper(nums, nums.size() - 1, sum, target);
+    }
+    bool helper(vector<int>& nums, int index, vector<int>& sum, int target) {
+        if (index < 0) {
+            return true;
+        }
+        for (int i = 0; i < sum.size(); i++) {
+            if (sum[i] + nums[index] <= target) {
+                sum[i] += nums[index];
+                if (helper(nums, index - 1, sum, target)) {
+                    return true;
+                }
+                sum[i] -= nums[index];
+            }
+        }
+        return false;

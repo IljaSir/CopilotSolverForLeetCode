@@ -1,0 +1,61 @@
+impl Solution {
+    pub fn is_self_crossing(distance: Vec<i32>) -> bool {
+        
+        let mut x = 0;
+        let mut y = 0;
+        let mut x0 = 0;
+        let mut y0 = 0;
+        let mut x1 = 0;
+        let mut y1 = 0;
+        let mut x2 = 0;
+        let mut y2 = 0;
+        let mut x3 = 0;
+        let mut y3 = 0;
+        let mut x4 = 0;
+        let mut y4 = 0;
+        let mut x5 = 0;
+        let mut y5 = 0;
+        let mut x6 = 0;
+        let mut y6 = 0;
+        let mut x7 = 0;
+        let mut y7 = 0;
+        let mut x8 = 0;
+        let mut y8 = 0;
+        let mut x9 = 0;
+        let mut y9 = 0;
+        let mut x10 = 0;
+        let mut y10 = 0;
+        let mut x11 = 0;
+        let mut y11 = 0;
+        let mut x12 = 0;
+        let mut y12 = 0;
+        let mut x13 = 0;
+        let mut y13 = 0;
+        let mut x14 = 0;
+        let mut y14 = 0;
+        let mut x15 = 0;
+        let mut y15 = 0;
+        let mut x16 = 0;
+        let mut y16 = 0;
+        let mut x17 = 0;
+        let mut y17 = 0;
+        let mut x18 = 0;
+        let mut y18 = 0;
+        let mut x19 = 0;
+        let mut y19 = 0;
+        let mut x20 = 0;
+        let mut y20 = 0;
+        let mut x21 = 0;
+        let mut y21 = 0;
+        let mut x22 = 0;
+        let mut y22 = 0;
+        let mut x23 = 0;
+        let mut y23 = 0;
+        let mut x24 = 0;
+        let mut y24 = 0;
+        let mut x25 = 0;
+        let mut y25 = 0;
+        let mut x26 = 0;
+        let mut y26 =
+    }
+}

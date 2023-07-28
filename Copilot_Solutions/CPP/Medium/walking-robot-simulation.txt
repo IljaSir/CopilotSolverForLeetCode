@@ -1,0 +1,354 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int dx[4] = {0, 1, 0, -1};
+        int dy[4] = {1, 0, -1, 0};
+        int x = 0, y = 0, di = 0;
+        unordered_set <long long> obstacleSet;
+        for (auto obstacle : obstacles) {
+            long long ox = (long long)obstacle[0] + 30000;
+            long long oy = (long long)obstacle[1] + 30000;
+            long long code = (ox << 16) + oy;
+            obstacleSet.insert(code);
+        }
+        int ans = 0;
+        for (auto cmd : commands) {
+            if (cmd == -2) {
+                di = (di + 3) % 4;
+            } else if (cmd == -1) {
+                di = (di + 1) % 4;
+            } else {
+                for (int k = 0; k < cmd; ++k) {
+                    int nx = x + dx[di];
+                    int ny = y + dy[di];
+                    long long code = (((long long)nx + 30000) << 16) + ((long long)ny + 30000);
+                    if (!obstacleSet.count(code)) {
+                        x = nx;
+                        y = ny;
+                        ans = max(ans, x * x + y * y);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int x = 0, y = 0, d = 0;
+        int dx[4] = {0, 1, 0, -1};
+        int dy[4] = {1, 0, -1, 0};
+        set<pair<int, int>> obstacleSet;
+        for (auto& obstacle: obstacles) {
+            obstacleSet.insert(make_pair(obstacle[0], obstacle[1]));
+        }
+        int ans = 0;
+        for (auto& command: commands) {
+            if (command == -2) {
+                d = (d + 3) % 4;
+            } else if (command == -1) {
+                d = (d + 1) % 4;
+            } else {
+                for (int i = 0; i < command; ++i) {
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
+                    if (obstacleSet.find(make_pair(nx, ny)) == obstacleSet.end()) {
+                        x = nx;
+                        y = ny;
+                        ans = max(ans, x * x + y * y);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int x = 0, y = 0, d = 0;
+        int dx[4] = {0, 1, 0, -1};
+        int dy[4] = {1, 0, -1, 0};
+        int ans = 0;
+        set<pair<int, int>> obstacleSet;
+        for (auto obstacle: obstacles) {
+            obstacleSet.insert(make_pair(obstacle[0], obstacle[1]));
+        }
+        for (auto command: commands) {
+            if (command == -2) {
+                d = (d + 3) % 4;
+            } else if (command == -1) {
+                d = (d + 1) % 4;
+            } else {
+                for (int i = 0; i < command; i++) {
+                    int nx = x + dx[d];
+                    int ny = y + dy[d];
+                    if (obstacleSet.count(make_pair(nx, ny))) {
+                        break;
+                    }
+                    x = nx;
+                    y = ny;
+                    ans = max(ans, x * x + y * y);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int x = 0, y = 0, dir = 0;
+        int dx[4] = {0, 1, 0, -1};
+        int dy[4] = {1, 0, -1, 0};
+        unordered_set<string> obs;
+        for (auto &obstacle : obstacles) {
+            obs.insert(to_string(obstacle[0]) + " " + to_string(obstacle[1]));
+        }
+        int ans = 0;
+        for (auto &command : commands) {
+            if (command == -2) {
+                dir = (dir + 3) % 4;
+            } else if (command == -1) {
+                dir = (dir + 1) % 4;
+            } else {
+                for (int i = 0; i < command; i++) {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+                    if (obs.find(to_string(nx) + " " + to_string(ny)) == obs.end()) {
+                        x = nx;
+                        y = ny;
+                        ans = max(ans, x * x + y * y);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        set<pair<int, int>> obstacleSet;
+        for (auto& obstacle: obstacles) {
+            obstacleSet.insert(make_pair(obstacle[0], obstacle[1]));
+        }
+        int x = 0;
+        int y = 0;
+        int direction = 0; // 0: north, 1: east, 2: south, 3: west
+        int maxDistance = 0;
+        for (auto command: commands) {
+            if (command == -2) {
+                direction = (direction + 3) % 4;
+            } else if (command == -1) {
+                direction = (direction + 1) % 4;
+            } else {
+                for (int i = 0; i < command; i++) {
+                    int nextX = x;
+                    int nextY = y;
+                    if (direction == 0) {
+                        nextY++;
+                    } else if (direction == 1) {
+                        nextX++;
+                    } else if (direction == 2) {
+                        nextY--;
+                    } else {
+                        nextX--;
+                    }
+                    if (obstacleSet.find(make_pair(nextX, nextY)) != obstacleSet.end()) {
+                        break;
+                    }
+                    x = nextX;
+                    y = nextY;
+                    maxDistance = max(maxDistance, x * x + y * y);
+                }
+            }
+        }
+        return maxDistance;
+
+=======
+
+        int x = 0, y = 0;
+        int direction = 0;
+        int max_distance = 0;
+        set<pair<int, int>> obstacle_set;
+        for (auto obstacle : obstacles) {
+            obstacle_set.insert(make_pair(obstacle[0], obstacle[1]));
+        }
+        for (auto command : commands) {
+            if (command == -2) {
+                direction = (direction + 3) % 4;
+            } else if (command == -1) {
+                direction = (direction + 1) % 4;
+            } else {
+                for (int i = 0; i < command; ++i) {
+                    int next_x = x + (direction == 1 ? 1 : direction == 3 ? -1 : 0);
+                    int next_y = y + (direction == 0 ? 1 : direction == 2 ? -1 : 0);
+                    if (obstacle_set.find(make_pair(next_x, next_y)) == obstacle_set.end()) {
+                        x = next_x;
+                        y = next_y;
+                        max_distance = max(max_distance, x * x + y * y);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return max_distance;
+
+=======
+
+        set<pair<int,int>> s;
+        for (auto &p : obstacles) {
+            s.insert({p[0], p[1]});
+        }
+        int dx[] = {0, 1, 0, -1};
+        int dy[] = {1, 0, -1, 0};
+        int dir = 0;
+        int x = 0, y = 0;
+        int ans = 0;
+        for (int cmd : commands) {
+            if (cmd == -2) {
+                dir = (dir + 3) % 4;
+            } else if (cmd == -1) {
+                dir = (dir + 1) % 4;
+            } else {
+                for (int i = 0; i < cmd; i++) {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+                    if (s.count({nx, ny})) {
+                        break;
+                    }
+                    x = nx;
+                    y = ny;
+                    ans = max(ans, x * x + y * y);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int x = 0, y = 0, d = 0;
+        int maxDist = 0;
+        set<pair<int, int>> obs;
+        for (auto& o : obstacles) {
+            obs.insert({o[0], o[1]});
+        }
+        vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        for (auto& cmd : commands) {
+            if (cmd == -1) {
+                d = (d + 1) % 4;
+            } else if (cmd == -2) {
+                d = (d + 3) % 4;
+            } else {
+                for (int i = 0; i < cmd; ++i) {
+                    int nx = x + dirs[d][0];
+                    int ny = y + dirs[d][1];
+                    if (obs.find({nx, ny}) == obs.end()) {
+                        x = nx;
+                        y = ny;
+                        maxDist = max(maxDist, x * x + y * y);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return maxDist;
+
+=======
+
+        // vector<vector<int>> obstacles;
+        // obstacles.push_back({2, 4});
+        // vector<int> commands = {4, -1, 4, -2, 4};
+        int x = 0, y = 0;
+        int direction = 0; // 0: north, 1: east, 2: south, 3: west
+        int max = 0;
+        for (int i = 0; i < commands.size(); i++) {
+            if (commands[i] == -1) {
+                direction = (direction + 1) % 4;
+            } else if (commands[i] == -2) {
+                direction = (direction + 3) % 4;
+            } else {
+                for (int j = 0; j < commands[i]; j++) {
+                    bool flag = false;
+                    for (int k = 0; k < obstacles.size(); k++) {
+                        if (direction == 0 && obstacles[k][0] == x && obstacles[k][1] == y + 1) {
+                            flag = true;
+                            break;
+                        }
+                        if (direction == 1 && obstacles[k][0] == x + 1 && obstacles[k][1] == y) {
+                            flag = true;
+                            break;
+                        }
+                        if (direction == 2 && obstacles[k][0] == x && obstacles[k][1] == y - 1) {
+                            flag = true;
+                            break;
+                        }
+                        if (direction == 3 && obstacles[k][0] == x - 1 && obstacles[k][1] == y) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        break;
+                    }
+                    if (direction == 0) {
+                        y++;
+                    } else if (direction == 1) {
+                        x++;
+                    } else if (direction == 2) {
+                        y--;
+                    } else if (direction == 3) {
+                        x--;
+                    }
+                }
+            }
+            if (x * x + y * y > max) {
+                max = x * x + y * y;
+            }
+        }
+        return max;
+
+=======
+
+        int x = 0, y = 0, d = 0, max = 0;
+        for (auto cmd : commands) {
+            switch (cmd) {
+                case -2:
+                    d = (d - 1 + 4) % 4;
+                    break;
+                case -1:
+                    d = (d + 1) % 4;
+                    break;
+                default:
+                    while (cmd--) {
+                        int x1 = x, y1 = y;
+                        switch (d) {
+                            case 0:
+                                y1++;
+                                break;
+                            case 1:
+                                x1++;
+                                break;
+                            case 2:
+                                y1--;
+                                break;
+                            case 3:
+                                x1--;
+                                break;
+                        }
+                        bool blocked = false;
+                        for (auto o : obstacles) {
+                            if (o[0] == x1 && o[1] == y1) {
+                                blocked = true;
+                                break;
+                            }
+                        }
+                        if (!blocked) {
+                            x = x1;
+                            y = y1;
+                        }
+                    }
+            }
+            int d2 = x * x + y * y;
+            if (d2 > max) max = d2;
+        }
+        return max;

@@ -1,0 +1,256 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = 0;
+        for target_word in target_words {
+            for start_word in &start_words {
+                if Solution::is_valid(start_word, &target_word) {
+                    count += 1;
+                    break;
+                }
+            }
+        }
+        count
+    }
+    fn is_valid(start_word: &String, target_word: &String) -> bool {
+        if start_word.len() + 1 != target_word.len() {
+            return false;
+        }
+        let mut start_word = start_word.clone();
+        for c in target_word.chars() {
+            if start_word.contains(c) {
+                let index = start_word.find(c).unwrap();
+                start_word.remove(index);
+            } else {
+                start_word.push(c);
+            }
+        }
+        start_word == *target_word
+
+=======
+
+        let mut count = 0;
+        for target_word in target_words {
+            let mut found = false;
+            for start_word in &start_words {
+                if Solution::is_convertable(start_word, &target_word) {
+                    found = true;
+                    break;
+                }
+            }
+            if found {
+                count += 1;
+            }
+        }
+        count
+    }
+    fn is_convertable(start_word: &String, target_word: &String) -> bool {
+        if start_word.len() > target_word.len() {
+            return false;
+        }
+        let mut start_word = start_word.clone();
+        for c in target_word.chars() {
+            if let Some(index) = start_word.find(c) {
+                start_word.remove(index);
+            } else {
+                start_word.push(c);
+            }
+        }
+        start_word == *target_word
+
+=======
+
+        let mut count = 0;
+        for target_word in &target_words {
+            let mut letters = vec![0; 26];
+            for c in target_word.chars() {
+                letters[c as usize - 97] += 1;
+            }
+            for start_word in &start_words {
+                let mut tmp = letters.clone();
+                for c in start_word.chars() {
+                    tmp[c as usize - 97] -= 1;
+                }
+                if tmp.iter().all(|&x| x <= 0) {
+                    count += 1;
+                    break;
+                }
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        for target in target_words.iter() {
+            let mut is_valid = false;
+            for start in start_words.iter() {
+                if target.len() > start.len() {
+                    continue;
+                }
+                let mut is_match = true;
+                let mut chars = target.chars().collect::<Vec<char>>();
+                for c in start.chars() {
+                    if let Some(idx) = chars.iter().position(|&x| x == c) {
+                        chars.remove(idx);
+                    }
+                }
+                if chars.len() > 0 {
+                    is_match = false;
+                }
+                if is_match {
+                    is_valid = true;
+                    break;
+                }
+            }
+            if is_valid {
+                count += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        for target in target_words {
+            for start in &start_words {
+                if start.len() < target.len() {
+                    continue;
+                }
+                let mut diff = vec![0; 26];
+                for c in start.chars() {
+                    diff[c as usize - 'a' as usize] += 1;
+                }
+                for c in target.chars() {
+                    diff[c as usize - 'a' as usize] -= 1;
+                }
+                let mut diff_count = 0;
+                for i in 0..26 {
+                    if diff[i] < 0 {
+                        diff_count += 1;
+                    }
+                }
+                if diff_count == 0 {
+                    count += 1;
+                    break;
+                }
+            }
+        }
+        count
+
+=======
+
+        let mut res = 0;
+        let mut sw = vec![];
+        for w in start_words {
+            let mut tmp = vec![0; 26];
+            for c in w.chars() {
+                tmp[c as usize - 'a' as usize] += 1;
+            }
+            sw.push(tmp);
+        }
+        let mut tw = vec![];
+        for w in target_words {
+            let mut tmp = vec![0; 26];
+            for c in w.chars() {
+                tmp[c as usize - 'a' as usize] += 1;
+            }
+            tw.push(tmp);
+        }
+        for i in 0..tw.len() {
+            let mut flag = false;
+            for j in 0..sw.len() {
+                let mut tmp = sw[j].clone();
+                let mut f = true;
+                for k in 0..26 {
+                    if tw[i][k] > tmp[k] {
+                        f = false;
+                        break;
+                    }
+                    tmp[k] -= tw[i][k];
+                }
+                if f {
+                    flag = true;
+                    break;
+                }
+            }
+            if flag {
+                res += 1;
+            }
+        }
+        res
+
+=======
+
+        let mut ans = 0;
+        for target in &target_words {
+            let mut ok = false;
+            for start in &start_words {
+                if Self::is_subsequence(start, target) {
+                    ok = true;
+                    break;
+                }
+            }
+            if ok {
+                ans += 1;
+            }
+        }
+        ans
+    }
+    fn is_subsequence(s: &str, t: &str) -> bool {
+        let mut i = 0;
+        for j in 0..t.len() {
+            if i < s.len() && s.chars().nth(i).unwrap() == t.chars().nth(j).unwrap() {
+                i += 1;
+            }
+        }
+        i == s.len()
+
+=======
+
+        let mut count = 0;
+        for word in target_words {
+            for s in &start_words {
+                if s.len() == word.len() && (0..s.len()).all(|i| s[i..].contains(&word[i..=i])) {
+                    count += 1;
+                    break;
+                }
+            }
+        }
+        count
+
+=======
+
+        let mut result = 0;
+        for word in target_words {
+            let mut flag = true;
+            let mut count = 0;
+            for start in &start_words {
+                if word.len() == start.len() {
+                    if word == *start {
+                        flag = false;
+                        break;
+                    }
+                } else if word.len() == start.len() + 1 {
+                    for i in 0..start.len() {
+                        if word[i..] == start[i..] {
+                            count += 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            if flag && count == 1 {
+                result += 1;
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        
+    }
+}

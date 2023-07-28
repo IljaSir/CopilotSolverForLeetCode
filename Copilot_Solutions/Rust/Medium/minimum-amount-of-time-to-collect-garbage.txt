@@ -1,0 +1,66 @@
+Synthesizing 2/10 solutions
+
+=======
+
+        let mut metal = 0;
+        let mut paper = 0;
+        let mut glass = 0;
+        for item in garbage {
+            for ch in item.chars() {
+                match ch {
+                    'M' => metal += 1,
+                    'P' => paper += 1,
+                    'G' => glass += 1,
+                    _ => (),
+                }
+            }
+        }
+        let mut time = paper * travel[0];
+        let mut index = 0;
+        for i in 1..garbage.len() {
+            let mut tmp = 0;
+            for ch in garbage[i].chars() {
+                match ch {
+                    'P' => tmp += 1,
+                    _ => (),
+                }
+            }
+            if tmp > 0 {
+                time += tmp * travel[i];
+                index = i;
+                break;
+            }
+        }
+        for i in (index + 1)..garbage.len() {
+            let mut tmp = 0;
+            for ch in garbage[i].chars() {
+                match ch {
+                    'G' => tmp += 1,
+                    _ => (),
+                }
+            }
+            if tmp > 0 {
+                time += tmp * travel[i];
+                break;
+            }
+        }
+        time
+
+=======
+
+        let mut dp = vec![vec![0; 3]; garbage.len()];
+        for i in 0..garbage.len() {
+            for j in 0..3 {
+                dp[i][j] = if i == 0 {
+                    garbage[i].chars().filter(|&c| c == "MPG".chars().nth(j).unwrap()).count() as i32 * travel[i]
+                } else {
+                    dp[i-1][j] + garbage[i].chars().filter(|&c| c == "MPG".chars().nth(j).unwrap()).count() as i32 * travel[i]
+                };
+                for k in 0..3 {
+                    if k != j {
+                        dp[i][j] = dp[i][j].min(dp[i][k] + garbage[i].chars().filter(|&c| c == "MPG".chars().nth(j).unwrap()).count() as i32 * travel[i]);
+                    }
+                }
+            }
+        }
+        *dp.last().unwrap().iter().min().unwrap()

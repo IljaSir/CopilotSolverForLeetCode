@@ -1,0 +1,291 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& d : dislikes) {
+            graph[d[0] - 1].push_back(d[1] - 1);
+            graph[d[1] - 1].push_back(d[0] - 1);
+        }
+        vector<int> color(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (color[i] != 0) continue;
+            stack<int> s;
+            s.push(i);
+            color[i] = 1;
+            while (!s.empty()) {
+                int cur = s.top();
+                s.pop();
+                for (int j = 0; j < graph[cur].size(); j++) {
+                    if (color[graph[cur][j]] == color[cur]) {
+                        return false;
+                    }
+                    if (color[graph[cur][j]] == 0) {
+                        s.push(graph[cur][j]);
+                        color[graph[cur][j]] = -color[cur];
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> graph(n + 1);
+        for (auto &dislike : dislikes) {
+            graph[dislike[0]].push_back(dislike[1]);
+            graph[dislike[1]].push_back(dislike[0]);
+        }
+        
+        vector<int> mark(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            if (mark[i] == 0) {
+                queue<int> q;
+                q.push(i);
+                mark[i] = 1;
+                while (!q.empty()) {
+                    int size = q.size();
+                    for (int j = 0; j < size; j++) {
+                        int cur = q.front();
+                        q.pop();
+                        for (int k = 0; k < graph[cur].size(); k++) {
+                            if (mark[graph[cur][k]] == mark[cur]) return false;
+                            if (mark[graph[cur][k]] == 0) {
+                                mark[graph[cur][k]] = -mark[cur];
+                                q.push(graph[cur][k]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> graph(n+1);
+        for (auto d : dislikes) {
+            graph[d[0]].push_back(d[1]);
+            graph[d[1]].push_back(d[0]);
+        }
+        vector<int> color(n+1, 0);
+        for (int i = 1; i <= n; i++) {
+            if (color[i] == 0) {
+                color[i] = 1;
+                queue<int> q;
+                q.push(i);
+                while (!q.empty()) {
+                    int cur = q.front();
+                    q.pop();
+                    for (int j = 0; j < graph[cur].size(); j++) {
+                        int next = graph[cur][j];
+                        if (color[next] == color[cur]) {
+                            return false;
+                        }
+                        if (color[next] == 0) {
+                            color[next] = -color[cur];
+                            q.push(next);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& d: dislikes) {
+            graph[d[0] - 1].push_back(d[1] - 1);
+            graph[d[1] - 1].push_back(d[0] - 1);
+        }
+        vector<int> colors(n, -1);
+        for (int i = 0; i < n; ++i) {
+            if (colors[i] == -1) {
+                colors[i] = 0;
+                queue<int> q;
+                q.push(i);
+                while (!q.empty()) {
+                    int t = q.front();
+                    q.pop();
+                    for (int j = 0; j < graph[t].size(); ++j) {
+                        if (colors[graph[t][j]] == -1) {
+                            colors[graph[t][j]] = 1 - colors[t];
+                            q.push(graph[t][j]);
+                        } else if (colors[graph[t][j]] == colors[t]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> graph(n + 1, vector<int>());
+        for (auto& dislike : dislikes) {
+            graph[dislike[0]].push_back(dislike[1]);
+            graph[dislike[1]].push_back(dislike[0]);
+        }
+        vector<int> color(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            if (color[i] != 0) continue;
+            color[i] = 1;
+            queue<int> q;
+            q.push(i);
+            while (!q.empty()) {
+                int size = q.size();
+                for (int i = 0; i < size; i++) {
+                    int node = q.front();
+                    q.pop();
+                    for (auto& neighbor : graph[node]) {
+                        if (color[neighbor] == color[node]) return false;
+                        if (color[neighbor] != 0) continue;
+                        color[neighbor] = -color[node];
+                        q.push(neighbor);
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> adj(n+1);
+        for (auto& d : dislikes) {
+            adj[d[0]].push_back(d[1]);
+            adj[d[1]].push_back(d[0]);
+        }
+        vector<int> color(n+1, 0);
+        for (int i = 1; i <= n; i++) {
+            if (color[i] == 0) {
+                color[i] = 1;
+                queue<int> q;
+                q.push(i);
+                while (!q.empty()) {
+                    int u = q.front();
+                    q.pop();
+                    for (int v : adj[u]) {
+                        if (color[v] == 0) {
+                            color[v] = -color[u];
+                            q.push(v);
+                        } else if (color[v] == color[u]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<int> group(n + 1, 0);
+        vector<vector<int>> graph(n + 1);
+        for (auto& dislike : dislikes) {
+            graph[dislike[0]].push_back(dislike[1]);
+            graph[dislike[1]].push_back(dislike[0]);
+        }
+        for (int i = 1; i <= n; i++) {
+            if (group[i] == 0 && !dfs(graph, group, 1, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    bool dfs(vector<vector<int>>& graph, vector<int>& group, int g, int node) {
+        if (group[node] != 0) {
+            return group[node] == g;
+        }
+        group[node] = g;
+        for (auto& next : graph[node]) {
+            if (!dfs(graph, group, -g, next)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> g(n+1);
+        vector<int> color(n+1, 0);
+        for (auto& p : dislikes) {
+            g[p[0]].push_back(p[1]);
+            g[p[1]].push_back(p[0]);
+        }
+        for (int i = 1; i <= n; i++) {
+            if (color[i] == 0 && !dfs(g, color, 1, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    bool dfs(vector<vector<int>>& g, vector<int>& color, int c, int i) {
+        if (color[i] != 0) {
+            return color[i] == c;
+        }
+        color[i] = c;
+        for (auto& j : g[i]) {
+            if (!dfs(g, color, -c, j)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int m = dislikes.size();
+        vector<vector<int>> g(n + 1);
+        vector<int> color(n + 1);
+        for (int i = 0; i < m; i++) {
+            g[dislikes[i][0]].push_back(dislikes[i][1]);
+            g[dislikes[i][1]].push_back(dislikes[i][0]);
+        }
+        for (int i = 1; i <= n; i++) {
+            if (color[i] == 0) {
+                color[i] = 1;
+                queue<int> q;
+                q.push(i);
+                while (!q.empty()) {
+                    int t = q.front();
+                    q.pop();
+                    for (int j = 0; j < g[t].size(); j++) {
+                        if (color[g[t][j]] == 0) {
+                            color[g[t][j]] = -color[t];
+                            q.push(g[t][j]);
+                        } else if (color[g[t][j]] == color[t]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        // 1. Build the graph
+        vector<vector<int>> graph(n);
+        for (auto& dislike: dislikes) {
+            graph[dislike[0] - 1].push_back(dislike[1] - 1);
+            graph[dislike[1] - 1].push_back(dislike[0] - 1);
+        }
+        
+        // 2. DFS
+        vector<int> colors(n, 0);
+        for (int i = 0; i < n; ++i) {
+            if (colors[i] != 0) continue;
+            if (!dfs(graph, colors, i, 1)) return false;
+        }
+        return true;
+    }
+    
+    bool dfs(vector<vector<int>>& graph, vector<int>& colors, int node, int color) {
+        if (colors[node] != 0) return colors[node] == color;
+        colors[node] = color;
+        for (auto& neighbor: graph[node]) {
+            if (!dfs(graph, colors, neighbor, -color)) return false;
+        }
+        return true;

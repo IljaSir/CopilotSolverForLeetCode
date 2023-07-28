@@ -1,0 +1,251 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int n = events.length;
+        int[] dp = new int[n];
+        dp[0] = events[0][2];
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], events[i][2]);
+        }
+        for (int i = 1; i < k; i++) {
+            int[] ndp = new int[n];
+            int j = 0;
+            for (int k1 = 0; k1 < n; k1++) {
+                while (j < n && events[j][0] <= events[k1][1]) {
+                    j++;
+                }
+                if (j < n) {
+                    ndp[k1] = dp[k1] + events[j][2];
+                }
+                if (k1 > 0) {
+                    ndp[k1] = Math.max(ndp[k1], ndp[k1 - 1]);
+                }
+            }
+            dp = ndp;
+        }
+        return dp[n - 1];
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        int n = events.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            int[] event = events[i - 1];
+            for (int j = 1; j <= k; j++) {
+                dp[i][j] = dp[i - 1][j];
+                int l = 0, r = i - 1;
+                while (l < r) {
+                    int mid = (l + r + 1) >> 1;
+                    if (events[mid - 1][1] < event[0]) {
+                        l = mid;
+                    } else {
+                        r = mid - 1;
+                    }
+                }
+                if (events[r - 1][1] < event[0]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[r][j - 1] + event[2]);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        int n = events.length;
+        int[] dp = new int[n];
+        dp[0] = events[0][2];
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], events[i][2]);
+            for (int j = i - 1; j >= 0; j--) {
+                if (events[j][1] < events[i][0]) {
+                    dp[i] = Math.max(dp[i], dp[j] + events[i][2]);
+                    break;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        int n = events.length;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = events[i][2];
+        }
+        for (int i = 1; i < k; i++) {
+            int[] dp2 = new int[n];
+            int j = 0;
+            for (int l = 0; l < n; l++) {
+                while (j < n && events[j][0] <= events[l][1]) {
+                    j++;
+                }
+                dp2[l] = Math.max(dp[l], dp[l] + (j < n ? dp[j] : 0));
+            }
+            dp = dp2;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(events, (a, b) -> Integer.compare(a[0], b[0]));
+        int n = events.length;
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= k; i++) {
+            int[] ndp = new int[n + 1];
+            int j = 1;
+            for (int[] e : events) {
+                int l = 1, r = j;
+                while (l < r) {
+                    int mid = l + r >> 1;
+                    if (events[mid - 1][1] < e[0]) {
+                        l = mid + 1;
+                    } else {
+                        r = mid;
+                    }
+                }
+                ndp[j] = Math.max(ndp[j - 1], dp[l - 1] + e[2]);
+                j++;
+            }
+            dp = ndp;
+        }
+        return dp[n];
+
+=======
+
+        int n = events.length;
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        int[] dp = new int[n+1];
+        for(int i = 1; i <= k; i++) {
+            int[] ndp = new int[n+1];
+            int prev = 0;
+            for(int j = 1; j <= n; j++) {
+                ndp[j] = Math.max(ndp[j-1], dp[j]);
+                int l = j-1;
+                int r = j;
+                while(l < r) {
+                    int mid = (l+r)/2;
+                    if(events[mid][1] < events[j-1][0]) l = mid+1;
+                    else r = mid;
+                }
+                ndp[j] = Math.max(ndp[j], dp[l] + events[j-1][2]);
+            }
+            dp = ndp;
+        }
+        return dp[n];
+
+=======
+
+        Arrays.sort(events, (a,b) -> a[1] - b[1]);
+        int n = events.length;
+        int[][] dp = new int[n][k + 1];
+        for(int i = 0; i < n; i++){
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(events, 0, k, dp);
+    }
+    
+    private int dfs(int[][] events, int index, int k, int[][] dp){
+        if(k == 0 || index == events.length){
+            return 0;
+        }
+        if(dp[index][k] != -1){
+            return dp[index][k];
+        }
+        int i = index + 1;
+        while(i < events.length && events[i][0] <= events[index][1]){
+            i++;
+        }
+        int res = Math.max(dfs(events, index + 1, k, dp), events[index][2] + dfs(events, i, k - 1, dp));
+        dp[index][k] = res;
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> (a[1] - b[1]));
+        int n = events.length;
+        int[] dp = new int[n];
+        int[] next = new int[n];
+        Arrays.fill(next, -1);
+        for (int i = 0; i < n; i++) {
+            int s = events[i][0];
+            for (int j = i + 1; j < n; j++) {
+                if (events[j][0] > s) {
+                    next[i] = j;
+                    break;
+                }
+            }
+        }
+        dp[n - 1] = events[n - 1][2];
+        for (int i = n - 2; i >= 0; i--) {
+            int j = next[i];
+            if (j == -1) {
+                dp[i] = Math.max(dp[i + 1], events[i][2]);
+            } else {
+                dp[i] = Math.max(dp[i + 1], events[i][2] + dp[j]);
+            }
+        }
+        int[][] memo = new int[n][k + 1];
+        for (int[] row : memo) {
+            Arrays.fill(row, -1);
+        }
+        return dfs(events, dp, next, 0, k, memo);
+    }
+
+    private int dfs(int[][] events, int[] dp, int[] next, int i, int k, int[][] memo) {
+        if (i == events.length || k == 0) {
+            return 0;
+        }
+        if (memo[i][k] != -1) {
+            return memo[i][k];
+        }
+        int j = next[i];
+        int ans = 0;
+        if (j == -1) {
+            ans = Math.max(ans, dp[i]);
+        } else {
+            ans = Math.max(ans, dp[i] + dfs(events, dp, next, j, k - 1, memo));
+        }
+        ans = Math.max(ans, dfs(events, dp, next, i + 1, k, memo));
+        memo[i][k] = ans;
+        return ans;
+
+=======
+
+        int n = events.length;
+        int m = 100000;
+        int[][] dp = new int[m + 1][k + 1];
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        for (int i = 1; i <= m; i++) {
+            dp[i][0] = 0;
+        }
+        for (int i = 0; i <= k; i++) {
+            dp[0][i] = 0;
+        }
+        int j = 0;
+        for (int i = 1; i <= m; i++) {
+            while (j < n && events[j][1] < i) {
+                j++;
+            }
+            for (int l = 1; l <= k; l++) {
+                dp[i][l] = dp[i - 1][l];
+                for (int r = j; r < n; r++) {
+                    if (events[r][0] <= i) {
+                        dp[i][l] = Math.max(dp[i][l], dp[events[r][0] - 1][l - 1] + events[r][2]);
+                    }
+                }
+            }
+        }
+        return dp[m][k];

@@ -1,0 +1,248 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= m; j++) {
+                Map<Integer, Integer> map = new HashMap<>();
+                map.put(0, 1);
+                int curSum = 0;
+                for (int k = 1; k <= n; k++) {
+                    curSum += sum[j][k] - sum[i - 1][k];
+                    if (map.containsKey(curSum - target)) {
+                        ans += map.get(curSum - target);
+                    }
+                    map.put(curSum, map.getOrDefault(curSum, 0) + 1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = i; k <= m; k++) {
+                    for (int l = j; l <= n; l++) {
+                        int cur = sum[k][l] - sum[i - 1][l] - sum[k][j - 1] + sum[i - 1][j - 1];
+                        if (cur == target) {
+                            ans++;
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int[][] sum = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int k = i; k <= n; k++) {
+                    for (int l = j; l <= m; l++) {
+                        if (sum[k][l] - sum[i - 1][l] - sum[k][j - 1] + sum[i - 1][j - 1] == target) {
+                            ans++;
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                sum[i + 1][j + 1] = sum[i][j + 1] + sum[i + 1][j] - sum[i][j] + matrix[i][j];
+            }
+        }
+        int res = 0;
+        for (int x1 = 0; x1 < m; x1++) {
+            for (int x2 = x1; x2 < m; x2++) {
+                Map<Integer, Integer> map = new HashMap<>();
+                map.put(0, 1);
+                for (int y = 0; y < n; y++) {
+                    int sumij = sum[x2 + 1][y + 1] - sum[x1][y + 1];
+                    res += map.getOrDefault(sumij - target, 0);
+                    map.put(sumij, map.getOrDefault(sumij, 0) + 1);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            int[] sums = new int[n];
+            for (int j = i; j < m; j++) {
+                for (int k = 0; k < n; k++) {
+                    sums[k] += matrix[j][k];
+                }
+                res += subarraySum(sums, target);
+            }
+        }
+        return res;
+    }
+    
+    public int subarraySum(int[] nums, int k) {
+        int count = 0, pre = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            pre += nums[i];
+            if (map.containsKey(pre - k)) {
+                count += map.get(pre - k);
+            }
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+        }
+        return count;
+
+=======
+
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int res = 0;
+        for (int i = 0; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                matrix[i][j] += matrix[i][j - 1];
+            }
+        }
+        for (int i = 0; i < col; i++) {
+            for (int j = i; j < col; j++) {
+                Map<Integer, Integer> map = new HashMap<>();
+                map.put(0, 1);
+                int curSum = 0;
+                for (int k = 0; k < row; k++) {
+                    curSum += matrix[k][j] - (i > 0 ? matrix[k][i - 1] : 0);
+                    res += map.getOrDefault(curSum - target, 0);
+                    map.put(curSum, map.getOrDefault(curSum, 0) + 1);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[][] sum = new int[m+1][n+1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1] + matrix[i-1][j-1];
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = i; k <= m; k++) {
+                    for (int l = j; l <= n; l++) {
+                        int cur = sum[k][l] - sum[k][j-1] - sum[i-1][l] + sum[i-1][j-1];
+                        if (cur == target) ans++;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] sum = new int[m+1][n+1];
+        for (int i=1; i<=m; i++) {
+            for (int j=1; j<=n; j++) {
+                sum[i][j] = sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1] + matrix[i-1][j-1];
+            }
+        }
+        int res = 0;
+        for (int i=1; i<=m; i++) {
+            for (int j=1; j<=n; j++) {
+                for (int k=i; k<=m; k++) {
+                    for (int l=j; l<=n; l++) {
+                        int cur = sum[k][l] - sum[k][j-1] - sum[i-1][l] + sum[i-1][j-1];
+                        if (cur == target) {
+                            res++;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] dp = new int[m + 1][n + 1];
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1] - dp[i - 1][j - 1] + matrix[i - 1][j - 1];
+            }
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= m; j++) {
+                Map<Integer, Integer> map = new HashMap<>();
+                map.put(0, 1);
+                for (int k = 1; k <= n; k++) {
+                    int sum = dp[j][k] - dp[i - 1][k];
+                    ans += map.getOrDefault(sum - target, 0);
+                    map.put(sum, map.getOrDefault(sum, 0) + 1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = matrix.length;
+        int m = matrix[0].length;
+        int[][] sum = new int[n+1][m+1];
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                sum[i][j] = sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1] + matrix[i-1][j-1];
+            }
+        }
+        int ans = 0;
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                for(int k = i; k <= n; k++){
+                    for(int l = j; l <= m; l++){
+                        int cur = sum[k][l] - sum[i-1][l] - sum[k][j-1] + sum[i-1][j-1];
+                        if(cur == target) ans++;
+                    }
+                }
+            }
+        }
+        return ans;

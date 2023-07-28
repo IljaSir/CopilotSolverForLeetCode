@@ -1,0 +1,245 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i < s.length()) {
+            int j = i + 1;
+            while (j < s.length() && s.charAt(i) == s.charAt(j)) {
+                j++;
+            }
+            int k = Math.min(repeatLimit, j - i);
+            while (k-- > 0) {
+                sb.append(s.charAt(i));
+            }
+            i = j;
+        }
+        return sb.toString();
+
+=======
+
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+            int j = i + 1;
+            while (j < s.length() && s.charAt(j) == c) {
+                j++;
+            }
+            int cnt = j - i;
+            if (cnt >= repeatLimit) {
+                for (int k = 0; k < repeatLimit; k++) {
+                    sb.append(c);
+                }
+            } else {
+                sb.append(s.substring(i, j));
+            }
+            i = j;
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] count = new int[26];
+        int[] used = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            count[c - 'a']--;
+            if (used[c - 'a'] == repeatLimit) {
+                continue;
+            }
+            while (sb.length() > 0 && sb.charAt(sb.length() - 1) < c && count[sb.charAt(sb.length() - 1) - 'a'] > 0) {
+                used[sb.charAt(sb.length() - 1) - 'a']--;
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            sb.append(c);
+            used[c - 'a']++;
+        }
+        return sb.toString();
+
+=======
+
+        int[] c = new int[26];
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            c[s.charAt(i) - 'a']++;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 26; i++) {
+            if (c[i] > 0) {
+                min = Math.min(min, c[i]);
+            }
+        }
+        if (min > repeatLimit) {
+            return s;
+        }
+        StringBuilder sb = new StringBuilder();
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (cnt < repeatLimit) {
+                sb.append(s.charAt(i));
+                cnt++;
+            } else {
+                if (s.charAt(i) != s.charAt(i - 1)) {
+                    sb.append(s.charAt(i));
+                    cnt = 1;
+                }
+            }
+        }
+        return sb.toString();
+
+=======
+
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        int j = i + 1;
+        while (i < s.length()) {
+            int count = 1;
+            while (j < s.length() && s.charAt(j) == s.charAt(i)) {
+                count++;
+                j++;
+            }
+            char c = s.charAt(i);
+            for (int k = 0; k < Math.min(count, repeatLimit); k++) {
+                sb.append(c);
+            }
+            i = j;
+            j = i + 1;
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        char[] arr = s.toCharArray();
+        int[] count = new int[26];
+        for (char c : arr) {
+            count[c - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (count[i] > repeatLimit) {
+                return "";
+            }
+        }
+        char[] result = new char[n];
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            int k = i;
+            while (k < n && arr[k] == arr[i]) {
+                k++;
+            }
+            int len = Math.min(k - i, repeatLimit);
+            for (int l = 0; l < len; l++) {
+                result[j++] = arr[i];
+            }
+            i = k;
+        }
+        return new String(result);
+
+=======
+
+        int n = s.length();
+        char[] c = s.toCharArray();
+        int i = 0;
+        for (int j = 0; j < n; ++j) {
+            c[i] = c[j];
+            if (i == 0 || c[i - 1] != c[i] || i < repeatLimit || c[i - repeatLimit] != c[i]) {
+                i++;
+            }
+        }
+        return new String(c, 0, i);
+
+=======
+
+        int n = s.length();
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        int[] repeat = new int[26];
+        Arrays.fill(repeat, 1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            int idx = c - 'a';
+            if (repeat[idx] > 0) {
+                sb.append(c);
+                repeat[idx]--;
+            } else {
+                while (sb.length() > 0 && sb.charAt(sb.length() - 1) <= c) {
+                    char last = sb.charAt(sb.length() - 1);
+                    if (count[last - 'a'] > repeatLimit) {
+                        sb.deleteCharAt(sb.length() - 1);
+                        count[last - 'a']--;
+                        repeat[last - 'a']++;
+                    } else {
+                        break;
+                    }
+                }
+                if (sb.length() == 0 || sb.charAt(sb.length() - 1) < c) {
+                    sb.append(c);
+                    repeat[idx]--;
+                }
+            }
+        }
+        return sb.toString();
+
+=======
+
+        char[] chars = s.toCharArray();
+        int len = chars.length;
+        int[] counts = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < len; i++) {
+            int idx = chars[i] - 'a';
+            counts[idx]++;
+            last[idx] = i;
+        }
+        int start = 0;
+        int end = len - 1;
+        while (start < end) {
+            int idx = chars[start] - 'a';
+            if (counts[idx] > repeatLimit) {
+                int next = last[idx];
+                chars[next] = chars[start];
+                chars[start] = (char) ('a' + idx);
+                counts[idx]--;
+                counts[idx + 1]++;
+                last[idx + 1] = next;
+                start++;
+            } else {
+                start++;
+            }
+        }
+        return new String(chars);
+
+=======
+
+        // if (s.length() == 1) {
+        //     return s;
+        // }
+        StringBuilder sb = new StringBuilder();
+        int n = s.length();
+        int count = 1;
+        char prev = s.charAt(0);
+        sb.append(prev);
+        for (int i = 1; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == prev) {
+                count++;
+                if (count <= repeatLimit) {
+                    sb.append(c);
+                }
+            } else {
+                count = 1;
+                prev = c;
+                sb.append(c);
+            }
+        }
+        return sb.toString();

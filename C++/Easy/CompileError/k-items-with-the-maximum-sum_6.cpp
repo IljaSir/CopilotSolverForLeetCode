@@ -1,0 +1,69 @@
+class Solution {
+public:
+    int kItemsWithMaximumSum(int numOnes, int numZeros, int numNegOnes, int k) {
+        
+        int sum = 0;
+        int max = 0;
+        int sum1 = 0;
+        int sum2 = 0;
+        int sum3 = 0;
+        int sum4 = 0;
+        int sum5 = 0;
+        int sum6 = 0;
+        int sum7 = 0;
+        int sum8 = 0;
+        int sum9 = 0;
+        int sum10 = 0;
+        int sum11 = 0;
+        int sum12 = 0;
+        int sum13 = 0;
+        int sum14 = 0;
+        int sum15 = 0;
+        int sum16 = 0;
+        int sum17 = 0;
+        int sum18 = 0;
+        int sum19 = 0;
+        int sum20 = 0;
+        int sum21 = 0;
+        int sum22 = 0;
+        int sum23 = 0;
+        int sum24 = 0;
+        int sum25 = 0;
+        int sum26 = 0;
+        int sum27 = 0;
+        int sum28 = 0;
+        int sum29 = 0;
+        int sum30 = 0;
+        int sum31 = 0;
+        int sum32 = 0;
+        int sum33 = 0;
+        int sum34 = 0;
+        int sum35 = 0;
+        int sum36 = 0;
+        int sum37 = 0;
+        int sum38 = 0;
+        int sum39 = 0;
+        int sum40 = 0;
+        int sum41 = 0;
+        int sum42 = 0;
+        int sum43 = 0;
+        int sum44 = 0;
+        int sum45 = 0;
+        int sum46 = 0;
+        int sum47 = 0;
+        int sum48 = 0;
+        int sum49 = 0;
+        int sum50 = 0;
+        int sum51 = 0;
+        int sum52 = 0;
+        int sum53 = 0;
+        int sum54 = 0;
+        int sum55 = 0;
+        int sum56 = 0;
+        int sum57 = 0;
+        int sum58 = 0;
+        int sum59 = 0;
+        int sum60 = 0;
+        int sum61 =
+    }
+};

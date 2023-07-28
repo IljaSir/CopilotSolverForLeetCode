@@ -1,0 +1,245 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int round = 0;
+        while (n > 1) {
+            if (n % 2 == 1) {
+                if (firstPlayer == n / 2 + 1 || secondPlayer == n / 2 + 1) {
+                    break;
+                }
+                if (firstPlayer > n / 2 + 1) {
+                    firstPlayer -= n / 2 + 1;
+                }
+                if (secondPlayer > n / 2 + 1) {
+                    secondPlayer -= n / 2 + 1;
+                }
+            } else {
+                if (firstPlayer == n / 2 || secondPlayer == n / 2) {
+                    break;
+                }
+                if (firstPlayer > n / 2) {
+                    firstPlayer -= n / 2;
+                }
+                if (secondPlayer > n / 2) {
+                    secondPlayer -= n / 2;
+                }
+            }
+            n /= 2;
+            ++round;
+        }
+        return {round + 1, round + 1};
+
+=======
+
+        int round = 1;
+        while (n > 2) {
+            if ((firstPlayer + 1) / 2 == (secondPlayer + 1) / 2) break;
+            round++;
+            n = (n + 1) / 2;
+            firstPlayer = (firstPlayer + 1) / 2;
+            secondPlayer = (secondPlayer + 1) / 2;
+        }
+        return {round, round + (n > 2)};
+
+=======
+
+        vector<int> res(2, 1);
+        int round = 1;
+        while (n > 2) {
+            if ((firstPlayer + 1) / 2 != (secondPlayer + 1) / 2) {
+                res[0] = round;
+            }
+            round++;
+            n = (n + 1) / 2;
+            firstPlayer = (firstPlayer + 1) / 2;
+            secondPlayer = (secondPlayer + 1) / 2;
+        }
+        res[1] = round;
+        return res;
+
+=======
+
+        int rounds = 0;
+        while (n > 1) {
+            ++rounds;
+            if (firstPlayer > n - firstPlayer + 1) {
+                firstPlayer = n - firstPlayer + 1;
+            }
+            if (secondPlayer > n - secondPlayer + 1) {
+                secondPlayer = n - secondPlayer + 1;
+            }
+            n = (n + 1) / 2;
+        }
+        return {rounds, rounds + (firstPlayer != secondPlayer)};
+
+=======
+
+        vector<int> res;
+        int start = 1;
+        int end = n;
+        int round = 1;
+        while (start < end) {
+            int mid = start + (end - start) / 2;
+            if ((firstPlayer <= mid && secondPlayer > mid) || (firstPlayer > mid && secondPlayer <= mid)) {
+                res.push_back(round);
+                res.push_back(round);
+                return res;
+            }
+            if (firstPlayer <= mid && secondPlayer <= mid) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+            ++round;
+        }
+        res.push_back(round);
+        res.push_back(round);
+        return res;
+
+=======
+
+        int round = 0;
+        int left = 1;
+        int right = n;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (firstPlayer <= mid && secondPlayer > mid) {
+                break;
+            } else if (firstPlayer > mid) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+            round++;
+        }
+        int minRound = round;
+        int maxRound = 0;
+        while (n > 1) {
+            n = (n + 1) / 2;
+            maxRound++;
+        }
+        return {minRound + 1, maxRound};
+
+=======
+
+        int round = 1;
+        int firstRound = 0;
+        int lastRound = 0;
+        while (n > 1) {
+            if (n % 2 == 1) {
+                if (firstPlayer == (n + 1) / 2 || secondPlayer == (n + 1) / 2) {
+                    firstRound = round;
+                    lastRound = round;
+                }
+                n = n / 2 + 1;
+            } else {
+                if ((firstPlayer <= n / 2 && secondPlayer > n / 2) || (firstPlayer > n / 2 && secondPlayer <= n / 2)) {
+                    firstRound = round;
+                    lastRound = round;
+                }
+                n = n / 2;
+            }
+            if (firstPlayer > n) {
+                firstPlayer = firstPlayer - n;
+            }
+            if (secondPlayer > n) {
+                secondPlayer = secondPlayer - n;
+            }
+            round++;
+        }
+        if (firstRound == 0) {
+            firstRound = round;
+        }
+        if (lastRound == 0) {
+            lastRound = round;
+        }
+        return {firstRound, lastRound};
+
+=======
+
+        int min_round = ceil(log2(min(firstPlayer, secondPlayer)));
+        int max_round = ceil(log2(max(firstPlayer, secondPlayer)));
+        return {min_round, (n & (n - 1)) == 0 ? max_round : max_round + 1};
+
+=======
+
+        int l = 0, r = n - 1;
+        int l1 = 0, r1 = n - 1;
+        int round = 0;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (firstPlayer <= mid && secondPlayer > mid || firstPlayer > mid && secondPlayer <= mid) {
+                l1 = l;
+                r1 = r;
+                round++;
+            }
+            if (firstPlayer <= mid && secondPlayer <= mid) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        int round1 = round;
+        l = 0, r = n - 1;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (firstPlayer <= mid && secondPlayer > mid || firstPlayer > mid && secondPlayer <= mid) {
+                round++;
+            }
+            if (firstPlayer <= mid && secondPlayer <= mid) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return {round1, round};
+
+=======
+
+        vector<int> ans;
+        int round = 0;
+        int min = 0;
+        int max = 0;
+        int i = 0;
+        while(n > 1){
+            n = n / 2;
+            round++;
+        }
+        min = round;
+        max = round;
+        if(firstPlayer > secondPlayer){
+            swap(firstPlayer, secondPlayer);
+        }
+        while(round > 1){
+            round--;
+            if(firstPlayer % 2 == 1 && secondPlayer % 2 == 0){
+                if(secondPlayer - firstPlayer == 1){
+                    max = round;
+                    break;
+                }
+            }
+            if(firstPlayer % 2 == 0 && secondPlayer % 2 == 1){
+                if(secondPlayer - firstPlayer == 1){
+                    max = round;
+                    break;
+                }
+            }
+            if(firstPlayer % 2 == 1 && secondPlayer % 2 == 1){
+                if(secondPlayer - firstPlayer == 2){
+                    max = round;
+                    break;
+                }
+            }
+            if(firstPlayer % 2 == 0 && secondPlayer % 2 == 0){
+                if(secondPlayer - firstPlayer == 2){
+                    max = round;
+                    break;
+                }
+            }
+            firstPlayer = (firstPlayer + 1) / 2;
+            secondPlayer = (secondPlayer + 1) / 2;
+        }
+        ans.push_back(min);
+        ans.push_back(max);
+        return ans;

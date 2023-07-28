@@ -1,0 +1,230 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        string s;
+        for (int i = 0; i < n; ++i) {
+            s += 'a';
+        }
+        --k;
+        while (k > 0) {
+            int i = n - 1;
+            while (i >= 0 && s[i] == 'c') {
+                --i;
+            }
+            if (i < 0) {
+                return "";
+            }
+            ++s[i];
+            for (int j = i + 1; j < n; ++j) {
+                s[j] = 'a';
+            }
+            --k;
+        }
+        return s;
+
+=======
+
+        string ans;
+        dfs(ans, n, k);
+        return ans;
+    }
+    void dfs(string& ans, int n, int& k) {
+        if (ans.size() == n) {
+            --k;
+            return;
+        }
+        for (char ch = 'a'; ch <= 'c'; ++ch) {
+            if (ans.empty() || ans.back() != ch) {
+                ans.push_back(ch);
+                dfs(ans, n, k);
+                if (k == 0) {
+                    return;
+                }
+                ans.pop_back();
+            }
+        }
+
+=======
+
+        vector<string> v = {"a", "b", "c"};
+        for (int i = 2; i <= n; ++i) {
+            vector<string> tmp;
+            for (auto s : v) {
+                for (auto c : string("abc")) {
+                    if (s.back() != c) {
+                        tmp.push_back(s + c);
+                    }
+                }
+            }
+            v = tmp;
+        }
+        return k <= v.size() ? v[k-1] : "";
+
+=======
+
+        vector<string> ans;
+        string s;
+        dfs(ans, s, n, k);
+        if (ans.size() < k) return "";
+        return ans[k - 1];
+    }
+    void dfs(vector<string>& ans, string& s, int n, int k) {
+        if (s.size() == n) {
+            ans.push_back(s);
+            return;
+        }
+        for (char ch = 'a'; ch <= 'c'; ++ch) {
+            if (s.size() && s.back() == ch) continue;
+            s.push_back(ch);
+            dfs(ans, s, n, k);
+            s.pop_back();
+        }
+
+=======
+
+        string s = "";
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            s += 'a';
+        }
+        while (true) {
+            if (isHappy(s)) {
+                cnt++;
+                if (cnt == k) {
+                    return s;
+                }
+            }
+            if (!next_permutation(s.begin(), s.end())) {
+                return "";
+            }
+        }
+    }
+    bool isHappy(string s) {
+        for (int i = 1; i < s.length(); i++) {
+            if (s[i] == s[i - 1]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        string str;
+        for (int i = 0; i < n; i++) {
+            str += 'a';
+        }
+        while (count < k) {
+            count++;
+            for (int i = n - 1; i >= 0; i--) {
+                if (str[i] != 'c') {
+                    str[i]++;
+                    break;
+                } else {
+                    str[i] = 'a';
+                }
+            }
+            if (count == k) {
+                for (int i = 0; i < n - 1; i++) {
+                    if (str[i] == str[i + 1]) {
+                        count--;
+                        break;
+                    }
+                }
+            }
+        }
+        return count == k ? str : "";
+
+=======
+
+        vector<string> happy;
+        string s;
+        for (int i = 0; i < n; i++) {
+            s += 'a';
+        }
+        dfs(s, 0, happy);
+        if (happy.size() >= k) {
+            return happy[k - 1];
+        }
+        return "";
+    }
+    
+    void dfs(string& s, int start, vector<string>& happy) {
+        if (start == s.size()) {
+            happy.push_back(s);
+            return;
+        }
+        for (char c = 'a'; c <= 'c'; c++) {
+            if (start > 0 && s[start - 1] == c) {
+                continue;
+            }
+            s[start] = c;
+            dfs(s, start + 1, happy);
+        }
+
+=======
+
+        string res;
+        int cnt = 0;
+        int total = 3 * pow(2, n - 1);
+        if (k > total) return res;
+        char c = 'a';
+        while (n--) {
+            if (k <= total / 3) {
+                res += c;
+                c = 'a';
+            } else if (k <= total * 2 / 3) {
+                res += c + 1;
+                c = 'a';
+            } else {
+                res += c + 2;
+                c = 'a';
+            }
+            total /= 3;
+        }
+        return res;
+
+=======
+
+        string res = "";
+        vector<string> s = {"a", "b", "c"};
+        vector<string> t = {};
+        for (int i = 1; i < n; i++) {
+            for (auto &e : s) {
+                for (auto &c : "abc") {
+                    if (e.back() != c) {
+                        t.push_back(e + c);
+                    }
+                }
+            }
+            s = t;
+            t.clear();
+        }
+        if (k > s.size()) {
+            return res;
+        }
+        return s[k - 1];
+
+=======
+
+        string res;
+        string s = "abc";
+        vector<string> v;
+        k--;
+        while (k >= 0) {
+            if (n <= 0) {
+                v.push_back(res);
+                if (v.size() > k) break;
+                res.pop_back();
+                continue;
+            }
+            for (int i = 0; i < s.size(); i++) {
+                if (res.empty() || res.back() != s[i]) {
+                    res.push_back(s[i]);
+                    n--;
+                    break;
+                }
+            }
+        }
+        return v[k];

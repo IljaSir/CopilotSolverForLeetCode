@@ -1,0 +1,274 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] sum = new int[stoneValue.length + 1];
+        for (int i = 0; i < stoneValue.length; i++) {
+            sum[i + 1] = sum[i] + stoneValue[i];
+        }
+        int[][] dp = new int[stoneValue.length][stoneValue.length];
+        for (int i = stoneValue.length - 1; i >= 0; i--) {
+            for (int j = i + 1; j < stoneValue.length; j++) {
+                for (int k = i; k < j; k++) {
+                    int left = sum[k + 1] - sum[i];
+                    int right = sum[j + 1] - sum[k + 1];
+                    if (left < right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    } else if (left > right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        return dp[0][stoneValue.length - 1];
+
+=======
+
+        int n = stoneValue.length;
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + stoneValue[i - 1];
+        }
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 0;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j + i < n; j++) {
+                int k = j + i;
+                dp[j][k] = 0;
+                for (int m = j; m < k; m++) {
+                    int left = sum[m + 1] - sum[j];
+                    int right = sum[k + 1] - sum[m + 1];
+                    if (left < right) {
+                        dp[j][k] = Math.max(dp[j][k], dp[j][m] + left);
+                    } else if (left > right) {
+                        dp[j][k] = Math.max(dp[j][k], dp[m + 1][k] + right);
+                    } else {
+                        dp[j][k] = Math.max(dp[j][k], dp[j][m] + left);
+                        dp[j][k] = Math.max(dp[j][k], dp[m + 1][k] + right);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int[] prefixSum = new int[stoneValue.length];
+        prefixSum[0] = stoneValue[0];
+        for (int i = 1; i < stoneValue.length; i++) {
+            prefixSum[i] = prefixSum[i - 1] + stoneValue[i];
+        }
+        return dfs(stoneValue, 0, stoneValue.length - 1, prefixSum, new int[500][500]);
+    }
+
+    private int dfs(int[] stoneValue, int start, int end, int[] prefixSum, int[][] memo) {
+        if (start == end) {
+            return 0;
+        }
+        if (memo[start][end] != 0) {
+            return memo[start][end];
+        }
+        int sum = prefixSum[end] - (start == 0 ? 0 : prefixSum[start - 1]);
+        int max = 0;
+        for (int i = start; i < end; i++) {
+            int leftSum = prefixSum[i] - (start == 0 ? 0 : prefixSum[start - 1]);
+            int rightSum = sum - leftSum;
+            if (leftSum > rightSum) {
+                max = Math.max(max, rightSum + dfs(stoneValue, i + 1, end, prefixSum, memo));
+            } else if (leftSum < rightSum) {
+                max = Math.max(max, leftSum + dfs(stoneValue, start, i, prefixSum, memo));
+            } else {
+                max = Math.max(max, leftSum + Math.max(dfs(stoneValue, start, i, prefixSum, memo), dfs(stoneValue, i + 1, end, prefixSum, memo)));
+            }
+        }
+        memo[start][end] = max;
+        return max;
+
+=======
+
+        int n = stoneValue.length;
+        int[] prefix = new int[n];
+        prefix[0] = stoneValue[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + stoneValue[i];
+        }
+        int[][] dp = new int[n][n];
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                int sum = prefix[j] - (i > 0 ? prefix[i - 1] : 0);
+                for (int k = i; k < j; k++) {
+                    int left = prefix[k] - (i > 0 ? prefix[i - 1] : 0);
+                    int right = sum - left;
+                    if (left < right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    } else if (left > right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int len = stoneValue.length;
+        int[] sum = new int[len + 1];
+        for (int i = 0; i < len; i++) {
+            sum[i + 1] = sum[i] + stoneValue[i];
+        }
+        int[][] dp = new int[len][len];
+        for (int i = len - 1; i >= 0; i--) {
+            for (int j = i + 1; j < len; j++) {
+                for (int k = i; k < j; k++) {
+                    if (sum[k + 1] - sum[i] < sum[j + 1] - sum[k + 1]) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + sum[k + 1] - sum[i]);
+                    } else if (sum[k + 1] - sum[i] > sum[j + 1] - sum[k + 1]) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + sum[j + 1] - sum[k + 1]);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k + 1][j]) + sum[k + 1] - sum[i]);
+                    }
+                }
+            }
+        }
+        return dp[0][len - 1];
+
+=======
+
+        int n = stoneValue.length;
+        int[][] dp = new int[n][n];
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + stoneValue[i - 1];
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 0;
+        }
+        for (int l = 2; l <= n; l++) {
+            for (int i = 0; i + l - 1 < n; i++) {
+                int j = i + l - 1;
+                dp[i][j] = 0;
+                for (int k = i; k < j; k++) {
+                    int left = sum[k + 1] - sum[i];
+                    int right = sum[j + 1] - sum[k + 1];
+                    if (left >= right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + right);
+                    }
+                    if (left <= right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = stoneValue.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + stoneValue[i];
+        }
+        int[][] dp = new int[n][n];
+        for (int len = 2; len <= n; ++len) {
+            for (int i = 0; i <= n - len; ++i) {
+                int j = i + len - 1;
+                for (int k = i; k < j; ++k) {
+                    int left = prefix[k + 1] - prefix[i];
+                    int right = prefix[j + 1] - prefix[k + 1];
+                    if (left < right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    } else if (left > right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = stoneValue.length;
+        int[] prefix = new int[n+1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i-1] + stoneValue[i-1];
+        }
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 0;
+        }
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                dp[i][j] = 0;
+                for (int k = i; k < j; k++) {
+                    int left = prefix[k+1] - prefix[i];
+                    int right = prefix[j+1] - prefix[k+1];
+                    if (left < right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    } else if (left > right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k+1][j] + right);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k+1][j]) + left);
+                    }
+                }
+            }
+        }
+        return dp[0][n-1];
+
+=======
+
+        int n = stoneValue.length;
+        int[] p = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            p[i] = p[i - 1] + stoneValue[i - 1];
+        }
+        int[][] dp = new int[n][n];
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = i; k < j; k++) {
+                    int left = p[k + 1] - p[i];
+                    int right = p[j + 1] - p[k + 1];
+                    if (left < right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[i][k] + left);
+                    } else if (left > right) {
+                        dp[i][j] = Math.max(dp[i][j], dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][j], Math.max(dp[i][k], dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = stoneValue.length;
+        int[][] dp = new int[n+1][n+1];
+        int[] preSum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            preSum[i+1] = preSum[i] + stoneValue[i];
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j + i <= n; j++) {
+                int end = j + i;
+                for (int k = j+1; k < end; k++) {
+                    if (preSum[k] - preSum[j] > preSum[end] - preSum[k]) {
+                        dp[j][end] = Math.max(dp[j][end], dp[k][end] + preSum[end] - preSum[k]);
+                    } else if (preSum[k] - preSum[j] < preSum[end] - preSum[k]) {
+                        dp[j][end] = Math.max(dp[j][end], dp[j][k] + preSum[k] - preSum[j]);
+                    } else {
+                        dp[j][end] = Math.max(dp[j][end], Math.max(dp[j][k] + preSum[k] - preSum[j],
+                                                                   dp[k][end] + preSum[end] - preSum[k]));
+                    }
+                }
+            }
+        }
+        return dp[0][n];

@@ -1,0 +1,184 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = num1.size(), n = num2.size();
+        vector<int> res(m + n);
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int p1 = i + j, p2 = i + j + 1;
+                int sum = mul + res[p2];
+                res[p1] += sum / 10;
+                res[p2] = sum % 10;
+            }
+        }
+        string str;
+        for (int i = 0; i < m + n; i++) {
+            if (i == 0 && res[i] == 0) continue;
+            str.push_back(res[i] + '0');
+        }
+        return str.empty() ? "0" : str;
+
+=======
+
+        int n1 = num1.size(), n2 = num2.size();
+        string ans(n1 + n2, '0');
+        for (int i = n1 - 1; i >= 0; i--) {
+            int carry = 0;
+            for (int j = n2 - 1; j >= 0; j--) {
+                int sum = (num1[i] - '0') * (num2[j] - '0') + carry + (ans[i + j + 1] - '0');
+                carry = sum / 10;
+                ans[i + j + 1] = sum % 10 + '0';
+            }
+            ans[i] += carry;
+        }
+        size_t startpos = ans.find_first_not_of("0");
+        if (string::npos != startpos) {
+            return ans.substr(startpos);
+        }
+        return "0";
+
+=======
+
+        string ans(num1.size() + num2.size(), '0');
+        for (int i = num1.size() - 1; i >= 0; --i) {
+            for (int j = num2.size() - 1; j >= 0; --j) {
+                int tmp = (ans[i + j + 1] - '0') + (num1[i] - '0') * (num2[j] - '0');
+                ans[i + j + 1] = tmp % 10 + '0';
+                ans[i + j] += tmp / 10;
+            }
+        }
+        for (int i = 0; i < ans.size(); ++i) {
+            if (ans[i] != '0') return ans.substr(i);
+        }
+        return "0";
+
+=======
+
+        int n = num1.size(), m = num2.size();
+        vector<int> ans(n + m, 0);
+        for (int i = n - 1; i >= 0; i--) {
+            int x = num1[i] - '0';
+            for (int j = m - 1; j >= 0; j--) {
+                int y = num2[j] - '0';
+                ans[i + j + 1] += x * y;
+            }
+        }
+        for (int i = n + m - 1; i > 0; i--) {
+            ans[i - 1] += ans[i] / 10;
+            ans[i] %= 10;
+        }
+        int i = 0;
+        while (i < n + m - 1 && ans[i] == 0) {
+            i++;
+        }
+        string res;
+        for (; i < n + m; i++) {
+            res.push_back(ans[i] + '0');
+        }
+        return res;
+
+=======
+
+        if (num1 == "0" || num2 == "0") return "0";
+        int n = num1.size(), m = num2.size();
+        string res(n + m, '0');
+        for (int i = n - 1; i >= 0; i--) {
+            int carry = 0;
+            for (int j = m - 1; j >= 0; j--) {
+                int tmp = (num1[i] - '0') * (num2[j] - '0') + carry + (res[i + j + 1] - '0');
+                res[i + j + 1] = tmp % 10 + '0';
+                carry = tmp / 10;
+            }
+            res[i] += carry;
+        }
+        size_t startpos = res.find_first_not_of("0");
+        if (string::npos != startpos) {
+            return res.substr(startpos);
+        }
+        return "0";
+
+=======
+
+        if (num1 == "0" || num2 == "0") return "0";
+        int n = num1.size(), m = num2.size();
+        vector<int> res(n + m, 0);
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = m - 1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int sum = mul + res[i + j + 1];
+                res[i + j + 1] = sum % 10;
+                res[i + j] += sum / 10;
+            }
+        }
+        string ans = "";
+        for (int i = 0; i < res.size(); i++) {
+            if (i == 0 && res[i] == 0) continue;
+            ans += res[i] + '0';
+        }
+        return ans;
+
+=======
+
+        int m = num1.length(), n = num2.length();
+        vector<int> res(m+n, 0);
+        for (int i = m-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int p1 = i + j, p2 = i + j + 1;
+                int sum = mul + res[p2];
+                res[p1] += sum / 10;
+                res[p2] = sum % 10;
+            }
+        }
+        string str;
+        for (int i = 0; i < m+n; i++) {
+            if (!str.empty() || res[i] != 0) {
+                str.push_back(res[i] + '0');
+            }
+        }
+        return str.empty() ? "0" : str;
+
+=======
+
+        if (num1 == "0" || num2 == "0") {
+            return "0";
+        }
+        int size1 = num1.size();
+        int size2 = num2.size();
+        vector<int> result(size1 + size2, 0);
+        for (int i = size1 - 1; i >= 0; --i) {
+            for (int j = size2 - 1; j >= 0; --j) {
+                int num = (num1[i] - '0') * (num2[j] - '0');
+                int sum = result[i + j + 1] + num;
+                result[i + j + 1] = sum % 10;
+                result[i + j] += sum / 10;
+            }
+        }
+        string ans = "";
+        for (int i = 0; i < size1 + size2; ++i) {
+            if (i == 0 && result[i] == 0) {
+                continue;
+            }
+            ans += result[i] + '0';
+        }
+        return ans;
+
+=======
+
+        int n1 = num1.size();
+        int n2 = num2.size();
+        string res(n1+n2, '0');
+        for(int i = n1-1; i >= 0; i--) {
+            for(int j = n2-1; j >= 0; j--) {
+                int mul = (num1[i] - '0') * (num2[j] - '0');
+                int sum = mul + (res[i+j+1] - '0');
+                res[i+j+1] = sum % 10 + '0';
+                res[i+j] += sum / 10;
+            }
+        }
+        int i = 0;
+        while(i < res.size() && res[i] == '0') i++;
+        if(i == res.size()) return "0";
+        return res.substr(i);

@@ -1,0 +1,21 @@
+impl Solution {
+    pub fn find_itinerary(tickets: Vec<Vec<String>>) -> Vec<String> {
+        
+        let mut tickets: Vec<(String, String)> = tickets.into_iter().map(|x| (x[0].clone(), x[1].clone())).collect();
+        tickets.sort_unstable_by(|a, b| a.1.cmp(&b.1));
+        let mut res = vec![];
+        let mut map: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
+        for (a, b) in tickets {
+            map.entry(a).or_insert_with(|| vec![]).push(b);
+        }
+        let mut stack = vec!["JFK".to_string()];
+        while let Some(x) = stack.pop() {
+            while let Some(y) = map.get_mut(&x).and_then(|x| x.pop()) {
+                stack.push(y);
+            }
+            res.push(x);
+        }
+        res.reverse();
+        res
+    }
+}

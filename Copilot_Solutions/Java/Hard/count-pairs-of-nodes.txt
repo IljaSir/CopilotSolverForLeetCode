@@ -1,0 +1,330 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int[] res = new int[queries.length];
+        int[] degree = new int[n];
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int[] edge : edges) {
+            int u = edge[0] - 1;
+            int v = edge[1] - 1;
+            degree[u]++;
+            degree[v]++;
+            if (u > v) {
+                int temp = u;
+                u = v;
+                v = temp;
+            }
+            map.put(u * n + v, map.getOrDefault(u * n + v, 0) + 1);
+        }
+        int[] count = new int[n + 1];
+        for (int i : degree) {
+            count[i]++;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            count[i] += count[i + 1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            int ans = 0;
+            for (int j = 0; j < n; j++) {
+                int left = Math.max(0, q - degree[j] + 1);
+                int right = Math.min(degree[j], q);
+                ans += count[left] - count[right + 1];
+                if (q - degree[j] <= degree[j] && q - degree[j] > 0) {
+                    int u = j;
+                    int v = q - degree[j];
+                    if (u > v) {
+                        int temp = u;
+                        u = v;
+                        v = temp;
+                    }
+                    ans -= map.getOrDefault(u * n + v, 0);
+                }
+            }
+            res[i] = ans / 2;
+        }
+        return res;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] degree = new int[n + 1];
+        int[][] cnt = new int[n + 1][n + 1];
+        for (int[] e: edges) {
+            degree[e[0]]++;
+            degree[e[1]]++;
+            cnt[e[0]][e[1]]++;
+            cnt[e[1]][e[0]]++;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            int res = 0;
+            for (int j = 1; j <= n; j++) {
+                for (int k = j + 1; k <= n; k++) {
+                    if (degree[j] + degree[k] - cnt[j][k] > q) {
+                        res++;
+                    }
+                }
+            }
+            ans[i] = res;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] degree = new int[n+1];
+        int[][] cnt = new int[n+1][n+1];
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            degree[u]++;
+            degree[v]++;
+            if (u > v) {
+                int tmp = u;
+                u = v;
+                v = tmp;
+            }
+            cnt[u][v]++;
+        }
+        int[] sum = new int[n+1];
+        for (int i=1; i<=n; i++) {
+            for (int j=i+1; j<=n; j++) {
+                sum[degree[i]+degree[j]-cnt[i][j]]++;
+            }
+        }
+        for (int i=n-1; i>=0; i--) {
+            sum[i] += sum[i+1];
+        }
+        for (int i=0; i<queries.length; i++) {
+            ans[i] = sum[queries[i]+1];
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] degree = new int[n+1];
+        int[] count = new int[n+1];
+        for (int[] edge : edges) {
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            count[degree[i]]++;
+        }
+        for (int i = n-1; i >= 0; i--) {
+            count[i] += count[i+1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            for (int j = 1; j <= n; j++) {
+                int d = degree[j];
+                if (d > q) {
+                    ans[i] += count[d-q];
+                }
+            }
+            for (int[] edge : edges) {
+                if (edge[0] > edge[1]) {
+                    int t = edge[0];
+                    edge[0] = edge[1];
+                    edge[1] = t;
+                }
+                int d = degree[edge[0]] + degree[edge[1]];
+                if (d > q && d - degree[edge[1]] <= q) {
+                    ans[i]--;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] count = new int[n+1];
+        int[] degree = new int[n+1];
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int[] e : edges) {
+            int a = e[0];
+            int b = e[1];
+            degree[a]++;
+            degree[b]++;
+            if (a > b) {
+                int tmp = a;
+                a = b;
+                b = tmp;
+            }
+            int key = a * n + b;
+            map.put(key, map.getOrDefault(key, 0) + 1);
+        }
+        for (int i = 1; i <= n; i++) {
+            count[degree[i]]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            count[i] += count[i - 1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            for (int j = 1; j <= n; j++) {
+                if (degree[j] <= q) {
+                    continue;
+                }
+                int max = n;
+                if (degree[j] - q - 1 < max) {
+                    max = degree[j] - q - 1;
+                }
+                ans[i] += count[max];
+                if (degree[j] - q <= n) {
+                    ans[i] -= n - degree[j] + q + 1;
+                }
+                int min = 1;
+                if (j - q > min) {
+                    min = j - q;
+                }
+                if (min <= j - 1) {
+                    ans[i] -= count[j - 1] - count[min - 1];
+                }
+            }
+            for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                int key = entry.getKey();
+                int a = key / n;
+                int b = key % n;
+                int c = entry.getValue();
+                if (degree[a] + degree[b] > q && degree[a] + degree[b] - c <= q) {
+                    ans[i]--;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] deg = new int[n+1];
+        int[] cnt = new int[n+1];
+        int[][] edgeCnt = new int[n+1][n+1];
+        for (int[] e : edges) {
+            deg[e[0]]++;
+            deg[e[1]]++;
+            edgeCnt[e[0]][e[1]]++;
+            edgeCnt[e[1]][e[0]]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            cnt[deg[i]]++;
+        }
+        for (int i = n-1; i >= 0; i--) {
+            cnt[i] += cnt[i+1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            for (int j = 1; j <= n; j++) {
+                int k = j+q;
+                if (k > n) {
+                    break;
+                }
+                ans[i] += cnt[k] - cnt[j];
+                if (k == j) {
+                    ans[i] -= cnt[k];
+                }
+                ans[i] -= edgeCnt[j][k];
+            }
+        }
+        return ans;
+
+=======
+
+        int[] degree = new int[n];
+        int[] count = new int[n];
+        int[] result = new int[queries.length];
+        
+        for (int[] edge : edges) {
+            degree[edge[0] - 1]++;
+            degree[edge[1] - 1]++;
+        }
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                count[degree[i] + degree[j]]++;
+            }
+        }
+        
+        for (int i = n - 2; i >= 0; i--) {
+            count[i] += count[i + 1];
+        }
+        
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = count[queries[i] + 1];
+        }
+        
+        return result;
+
+=======
+
+        int[] result = new int[queries.length];
+        int[] degree = new int[n + 1];
+        int[] count = new int[n + 1];
+        int[] degreeCount = new int[n + 1];
+        int[] edgeCount = new int[n + 1];
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            degree[u]++;
+            degree[v]++;
+            int min = Math.min(u, v);
+            int max = Math.max(u, v);
+            count[min]++;
+            edgeCount[max]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            degreeCount[degree[i]]++;
+        }
+        for (int i = 1; i <= n; i++) {
+            degreeCount[i] += degreeCount[i - 1];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int query = queries[i];
+            int ans = 0;
+            for (int j = 1; j <= n; j++) {
+                int k = j + query;
+                if (k > n) {
+                    break;
+                }
+                ans += count[j] * (degreeCount[k] - degreeCount[j]);
+            }
+            for (int j = 1; j <= n; j++) {
+                int k = j + query;
+                if (k > n) {
+                    break;
+                }
+                ans += edgeCount[j] * (degreeCount[k] - degreeCount[j + 1]);
+            }
+            result[i] = ans;
+        }
+        return result;
+
+=======
+
+        int[] result = new int[queries.length];
+        int[] counter = new int[n + 1];
+        int[][] incident = new int[n + 1][n + 1];
+        int[] edgesCounter = new int[edges.length];
+        for (int i = 0; i < edges.length; i++) {
+            counter[edges[i][0]]++;
+            counter[edges[i][1]]++;
+            incident[edges[i][0]][edges[i][1]]++;
+            incident[edges[i][1]][edges[i][0]]++;
+        }
+        for (int i = 0; i < edges.length; i++) {
+            edgesCounter[i] = counter[edges[i][0]] + counter[edges[i][1]] - incident[edges[i][0]][edges[i][1]];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int q = queries[i];
+            int sum = 0;
+            for (int j = 0; j < edges.length; j++) {
+                if (edgesCounter[j] > q) {
+                    sum++;
+                }
+            }
+            result[i] = sum;
+        }
+        return result;

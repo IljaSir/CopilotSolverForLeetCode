@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![false; n]; n];
+        for i in 0..n {
+            dp[i][i] = true;
+        }
+        for i in 0..n - 1 {
+            dp[i][i + 1] = s[i] == s[i + 1];
+        }
+        for len in 3..=n {
+            for i in 0..n - len + 1 {
+                dp[i][i + len - 1] = dp[i + 1][i + len - 2] && s[i] == s[i + len - 1];
+            }
+        }
+        let mut f = vec![0; n + 1];
+        for i in 1..=n {
+            f[i] = i - 1;
+            for j in 0..i {
+                if dp[j][i - 1] {
+                    f[i] = f[i].min(f[j] + 1);
+                }
+            }
+        }
+        f[n] as i32
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut f = vec![0; n + 1];
+        let mut g = vec![vec![false; n]; n];
+        for i in 0..n {
+            f[i] = i as i32;
+            for j in (0..=i).rev() {
+                if s[i] == s[j] && (i - j < 2 || g[j + 1][i - 1]) {
+                    g[j][i] = true;
+                    f[i + 1] = f[i + 1].min(f[j] + 1);
+                }
+            }
+        }
+        f[n]
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![0; n + 1];
+        for i in 0..=n {
+            dp[i] = i - 1;
+        }
+        for i in 0..n {
+            let mut j = 0;
+            while i >= j && i + j < n && s[i - j] == s[i + j] {
+                dp[i + j + 1] = dp[i + j + 1].min(dp[i - j] + 1);
+                j += 1;
+            }
+            j = 1;
+            while i >= j - 1 && i + j < n && s[i - j + 1] == s[i + j] {
+                dp[i + j + 1] = dp[i + j + 1].min(dp[i - j + 1] + 1);
+                j += 1;
+            }
+        }
+        dp[n] as i32
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut f = vec![n; n];
+        let mut g = vec![vec![false; n]; n];
+        for i in (0..n).rev() {
+            for j in i..n {
+                if s[i] == s[j] && (j - i < 2 || g[i + 1][j - 1]) {
+                    g[i][j] = true;
+                }
+            }
+        }
+        for i in 0..n {
+            if g[0][i] {
+                f[i] = 0;
+            } else {
+                for j in 0..i {
+                    if g[j + 1][i] {
+                        f[i] = f[i].min(f[j] + 1);
+                    }
+                }
+            }
+        }
+        f[n - 1] as i32
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![false; n]; n];
+        let mut f = vec![0; n + 1];
+        for i in (0..n).rev() {
+            f[i] = n;
+            for j in i..n {
+                if s[i] == s[j] && (j - i < 2 || dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    f[i] = f[i].min(f[j + 1] + 1);
+                }
+            }
+        }
+        f[0] as i32 - 1
+
+=======
+
+        let n = s.len();
+        let s = s.as_bytes();
+        let mut dp = vec![0; n];
+        let mut is_palindrome = vec![vec![false; n]; n];
+        for i in 0..n {
+            let mut min_cut = i as i32;
+            for j in 0..=i {
+                if s[i] == s[j] && (i - j <= 2 || is_palindrome[j + 1][i - 1]) {
+                    is_palindrome[j][i] = true;
+                    min_cut = if j > 0 { min_cut.min(dp[j - 1] + 1) } else { 0 };
+                }
+            }
+            dp[i] = min_cut;
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![vec![false; n]; n];
+        let mut f = vec![0; n];
+        for i in 0..n {
+            f[i] = i as i32;
+            for j in 0..=i {
+                if s[i] == s[j] && (i - j <= 1 || dp[j + 1][i - 1]) {
+                    dp[j][i] = true;
+                    if j == 0 {
+                        f[i] = 0;
+                    } else {
+                        f[i] = f[i].min(f[j - 1] + 1);
+                    }
+                }
+            }
+        }
+        f[n - 1]
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![n; n];
+        for i in 0..n {
+            let mut l = i;
+            let mut r = i;
+            while l > 0 && r < n - 1 && s[l - 1] == s[r + 1] {
+                dp[l - 1] = dp[l - 1].min(dp[r + 1] + 1);
+                l -= 1;
+                r += 1;
+            }
+            l = i;
+            r = i + 1;
+            while l > 0 && r < n && s[l - 1] == s[r] {
+                dp[l - 1] = dp[l - 1].min(dp[r] + 1);
+                l -= 1;
+                r += 1;
+            }
+        }
+        dp[0] as i32
+
+=======
+
+        let s: Vec<_> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![false; n]; n];
+        let mut cut = vec![0; n];
+        for i in (0..n).rev() {
+            let mut min = i32::MAX;
+            for j in i..n {
+                if s[i] == s[j] && (j - i <= 2 || dp[i + 1][j - 1]) {
+                    dp[i][j] = true;
+                    min = min.min(if j < n - 1 { cut[j + 1] } else { -1 }) + 1;
+                }
+            }
+            cut[i] = min;
+        }
+        cut[0]
+
+=======
+
+        let n = s.len();
+        if n == 0 {
+            return 0;
+        }
+        let mut dp = vec![0; n];
+        let s = s.as_bytes();
+        for i in 1..n {
+            if Solution::is_palindrome(&s[0..=i]) {
+                dp[i] = 0;
+            } else {
+                dp[i] = dp[i-1] + 1;
+                for j in 1..i {
+                    if Solution::is_palindrome(&s[j..=i]) {
+                        dp[i] = dp[i].min(dp[j-1] + 1);
+                    }
+                }
+            }
+        }
+        dp[n-1] as i32
+    }
+    fn is_palindrome(s: &[u8]) -> bool {
+        let n = s.len();
+        for i in 0..(n/2) {
+            if s[i] != s[n-i-1] {
+                return false;
+            }
+        }
+        true

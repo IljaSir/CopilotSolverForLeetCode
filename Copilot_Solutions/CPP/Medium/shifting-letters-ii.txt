@@ -1,0 +1,153 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = shifts.size();
+        for (int i = n - 2; i >= 0; i--) {
+            shifts[i][2] = (shifts[i][2] + shifts[i + 1][2]) % 26;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = shifts[i][0]; j <= shifts[i][1]; j++) {
+                s[j] = (s[j] - 'a' + shifts[i][2]) % 26 + 'a';
+            }
+        }
+        return s;
+
+=======
+
+        int n = s.size();
+        for (int i = n - 2; i >= 0; i--) {
+            shifts[i][2] += shifts[i + 1][2];
+            shifts[i][2] %= 26;
+        }
+        for (int i = 0; i < n; i++) {
+            s[i] = (s[i] - 'a' + shifts[i][2]) % 26 + 'a';
+        }
+        return s;
+
+=======
+
+        int n = s.size();
+        vector<int> sum(n, 0);
+        sum[n - 1] = shifts[n - 1][2];
+        for (int i = n - 2; i >= 0; --i) {
+            sum[i] = sum[i + 1] + shifts[i][2];
+        }
+        for (int i = 0; i < n; ++i) {
+            int pos = s[i] - 'a';
+            int shift = sum[i];
+            if (shifts[i][2] == 1) {
+                pos = (pos + shift) % 26;
+            } else {
+                pos = (pos - shift + 26) % 26;
+            }
+            s[i] = 'a' + pos;
+        }
+        return s;
+
+=======
+
+        for (int i = shifts.size() - 1; i >= 0; i--) {
+            shifts[i][2] %= 26;
+            if (i > 0) shifts[i - 1][2] += shifts[i][2];
+        }
+        for (int i = 0; i < shifts.size(); i++) {
+            int start = shifts[i][0], end = shifts[i][1], dir = shifts[i][2];
+            for (int j = start; j <= end; j++) {
+                s[j] = (s[j] - 'a' + dir) % 26 + 'a';
+            }
+        }
+        return s;
+
+=======
+
+        int n = s.length();
+        int sum = 0;
+        for (int i = n-1; i >= 0; --i) {
+            sum += shifts[i][2] ? shifts[i][1] - shifts[i][0] + 1 : -(shifts[i][1] - shifts[i][0] + 1);
+            s[i] = ((s[i]-'a') + sum) % 26;
+            if (s[i] < 0) s[i] += 26;
+            s[i] += 'a';
+        }
+        return s;
+
+=======
+
+        int n = s.size();
+        vector<int> sum(n);
+        sum[n-1] = shifts[n-1][2];
+        for (int i = n - 2; i >= 0; i--) {
+            sum[i] = sum[i+1] + shifts[i][2];
+        }
+        for (int i = 0; i < n; i++) {
+            int start = shifts[i][0];
+            int end = shifts[i][1];
+            if (start < n) {
+                s[start] = (s[start] - 'a' + sum[start]) % 26 + 'a';
+            }
+            if (end + 1 < n) {
+                s[end+1] = (s[end+1] - 'a' - sum[end+1]) % 26 + 'a';
+            }
+        }
+        return s;
+
+=======
+
+        int n = s.size();
+        int i = n - 1;
+        int sum = 0;
+        while (i >= 0) {
+            sum = (sum + shifts[i][2]) % 26;
+            s[i] = (s[i] - 'a' + sum) % 26 + 'a';
+            --i;
+        }
+        return s;
+
+=======
+
+        int n = s.length();
+        vector<int> sum(n + 1, 0);
+        for (auto& shift: shifts) {
+            sum[shift[0]] += shift[2] == 0 ? -shift[1] - shift[0] : shift[1] - shift[0] + 1;
+            sum[shift[1] + 1] -= shift[2] == 0 ? -shift[1] - shift[0] : shift[1] - shift[0] + 1;
+        }
+        for (int i = 1; i <= n; ++i) sum[i] += sum[i - 1];
+        for (int i = 0; i < n; ++i) {
+            int x = s[i] - 'a';
+            x += sum[i];
+            x = (x % 26 + 26) % 26;
+            s[i] = x + 'a';
+        }
+        return s;
+
+=======
+
+        int n = s.size();
+        vector<int> forward(n, 0);
+        vector<int> backward(n, 0);
+        for (int i = 0; i < shifts.size(); i++) {
+            forward[shifts[i][0]] += shifts[i][2];
+            backward[shifts[i][1]] += shifts[i][2];
+        }
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += forward[i];
+            s[i] = (s[i] - 'a' + sum) % 26 + 'a';
+            sum -= backward[i];
+        }
+        return s;
+
+=======
+
+        int n = s.length();
+        vector<int> sum(n+1, 0);
+        for (auto &sh : shifts) {
+            sum[sh[0]] += (sh[2] == 1 ? 1 : -1);
+            sum[sh[1]+1] -= (sh[2] == 1 ? 1 : -1);
+        }
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            cnt += sum[i];
+            s[i] = (s[i] - 'a' + cnt) % 26 + 'a';
+        }
+        return s;

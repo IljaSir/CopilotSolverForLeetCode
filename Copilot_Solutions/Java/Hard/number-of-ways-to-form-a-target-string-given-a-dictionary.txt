@@ -1,0 +1,255 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[][] count = new int[words[0].length()][26];
+        for (String word : words) {
+            for (int i = 0; i < word.length(); i++) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[target.length()][words[0].length()];
+        for (int i = 0; i < words[0].length(); i++) {
+            if (target.charAt(0) == words[0].charAt(i)) {
+                dp[0][i] = 1;
+            }
+        }
+        for (int i = 1; i < target.length(); i++) {
+            for (int j = i; j < words[0].length(); j++) {
+                if (target.charAt(i) == words[0].charAt(j)) {
+                    for (int k = 0; k < j; k++) {
+                        dp[i][j] += dp[i - 1][k];
+                        dp[i][j] %= 1000000007;
+                    }
+                }
+            }
+        }
+        int result = 0;
+        for (int i = target.length() - 1; i < words[0].length(); i++) {
+            result += dp[target.length() - 1][i];
+            result %= 1000000007;
+        }
+        return result;
+
+=======
+
+        int[][] count = new int[target.length()][26];
+        for (String word : words) {
+            for (int i = 0; i < word.length(); i++) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[target.length()][target.length()];
+        for (int i = 0; i < target.length(); i++) {
+            for (int j = 0; j < 26; j++) {
+                if (i == 0) {
+                    dp[i][i] += count[i][j];
+                } else {
+                    for (int k = 0; k < i; k++) {
+                        dp[i][k] += dp[i - 1][k];
+                    }
+                    for (int k = 0; k < i; k++) {
+                        dp[i][i] += dp[i - 1][k] * count[i][j];
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < target.length(); i++) {
+            ans += dp[target.length() - 1][i];
+        }
+        return ans;
+
+=======
+
+        int[][] count = new int[words[0].length()][26];
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                count[j][words[i].charAt(j) - 'a']++;
+            }
+        }
+        int mod = 1000000007;
+        int[] dp = new int[target.length()];
+        for (int i = 0; i < target.length(); i++) {
+            int c = target.charAt(i) - 'a';
+            int sum = 0;
+            for (int j = 0; j < words[0].length(); j++) {
+                if (count[j][c] == 0) {
+                    continue;
+                }
+                if (i == 0) {
+                    dp[i] += count[j][c];
+                } else {
+                    dp[i] += dp[i - 1] * count[j][c];
+                }
+                dp[i] %= mod;
+            }
+        }
+        return dp[target.length() - 1];
+
+=======
+
+        int n = words[0].length();
+        int m = target.length();
+        int[][] count = new int[n][26];
+        for (String word : words) {
+            for (int i = 0; i < n; i++) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[m + 1][n];
+        dp[0][0] = 1;
+        for (int i = 0; i < m; i++) {
+            int c = target.charAt(i) - 'a';
+            for (int j = i; j < n; j++) {
+                if (count[j][c] == 0) {
+                    continue;
+                }
+                for (int k = 0; k <= j; k++) {
+                    dp[i + 1][j] = (dp[i + 1][j] + (int) ((long) dp[i][k] * count[j][c] % 1000000007)) % 1000000007;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = (ans + dp[m][i]) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int[][] count = new int[words[0].length()][26];
+        for (String word : words) {
+            for (int i = 0; i < word.length(); i++) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[target.length() + 1][words[0].length() + 1];
+        for (int i = 0; i <= words[0].length(); i++) {
+            dp[0][i] = 1;
+        }
+        for (int i = 1; i <= target.length(); i++) {
+            for (int j = i; j <= words[0].length(); j++) {
+                dp[i][j] = dp[i][j - 1];
+                if (count[j - 1][target.charAt(i - 1) - 'a'] > 0) {
+                    dp[i][j] = (dp[i][j] + (int) ((long) dp[i - 1][j - 1] * count[j - 1][target.charAt(i - 1) - 'a'] % mod)) % mod;
+                }
+            }
+        }
+        return dp[target.length()][words[0].length()];
+
+=======
+
+        int mod = 1000000007;
+        int n = words[0].length();
+        int m = target.length();
+        int[][] count = new int[n][26];
+        for (String word : words) {
+            for (int i = 0; i < n; i++) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[m + 1][n + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= n; j++) {
+                if (count[j - 1][target.charAt(i - 1) - 'a'] == 0) {
+                    continue;
+                }
+                dp[i][j] = (dp[i][j] + dp[i - 1][j - 1] * count[j - 1][target.charAt(i - 1) - 'a']) % mod;
+                dp[i][j] = (dp[i][j] + dp[i][j - 1]) % mod;
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int m = words.length, n = words[0].length(), t = target.length();
+        int[][] cnt = new int[n][26];
+        for (String word : words) {
+            for (int i = 0; i < n; i++) {
+                cnt[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[t + 1][n + 1];
+        dp[0][0] = 1;
+        for (int i = 0; i < t; i++) {
+            for (int j = i; j < n; j++) {
+                dp[i + 1][j + 1] = (dp[i + 1][j + 1] + dp[i + 1][j]) % 1000000007;
+                dp[i + 1][j + 1] = (dp[i + 1][j + 1] + (int)((long)dp[i][j] * cnt[j][target.charAt(i) - 'a'] % 1000000007)) % 1000000007;
+            }
+        }
+        return dp[t][n];
+
+=======
+
+        int mod = 1000000007;
+        int n = words[0].length();
+        int m = target.length();
+        int[][] f = new int[m][26];
+        for (int i = 0; i < n; i++) {
+            int[] count = new int[26];
+            for (String word : words) {
+                count[word.charAt(i) - 'a']++;
+            }
+            for (int j = 0; j < m; j++) {
+                f[j][target.charAt(j) - 'a'] += count[target.charAt(j) - 'a'];
+            }
+        }
+        long[] dp = new long[m];
+        for (int i = 0; i < 26; i++) {
+            dp[0] += f[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < 26; j++) {
+                dp[i] = (dp[i] + dp[i - 1] * f[i][j]) % mod;
+            }
+        }
+        return (int) dp[m - 1];
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[target.length()][26];
+        for (int i = 0; i < words[0].length(); i++) {
+            for (String word : words) {
+                int idx = word.charAt(i) - 'a';
+                dp[target.length() - 1][idx] = (dp[target.length() - 1][idx] + 1) % mod;
+            }
+        }
+        for (int i = target.length() - 2; i >= 0; i--) {
+            for (int j = 0; j < 26; j++) {
+                for (String word : words) {
+                    if (word.charAt(i) - 'a' == j) {
+                        dp[i][j] = (dp[i][j] + dp[i + 1][target.charAt(i + 1) - 'a']) % mod;
+                    }
+                }
+            }
+        }
+        return dp[0][target.charAt(0) - 'a'];
+
+=======
+
+        int n = words.length, m = words[0].length(), mod = (int)1e9+7;
+        int[][] count = new int[m][26];
+        for (String word : words) {
+            for (int i = 0; i < m; ++i) {
+                count[i][word.charAt(i) - 'a']++;
+            }
+        }
+        int[][] dp = new int[m][target.length()];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < target.length(); ++j) {
+                if (i == 0 && j == 0) {
+                    dp[i][j] = count[i][target.charAt(j) - 'a'];
+                } else if (i == 0) {
+                    dp[i][j] = dp[i][j - 1] * count[i][target.charAt(j) - 'a'] % mod;
+                } else if (j == 0) {
+                    dp[i][j] = dp[i - 1][j] * count[i][target.charAt(j) - 'a'] % mod;
+                } else {
+                    dp[i][j] = (dp[i - 1][j] * count[i][target.charAt(j) - 'a'] % mod + dp[i - 1][j - 1] * count[i][target.charAt(j) - 'a'] % mod) % mod;
+                }
+            }
+        }
+        return dp[m - 1][target.length() - 1];

@@ -1,0 +1,313 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> f(n);
+        function<void(int, int)> dfs = [&](int u, int fa) {
+            f[u] = nums[u];
+            for (auto v : g[u]) {
+                if (v == fa) continue;
+                dfs(v, u);
+                f[u] ^= f[v];
+            }
+        };
+        dfs(0, -1);
+        int ans = f[0];
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            ans = min(ans, f[u] ^ f[v] ^ (f[u] ^ f[v] ^ nums[u] ^ nums[v]));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> s(n);
+        vector<int> p(n);
+        function<void(int, int)> dfs = [&](int u, int pa) {
+            s[u] = nums[u];
+            p[u] = pa;
+            for (int v : g[u]) {
+                if (v != pa) {
+                    dfs(v, u);
+                    s[u] ^= s[v];
+                }
+            }
+        };
+        dfs(0, -1);
+        int ans = INT_MAX;
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            if (p[u] == v) swap(u, v);
+            ans = min(ans, max(s[0], s[u] ^ s[v]));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n), dp2(n);
+        dfs(0, -1, g, nums, dp);
+        dfs2(0, -1, g, nums, dp, dp2);
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = max(ans, dp[i] ^ dp2[i]);
+        }
+        return ans;
+    }
+    void dfs(int u, int fa, vector<vector<int>>& g, vector<int>& nums, vector<int>& dp) {
+        dp[u] = nums[u];
+        for (int v : g[u]) {
+            if (v == fa) continue;
+            dfs(v, u, g, nums, dp);
+            dp[u] ^= dp[v];
+        }
+    }
+    void dfs2(int u, int fa, vector<vector<int>>& g, vector<int>& nums, vector<int>& dp, vector<int>& dp2) {
+        if (fa != -1) {
+            dp2[u] = dp2[fa] ^ dp[u] ^ dp2[u];
+        }
+        for (int v : g[u]) {
+            if (v == fa) continue;
+            dfs2(v, u, g, nums, dp, dp2);
+        }
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> sz(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            for (int v : adj[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sz[u] += sz[v];
+            }
+        };
+        dfs(0, -1);
+        int ans = INT_MAX;
+        function<int(int, int)> dfs2 = [&](int u, int p) {
+            int ret = nums[u];
+            for (int v : adj[u]) {
+                if (v == p) continue;
+                ret ^= dfs2(v, u);
+            }
+            if (p != -1) {
+                ans = min(ans, ret ^ dfs2(p, u));
+            }
+            return ret;
+        };
+        dfs2(0, -1);
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> sub(n);
+        int ans = INT_MAX;
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sub[u] = nums[u];
+            for (int v : adj[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sub[u] ^= sub[v];
+            }
+            if (p != -1) ans = min(ans, sub[u] ^ sub[p]);
+        };
+        dfs(0, -1);
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n);
+        vector<int> s(n);
+        int ans = INT_MAX;
+        function<void(int, int)> dfs = [&](int u, int p) {
+            dp[u] = nums[u];
+            s[u] = nums[u];
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                dp[u] ^= dp[v];
+                s[u] += s[v];
+            }
+        };
+        dfs(0, -1);
+        function<void(int, int, int)> dfs2 = [&](int u, int p, int t) {
+            ans = min(ans, (t ^ dp[u]) - min(t ^ dp[u], dp[u]));
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs2(v, u, t ^ dp[u] ^ dp[v]);
+            }
+        };
+        dfs2(0, -1, 0);
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> sum(1 << n);
+        vector<int> cnt(1 << n);
+        vector<int> dp(1 << n);
+        for (int i = 0; i < (1 << n); ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) {
+                    sum[i] ^= nums[j];
+                    ++cnt[i];
+                }
+            }
+        }
+        for (int i = 0; i < (1 << n); ++i) {
+            dp[i] = sum[i];
+        }
+        for (int i = 0; i < (1 << n); ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) {
+                    dp[i] = min(dp[i], dp[i ^ (1 << j)]);
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for (int i = 1; i < (1 << n); ++i) {
+            if (cnt[i] == 1) {
+                continue;
+            }
+            int j = ((1 << n) - 1) ^ i;
+            for (int k = j; k; k = (k - 1) & j) {
+                if (cnt[k] == 1) {
+                    continue;
+                }
+                ans = min(ans, dp[k] ^ dp[i ^ k]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            g[u].push_back(v);
+            g[v].push_back(u);
+        }
+        vector<int> sz(n);
+        vector<int> val(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            val[u] = nums[u];
+            for (int v : g[u]) {
+                if (v != p) {
+                    dfs(v, u);
+                    sz[u] += sz[v];
+                    val[u] ^= val[v];
+                }
+            }
+        };
+        dfs(0, -1);
+        int ans = INT_MAX;
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            if (sz[u] > sz[v]) swap(u, v);
+            ans = min(ans, (val[u] ^ val[v]));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> f(n);
+        iota(f.begin(), f.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return x == f[x] ? x : f[x] = find(f[x]);
+        };
+        for (auto& e : edges) {
+            int x = find(e[0]), y = find(e[1]);
+            if (x != y) f[x] = y;
+        }
+        vector<int> id(n);
+        for (int i = 0; i < n; i++) id[find(i)] = i;
+        vector<int> xorv(n);
+        for (int i = 0; i < n; i++) xorv[id[i]] ^= nums[i];
+        vector<int> sz(n);
+        for (int i = 0; i < n; i++) sz[id[i]]++;
+        int ans = INT_MAX;
+        for (auto& e : edges) {
+            int x = find(e[0]), y = find(e[1]);
+            if (sz[x] > sz[y]) swap(x, y);
+            if (sz[x] > 1) {
+                int tmp = xorv[y];
+                xorv[y] ^= xorv[x];
+                ans = min(ans, max(xorv[y], tmp) - min(xorv[y], tmp));
+                xorv[y] = tmp;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> parents(nums.size());
+        iota(parents.begin(), parents.end(), 0);
+        function<int(int)> find = [&](int x) {
+            if (parents[x] != x) {
+                parents[x] = find(parents[x]);
+            }
+            return parents[x];
+        };
+        function<void(int, int)> merge = [&](int x, int y) {
+            parents[find(x)] = find(y);
+        };
+        for (const auto& e : edges) {
+            merge(e[0], e[1]);
+        }
+        unordered_map<int, vector<int>> groups;
+        for (int i = 0; i < nums.size(); ++i) {
+            groups[find(i)].push_back(nums[i]);
+        }
+        int ans = INT_MAX;
+        for (const auto& [_, group] : groups) {
+            int sum = accumulate(group.begin(), group.end(), 0);
+            int x = 0;
+            for (int num : group) {
+                x ^= num;
+            }
+            ans = min(ans, sum - 2 * x);
+        }
+        return ans;

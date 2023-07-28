@@ -1,0 +1,244 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = words.size();
+        vector<int> mask(n);
+        for (int i = 0; i < n; ++i) {
+            for (char c : words[i]) {
+                mask[i] |= 1 << (c - 'a');
+            }
+        }
+        vector<int> count(1 << 16);
+        for (int m : mask) {
+            count[m]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << 16); ++i) {
+            if (count[i]) {
+                ans += count[i] * (count[i] - 1);
+            }
+            for (int j = i + 1; j < (1 << 16); ++j) {
+                if (count[i] && count[j] && !(i & j)) {
+                    ans += count[i] * count[j] * 2;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int result = 0;
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = i + 1; j < words.size(); j++) {
+                if (words[i][0] == words[j][1] && words[i][1] == words[j][0]) {
+                    result += 2;
+                }
+            }
+        }
+        int odd = 0;
+        for (int i = 0; i < words.size(); i++) {
+            if (words[i][0] == words[i][1]) {
+                odd = 1;
+            }
+        }
+        return result + odd;
+
+=======
+
+        int n = words.size();
+        vector<int> mask(n);
+        for (int i = 0; i < n; ++i) {
+            mask[i] = 1 << (words[i][0] - 'a');
+            mask[i] |= 1 << (words[i][1] - 'a');
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j)
+                if ((mask[i] & mask[j]) == 0)
+                    ans = max(ans, (int)words[i].size() + (int)words[j].size());
+        
+        vector<int> count(26);
+        for (int i = 0; i < n; ++i) {
+            int x = words[i][0] - 'a';
+            int y = words[i][1] - 'a';
+            if (x == y) {
+                count[x] = max(count[x], (int)words[i].size());
+            }
+        }
+        for (int i = 0; i < 26; ++i)
+            ans = max(ans, count[i]);
+        
+        return ans;
+
+=======
+
+        vector<int> mask(words.size(), 0);
+        for(int i = 0; i < words.size(); i++) {
+            for(int j = 0; j < 2; j++) {
+                mask[i] |= 1 << (words[i][j] - 'a');
+            }
+        }
+        unordered_map<int, int> counts;
+        for(int i = 0; i < words.size(); i++) {
+            counts[mask[i]]++;
+        }
+        int res = 0;
+        for(auto it = counts.begin(); it != counts.end(); it++) {
+            for(auto it2 = counts.begin(); it2 != counts.end(); it2++) {
+                if((it->first & it2->first) == 0) {
+                    res = max(res, it->second * it2->second);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = words.size();
+        int mask[n];
+        for (int i = 0; i < n; i++) {
+            mask[i] = 0;
+            for (int j = 0; j < 2; j++) {
+                mask[i] |= 1 << (words[i][j] - 'a');
+            }
+        }
+        vector<int> v(1 << 16, 0);
+        for (int i = 0; i < n; i++) {
+            v[mask[i]] = max(v[mask[i]], (int)words[i].length());
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << 16); i++) {
+            for (int j = i; j < (1 << 16); j++) {
+                if ((i | j) == (1 << 16) - 1) {
+                    ans = max(ans, v[i] + v[j]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        unordered_map<int, int> count;
+        for (auto word : words) {
+            int mask = 0;
+            for (char c : word) {
+                mask ^= 1 << (c - 'a');
+            }
+            ++count[mask];
+        }
+        for (auto it = count.begin(); it != count.end(); ++it) {
+            int mask = it->first;
+            if (count[mask] == 0) continue;
+            ans += count[mask] * (count[mask] - 1);
+            count[mask] = 0;
+            for (int i = 0; i < 26; ++i) {
+                int t = mask ^ (1 << i);
+                if (count.count(t)) {
+                    ans += count[mask] * count[t];
+                    count[t] = 0;
+                }
+            }
+        }
+        return ans + (count[0] > 0);
+
+=======
+
+        int n = words.size();
+        vector<int> mp(26, 0);
+        for (int i = 0; i < n; i++) {
+            mp[words[i][0] - 'a'] |= (1 << i);
+            mp[words[i][1] - 'a'] |= (1 << i);
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            for (int j = i; j < 26; j++) {
+                int mask = mp[i] | mp[j];
+                int cnt = __builtin_popcount(mask);
+                if (cnt > 1 && (mask & (mask - 1)) == 0) {
+                    ans = max(ans, cnt * 2);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> m;
+        for (auto word : words) {
+            string s = word;
+            reverse(s.begin(), s.end());
+            if (m.count(s)) {
+                m[s]++;
+            } else {
+                m[word]++;
+            }
+        }
+        int ans = 0;
+        string mid;
+        for (auto p : m) {
+            if (p.first == string(p.first.rbegin(), p.first.rend())) {
+                if (p.second % 2 == 1) {
+                    mid = p.first;
+                }
+                ans += p.second / 2 * 2;
+            } else if (m.count(p.first)) {
+                int n = min(m[p.first], m[p.first]);
+                ans += n / 2 * 2;
+                m[p.first] -= n;
+                m[p.first] -= n;
+            }
+        }
+        return ans + mid.size();
+
+=======
+
+        int n = words.size();
+        unordered_map<string, int> m;
+        for (auto word : words) {
+            string s = word;
+            reverse(s.begin(), s.end());
+            if (s == word) {
+                m[s] = max(m[s], 1);
+            } else {
+                m[s] = max(m[s], 0);
+            }
+        }
+        int res = 0;
+        for (auto it : m) {
+            if (m.count(it.first) && m[it.first] == 0) {
+                res += it.first.length();
+                m[it.first] = 1;
+            }
+        }
+        for (auto it : m) {
+            if (m[it.first] == 1) {
+                res += it.first.length();
+                break;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> m(26, 0);
+        for (auto &w : words) {
+            int mask = 0;
+            for (auto &c: w) {
+                mask |= 1 << (c - 'a');
+            }
+            m[mask]++;
+        }
+        int res = 0;
+        for (int i = 0; i < m.size(); i++) {
+            for (int j = i; j < m.size(); j++) {
+                if (m[i] > 0 && m[j] > 0 && (i ^ j) == 0) {
+                    res += m[i] * m[j];
+                    if (i == j) {
+                        res -= m[i];
+                    }
+                }
+            }
+        }
+        return res;

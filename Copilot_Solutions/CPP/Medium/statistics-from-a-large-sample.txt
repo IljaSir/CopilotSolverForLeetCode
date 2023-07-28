@@ -1,0 +1,474 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int min = 0;
+        int max = 0;
+        int sum = 0;
+        int n = 0;
+        int max_count = 0;
+        int mode = 0;
+        double mean = 0;
+        double median = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (min == 0) {
+                    min = i;
+                }
+                max = i;
+                sum += i * count[i];
+                n += count[i];
+                if (count[i] > max_count) {
+                    max_count = count[i];
+                    mode = i;
+                }
+            }
+        }
+        mean = sum / (double)n;
+        int mid = n / 2;
+        int mid2 = mid + 1;
+        int mid_count = 0;
+        int mid2_count = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (mid_count == 0 && mid2_count == 0) {
+                if (count[i] > 0) {
+                    mid_count += count[i];
+                    mid2_count += count[i];
+                }
+            } else if (mid_count == 0 && mid2_count > 0) {
+                if (count[i] > 0) {
+                    mid_count += count[i];
+                    if (mid2_count + count[i] > mid) {
+                        mid2 = i;
+                        break;
+                    }
+                    mid2_count += count[i];
+                }
+            } else if (mid_count > 0 && mid2_count == 0) {
+                if (count[i] > 0) {
+                    mid2_count += count[i];
+                    if (mid_count + count[i] > mid) {
+                        mid = i;
+                        break;
+                    }
+                    mid_count += count[i];
+                }
+            } else {
+                break;
+            }
+        }
+        if (n % 2 == 0) {
+            median = (mid + mid2) / 2.0;
+        } else {
+            median = mid;
+        }
+        return {min, max, mean, median, mode};
+
+=======
+
+        int n = accumulate(count.begin(), count.end(), 0);
+        int min = 0, max = 0;
+        double mean = 0;
+        int median = 0;
+        int mode = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (min == 0 && count[i] > 0) {
+                min = i;
+            }
+            if (count[i] > 0) {
+                max = i;
+            }
+            mean += i * count[i];
+            if (n % 2 == 1 && median == 0) {
+                if (count[i] > n / 2) {
+                    median = i;
+                } else {
+                    n -= count[i];
+                }
+            } else if (n % 2 == 0 && median == 0) {
+                if (count[i] > n / 2) {
+                    median = i;
+                    n -= count[i];
+                } else if (count[i] > n / 2 - 1) {
+                    median = i;
+                } else {
+                    n -= count[i];
+                }
+            }
+            if (count[i] > count[mode]) {
+                mode = i;
+            }
+        }
+        mean /= accumulate(count.begin(), count.end(), 0);
+        return {min, max, mean, median, mode};
+
+=======
+
+        int min = 255, max = 0;
+        int sum = 0, count_sum = 0;
+        int mode = 0;
+        double mean, median;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                sum += i * count[i];
+                count_sum += count[i];
+                if (min > i) min = i;
+                if (max < i) max = i;
+                if (count[mode] < count[i]) mode = i;
+            }
+        }
+        mean = (double)sum / count_sum;
+        if (count_sum % 2 == 0) {
+            int half = count_sum / 2;
+            int i = 0;
+            while (half > 0) {
+                half -= count[i];
+                if (half <= 0) {
+                    if (half == 0) {
+                        while (i < count.size() && count[i] == 0) i++;
+                        median = (i + i + 1) / 2.0;
+                    } else {
+                        median = i;
+                    }
+                    break;
+                }
+                i++;
+            }
+        } else {
+            int half = (count_sum + 1) / 2;
+            int i = 0;
+            while (half > 0) {
+                half -= count[i];
+                if (half <= 0) {
+                    median = i;
+                    break;
+                }
+                i++;
+            }
+        }
+        return { (double)min, (double)max, mean, median, (double)mode };
+
+=======
+
+        int sum = 0, min = 0, max = 0, mode = 0, mode_count = 0, median_count = 0;
+        double mean = 0.0, median = 0.0;
+        for (int i = 0; i < count.size(); ++i) {
+            sum += count[i];
+            if (count[i] > 0) {
+                if (min == 0) min = i;
+                max = i;
+            }
+            if (count[i] > mode_count) {
+                mode = i;
+                mode_count = count[i];
+            }
+        }
+        mean = sum * 1.0 / 256;
+        median_count = sum / 2;
+        int i = 0;
+        for (; i < count.size(); ++i) {
+            median_count -= count[i];
+            if (median_count <= 0) break;
+        }
+        if (sum % 2 == 0) {
+            median = i;
+            if (median_count < 0) {
+                while (count[i] == 0) ++i;
+                median = (median + i) / 2.0;
+            }
+        } else {
+            median = i;
+        }
+        return {min, max, mean, median, mode};
+
+=======
+
+        vector<double> res;
+        int max = 0, min = 255, sum = 0, mode = 0, cnt = 0;
+        double mean = 0, median = 0;
+        for (int i = 0; i < count.size(); ++i) {
+            if (count[i] > 0) {
+                if (min > i) min = i;
+                if (max < i) max = i;
+                sum += i * count[i];
+                if (mode < count[i]) {
+                    mode = count[i];
+                    cnt = i;
+                }
+            }
+        }
+        mean = (double)sum / sum;
+        int mid = sum / 2;
+        for (int i = 0; i < count.size(); ++i) {
+            if (count[i] > 0) {
+                if (mid > count[i]) {
+                    mid -= count[i];
+                } else if (mid == count[i]) {
+                    median = (double)i;
+                    mid -= count[i];
+                } else {
+                    median = (double)i;
+                    break;
+                }
+            }
+        }
+        res.push_back(min);
+        res.push_back(max);
+        res.push_back(mean);
+        res.push_back(median);
+        res.push_back(cnt);
+        return res;
+
+=======
+
+        int max = -1, min = -1;
+        long long sum = 0;
+        int mode = 0;
+        int count_sum = 0;
+        for (int i = 0; i < 256; ++i) {
+            if (count[i] > 0) {
+                if (min == -1) {
+                    min = i;
+                }
+                max = i;
+                sum += count[i] * i;
+                count_sum += count[i];
+                if (count[i] > count[mode]) {
+                    mode = i;
+                }
+            }
+        }
+        vector<double> result;
+        result.push_back(min);
+        result.push_back(max);
+        result.push_back((double)sum / count_sum);
+        if (count_sum % 2 == 0) {
+            int count1 = 0;
+            int count2 = 0;
+            for (int i = 0; i < 256; ++i) {
+                if (count[i] > 0) {
+                    count1 += count[i];
+                    if (count1 >= count_sum / 2) {
+                        result.push_back(i);
+                        break;
+                    }
+                    if (count1 == count_sum / 2) {
+                        count2 = i;
+                    }
+                }
+            }
+            if (count2 > 0) {
+                result.push_back((result[3] + count2) / 2.0);
+            } else {
+                result.push_back(result[3]);
+            }
+        } else {
+            int count1 = 0;
+            for (int i = 0; i < 256; ++i) {
+                if (count[i] > 0) {
+                    count1 += count[i];
+                    if (count1 > count_sum / 2) {
+                        result.push_back(i);
+                        break;
+                    }
+                }
+            }
+        }
+        result.push_back(mode);
+        return result;
+
+=======
+
+        vector<double> result;
+        int min = INT_MAX, max = INT_MIN, mode = 0;
+        long long sum = 0;
+        double mean = 0.0;
+        long long total = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (min > i) {
+                    min = i;
+                }
+                if (max < i) {
+                    max = i;
+                }
+                if (count[i] > count[mode]) {
+                    mode = i;
+                }
+                sum += count[i] * i;
+                total += count[i];
+            }
+        }
+        mean = (double)sum / total;
+        int mid = total / 2;
+        int prev = 0;
+        int median = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (mid >= prev && mid < prev + count[i]) {
+                    median = i;
+                    break;
+                }
+                prev += count[i];
+            }
+        }
+        if (total % 2 == 0) {
+            int next = 0;
+            for (int i = 0; i < count.size(); i++) {
+                if (count[i] > 0) {
+                    if (mid + 1 >= next && mid + 1 < next + count[i]) {
+                        median = (median + i) / 2.0;
+                        break;
+                    }
+                    next += count[i];
+                }
+            }
+        }
+        result.push_back(min);
+        result.push_back(max);
+        result.push_back(mean);
+        result.push_back(median);
+        result.push_back(mode);
+        return result;
+
+=======
+
+        int min = 0, max = 0;
+        long long sum = 0;
+        int mode = 0;
+        int modeCount = 0;
+        int totalCount = 0;
+        int medianIndex = 0;
+        int median1 = 0;
+        int median2 = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (min == 0) {
+                    min = i;
+                }
+                max = i;
+                sum += i * count[i];
+                if (count[i] > modeCount) {
+                    modeCount = count[i];
+                    mode = i;
+                }
+                totalCount += count[i];
+            }
+        }
+        medianIndex = totalCount / 2;
+        int count1 = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (count1 + count[i] > medianIndex) {
+                    median1 = i;
+                    if (totalCount % 2 == 0) {
+                        if (count1 + count[i] == medianIndex + 1) {
+                            median2 = i;
+                            break;
+                        } else {
+                            median2 = i - 1;
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    count1 += count[i];
+                }
+            }
+        }
+        double mean = (double)sum / totalCount;
+        double median = median1;
+        if (median2 != 0) {
+            median = (median1 + median2) / 2.0;
+        }
+        return {min, max, mean, median, mode};
+
+=======
+
+        vector<double> res(5, 0);
+        int max = 0;
+        int min = 0;
+        int total = 0;
+        int mode = 0;
+        int median = 0;
+        int sum = 0;
+        int count_sum = 0;
+        int count_median = 0;
+        for (int i = 0; i < count.size(); ++i) {
+            if (count[i] > 0) {
+                min = i;
+                break;
+            }
+        }
+        for (int i = count.size() - 1; i >= 0; --i) {
+            if (count[i] > 0) {
+                max = i;
+                break;
+            }
+        }
+        for (int i = 0; i < count.size(); ++i) {
+            if (count[i] > max) {
+                mode = i;
+                max = count[i];
+            }
+            if (count[i] > 0) {
+                sum += i * count[i];
+                total += count[i];
+            }
+        }
+        for (int i = 0; i < count.size(); ++i) {
+            if (count[i] > 0) {
+                count_sum += count[i];
+                if (count_sum > total / 2) {
+                    median = i;
+                    break;
+                }
+                if (count_sum == total / 2) {
+                    for (int j = i + 1; j < count.size(); ++j) {
+                        if (count[j] > 0) {
+                            median = (i + j) / 2.0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        res[0] = min;
+        res[1] = max;
+        res[2] = sum / double(total);
+        res[3] = median;
+        res[4] = mode;
+        return res;
+
+=======
+
+        int min = 0, max = 0, sum = 0, mode = 0, modeCount = 0, median = 0, medianCount = 0, medianCount2 = 0, median2 = 0;
+        int totalCount = 0;
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (min == 0) {
+                    min = i;
+                }
+                max = i;
+                sum += i * count[i];
+                totalCount += count[i];
+                if (modeCount < count[i]) {
+                    mode = i;
+                    modeCount = count[i];
+                }
+            }
+        }
+        for (int i = 0; i < count.size(); i++) {
+            if (count[i] > 0) {
+                if (medianCount < totalCount / 2 + 1) {
+                    median = i;
+                    medianCount += count[i];
+                }
+                if (medianCount2 < totalCount / 2 + 2) {
+                    median2 = i;
+                    medianCount2 += count[i];
+                }
+            }
+        }
+        return vector<double>{min, max, (double)sum / totalCount, totalCount % 2 == 0 ? (double)(median + median2) / 2 : median, mode};

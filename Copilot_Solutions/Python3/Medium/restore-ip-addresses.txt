@@ -1,0 +1,184 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def dfs(s, path, res):
+            if len(path) == 4 and not s:
+                res.append('.'.join(path))
+                return
+            for i in range(1, 4):
+                if i <= len(s):
+                    if i == 1:
+                        dfs(s[i:], path + [s[:i]], res)
+                    elif i == 2 and s[0] != '0':
+                        dfs(s[i:], path + [s[:i]], res)
+                    elif i == 3 and s[0] != '0' and int(s[:3]) <= 255:
+                        dfs(s[i:], path + [s[:i]], res)
+        
+        res = []
+        dfs(s, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def helper(s, k):
+            if k == 0:
+                return [s] if not s else []
+            res = []
+            for i in range(1, 4):
+                if i <= len(s) and int(s[:i]) <= 255:
+                    if s[:i].startswith('0') and len(s[:i]) > 1:
+                        continue
+                    res += [s[:i] + '.' + rest for rest in helper(s[i:], k - 1)]
+            return res
+        return helper(s, 4)
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def backtrack(s, path, res):
+            if len(path) == 4 and not s:
+                res.append(".".join(path))
+                return
+            for i in range(1, 4):
+                if i <= len(s):
+                    if int(s[:i]) <= 255:
+                        backtrack(s[i:], path + [s[:i]], res)
+                    if s[0] == "0":
+                        break
+        res = []
+        backtrack(s, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def check(s):
+            if len(s) > 1 and s[0] == "0":
+                return False
+            if int(s) > 255:
+                return False
+            return True
+        
+        def dfs(s, path, res):
+            if len(path) == 4 and len(s) == 0:
+                res.append(".".join(path))
+                return
+            for i in range(1, 4):
+                if i <= len(s):
+                    if check(s[:i]):
+                        dfs(s[i:], path + [s[:i]], res)
+        
+        res = []
+        dfs(s, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def dfs(s, start, path, res):
+            if start == len(s) and len(path) == 4:
+                res.append('.'.join(path))
+            elif start < len(s) and len(path) < 4:
+                for i in range(start, start + 3):
+                    if i < len(s):
+                        if i == start and s[i] == '0' or i > start and int(s[start:i + 1]) <= 255:
+                            path.append(s[start:i + 1])
+                            dfs(s, i + 1, path, res)
+                            path.pop()
+        res = []
+        dfs(s, 0, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        if len(s) > 12:
+            return []
+        def dfs(s, k, path, res):
+            if k == 4:
+                if not s:
+                    res.append(path[:-1])
+                return
+            for i in range(1, 4):
+                if i <= len(s):
+                    if i == 1:
+                        dfs(s[i:], k+1, path+s[:i]+'.', res)
+                    elif i == 2 and s[0] != '0':
+                        dfs(s[i:], k+1, path+s[:i]+'.', res)
+                    elif i == 3 and s[0] != '0' and int(s[:3]) <= 255:
+                        dfs(s[i:], k+1, path+s[:i]+'.', res)
+        res = []
+        dfs(s, 0, '', res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def isValid(s):
+            if not s or (len(s) > 1 and s[0] == '0') or int(s) > 255:
+                return False
+            return True
+        def dfs(s, n, ip, ips):
+            if n == 1:
+                if isValid(s):
+                    ips.append(ip + s)
+                return
+            for i in range(1, min(4, len(s))):
+                if isValid(s[:i]):
+                    dfs(s[i:], n-1, ip + s[:i] + '.', ips)
+        ips = []
+        dfs(s, 4, '', ips)
+        return ips
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def dfs(s, path, res):
+            if len(path) == 4 and s == '':
+                res.append('.'.join(path))
+                return
+            for i in range(1, len(s)+1):
+                if i > 3 or (i > 1 and s[0] == '0') or int(s[:i]) > 255:
+                    continue
+                dfs(s[i:], path+[s[:i]], res)
+        res = []
+        dfs(s, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def is_valid(s):
+            if len(s) > 1 and s[0] == '0':
+                return False
+            return int(s) >= 0 and int(s) <= 255
+        
+        def dfs(s, i, path, res):
+            if i == 4 and len(s) == 0:
+                res.append('.'.join(path))
+                return
+            if i == 4 and len(s) > 0:
+                return
+            for j in range(1, 4):
+                if j <= len(s):
+                    if is_valid(s[:j]):
+                        dfs(s[j:], i+1, path+[s[:j]], res)
+        
+        res = []
+        dfs(s, 0, [], res)
+        return res
+
+=======
+
+def restoreIpAddresses(self, s: str) -> List[str]:
+        def restoreIpAddressesHelper(s, k):
+            if k == 0:
+                return [s] if not s else []
+            return [s[:i] + '.' + rest
+                    for i in range(1, min(4, len(s) - k + 1))
+                    if int(s[:i]) < 256 and (s[0] != '0' or i == 1)
+                    for rest in restoreIpAddressesHelper(s[i:], k - 1)]
+        return restoreIpAddressesHelper(s, 4)

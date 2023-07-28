@@ -1,0 +1,297 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        long[] ans = new long[n];
+        long[] presum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            presum[i + 1] = presum[i] + nums[i];
+        }
+        List<Integer>[] pos = new List[n + 1];
+        for (int i = 0; i <= n; i++) {
+            pos[i] = new ArrayList<Integer>();
+        }
+        for (int i = 0; i < n; i++) {
+            pos[removeQueries[i]].add(i);
+        }
+        TreeSet<Integer> set = new TreeSet<>();
+        set.add(-1);
+        set.add(n);
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j : pos[i]) {
+                set.add(j);
+            }
+            Integer l = set.lower(i);
+            Integer r = set.higher(i);
+            ans[i] = presum[r] - presum[l + 1];
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        long[] ans = new long[n];
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        int[] next = new int[n];
+        Arrays.fill(next, n);
+        boolean[] removed = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int index = removeQueries[i];
+            removed[index] = true;
+            if (index > 0 && !removed[index - 1]) {
+                next[index - 1] = index;
+            }
+            if (index < n - 1 && !removed[index + 1]) {
+                next[index] = index + 1;
+            }
+        }
+        TreeSet<Integer> set = new TreeSet<>();
+        for (int i = 0; i < n; i++) {
+            if (!removed[i]) {
+                set.add(i);
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            int index = removeQueries[i];
+            if (set.isEmpty()) {
+                ans[i] = 0;
+            } else {
+                int left = set.floor(index);
+                int right = next[left];
+                ans[i] = prefix[right] - prefix[left];
+            }
+            set.remove(index);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        long[] ans = new long[n];
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        TreeSet<Integer> set = new TreeSet<>();
+        set.add(-1);
+        set.add(n);
+        for (int i = n - 1; i >= 0; i--) {
+            int x = removeQueries[i];
+            set.add(x);
+            Integer l = set.lower(x);
+            Integer r = set.higher(x);
+            ans[i] = Math.max(ans[i], prefix[r] - prefix[x + 1]);
+            ans[i] = Math.max(ans[i], prefix[x] - prefix[l + 1]);
+            ans[i] = Math.max(ans[i], ans[i + 1]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        long[] res = new long[n];
+        long[] presum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            presum[i + 1] = presum[i] + nums[i];
+        }
+        long[] max = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            max[i] = presum[i + 1];
+        }
+        for (int i = n - 1; i > 0; i--) {
+            max[i] = Math.max(max[i], max[i + 1]);
+        }
+        boolean[] removed = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            removed[removeQueries[i]] = true;
+            long sum = 0;
+            for (int j = removeQueries[i]; j < n; j++) {
+                if (!removed[j]) {
+                    sum += nums[j];
+                }
+                if (j + 1 < n && !removed[j + 1]) {
+                    max[j + 1] = Math.max(max[j + 1], sum);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            res[i] = max[i];
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        long[] result = new long[n];
+        long[] prefixSum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefixSum[i + 1] = prefixSum[i] + nums[i];
+        }
+        TreeSet<Integer> indices = new TreeSet<>();
+        indices.add(-1);
+        indices.add(n);
+        for (int i = n - 1; i >= 0; i--) {
+            int index = removeQueries[i];
+            Integer left = indices.lower(index);
+            Integer right = indices.higher(index);
+            result[i] = prefixSum[right] - prefixSum[left + 1];
+            indices.add(index);
+        }
+        for (int i = 1; i < n; i++) {
+            result[i] = Math.max(result[i], result[i - 1]);
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        long[] res = new long[n];
+        Set<Integer> removed = new HashSet<>();
+        for (int i = n - 1; i >= 0; i--) {
+            removed.add(removeQueries[i]);
+            res[i] = helper(nums, removed);
+        }
+        return res;
+    }
+    private long helper(int[] nums, Set<Integer> removed) {
+        long res = 0;
+        long sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (!removed.contains(i)) {
+                sum += nums[i];
+                res = Math.max(res, sum);
+            } else {
+                sum = 0;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        long[] ans = new long[n];
+        int[] idx = new int[n];
+        for (int i = 0; i < n; i++) {
+            idx[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            idx[removeQueries[i]] = -1;
+        }
+        long sum = 0;
+        long max = 0;
+        int cur = 0;
+        for (int i = 0; i < n; i++) {
+            if (idx[i] == -1) {
+                ans[cur++] = max;
+                sum = 0;
+                max = 0;
+            } else {
+                sum += nums[i];
+                max = Math.max(max, sum);
+                if (sum < 0) {
+                    sum = 0;
+                }
+            }
+        }
+        ans[cur] = max;
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] removed = new int[n];
+        for (int i = 0; i < n; i++) {
+            removed[removeQueries[i]] = 1;
+        }
+        long[] res = new long[n];
+        long sum = 0;
+        long max = 0;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (removed[i] == 0) {
+                sum += nums[i];
+                max = Math.max(max, sum);
+            } else {
+                count++;
+                res[n - count] = max;
+                sum = 0;
+                max = 0;
+            }
+        }
+        count++;
+        res[n - count] = max;
+        for (int i = n - count - 1; i >= 0; i--) {
+            res[i] = res[i + 1];
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        long[] ans = new long[n];
+        int[] segs = new int[n];
+        for (int i = 0; i < n; i++) {
+            segs[i] = i;
+        }
+        long[] segSum = new long[n];
+        for (int i = 0; i < n; i++) {
+            segSum[i] = nums[i];
+        }
+        long max = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            int x = removeQueries[i];
+            max = Math.max(max, segSum[find(segs, x)]);
+            ans[i] = max;
+            if (x > 0 && find(segs, x - 1) == find(segs, x)) {
+                union(segs, x - 1, x);
+                segSum[find(segs, x)] = segSum[find(segs, x - 1)] + segSum[find(segs, x)];
+            }
+            if (x < n - 1 && find(segs, x + 1) == find(segs, x)) {
+                union(segs, x, x + 1);
+                segSum[find(segs, x)] = segSum[find(segs, x + 1)] + segSum[find(segs, x)];
+            }
+        }
+        return ans;
+    }
+
+    private int find(int[] segs, int x) {
+        if (segs[x] != x) {
+            segs[x] = find(segs, segs[x]);
+        }
+        return segs[x];
+
+=======
+
+        int n = nums.length;
+        int[] removed = new int[n];
+        for(int i = 0; i < n; i++){
+            removed[removeQueries[i]] = i;
+        }
+        long[] ans = new long[n];
+        long max = 0;
+        long sum = 0;
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        treeSet.add(-1);
+        treeSet.add(n);
+        for(int i = n - 1; i >= 0; i--){
+            int index = removed[i];
+            Integer left = treeSet.lower(index);
+            Integer right = treeSet.higher(index);
+            if(left != null && right != null){
+                sum -= (long)(right - left - 1) * nums[index];
+            }
+            if(left != null){
+                sum += (long)(index - left - 1) * nums[index];
+            }
+            if(right != null){
+                sum += (long)(right - index - 1) * nums[index];
+            }
+            treeSet.add(index);
+            max = Math.max(max, sum);
+            ans[i] = max;
+        }
+        return ans;

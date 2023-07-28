@@ -1,0 +1,82 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> dp(n+1, vector<int>(101, 0));
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= 100; j++) {
+                dp[i][j] = dp[i-1][j];
+            }
+            dp[i][nums[i-1]]++;
+        }
+        vector<int> ans;
+        for (auto q : queries) {
+            int l = q[0], r = q[1];
+            int last = -1;
+            int minDiff = INT_MAX;
+            for (int i = 1; i <= 100; i++) {
+                if (dp[r+1][i] - dp[l][i] > 0) {
+                    if (last != -1) {
+                        minDiff = min(minDiff, i-last);
+                    }
+                    last = i;
+                }
+            }
+            if (minDiff == INT_MAX) {
+                minDiff = -1;
+            }
+            ans.push_back(minDiff);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> pos(101, vector<int>(n+1, 0));
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 1; j <= 100; ++j) {
+                pos[j][i+1] = pos[j][i] + (nums[i] == j);
+            }
+        }
+        for (auto& q : queries) {
+            int l = q[0], r = q[1];
+            int prev = -1, minDiff = INT_MAX;
+            for (int i = 1; i <= 100; ++i) {
+                if (pos[i][r+1] - pos[i][l] > 0) {
+                    if (prev != -1) {
+                        minDiff = min(minDiff, i - prev);
+                    }
+                    prev = i;
+                }
+            }
+            res.push_back(minDiff == INT_MAX ? -1 : minDiff);
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        for (auto q: queries) {
+            vector<int> a(101, 0);
+            for (int i = q[0]; i <= q[1]; i++) {
+                a[nums[i]]++;
+            }
+            int pre = -1;
+            int minv = INT_MAX;
+            for (int i = 0; i < 101; i++) {
+                if (a[i] > 0) {
+                    if (pre != -1) {
+                        minv = min(minv, i - pre);
+                    }
+                    pre = i;
+                }
+            }
+            if (minv == INT_MAX) {
+                ans.push_back(-1);
+            } else {
+                ans.push_back(minv);
+            }
+        }
+        return ans;

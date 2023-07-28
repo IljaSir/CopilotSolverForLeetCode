@@ -1,0 +1,220 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> v(n, 0);
+        v[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            v[i] = v[i-1] + nums[i];
+        }
+        int ans = nums[0];
+        int l = 0, r = 0;
+        set<int> s;
+        while (r < n) {
+            while (r < n && !s.count(nums[r])) {
+                s.insert(nums[r]);
+                r++;
+            }
+            ans = max(ans, v[r-1] - v[l] + nums[l]);
+            while (l < r && nums[l] != nums[r]) {
+                s.erase(nums[l]);
+                l++;
+            }
+            l++;
+            r++;
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int sum = 0;
+        unordered_set<int> s;
+        int j = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            while (s.count(nums[i])) {
+                sum -= nums[j];
+                s.erase(nums[j++]);
+            }
+            s.insert(nums[i]);
+            sum += nums[i];
+            res = max(res, sum);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int left = 0;
+        int right = 0;
+        int sum = 0;
+        int ans = 0;
+        unordered_set<int> s;
+        while (right < n) {
+            if (s.find(nums[right]) == s.end()) {
+                s.insert(nums[right]);
+                sum += nums[right];
+                right++;
+            } else {
+                s.erase(nums[left]);
+                sum -= nums[left];
+                left++;
+            }
+            ans = max(ans, sum);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int i = 0, j = 0, sum = 0, ans = 0;
+        unordered_map<int, int> mp;
+        while (j < n) {
+            mp[nums[j]]++;
+            sum += nums[j];
+            while (mp[nums[j]] > 1) {
+                mp[nums[i]]--;
+                sum -= nums[i];
+                i++;
+            }
+            ans = max(ans, sum);
+            j++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int l = 0, r = 0, sum = 0, res = 0;
+        unordered_set<int> s;
+        while (r < n) {
+            while (s.find(nums[r]) != s.end()) {
+                s.erase(nums[l]);
+                sum -= nums[l];
+                l++;
+            }
+            s.insert(nums[r]);
+            sum += nums[r];
+            res = max(res, sum);
+            r++;
+        }
+        return res;
+
+=======
+
+        int sum = 0;
+        int maxSum = 0;
+        unordered_set<int> set;
+        int i = 0;
+        int j = 0;
+        while (i < nums.size() && j < nums.size()) {
+            if (set.find(nums[j]) == set.end()) {
+                set.insert(nums[j]);
+                sum += nums[j];
+                j++;
+                maxSum = max(maxSum, sum);
+            } else {
+                set.erase(nums[i]);
+                sum -= nums[i];
+                i++;
+            }
+        }
+        return maxSum;
+
+=======
+
+        int result = 0;
+        int sum = 0;
+        unordered_set<int> set;
+        int i = 0;
+        int j = 0;
+        while (j < nums.size()) {
+            if (set.find(nums[j]) == set.end()) {
+                set.insert(nums[j]);
+                sum += nums[j];
+                result = max(result, sum);
+                j++;
+            } else {
+                sum -= nums[i];
+                set.erase(nums[i]);
+                i++;
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int sum = 0;
+        int i = 0;
+        int j = 0;
+        unordered_map<int, int> mp;
+        while (j < n) {
+            if (mp.find(nums[j]) == mp.end()) {
+                mp[nums[j]] = j;
+                sum += nums[j];
+                ans = max(ans, sum);
+                j++;
+            } else {
+                int k = mp[nums[j]];
+                while (i <= k) {
+                    sum -= nums[i];
+                    mp.erase(nums[i]);
+                    i++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int cur = 0;
+        int i = 0;
+        int j = 0;
+        unordered_set<int> s;
+        while (j < nums.size()) {
+            if (s.find(nums[j]) == s.end()) {
+                s.insert(nums[j]);
+                cur += nums[j];
+                res = max(res, cur);
+                j++;
+            } else {
+                while (nums[i] != nums[j]) {
+                    cur -= nums[i];
+                    s.erase(nums[i]);
+                    i++;
+                }
+                i++;
+                j++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n, 0);
+        int start = 0;
+        int end = 0;
+        int sum = 0;
+        int maxSum = 0;
+        unordered_map<int, int> m;
+        while(end < n) {
+            int num = nums[end];
+            if(m.find(num) != m.end()) {
+                int j = m[num];
+                while(start <= j) {
+                    sum -= nums[start];
+                    m.erase(nums[start]);
+                    start++;
+                }
+            }
+            m[num] = end;
+            sum += num;
+            maxSum = max(maxSum, sum);
+            end++;
+        }
+        return maxSum;

@@ -1,0 +1,72 @@
+Synthesizing 4/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut jobs = difficulty
+            .into_iter()
+            .zip(profit.into_iter())
+            .collect::<Vec<_>>();
+        jobs.sort_by(|a, b| a.0.cmp(&b.0));
+        let mut max = 0;
+        let mut max_profit = 0;
+        for i in 0..jobs.len() {
+            if jobs[i].1 > max_profit {
+                max_profit = jobs[i].1;
+            }
+            jobs[i].1 = max_profit;
+        }
+        let mut res = 0;
+        for w in worker {
+            if w >= jobs[jobs.len() - 1].0 {
+                res += jobs[jobs.len() - 1].1;
+            } else {
+                let mut l = 0;
+                let mut r = jobs.len() - 1;
+                while l < r {
+                    let mid = (l + r) / 2;
+                    if jobs[mid].0 > w {
+                        r = mid;
+                    } else {
+                        l = mid + 1;
+                    }
+                }
+                res += jobs[l - 1].1;
+            }
+        }
+        res
+
+=======
+
+        let mut jobs = difficulty.into_iter().zip(profit.into_iter()).collect::<Vec<_>>();
+        jobs.sort_by_key(|x| x.0);
+        let mut max = 0;
+        for (_, p) in jobs.iter_mut() {
+            if *p < max {
+                *p = max;
+            } else {
+                max = *p;
+            }
+        }
+        let mut res = 0;
+        for w in worker {
+            let mut l = 0;
+            let mut r = jobs.len();
+            while l < r {
+                let m = (l + r) / 2;
+                if jobs[m].0 <= w {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            if l > 0 {
+                res += jobs[l-1].1;
+            }
+        }
+        res

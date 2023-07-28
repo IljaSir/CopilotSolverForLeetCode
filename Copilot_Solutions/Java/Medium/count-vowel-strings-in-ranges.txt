@@ -1,0 +1,265 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int count = 0;
+            for (int j = queries[i][0]; j <= queries[i][1]; j++) {
+                if (isVowel(words[j])) {
+                    count++;
+                }
+            }
+            ans[i] = count;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int start = queries[i][0];
+            int end = queries[i][1];
+            int count = 0;
+            for (int j = start; j <= end; j++) {
+                if (words[j].charAt(0) == 'a' || words[j].charAt(0) == 'e' || words[j].charAt(0) == 'i' || words[j].charAt(0) == 'o' || words[j].charAt(0) == 'u') {
+                    if (words[j].charAt(words[j].length() - 1) == 'a' || words[j].charAt(words[j].length() - 1) == 'e' || words[j].charAt(words[j].length() - 1) == 'i' || words[j].charAt(words[j].length() - 1) == 'o' || words[j].charAt(words[j].length() - 1) == 'u') {
+                        count++;
+                    }
+                }
+            }
+            ans[i] = count;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] a = new int[words.length];
+        int[] e = new int[words.length];
+        int[] i = new int[words.length];
+        int[] o = new int[words.length];
+        int[] u = new int[words.length];
+        for (int j = 0; j < words.length; j++) {
+            for (int k = 0; k < words[j].length(); k++) {
+                char c = words[j].charAt(k);
+                if (c == 'a') {
+                    a[j]++;
+                } else if (c == 'e') {
+                    e[j]++;
+                } else if (c == 'i') {
+                    i[j]++;
+                } else if (c == 'o') {
+                    o[j]++;
+                } else if (c == 'u') {
+                    u[j]++;
+                }
+            }
+        }
+        for (int j = 0; j < queries.length; j++) {
+            int l = queries[j][0];
+            int r = queries[j][1];
+            int sum = 0;
+            for (int k = l; k <= r; k++) {
+                sum += a[k] + e[k] + i[k] + o[k] + u[k];
+            }
+            ans[j] = sum;
+        }
+        return ans;
+
+=======
+
+        int[][] dp = new int[words.length][5];
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < 5; j++) {
+                dp[i][j] = (i > 0 ? dp[i - 1][j] : 0) + (isVowel(words[i].charAt(0)) ? 1 : 0);
+            }
+        }
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int[] query = queries[i];
+            for (int j = 0; j < 5; j++) {
+                if (query[0] == 0) {
+                    ans[i] += dp[query[1]][j];
+                } else {
+                    ans[i] += dp[query[1]][j] - dp[query[0] - 1][j];
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[][] cnt = new int[words.length][5];
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                if (words[i].charAt(j) == 'a') {
+                    cnt[i][0]++;
+                } else if (words[i].charAt(j) == 'e') {
+                    cnt[i][1]++;
+                } else if (words[i].charAt(j) == 'i') {
+                    cnt[i][2]++;
+                } else if (words[i].charAt(j) == 'o') {
+                    cnt[i][3]++;
+                } else if (words[i].charAt(j) == 'u') {
+                    cnt[i][4]++;
+                }
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int l = queries[i][0];
+            int r = queries[i][1];
+            for (int j = l; j <= r; j++) {
+                ans[i] += cnt[j][0] * cnt[j][1] * cnt[j][2] * cnt[j][3] * cnt[j][4];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = words.length;
+        int m = queries.length;
+        int[] ans = new int[m];
+        int[][] dp = new int[n][5];
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = 1;
+            for (int j = 1; j < 5; j++) {
+                dp[i][j] = dp[i][j - 1];
+                if (words[i].charAt(0) == "aeiou".charAt(j)) {
+                    dp[i][j]++;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            int[] query = queries[i];
+            int l = query[0];
+            int r = query[1];
+            int cnt = 0;
+            for (int j = l; j <= r; j++) {
+                cnt += dp[j][4];
+            }
+            ans[i] = cnt;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[][] start = new int[words.length][5];
+        int[][] end = new int[words.length][5];
+        for (int i = 0; i < words.length; i++) {
+            char c = words[i].charAt(0);
+            if (c == 'a') {
+                start[i][0] = 1;
+            } else if (c == 'e') {
+                start[i][1] = 1;
+            } else if (c == 'i') {
+                start[i][2] = 1;
+            } else if (c == 'o') {
+                start[i][3] = 1;
+            } else if (c == 'u') {
+                start[i][4] = 1;
+            }
+            c = words[i].charAt(words[i].length() - 1);
+            if (c == 'a') {
+                end[i][0] = 1;
+            } else if (c == 'e') {
+                end[i][1] = 1;
+            } else if (c == 'i') {
+                end[i][2] = 1;
+            } else if (c == 'o') {
+                end[i][3] = 1;
+            } else if (c == 'u') {
+                end[i][4] = 1;
+            }
+        }
+        for (int i = 1; i < words.length; i++) {
+            for (int j = 0; j < 5; j++) {
+                start[i][j] += start[i - 1][j];
+                end[i][j] += end[i - 1][j];
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int l = q[0], r = q[1];
+            if (l == 0) {
+                for (int j = 0; j < 5; j++) {
+                    ans[i] += end[r][j];
+                }
+            } else {
+                for (int j = 0; j < 5; j++) {
+                    ans[i] += end[r][j] - end[l - 1][j] + start[l - 1][j];
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] vowelCount = new int[words.length];
+        for (int i = 0; i < words.length; i++) {
+            int count = 0;
+            for (int j = 0; j < words[i].length(); j++) {
+                if (isVowel(words[i].charAt(j))) {
+                    count++;
+                }
+            }
+            vowelCount[i] = count;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int count = 0;
+            for (int j = queries[i][0]; j <= queries[i][1]; j++) {
+                count += vowelCount[j];
+            }
+            ans[i] = count;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] vowels = new int[words.length];
+        for (int i = 0; i < words.length; i++) {
+            vowels[i] = 0;
+            for (int j = 0; j < words[i].length(); j++) {
+                char c = words[i].charAt(j);
+                if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                    vowels[i]++;
+                }
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int count = 0;
+            for (int j = queries[i][0]; j <= queries[i][1]; j++) {
+                if (vowels[j] == words[j].length()) {
+                    count++;
+                }
+            }
+            ans[i] = count;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[][] vowelStringCount = new int[words.length][5];
+        int[] vowels = new int[]{'a', 'e', 'i', 'o', 'u'};
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                for (int k = 0; k < vowels.length; k++) {
+                    if (words[i].charAt(j) == vowels[k]) {
+                        vowelStringCount[i][k]++;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            for (int j = queries[i][0]; j <= queries[i][1]; j++) {
+                for (int k = 0; k < vowelStringCount[j].length; k++) {
+                    ans[i] += vowelStringCount[j][k];
+                }
+            }
+        }
+        return ans;

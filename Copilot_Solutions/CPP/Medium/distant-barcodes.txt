@@ -1,0 +1,276 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        map<int, int> m;
+        for (int i = 0; i < barcodes.size(); i++) {
+            m[barcodes[i]]++;
+        }
+        vector<pair<int, int>> v;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            v.push_back(make_pair(it->second, it->first));
+        }
+        sort(v.begin(), v.end());
+        int i = 0;
+        int j = 0;
+        while (i < barcodes.size()) {
+            while (j < v.size() && v[j].first == 0) {
+                j++;
+            }
+            if (j >= v.size()) {
+                break;
+            }
+            barcodes[i] = v[j].second;
+            v[j].first--;
+            i += 2;
+        }
+        i = 1;
+        while (i < barcodes.size()) {
+            while (j < v.size() && v[j].first == 0) {
+                j++;
+            }
+            if (j >= v.size()) {
+                break;
+            }
+            barcodes[i] = v[j].second;
+            v[j].first--;
+            i += 2;
+        }
+        return barcodes;
+
+=======
+
+        unordered_map<int, int> m;
+        for (int i = 0; i < barcodes.size(); i++) {
+            m[barcodes[i]]++;
+        }
+        vector<pair<int, int>> v;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            v.push_back(make_pair(it->first, it->second));
+        }
+        sort(v.begin(), v.end(), [](pair<int, int> a, pair<int, int> b) { return a.second > b.second; });
+        vector<int> res;
+        int i = 0;
+        while (i < barcodes.size()) {
+            for (int j = 0; j < v.size(); j++) {
+                if (v[j].second == 0) continue;
+                res.push_back(v[j].first);
+                v[j].second--;
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<int, int> m;
+        for (auto i : barcodes) m[i]++;
+        priority_queue<pair<int, int>> pq;
+        for (auto i : m) pq.push({i.second, i.first});
+        vector<int> res;
+        while (pq.size() > 1) {
+            auto a = pq.top(); pq.pop();
+            auto b = pq.top(); pq.pop();
+            res.push_back(a.second); res.push_back(b.second);
+            if (--a.first) pq.push(a);
+            if (--b.first) pq.push(b);
+        }
+        if (pq.size()) res.push_back(pq.top().second);
+        return res;
+
+=======
+
+        int n = barcodes.size();
+        vector<int> res(n);
+        unordered_map<int, int> freq;
+        for (int i = 0; i < n; i++) {
+            freq[barcodes[i]]++;
+        }
+        vector<pair<int, int>> freqs;
+        for (auto it = freq.begin(); it != freq.end(); it++) {
+            freqs.push_back({it->second, it->first});
+        }
+        sort(freqs.begin(), freqs.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+            return a.first > b.first;
+        });
+        int i = 0;
+        for (auto f : freqs) {
+            int cnt = f.first;
+            int val = f.second;
+            while (cnt--) {
+                res[i] = val;
+                i += 2;
+                if (i >= n) {
+                    i = 1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = barcodes.size();
+        vector<int> ans(n);
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            cnt[barcodes[i]]++;
+        }
+        priority_queue<pair<int, int>> pq;
+        for (auto [k, v] : cnt) {
+            pq.push({v, k});
+        }
+        int pos = 0;
+        while (!pq.empty()) {
+            auto [cnt, num] = pq.top();
+            pq.pop();
+            for (int i = 0; i < cnt; ++i) {
+                ans[pos] = num;
+                pos += 2;
+                if (pos >= n) {
+                    pos = 1;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> count;
+        for (int i = 0; i < barcodes.size(); ++i) {
+            count[barcodes[i]]++;
+        }
+        vector<pair<int, int>> sorted;
+        for (auto it = count.begin(); it != count.end(); ++it) {
+            sorted.push_back(make_pair(it->first, it->second));
+        }
+        sort(sorted.begin(), sorted.end(), [](pair<int, int> a, pair<int, int> b) {
+            return a.second > b.second;
+        });
+        vector<int> result;
+        for (int i = 0; i < sorted.size(); ++i) {
+            result.push_back(sorted[i].first);
+            sorted[i].second--;
+        }
+        int i = 0;
+        while (i < sorted.size()) {
+            if (sorted[i].second == 0) {
+                i++;
+                continue;
+            }
+            for (int j = 0; j < result.size(); ++j) {
+                if (result[j] == sorted[i].first) {
+                    continue;
+                }
+                if (j + 1 < result.size() && result[j + 1] == sorted[i].first) {
+                    continue;
+                }
+                result.insert(result.begin() + j + 1, sorted[i].first);
+                sorted[i].second--;
+                break;
+            }
+        }
+        return result;
+
+=======
+
+        unordered_map<int, int> m;
+        for (int b: barcodes) m[b]++;
+        vector<pair<int, int>> v;
+        for (auto p: m) v.push_back(p);
+        sort(v.begin(), v.end(), [](pair<int, int> p1, pair<int, int> p2) {return p1.second > p2.second;});
+        vector<int> res(barcodes.size());
+        int i = 0;
+        for (auto p: v) {
+            for (int j = 0; j < p.second; j++) {
+                res[i] = p.first;
+                i += 2;
+                if (i >= res.size()) i = 1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = barcodes.size();
+        unordered_map<int, int> freq;
+        for (int i: barcodes) {
+            freq[i]++;
+        }
+        priority_queue<pair<int, int>> pq;
+        for (auto it = freq.begin(); it != freq.end(); it++) {
+            pq.push(make_pair(it->second, it->first));
+        }
+        vector<int> ans(n);
+        int i = 0;
+        while (!pq.empty()) {
+            pair<int, int> p1 = pq.top();
+            pq.pop();
+            ans[i] = p1.second;
+            i += 2;
+            if (i >= n) i = 1;
+            if (p1.first > 1) {
+                p1.first--;
+                pq.push(p1);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = barcodes.size();
+        vector<int> res(n);
+        unordered_map<int, int> m;
+        for (auto b: barcodes) {
+            m[b]++;
+        }
+        vector<pair<int, int>> v;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            v.push_back(make_pair(it->second, it->first));
+        }
+        sort(v.begin(), v.end(), [](pair<int, int> a, pair<int, int> b) {
+            return a.first > b.first;
+        });
+        int i = 0;
+        for (auto p: v) {
+            while (p.first--) {
+                res[i] = p.second;
+                i += 2;
+                if (i >= n) i = 1;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ret;
+        map<int, int> counts;
+        for (auto b : barcodes) {
+            counts[b]++;
+        }
+        auto cmp = [](pair<int, int> a, pair<int, int> b) {
+            return a.second < b.second;
+        };
+        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
+        for (auto c : counts) {
+            pq.push(c);
+        }
+        while (pq.size() >= 2) {
+            auto a = pq.top();
+            pq.pop();
+            auto b = pq.top();
+            pq.pop();
+            ret.push_back(a.first);
+            ret.push_back(b.first);
+            a.second--;
+            b.second--;
+            if (a.second > 0) {
+                pq.push(a);
+            }
+            if (b.second > 0) {
+                pq.push(b);
+            }
+        }
+        if (!pq.empty()) {
+            ret.push_back(pq.top().first);
+        }
+        return ret;

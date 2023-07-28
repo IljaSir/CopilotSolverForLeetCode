@@ -1,0 +1,342 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        for (int i = 0; i < n - 1; ++i) {
+            res += abs(nums[i] - nums[i + 1]);
+        }
+        return res;
+    }
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        int res = 0;
+        int sum = 0;
+        vector<int> nums = nums1;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < n; ++i) {
+            int diff = abs(nums1[i] - nums2[i]);
+            res = max(res, diff - abs(nums2[i] - *lower_bound(nums.begin(), nums.end(), nums2[i])));
+            sum = (sum + diff) % 1000000007;
+        }
+        return (sum - res) % 1000000007;
+
+=======
+
+        int n = nums.size();
+        int minVal = nums[0], maxVal = nums[0];
+        for (int i = 1; i < n; i++) {
+            minVal = min(minVal, nums[i]);
+            maxVal = max(maxVal, nums[i]);
+        }
+        int low = 0, high = maxVal - minVal;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (check(nums, mid)) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+    bool check(vector<int>& nums, int mid) {
+        int n = nums.size();
+        int maxVal = nums[0], minVal = nums[0];
+        for (int i = 1; i < n; i++) {
+            maxVal = max(maxVal, nums[i]);
+            minVal = min(minVal, nums[i]);
+            if (maxVal - minVal > mid) {
+                return false;
+            }
+        }
+        return true;
+    }
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int ans = INT_MAX;
+        for (int i = 0; i < 4; i++) {
+            ans = min(ans, nums[nums.size() - 4 + i] - nums[i]);
+        }
+        return ans;
+    }
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int ans = INT_MAX;
+        for (int i = 0; i < 4; i++) {
+            ans = min(ans, nums[nums.size() - 4 + i] - nums[i]);
+        }
+        return ans;
+    }
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int ans = INT_MAX;
+        for (int i = 0; i < 4; i++) {
+            ans = min(ans, nums[nums.size() - 4 + i] - nums[i]);
+        }
+        return
+
+=======
+
+        int n = nums.size();
+        int s = 0;
+        for (int i = 0; i < n-1; i++) {
+            s += abs(nums[i] - nums[i+1]);
+        }
+        return s;
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, INT_MAX);
+        vector<int> right(n, INT_MAX);
+        for(int i = 1; i < n; i++){
+            left[i] = min(left[i - 1], nums[i - 1]);
+            right[n - i - 1] = min(right[n - i], nums[n - i]);
+        }
+        int ans = INT_MAX;
+        for(int i = 1; i < n - 1; i++){
+            ans = min(ans, max(nums[i] - left[i], right[i] - nums[i]));
+        }
+        return ans;
+    }
+    int minDifference(vector<int>& nums) {
+        if(nums.size() <= 4) return 0;
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        int ans = INT_MAX;
+        for(int i = 0; i < 4; i++){
+            ans = min(ans, nums[n - 4 + i] - nums[i]);
+        }
+        return ans;
+    }
+    int minScore(vector<int>& nums) {
+        int n = nums.size();
+        if(n <= 4) return 0;
+        int sum = 0;
+        for(int i = 1; i < n; i++){
+            sum += abs(nums[i] - nums[i - 1]);
+        }
+        return sum - minDifference(nums) - minimizeSum(nums);
+
+=======
+
+        int n = nums.size();
+        int ans = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int sum = 0;
+                for (int k = 0; k < n; k++) {
+                    if (k == i || k == j) {
+                        sum += abs(nums[k] - nums[i]);
+                    } else {
+                        sum += abs(nums[k] - nums[j]);
+                    }
+                }
+                ans = min(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int res = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                int sum = 0;
+                for (int k = 0; k < n; k++) {
+                    if (k >= i && k <= j) {
+                        sum += abs(nums[i] - nums[k]);
+                    } else {
+                        sum += abs(nums[k] - nums[j]);
+                    }
+                }
+                res = min(res, sum);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n+1, INT_MAX);
+        dp[0] = INT_MIN;
+        for (int x : nums) {
+            auto it = upper_bound(dp.begin(), dp.end(), x);
+            int i = it - dp.begin();
+            if (x - dp[i-1] <= dp[i] - x) {
+                dp[i] = x;
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; ++i) {
+            if (dp[i] != INT_MAX) {
+                res = i;
+            }
+        }
+        return res;
+    }
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        int sum = 0;
+        vector<int> nums3 = nums1;
+        sort(nums3.begin(), nums3.end());
+        for (int i = 0; i < n; ++i) {
+            sum = (sum + abs(nums1[i] - nums2[i])) % 1000000007;
+        }
+        int res = sum;
+        for (int i = 0; i < n; ++i) {
+            int x = nums2[i];
+            int j = lower_bound(nums3.begin(), nums3.end(), x) - nums3.begin();
+            if (j < n) {
+                res = min(res, sum - abs(nums1[i] - nums2[i]) + abs(nums3[j] - nums2[i]));
+            }
+            if (j > 0) {
+                res = min(res, sum - abs(nums1[i] - nums2[i]) + abs(nums3[j-1] - nums2[i]));
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int low = nums[0];
+        int high = nums[n-1];
+        int sum = 0;
+        for(int i=0;i<n-1;i++) {
+            sum += abs(nums[i]-nums[i+1]);
+        }
+        int ans = sum;
+        for(int i=0;i<n-1;i++) {
+            int l = nums[i];
+            int h = nums[i+1];
+            int s = sum;
+            s -= abs(l-h);
+            s += abs(low-h);
+            s += abs(l-high);
+            ans = min(ans,s);
+            low = min(low,l);
+            high = max(high,h);
+        }
+        return ans;
+    }
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        int sum = 0;
+        for(int i=0;i<n;i++) {
+            sum += abs(nums1[i]-nums2[i]);
+        }
+        int ans = sum;
+        ans -= minimizeSum(nums1);
+        ans -= minimizeSum(nums2);
+        ans = (ans+2e9)%1000000007;
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        vector<int> dp(n, 0);
+        for (int i = 1; i < n; i++) {
+            dp[i] = max(dp[i-1], nums[i] - nums[i-1]);
+            res += dp[i];
+        }
+        return res;
+    }
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        vector<int> nums = nums1;
+        sort(nums.begin(), nums.end());
+        int res = 0;
+        int diff = 0;
+        for (int i = 0; i < n; i++) {
+            int tmp = abs(nums1[i] - nums2[i]);
+            res += tmp;
+            int left = 0;
+            int right = n-1;
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (nums[mid] < nums2[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            if (left > 0) {
+                diff = max(diff, tmp - abs(nums[left-1] - nums2[i]));
+            }
+            if (left < n-1) {
+                diff = max(diff, tmp - abs(nums[left+1] - nums2[i]));
+            }
+        }
+        return (res - diff) % 1000000007;
+
+=======
+
+        int n = nums.size();
+        int res = INT_MAX;
+        vector<int> dp(n, INT_MAX);
+        dp[0] = 0;
+        int pre = 0;
+        for (int i = 1; i < n; i++) {
+            int temp = dp[i - 1];
+            dp[i - 1] = pre;
+            pre = min(pre, temp);
+            for (int j = i - 2; j >= 0; j--) {
+                dp[j] = min(dp[j], abs(nums[i] - nums[j]));
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            res = min(res, dp[i]);
+        }
+        return res;
+    }
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        int res = INT_MAX;
+        res = min(res, nums[n - 1] - nums[3]);
+        res = min(res, nums[n - 2] - nums[2]);
+        res = min(res, nums[n - 3] - nums[1]);
+        res = min(res, nums[n - 4] - nums[0]);
+        return res;
+    }
+    int minDifference(vector<int>& nums) {
+        int n = nums.size();
+        if (n <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int res = INT_MAX;
+        int pre = nums[n - 4] - nums[0];
+        res = min(res, pre);
+        for (int i = 1; i < 4; i++) {
+            pre = min(pre, nums[n - 4 + i] - nums[i]);
+            res = min(res, pre);
+        }
+        return res;
+    }
+    int minDifference(vector<int>& nums) {
+        if (nums.size() <= 4) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        int res = INT_MAX;
+        res = min(res, nums[n - 1] - nums[3]);
+        res = min(res, nums[n - 2] - nums[2]);
+        res = min(res, nums[n - 3]

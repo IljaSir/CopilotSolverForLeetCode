@@ -1,0 +1,283 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.size();
+        vector<int> odd(n, -1), even(n, -1);
+        map<int, int> m;
+        m[arr[n - 1]] = n - 1;
+        odd[n - 1] = even[n - 1] = 1;
+        for (int i = n - 2; i >= 0; --i) {
+            auto it = m.lower_bound(arr[i]);
+            if (it != m.end()) {
+                odd[i] = even[it->second];
+            }
+            it = m.upper_bound(arr[i]);
+            if (it != m.begin()) {
+                even[i] = odd[(--it)->second];
+            }
+            m[arr[i]] = i;
+        }
+        return accumulate(odd.begin(), odd.end(), 0);
+
+=======
+
+        int n = arr.size();
+        vector<int> odd(n, -1);
+        vector<int> even(n, -1);
+        map<int, int> mp;
+        mp[arr[n-1]] = n-1;
+        odd[n-1] = even[n-1] = 1;
+        for(int i = n-2; i >= 0; i--) {
+            auto it = mp.lower_bound(arr[i]);
+            if(it != mp.end()) {
+                odd[i] = even[it->second];
+            }
+            it = mp.upper_bound(arr[i]);
+            if(it != mp.begin()) {
+                it--;
+                even[i] = odd[it->second];
+            }
+            mp[arr[i]] = i;
+        }
+        return accumulate(odd.begin(), odd.end(), 0);
+
+=======
+
+        int n = arr.size(), res = 1;
+        vector<int> next(n), prev(n);
+        stack<int> s;
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && arr[s.top()] <= arr[i]) s.pop();
+            next[i] = s.empty() ? n : s.top();
+            s.push(i);
+        }
+        while (!s.empty()) s.pop();
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && arr[s.top()] >= arr[i]) s.pop();
+            prev[i] = s.empty() ? n : s.top();
+            s.push(i);
+        }
+        vector<bool> higher(n), lower(n);
+        higher[n - 1] = lower[n - 1] = true;
+        for (int i = n - 2; i >= 0; --i) {
+            if (next[i] != n) higher[i] = lower[next[i]];
+            if (prev[i] != n) lower[i] = higher[prev[i]];
+            if (higher[i]) ++res;
+        }
+        return res;
+
+=======
+
+        int n = arr.size(), res = 1;
+        vector<int> next(n), prev(n);
+        map<int, int> m;
+        m[arr[n-1]] = n-1;
+        next[n-1] = prev[n-1] = -1;
+        for (int i = n-2; i >= 0; i--) {
+            auto it = m.lower_bound(arr[i]);
+            if (it != m.end()) next[i] = it->second;
+            else next[i] = -1;
+            if (it != m.begin()) prev[i] = prev(it)->second;
+            else prev[i] = -1;
+            m[arr[i]] = i;
+        }
+        vector<bool> odd(n), even(n);
+        odd[n-1] = even[n-1] = true;
+        for (int i = n-2; i >= 0; i--) {
+            if (next[i] != -1) odd[i] = even[next[i]];
+            if (prev[i] != -1) even[i] = odd[prev[i]];
+            if (odd[i]) res++;
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<int> odd(n);
+        vector<int> even(n);
+        map<int,int> m;
+        odd[n-1] = even[n-1] = 1;
+        m[arr[n-1]] = n-1;
+        int res = 1;
+        for(int i = n-2; i >= 0; i--){
+            auto odd_it = m.lower_bound(arr[i]);
+            auto even_it = m.upper_bound(arr[i]);
+            if(odd_it != m.end()){
+                odd[i] = even[odd_it->second];
+            }
+            if(even_it != m.begin()){
+                even[i] = odd[(--even_it)->second];
+            }
+            if(odd[i]){
+                res++;
+            }
+            m[arr[i]] = i;
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<int> next(n), prev(n);
+        map<int, int> m;
+        m[arr[n - 1]] = n - 1;
+        next[n - 1] = prev[n - 1] = n - 1;
+        for (int i = n - 2; i >= 0; i--) {
+            auto it = m.lower_bound(arr[i]);
+            if (it != m.end()) next[i] = it->second;
+            else next[i] = n;
+            if (it != m.begin()) prev[i] = prev(it->second);
+            else prev[i] = n;
+            m[arr[i]] = i;
+        }
+        vector<bool> odd(n), even(n);
+        odd[n - 1] = even[n - 1] = true;
+        int res = 1;
+        for (int i = n - 2; i >= 0; i--) {
+            if (next[i] != n) odd[i] = even[next[i]];
+            if (prev[i] != n) even[i] = odd[prev[i]];
+            if (odd[i]) res++;
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<int> nextOdd(n, -1), nextEven(n, -1);
+        vector<int> stack;
+        for (int i = 0; i < n; ++i) {
+            while (!stack.empty() && arr[stack.back()] < arr[i]) {
+                nextOdd[stack.back()] = i;
+                stack.pop_back();
+            }
+            stack.push_back(i);
+        }
+        stack.clear();
+        for (int i = 0; i < n; ++i) {
+            while (!stack.empty() && arr[stack.back()] > arr[i]) {
+                nextEven[stack.back()] = i;
+                stack.pop_back();
+            }
+            stack.push_back(i);
+        }
+        vector<bool> odd(n, false), even(n, false);
+        odd[n - 1] = even[n - 1] = true;
+        for (int i = n - 2; i >= 0; --i) {
+            if (nextOdd[i] != -1) {
+                odd[i] = even[nextOdd[i]];
+            }
+            if (nextEven[i] != -1) {
+                even[i] = odd[nextEven[i]];
+            }
+        }
+        return count(odd.begin(), odd.end(), true);
+
+=======
+
+        int n = arr.size();
+        vector<int> next(n, 0);
+        vector<int> odd(n, 0);
+        vector<int> even(n, 0);
+        map<int, int> mp;
+        mp[arr[n-1]] = n-1;
+        next[n-1] = n-1;
+        odd[n-1] = 1;
+        even[n-1] = 1;
+        for (int i = n - 2; i >= 0; i--) {
+            auto it = mp.lower_bound(arr[i]);
+            if (it != mp.end()) {
+                next[i] = it->second;
+            }
+            if (it != mp.begin()) {
+                it--;
+                even[i] = odd[it->second];
+            }
+            odd[i] = even[next[i]];
+            mp[arr[i]] = i;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res += odd[i];
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<int> next(n, n);
+        vector<int> prev(n, n);
+        stack<int> s;
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && arr[i] >= arr[s.top()]) {
+                s.pop();
+            }
+            if (!s.empty()) {
+                next[i] = s.top();
+            }
+            s.push(i);
+        }
+        while (!s.empty()) {
+            s.pop();
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && arr[i] <= arr[s.top()]) {
+                s.pop();
+            }
+            if (!s.empty()) {
+                prev[i] = s.top();
+            }
+            s.push(i);
+        }
+        vector<bool> odd(n, false);
+        vector<bool> even(n, false);
+        odd[n - 1] = true;
+        even[n - 1] = true;
+        for (int i = n - 2; i >= 0; i--) {
+            if (next[i] < n) {
+                odd[i] = even[next[i]];
+            }
+            if (prev[i] < n) {
+                even[i] = odd[prev[i]];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (odd[i]) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = arr.size();
+        if (n <= 1) {
+            return n;
+        }
+        vector<int> next(n);
+        vector<int> stack(n);
+        int top = -1;
+        auto cmp = [&](int i, int j) {
+            if (arr[i] != arr[j]) {
+                return arr[i] < arr[j];
+            }
+            return i < j;
+        };
+        for (int i = n - 1; i >= 0; --i) {
+            while (top > 0 && cmp(stack[top], i)) {
+                --top;
+            }
+            next[i] = top > 0 ? stack[top] : -1;
+            stack[++top] = i;
+        }
+        vector<bool> odd(n);
+        vector<bool> even(n);
+        odd[n - 1] = even[n - 1] = true;
+        for (int i = n - 2; i >= 0; --i) {
+            if (next[i] != -1) {
+                odd[i] = even[next[i]];
+                even[i] = odd[next[i]];
+            }
+        }
+        return accumulate(odd.begin(), odd.end(), 0);

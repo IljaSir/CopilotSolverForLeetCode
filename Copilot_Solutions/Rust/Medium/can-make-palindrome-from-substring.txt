@@ -1,0 +1,50 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![0; 26]; n + 1];
+        for i in 0..n {
+            for j in 0..26 {
+                dp[i + 1][j] = dp[i][j];
+            }
+            dp[i + 1][s[i] as usize - 'a' as usize] += 1;
+        }
+        let mut res = vec![];
+        for query in queries {
+            let (l, r, k) = (query[0] as usize, query[1] as usize, query[2] as usize);
+            let mut odd = 0;
+            for i in 0..26 {
+                if (dp[r + 1][i] - dp[l][i]) % 2 == 1 {
+                    odd += 1;
+                }
+            }
+            res.push(odd / 2 <= k);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        let mut v = vec![vec![0; 26]; s.len()+1];
+        for i in 0..s.len() {
+            v[i+1] = v[i].clone();
+            v[i+1][s.as_bytes()[i] as usize - 'a' as usize] += 1;
+        }
+        for q in queries {
+            let mut cnt = 0;
+            for i in 0..26 {
+                cnt += (v[q[1] as usize + 1][i] - v[q[0] as usize][i]) % 2;
+            }
+            ans.push(cnt / 2 <= q[2]);
+        }
+        ans

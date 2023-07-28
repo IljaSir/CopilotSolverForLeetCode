@@ -1,0 +1,226 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        unordered_set<string> dict(dictionary.begin(), dictionary.end());
+        vector<string> result;
+        for (const string& query : queries) {
+            if (dict.count(query)) {
+                result.push_back(query);
+                continue;
+            }
+            bool found = false;
+            for (int i = 0; i < query.size() && !found; ++i) {
+                for (char c = 'a'; c <= 'z' && !found; ++c) {
+                    if (c == query[i]) {
+                        continue;
+                    }
+                    string tmp = query;
+                    tmp[i] = c;
+                    if (dict.count(tmp)) {
+                        result.push_back(query);
+                        found = true;
+                    }
+                }
+            }
+            if (found) {
+                continue;
+            }
+            for (int i = 0; i < query.size() && !found; ++i) {
+                for (int j = i + 1; j < query.size() && !found; ++j) {
+                    for (char c1 = 'a'; c1 <= 'z' && !found; ++c1) {
+                        for (char c2 = 'a'; c2 <= 'z' && !found; ++c2) {
+                            if (c1 == query[i] && c2 == query[j]) {
+                                continue;
+                            }
+                            string tmp = query;
+                            tmp[i] = c1;
+                            tmp[j] = c2;
+                            if (dict.count(tmp)) {
+                                result.push_back(query);
+                                found = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        unordered_set<string> dict;
+        for (auto& word : dictionary) {
+            dict.insert(word);
+        }
+        vector<string> result;
+        for (auto& word : queries) {
+            if (dict.count(word)) {
+                result.push_back(word);
+                continue;
+            }
+            for (int i = 0; i < word.size(); ++i) {
+                char c = word[i];
+                for (int j = 0; j < 26; ++j) {
+                    word[i] = 'a' + j;
+                    if (dict.count(word)) {
+                        result.push_back(word);
+                        break;
+                    }
+                }
+                word[i] = c;
+            }
+        }
+        return result;
+
+=======
+
+        unordered_set<string> dict(dictionary.begin(), dictionary.end());
+        vector<string> res;
+        for (auto& word: queries) {
+            if (dict.count(word) > 0) {
+                res.push_back(word);
+                continue;
+            }
+            for (auto& w: dict) {
+                if (w.size() != word.size()) continue;
+                if (isOneEditAway(w, word)) {
+                    res.push_back(word);
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+    
+    bool isOneEditAway(string& w1, string& w2) {
+        int diff = 0;
+        for (int i = 0; i < w1.size(); i++) {
+            if (w1[i] != w2[i]) {
+                diff++;
+                if (diff > 1) return false;
+            }
+        }
+        return true;
+
+=======
+
+        vector<string> result;
+        for (auto& query : queries) {
+            for (auto& word : dictionary) {
+                if (query.size() == word.size()) {
+                    if (oneEdit(query, word)) {
+                        result.push_back(query);
+                        break;
+                    }
+                } else if (query.size() == word.size() + 1) {
+                    if (oneEdit(word, query)) {
+                        result.push_back(query);
+                        break;
+                    }
+                } else if (query.size() + 1 == word.size()) {
+                    if (oneEdit(query, word)) {
+                        result.push_back(query);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    bool oneEdit(string& s1, string& s2) {
+        int count = 0;
+        for (int i = 0, j = 0; i < s1.size() && j < s2.size(); ) {
+            if (s1[i] == s2[j]) {
+                i++;
+                j++;
+            } else {
+                count++;
+                if (count > 1) {
+                    return false;
+                }
+                if (s1.size() > s2.size()) {
+                    i++;
+                } else if (s1.size() < s2.size()) {
+                    j++;
+                } else {
+                    i++;
+                    j++;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        vector<string> result;
+        for (const string& query : queries) {
+            for (const string& dict : dictionary) {
+                if (query.size() == dict.size()) {
+                    if (oneEditWord(query, dict)) {
+                        result.push_back(query);
+                        break;
+                    }
+                } else if (query.size() == dict.size() + 1) {
+                    if (oneEditWord(dict, query)) {
+                        result.push_back(query);
+                        break;
+                    }
+                } else if (query.size() == dict.size() - 1) {
+                    if (oneEditWord(query, dict)) {
+                        result.push_back(query);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    bool oneEditWord(const string& s1, const string& s2) {
+        int count = 0;
+        for (int i = 0; i < s1.size(); i++) {
+            if (s1[i] != s2[i]) {
+                count++;
+                if (count > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        unordered_set<string> dict(dictionary.begin(), dictionary.end());
+        vector<string> res;
+        for (string& query : queries) {
+            if (dict.count(query) || findOneEdit(query, dict) || findTwoEdits(query, dict)) {
+                res.push_back(query);
+            }
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        for(string& q : queries) {
+            for(string& d : dictionary) {
+                if(q.size() == d.size()) {
+                    if(oneEdit(q, d)) {
+                        res.push_back(q);
+                        break;
+                    }
+                } else if(q.size() + 1 == d.size()) {
+                    if(oneInsert(q, d)) {
+                        res.push_back(q);
+                        break;
+                    }
+                } else if(q.size() - 1 == d.size()) {
+                    if(oneInsert(d, q)) {
+                        res.push_back(q);
+                        break;
+                    }
+                }
+            }
+        }
+        return res;

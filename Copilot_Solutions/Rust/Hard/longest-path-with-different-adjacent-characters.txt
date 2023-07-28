@@ -1,0 +1,45 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let n = parent.len();
+        let mut adj = vec![vec![]; n];
+        for i in 1..n {
+            adj[parent[i] as usize].push(i);
+        }
+        let mut dp = vec![0; n];
+        let mut ans = 0;
+        let mut dfs = |i: usize, c: u8| {
+            let mut mx1 = 0;
+            let mut mx2 = 0;
+            for &j in &adj[i] {
+                let (a, b) = dfs(j, s.as_bytes()[j]);
+                if a > mx1 {
+                    mx2 = mx1;
+                    mx1 = a;
+                } else if a > mx2 {
+                    mx2 = a;
+                }
+                if b > mx1 {
+                    mx2 = mx1;
+                    mx1 = b;
+                } else if b > mx2 {
+                    mx2 = b;
+                }
+            }
+            if s.as_bytes()[i] == c {
+                dp[i] = mx1 + 1;
+            } else {
+                dp[i] = mx2 + 1;
+            }
+            ans = ans.max(dp[i]);
+            (dp[i], mx1 + 1)
+        };
+        dfs(0, 0);
+        ans

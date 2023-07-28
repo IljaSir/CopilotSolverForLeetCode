@@ -1,0 +1,417 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (!map.containsKey(arr[i])) {
+                map.put(arr[i], new ArrayList<>());
+            }
+            map.get(arr[i]).add(i);
+        }
+        int[] dist = new int[arr.length];
+        Arrays.fill(dist, -1);
+        dist[0] = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            if (u == arr.length - 1) {
+                break;
+            }
+            if (u - 1 >= 0 && dist[u - 1] == -1) {
+                dist[u - 1] = dist[u] + 1;
+                queue.offer(u - 1);
+            }
+            if (u + 1 < arr.length && dist[u + 1] == -1) {
+                dist[u + 1] = dist[u] + 1;
+                queue.offer(u + 1);
+            }
+            for (int v : map.get(arr[u])) {
+                if (dist[v] == -1) {
+                    dist[v] = dist[u] + 1;
+                    queue.offer(v);
+                }
+            }
+            map.get(arr[u]).clear();
+        }
+        return dist[arr.length - 1];
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            List<Integer> list = map.getOrDefault(arr[i], new ArrayList<>());
+            list.add(i);
+            map.put(arr[i], list);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        boolean[] visited = new boolean[arr.length];
+        visited[0] = true;
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == arr.length - 1) {
+                    return step;
+                }
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    queue.add(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                if (cur + 1 < arr.length && !visited[cur + 1]) {
+                    queue.add(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                for (int next : map.get(arr[cur])) {
+                    if (!visited[next]) {
+                        queue.add(next);
+                        visited[next] = true;
+                    }
+                }
+                map.get(arr[cur]).clear();
+            }
+            step++;
+        }
+        return step;
+
+=======
+
+        int n = arr.length;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(arr[i], new ArrayList<>());
+            map.get(arr[i]).add(i);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] visited = new boolean[n];
+        q.offer(0);
+        visited[0] = true;
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.poll();
+                if (cur == n - 1) {
+                    return step;
+                }
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    q.offer(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                if (cur + 1 < n && !visited[cur + 1]) {
+                    q.offer(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                for (int next : map.get(arr[cur])) {
+                    if (!visited[next]) {
+                        q.offer(next);
+                        visited[next] = true;
+                    }
+                }
+                map.remove(arr[cur]);
+            }
+            step++;
+        }
+        return step;
+
+=======
+
+        int n = arr.length;
+        if (n <= 1) {
+            return 0;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(arr[i], new ArrayList<>());
+            map.get(arr[i]).add(i);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        visited[0] = true;
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == n - 1) {
+                    return step;
+                }
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    queue.add(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                if (cur + 1 < n && !visited[cur + 1]) {
+                    queue.add(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                List<Integer> list = map.get(arr[cur]);
+                for (int next : list) {
+                    if (!visited[next]) {
+                        queue.add(next);
+                        visited[next] = true;
+                    }
+                }
+                list.clear();
+            }
+            step++;
+        }
+        return step;
+
+=======
+
+        int n = arr.length;
+        if (n <= 1) {
+            return 0;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            List<Integer> list = map.getOrDefault(arr[i], new ArrayList<>());
+            list.add(i);
+            map.put(arr[i], list);
+        }
+        boolean[] visited = new boolean[n];
+        Deque<Integer> q = new ArrayDeque<>();
+        q.addLast(0);
+        visited[0] = true;
+        int steps = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int idx = q.removeFirst();
+                if (idx == n - 1) {
+                    return steps;
+                }
+                List<Integer> list = map.get(arr[idx]);
+                for (int j : list) {
+                    if (!visited[j]) {
+                        q.addLast(j);
+                        visited[j] = true;
+                    }
+                }
+                list.clear();
+                if (idx - 1 >= 0 && !visited[idx - 1]) {
+                    q.addLast(idx - 1);
+                    visited[idx - 1] = true;
+                }
+                if (idx + 1 < n && !visited[idx + 1]) {
+                    q.addLast(idx + 1);
+                    visited[idx + 1] = true;
+                }
+            }
+            steps++;
+        }
+        return steps;
+
+=======
+
+        int n = arr.length;
+        if (n <= 1) return 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+        visited[0] = true;
+        int steps = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.poll();
+                if (cur == n - 1) return steps;
+                if (cur + 1 < n && !visited[cur + 1]) {
+                    q.offer(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    q.offer(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                for (int next : map.getOrDefault(arr[cur], new ArrayList<>())) {
+                    if (!visited[next]) {
+                        q.offer(next);
+                        visited[next] = true;
+                    }
+                }
+                map.remove(arr[cur]);
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int n = arr.length;
+        if (n <= 1) {
+            return 0;
+        }
+        Map<Integer, List<Integer>> index = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int num = arr[i];
+            if (!index.containsKey(num)) {
+                index.put(num, new ArrayList<>());
+            }
+            index.get(num).add(i);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        visited[0] = true;
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                if (curr == n - 1) {
+                    return steps;
+                }
+                if (curr - 1 >= 0 && !visited[curr - 1]) {
+                    queue.offer(curr - 1);
+                    visited[curr - 1] = true;
+                }
+                if (curr + 1 < n && !visited[curr + 1]) {
+                    queue.offer(curr + 1);
+                    visited[curr + 1] = true;
+                }
+                int num = arr[curr];
+                for (int next : index.get(num)) {
+                    if (!visited[next]) {
+                        queue.offer(next);
+                        visited[next] = true;
+                    }
+                }
+                index.remove(num);
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int n = arr.length;
+        if (n == 1) {
+            return 0;
+        }
+        Map<Integer, List<Integer>> indexMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            indexMap.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        visited.add(0);
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == n - 1) {
+                    return step;
+                }
+                if (cur + 1 < n && !visited.contains(cur + 1)) {
+                    queue.add(cur + 1);
+                    visited.add(cur + 1);
+                }
+                if (cur - 1 >= 0 && !visited.contains(cur - 1)) {
+                    queue.add(cur - 1);
+                    visited.add(cur - 1);
+                }
+                if (indexMap.containsKey(arr[cur])) {
+                    for (int next : indexMap.get(arr[cur])) {
+                        if (!visited.contains(next)) {
+                            queue.add(next);
+                            visited.add(next);
+                        }
+                    }
+                    indexMap.remove(arr[cur]);
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = arr.length;
+        Map<Integer, List<Integer>> index = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            index.computeIfAbsent(arr[i], z -> new ArrayList<>()).add(i);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+        visited[0] = true;
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int u = q.poll();
+                if (u == n - 1) {
+                    return step;
+                }
+                List<Integer> nexts = index.get(arr[u]);
+                nexts.add(u - 1);
+                nexts.add(u + 1);
+                for (int v : nexts) {
+                    if (v >= 0 && v < n && !visited[v]) {
+                        q.offer(v);
+                        visited[v] = true;
+                    }
+                }
+                nexts.clear();
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = arr.length;
+        if (n <= 1) {
+            return 0;
+        }
+        // 1. build the graph
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+        // 2. bfs
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == n - 1) {
+                    return steps;
+                }
+                // 1. next index
+                if (cur + 1 < n && !visited[cur + 1]) {
+                    queue.offer(cur + 1);
+                    visited[cur + 1] = true;
+                }
+                // 2. prev index
+                if (cur - 1 >= 0 && !visited[cur - 1]) {
+                    queue.offer(cur - 1);
+                    visited[cur - 1] = true;
+                }
+                // 3. same value index
+                for (int next : graph.get(arr[cur])) {
+                    if (!visited[next]) {
+                        queue.offer(next);
+                        visited[next] = true;
+                    }
+                }
+                graph.get(arr[cur]).clear();
+            }
+            steps++;
+        }
+        return -1;

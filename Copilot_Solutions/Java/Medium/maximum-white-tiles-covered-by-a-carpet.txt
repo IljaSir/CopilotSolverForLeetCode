@@ -1,0 +1,276 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tiles.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = tiles[i][0];
+            right[i] = tiles[i][1];
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (i < n) {
+            if (left[i] <= right[j]) {
+                count++;
+                res = Math.max(res, count);
+                i++;
+            } else {
+                count--;
+                j++;
+            }
+        }
+        return res * carpetLen;
+
+=======
+
+        int n = tiles.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = tiles[i][0];
+            right[i] = tiles[i][1];
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        int cur = 0;
+        while (i < n) {
+            if (left[i] <= right[j]) {
+                cur++;
+                i++;
+            } else {
+                cur--;
+                j++;
+            }
+            if (cur > 0) {
+                res = Math.max(res, cur * carpetLen + right[j] - left[i - 1]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = tiles.length;
+        int[] start = new int[n];
+        int[] end = new int[n];
+        for (int i = 0; i < n; i++) {
+            start[i] = tiles[i][0];
+            end[i] = tiles[i][1];
+        }
+        Arrays.sort(start);
+        Arrays.sort(end);
+        int i = 0, j = 0;
+        int res = 0;
+        int count = 0;
+        while (i < n && j < n) {
+            if (start[i] < end[j]) {
+                count++;
+                res = Math.max(res, count);
+                i++;
+            } else {
+                count--;
+                j++;
+            }
+        }
+        return res + carpetLen - 1;
+
+=======
+
+        int n = tiles.length;
+        int[] starts = new int[n];
+        int[] ends = new int[n];
+        for (int i = 0; i < n; i++) {
+            starts[i] = tiles[i][0];
+            ends[i] = tiles[i][1];
+        }
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        int i = 0, j = 0, res = 0, cur = 0;
+        while (i < n) {
+            if (starts[i] <= ends[j] + 1) {
+                cur++;
+                res = Math.max(res, cur);
+                i++;
+            } else {
+                cur--;
+                j++;
+            }
+        }
+        return res + carpetLen - 1;
+
+=======
+
+        int n = tiles.length;
+        int[] starts = new int[n];
+        int[] ends = new int[n];
+        for (int i = 0; i < n; i++) {
+            starts[i] = tiles[i][0];
+            ends[i] = tiles[i][1];
+        }
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        int ans = 0;
+        int j = 0;
+        int cur = 0;
+        for (int i = 0; i < n; i++) {
+            while (j < n && ends[j] < starts[i] + carpetLen) {
+                cur++;
+                j++;
+            }
+            ans = Math.max(ans, cur);
+            cur--;
+        }
+        return ans;
+
+=======
+
+        int n = tiles.length;
+        int[][] events = new int[2 * n][2];
+        for (int i = 0; i < n; i++) {
+            events[2 * i][0] = tiles[i][0];
+            events[2 * i][1] = 1;
+            events[2 * i + 1][0] = tiles[i][1] - carpetLen + 1;
+            events[2 * i + 1][1] = -1;
+        }
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        int res = 0, count = 0;
+        for (int[] event : events) {
+            count += event[1];
+            res = Math.max(res, count);
+        }
+        return res;
+
+=======
+
+        int n = tiles.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for(int i=0; i<n; i++) {
+            left[i] = tiles[i][0];
+            right[i] = tiles[i][1];
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while(i<n) {
+            if(left[i] <= right[j]) {
+                count++;
+                res = Math.max(res, count);
+                i++;
+            } else {
+                count--;
+                j++;
+            }
+        }
+        return res + carpetLen - 1;
+
+=======
+
+        int[] count = new int[1000000001];
+        for (int[] tile : tiles) {
+            count[tile[0]]++;
+            count[tile[1] + 1]--;
+        }
+        for (int i = 1; i < count.length; i++) {
+            count[i] += count[i - 1];
+        }
+        int max = 0;
+        for (int i = 1; i < count.length; i++) {
+            max = Math.max(max, count[i]);
+        }
+        return max;
+
+=======
+
+        Arrays.sort(tiles, (a, b) -> a[0] - b[0]);
+        int n = tiles.length;
+        int[][] dp = new int[n][2];
+        dp[0][0] = tiles[0][1] - tiles[0][0] + 1;
+        dp[0][1] = tiles[0][1] - tiles[0][0] + 1;
+        for (int i = 1; i < n; i++) {
+            int[] tile = tiles[i];
+            int l = tile[0], r = tile[1];
+            dp[i][0] = r - l + 1;
+            dp[i][1] = r - l + 1;
+            int j = Arrays.binarySearch(tiles, new int[]{l - carpetLen, 0}, (a, b) -> a[0] - b[0]);
+            if (j >= 0) {
+                dp[i][0] = Math.max(dp[i][0], dp[j][0] + r - l + 1);
+            } else {
+                j = -j - 2;
+                if (j >= 0) {
+                    dp[i][0] = Math.max(dp[i][0], dp[j][1] + r - l + 1);
+                }
+            }
+            j = Arrays.binarySearch(tiles, new int[]{l - carpetLen + 1, 0}, (a, b) -> a[0] - b[0]);
+            if (j >= 0) {
+                dp[i][1] = Math.max(dp[i][1], dp[j][0] + r - l + 1);
+            } else {
+                j = -j - 2;
+                if (j >= 0) {
+                    dp[i][1] = Math.max(dp[i][1], dp[j][1] + r - l + 1);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i][0]);
+            ans = Math.max(ans, dp[i][1]);
+        }
+        return ans;
+
+=======
+
+        int n = tiles.length;
+        Arrays.sort(tiles, (a, b) -> Integer.compare(a[0], b[0]));
+        int[] dp = new int[n];
+        int[] pre = new int[n];
+        int[] next = new int[n];
+        int[] sum = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (i == 0 || tiles[i][0] > tiles[i - 1][1] + 1) {
+                pre[i] = tiles[i][0];
+            } else {
+                pre[i] = pre[i - 1];
+            }
+            if (i == n - 1 || tiles[i][1] < tiles[i + 1][0] - 1) {
+                next[i] = tiles[i][1];
+            } else {
+                next[i] = next[i + 1];
+            }
+            sum[i] = next[i] - pre[i] + 1;
+            ans = Math.max(ans, sum[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (i == 0 || tiles[i][0] > tiles[i - 1][1] + 1) {
+                dp[i] = sum[i];
+            } else {
+                dp[i] = sum[i] + dp[i - 1];
+            }
+            if (i == n - 1 || tiles[i][1] < tiles[i + 1][0] - 1) {
+                int j = i;
+                while (j >= 0 && tiles[i][0] - tiles[j][0] + 1 <= carpetLen) {
+                    int cur = sum[i];
+                    if (j > 0) {
+                        cur += dp[j - 1];
+                    }
+                    if (i < n - 1 && tiles[i][1] < tiles[i + 1][0] - 1) {
+                        cur += sum[i + 1];
+                    }
+                    ans = Math.max(ans, cur);
+                    j--;
+                }
+            }
+        }
+        return ans;

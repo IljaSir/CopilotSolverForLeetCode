@@ -1,0 +1,369 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        queue.add(s1);
+        visited.add(s1);
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String cur = queue.poll();
+                if (cur.equals(s2)) {
+                    return steps;
+                }
+                int j = 0;
+                while (j < cur.length() && cur.charAt(j) == s2.charAt(j)) {
+                    j++;
+                }
+                for (int k = j + 1; k < cur.length(); k++) {
+                    if (cur.charAt(k) == s2.charAt(k) || cur.charAt(k) != s2.charAt(j)) {
+                        continue;
+                    }
+                    String next = swap(cur, j, k);
+                    if (visited.add(next)) {
+                        queue.add(next);
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        if (s1.equals(s2)) {
+            return 0;
+        }
+        int n = s1.length();
+        int[] count = new int[6];
+        for (int i = 0; i < n; i++) {
+            count[s1.charAt(i) - 'a']++;
+            count[s2.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 6; i++) {
+            if (count[i] != 0) {
+                return -1;
+            }
+        }
+        Queue<String> q = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        q.offer(s1);
+        visited.add(s1);
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                String cur = q.poll();
+                if (cur.equals(s2)) {
+                    return step;
+                }
+                int j = 0;
+                while (j < n && cur.charAt(j) == s2.charAt(j)) {
+                    j++;
+                }
+                for (int k = j + 1; k < n; k++) {
+                    if (cur.charAt(k) == s2.charAt(k) || cur.charAt(k) != s2.charAt(j)) {
+                        continue;
+                    }
+                    String next = swap(cur, j, k);
+                    if (!visited.contains(next)) {
+                        q.offer(next);
+                        visited.add(next);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        if (s1.equals(s2)) {
+            return 0;
+        }
+        int n = s1.length();
+        int[] pos = new int[26];
+        for (int i = 0; i < n; i++) {
+            pos[s1.charAt(i) - 'a'] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                int j = pos[s2.charAt(i) - 'a'];
+                char[] ch = s1.toCharArray();
+                char temp = ch[i];
+                ch[i] = ch[j];
+                ch[j] = temp;
+                pos[s1.charAt(i) - 'a'] = j;
+                pos[s2.charAt(i) - 'a'] = i;
+                s1 = String.valueOf(ch);
+                break;
+            }
+        }
+        return 1 + kSimilarity(s1, s2);
+
+=======
+
+        int N = s1.length();
+        int[][] dp = new int[N][N];
+        for (int[] row: dp)
+            Arrays.fill(row, N);
+        for (int i = 0; i < N; ++i) {
+            if (s1.charAt(i) == s2.charAt(i)) {
+                dp[i][i] = 0;
+                continue;
+            }
+            for (int j = i+1; j < N; ++j) {
+                if (s1.charAt(i) == s2.charAt(j) && s1.charAt(j) == s2.charAt(i)) {
+                    dp[i][j] = dp[j][i] = 1;
+                }
+            }
+        }
+
+        for (int k = 2; k < N; ++k) {
+            for (int i = 0; i < N; ++i) {
+                for (int j = i+1; j < N; ++j) {
+                    if (dp[i][j] > k) continue;
+                    for (int m = i+1; m < N; ++m) {
+                        if (s1.charAt(m) == s2.charAt(j)) {
+                            dp[i][j] = Math.min(dp[i][j], dp[m][j] + (m > i+1 ? 1 : 0));
+                        }
+                    }
+                }
+            }
+        }
+
+        return dp[0][N-1];
+
+=======
+
+        int n = s1.length();
+        int[] p = new int[n];
+        for (int i = 0; i < n; i++) {
+            p[i] = i;
+        }
+        int ans = 0;
+        while (!s1.equals(s2)) {
+            int i = 0;
+            while (s1.charAt(i) == s2.charAt(i)) {
+                i++;
+            }
+            int j = i + 1;
+            while (s1.charAt(j) != s2.charAt(i)) {
+                j++;
+            }
+            char[] chars = s1.toCharArray();
+            char tmp = chars[i];
+            chars[i] = chars[j];
+            chars[j] = tmp;
+            s1 = String.valueOf(chars);
+            ans++;
+        }
+        return ans;
+
+=======
+
+        if(s1.equals(s2)) return 0;
+        Queue<String> q = new LinkedList<>();
+        q.offer(s1);
+        int step = 0;
+        Set<String> visited = new HashSet<>();
+        visited.add(s1);
+        while(!q.isEmpty()) {
+            int size = q.size();
+            for(int i = 0; i < size; i++) {
+                String cur = q.poll();
+                int j = 0;
+                while(cur.charAt(j) == s2.charAt(j)) j++;
+                for(int k = j + 1; k < cur.length(); k++) {
+                    if(cur.charAt(k) == s2.charAt(k) || cur.charAt(k) != s2.charAt(j)) continue;
+                    String next = swap(cur, j, k);
+                    if(next.equals(s2)) return step + 1;
+                    if(visited.add(next)) q.offer(next);
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        if (s1.equals(s2)) {
+            return 0;
+        }
+        int n = s1.length();
+        int[] s1Array = new int[n];
+        int[] s2Array = new int[n];
+        for (int i = 0; i < n; i++) {
+            s1Array[i] = s1.charAt(i) - 'a';
+            s2Array[i] = s2.charAt(i) - 'a';
+        }
+        int[] count = new int[6];
+        for (int i = 0; i < n; i++) {
+            count[s1Array[i]]++;
+            count[s2Array[i]]--;
+        }
+        for (int i = 0; i < 6; i++) {
+            if (count[i] != 0) {
+                return -1;
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(s1Array);
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                if (Arrays.equals(cur, s2Array)) {
+                    return step;
+                }
+                int j = 0;
+                while (cur[j] == s2Array[j]) {
+                    j++;
+                }
+                for (int k = j + 1; k < n; k++) {
+                    if (cur[k] == s2Array[k] || cur[k] != s2Array[j]) {
+                        continue;
+                    }
+                    swap(cur, j, k);
+                    queue.offer(cur.clone());
+                    swap(cur, j, k);
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = s1.length();
+        int[] p = new int[n];
+        for (int i = 0; i < n; i++) {
+            p[i] = i;
+        }
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (s1.charAt(i) == s2.charAt(j) && s1.charAt(j) == s2.charAt(i)) {
+                    dist[i][j] = 1;
+                    dist[j][i] = 1;
+                }
+            }
+        }
+        int[] d = new int[1 << n];
+        Arrays.fill(d, Integer.MAX_VALUE);
+        d[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int[] q = p.clone();
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    q[j] = find(q, j);
+                }
+            }
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 0) {
+                    for (int k = j + 1; k < n; k++) {
+                        if (((i >> k) & 1) == 0 && dist[j][k] == 1) {
+                            int nj = find(q, j);
+                            int nk = find(q, k);
+                            if (nj != nk) {
+                                d[i | (1 << j) | (1 << k)] = Math.min(d[i | (1 << j) | (1 << k)], d[i] + 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return d[(1 << n) - 1];
+    }
+    
+    int find(int[] p, int x) {
+        if (p[x] != x) {
+            p[x] = find(p, p[x]);
+        }
+        return p[x];
+
+=======
+
+        if(s1.equals(s2)) return 0;
+        int n = s1.length();
+        int[] A = new int[n];
+        int[] B = new int[n];
+        int l = 0;
+        for(int i=0;i<n;i++){
+            if(s1.charAt(i) != s2.charAt(i)){
+                A[l] = s1.charAt(i) - 'a';
+                B[l] = s2.charAt(i) - 'a';
+                l++;
+            }
+        }
+        int[][] dp = new int[l][1<<l];
+        for(int[] d : dp){
+            Arrays.fill(d, 10000);
+        }
+        for(int i=0;i<l;i++){
+            dp[i][1<<i] = 1;
+        }
+        for(int i=0;i<l;i++){
+            for(int j=0;j<(1<<l);j++){
+                for(int k=0;k<l;k++){
+                    if((j & (1<<k)) == 0){
+                        if(A[i] == A[k] || A[i] == B[k]){
+                            dp[k][j | (1<<k)] = Math.min(dp[k][j | (1<<k)], dp[i][j] + 1);
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 10000;
+        for(int i=0;i<l;i++){
+            ans = Math.min(ans, dp[i][(1<<l)-1]);
+        }
+        return ans;
+
+=======
+
+        int n = s1.length();
+        // if (n == 0) return 0;
+        // if (s1.equals(s2)) return 0;
+        // int res = 0;
+        // for (int i = 0; i < n; i++) {
+        //     if (s1.charAt(i) != s2.charAt(i)) {
+        //         for (int j = i + 1; j < n; j++) {
+        //             if (s1.charAt(j) == s2.charAt(i)) {
+        //                 s1 = swap(s1, i, j);
+        //                 res++;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
+        // return res;
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.add(s1);
+        visited.add(s1);
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String cur = queue.poll();
+                if (cur.equals(s2)) return res;
+                int k = 0;
+                while (cur.charAt(k) == s2.charAt(k)) k++;
+                for (int j = k + 1; j < n; j++) {
+                    if (cur.charAt(j) == s2.charAt(k) && cur.charAt(j) != s2.charAt(j)) {
+                        String next = swap(cur, k, j);
+                        if (!visited.contains(next)) {
+                            queue.add(next);
+                            visited.add(next);
+                        }
+                    }
+                }
+            }
+            res++;
+        }
+        return res;

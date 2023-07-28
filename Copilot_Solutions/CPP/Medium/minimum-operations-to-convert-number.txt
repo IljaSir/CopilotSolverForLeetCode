@@ -1,0 +1,240 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_set<int> visited;
+        queue<int> q;
+        q.push(start);
+        visited.insert(start);
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int cur = q.front();
+                q.pop();
+                if (cur == goal) return step;
+                for (int num : nums) {
+                    int next = cur + num;
+                    if (next <= 1000 && !visited.count(next)) {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                    next = cur - num;
+                    if (next >= 0 && !visited.count(next)) {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                    next = cur ^ num;
+                    if (next >= 0 && !visited.count(next)) {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(1 << n, INT_MAX);
+        dp[0] = 0;
+        for (int mask = 1; mask < (1 << n); ++mask) {
+            int sum = start;
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    sum += nums[i];
+                }
+            }
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    dp[mask] = min(dp[mask], dp[mask ^ (1 << i)] + abs(sum - nums[i] - goal));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(1001, -1);
+        dp[start] = 0;
+        for (int i = 0; i < n; ++i) {
+            vector<int> dp2(1001, -1);
+            for (int j = 0; j < 1001; ++j) {
+                if (dp[j] >= 0) {
+                    if (j + nums[i] <= 1000) {
+                        dp2[j + nums[i]] = max(dp2[j + nums[i]], dp[j] + 1);
+                    }
+                    if (j - nums[i] >= 0) {
+                        dp2[j - nums[i]] = max(dp2[j - nums[i]], dp[j] + 1);
+                    }
+                    dp2[j ^ nums[i]] = max(dp2[j ^ nums[i]], dp[j] + 1);
+                }
+            }
+            dp = dp2;
+        }
+        return dp[goal];
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n+1, 0);
+        for(int i=0; i<n; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        int ans = 0;
+        if((start+sum[n])%2 != goal%2) return -1;
+        if(start == goal) return 0;
+        return dfs(nums, sum, start, goal, 0);
+    }
+    int dfs(vector<int>& nums, vector<int>& sum, int start, int goal, int idx) {
+        int n = nums.size();
+        if(start == goal) return 0;
+        if(idx == n) return -1;
+        int ans = -1;
+        int a = dfs(nums, sum, start+nums[idx], goal, idx+1);
+        if(a != -1) {
+            ans = a+1;
+        }
+        int b = dfs(nums, sum, start-nums[idx], goal, idx+1);
+        if(b != -1) {
+            if(ans == -1) ans = b+1;
+            else ans = min(ans, b+1);
+        }
+        int c = dfs(nums, sum, start^nums[idx], goal, idx+1);
+        if(c != -1) {
+            if(ans == -1) ans = c+1;
+            else ans = min(ans, c+1);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        if (n == 0) return 0;
+        unordered_set<int> st;
+        st.insert(start);
+        for (int i = 0; i < n; i++) {
+            unordered_set<int> st2;
+            for (auto x : st) {
+                st2.insert(x + nums[i]);
+                st2.insert(x - nums[i]);
+                st2.insert(x ^ nums[i]);
+            }
+            st = st2;
+        }
+        int ans = INT_MAX;
+        for (auto x : st) ans = min(ans, abs(x - goal));
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int sum = start;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        int diff = abs(goal - sum);
+        if (diff % 2 == 1) {
+            return -1;
+        }
+        int target = diff / 2;
+        vector<int> dp(target + 1, 0);
+        for (int i = 1; i <= target; i++) {
+            dp[i] = INT_MAX;
+            for (int j = 0; j < n; j++) {
+                if (i >= nums[j]) {
+                    dp[i] = min(dp[i], dp[i - nums[j]] + 1);
+                }
+            }
+        }
+        return dp[target];
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = start ^ nums[i];
+            int y = goal ^ nums[i];
+            int cnt = 0;
+            while (x) {
+                if (x % 2 != y % 2) {
+                    cnt++;
+                }
+                x /= 2;
+                y /= 2;
+            }
+            ans += cnt;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        if (n == 0) return 0;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (start < goal) {
+                if (start + nums[i] > goal) {
+                    ans += (goal - start) / nums[i];
+                    start += (goal - start) / nums[i] * nums[i];
+                }
+            } else {
+                if (start - nums[i] < goal) {
+                    ans += (start - goal) / nums[i];
+                    start -= (start - goal) / nums[i] * nums[i];
+                }
+            }
+            if (start == goal) break;
+        }
+        if (start == goal) return ans;
+        return -1;
+
+=======
+
+        int n = nums.size();
+        int i = 0;
+        int j = 0;
+        int sum = start;
+        int res = 0;
+        while (i < n && j < n) {
+            sum = sum ^ nums[i];
+            if (sum == goal) {
+                res++;
+                i++;
+                j++;
+                sum = start;
+            } else if (sum > goal) {
+                sum = sum ^ nums[j];
+                j++;
+            } else {
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        if (n == 0) return 0;
+        int res = 0;
+        for (auto a: nums) {
+            if (start > goal) {
+                if (start - a >= goal) {
+                    start -= a;
+                    res++;
+                }
+            } else if (start < goal) {
+                if (start + a <= goal) {
+                    start += a;
+                    res++;
+                }
+            } else {
+                break;
+            }
+        }
+        if (start == goal) return res;
+        return -1;

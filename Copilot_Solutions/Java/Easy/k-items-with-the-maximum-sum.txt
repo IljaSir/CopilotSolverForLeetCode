@@ -1,0 +1,184 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int[][][] dp = new int[numOnes + 1][numZeros + 1][numNegOnes + 1];
+        for (int i = 0; i <= numOnes; i++) {
+            for (int j = 0; j <= numZeros; j++) {
+                for (int l = 0; l <= numNegOnes; l++) {
+                    for (int m = 0; m <= k; m++) {
+                        if (m == 0) {
+                            dp[i][j][l] = 0;
+                            continue;
+                        }
+                        int max = dp[i][j][l];
+                        if (i > 0) {
+                            max = Math.max(max, dp[i - 1][j][l] + 1);
+                        }
+                        if (j > 0) {
+                            max = Math.max(max, dp[i][j - 1][l]);
+                        }
+                        if (l > 0) {
+                            max = Math.max(max, dp[i][j][l - 1] - 1);
+                        }
+                        dp[i][j][l] = max;
+                    }
+                }
+            }
+        }
+        return dp[numOnes][numZeros][numNegOnes];
+
+=======
+
+        int[] nums = new int[numOnes + numZeros + numNegOnes];
+        for (int i = 0; i < numOnes; i++) {
+            nums[i] = 1;
+        }
+        for (int i = numOnes; i < numOnes + numZeros; i++) {
+            nums[i] = 0;
+        }
+        for (int i = numOnes + numZeros; i < numOnes + numZeros + numNegOnes; i++) {
+            nums[i] = -1;
+        }
+        Arrays.sort(nums);
+        int sum = 0;
+        for (int i = nums.length - 1; i >= nums.length - k; i--) {
+            sum += nums[i];
+        }
+        return sum;
+
+=======
+
+        int[][][] dp = new int[numOnes+1][numZeros+1][numNegOnes+1];
+        for (int i = 0; i <= numOnes; i++) {
+            for (int j = 0; j <= numZeros; j++) {
+                for (int m = 0; m <= numNegOnes; m++) {
+                    dp[i][j][m] = Math.max(i, Math.max(j, m));
+                }
+            }
+        }
+        for (int i = 0; i <= numOnes; i++) {
+            for (int j = 0; j <= numZeros; j++) {
+                for (int m = 0; m <= numNegOnes; m++) {
+                    if (i > 0) dp[i][j][m] = Math.max(dp[i][j][m], dp[i-1][j][m]+1);
+                    if (j > 0) dp[i][j][m] = Math.max(dp[i][j][m], dp[i][j-1][m]);
+                    if (m > 0) dp[i][j][m] = Math.max(dp[i][j][m], dp[i][j][m-1]-1);
+                }
+            }
+        }
+        return dp[numOnes][numZeros][numNegOnes];
+
+=======
+
+        int[] dp = new int[k + 1];
+        for (int i = 1; i <= numOnes; i++) {
+            for (int j = Math.min(i, k); j >= 1; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] + 1);
+            }
+        }
+        for (int i = 1; i <= numZeros; i++) {
+            for (int j = Math.min(numOnes + i, k); j >= 1; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1]);
+            }
+        }
+        for (int i = 1; i <= numNegOnes; i++) {
+            for (int j = Math.min(numOnes + numZeros + i, k); j >= 1; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] - 1);
+            }
+        }
+        return dp[k];
+
+=======
+
+        int[] dp = new int[k + 1];
+        for (int i = 1; i <= numOnes; i++) {
+            for (int j = Math.min(k, i); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] + 1);
+            }
+        }
+        for (int i = 1; i <= numZeros; i++) {
+            for (int j = Math.min(k, numOnes + i); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1]);
+            }
+        }
+        for (int i = 1; i <= numNegOnes; i++) {
+            for (int j = Math.min(k, numOnes + numZeros + i); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] - 1);
+            }
+        }
+        return dp[k];
+    }
+}
+
+=======
+
+        int[] dp = new int[k + 1];
+        for (int i = 0; i < k; i++) {
+            dp[i] = Integer.MIN_VALUE;
+        }
+        for (int i = 0; i < numOnes; i++) {
+            for (int j = Math.min(k, i + 1); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] + 1);
+            }
+        }
+        for (int i = 0; i < numZeros; i++) {
+            for (int j = Math.min(k, i + 1); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1]);
+            }
+        }
+        for (int i = 0; i < numNegOnes; i++) {
+            for (int j = Math.min(k, i + 1); j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j - 1] - 1);
+            }
+        }
+        return dp[k];
+
+=======
+
+        int[] dp = new int[k + 1];
+        for (int i = 1; i <= k; i++) {
+            int max = Integer.MIN_VALUE;
+            if (i <= numOnes) {
+                max = Math.max(max, dp[i - 1] + 1);
+            }
+            if (i <= numZeros) {
+                max = Math.max(max, dp[i - 1]);
+            }
+            if (i <= numNegOnes) {
+                max = Math.max(max, dp[i - 1] - 1);
+            }
+            dp[i] = max;
+        }
+        return dp[k];
+
+=======
+
+        int[] nums = new int[]{numOnes, numZeros, numNegOnes};
+        int[] values = new int[]{1, 0, -1};
+        int[][] dp = new int[nums.length][k + 1];
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 1; j <= k; j++) {
+                if (i == 0) {
+                    dp[i][j] = Math.min(nums[i], j) * values[i];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - 1] + values[i]);
+                }
+            }
+        }
+        return dp[nums.length - 1][k];
+
+=======
+
+        int[] nums = new int[]{numOnes, numZeros, numNegOnes};
+        int[] values = new int[]{1, 0, -1};
+        int[][] dp = new int[4][51];
+        for(int i = 1; i <= 3; i++) {
+            for(int j = 1; j <= 50; j++) {
+                if (j < nums[i - 1]) {
+                    dp[i][j] = dp[i - 1][j];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - nums[i - 1]] + values[i - 1] * nums[i - 1]);
+                }
+            }
+        }
+        return dp[3][k];

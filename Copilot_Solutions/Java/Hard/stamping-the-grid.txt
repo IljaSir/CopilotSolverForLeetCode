@@ -1,0 +1,277 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] stamp = new int[stampHeight][stampWidth];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i < stampHeight && j < stampWidth) {
+                    stamp[i][j] = grid[i][j];
+                }
+                grid[i][j] = 1;
+            }
+        }
+        boolean flag = true;
+        while (flag) {
+            flag = false;
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (grid[i][j] == 1) {
+                        if (i + stampHeight <= m && j + stampWidth <= n) {
+                            if (isMatched(grid, i, j, stamp)) {
+                                flag = true;
+                                for (int k = 0; k < stampHeight; k++) {
+                                    for (int l = 0; l < stampWidth; l++) {
+                                        grid[i + k][j + l] = stamp[k][l];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isMatched(int[][] grid, int i, int j, int[][] stamp) {
+        int m = stamp.length;
+        int n = stamp[0].length;
+        for (int k = 0; k < m; k++) {
+            for (int l = 0; l < n; l++) {
+                if (grid[i + k][j + l] == 1 && stamp[k][l] == 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        List<int[]> stamps = new ArrayList<>();
+        for (int i = 0; i <= m - stampHeight; i++) {
+            for (int j = 0; j <= n - stampWidth; j++) {
+                if (grid[i][j] == 0) {
+                    boolean isStamp = true;
+                    for (int k = i; k < i + stampHeight; k++) {
+                        for (int l = j; l < j + stampWidth; l++) {
+                            if (grid[k][l] == 1) {
+                                isStamp = false;
+                                break;
+                            }
+                        }
+                        if (!isStamp) break;
+                    }
+                    if (isStamp) stamps.add(new int[]{i, j});
+                }
+            }
+        }
+        if (stamps.size() == 0) return false;
+        boolean[] visited = new boolean[stamps.size()];
+        int count = 0;
+        while (true) {
+            int oldCount = count;
+            for (int i = 0; i < stamps.size(); i++) {
+                if (visited[i]) continue;
+                int[] stamp = stamps.get(i);
+                boolean isStamp = true;
+                for (int k = stamp[0]; k < stamp[0] + stampHeight; k++) {
+                    for (int l = stamp[1]; l < stamp[1] + stampWidth; l++) {
+                        if (grid[k][l] == 1) {
+                            isStamp = false;
+                            break;
+                        }
+                    }
+                    if (!isStamp) break;
+                }
+                if (isStamp) {
+                    visited[i] = true;
+                    count++;
+                    for (int k = stamp[0]; k < stamp[0] + stampHeight; k++) {
+                        for (int l = stamp[1]; l < stamp[1] + stampWidth; l++) {
+                            grid[k][l] = 1;
+                        }
+                    }
+                }
+            }
+            if (oldCount == count) break;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) return false;
+            }
+        }
+        return true;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dir = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        boolean[] visited = new boolean[m * n];
+        int[] stamp = new int[stampHeight * stampWidth];
+        for (int i = 0; i < stampHeight; i++) {
+            for (int j = 0; j < stampWidth; j++) {
+                stamp[i * stampWidth + j] = 1;
+            }
+        }
+        List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    list.add(new int[]{i, j});
+                }
+            }
+        }
+        while (!list.isEmpty()) {
+            List<int[]> next = new ArrayList<>();
+            for (int[] point : list) {
+                if (visited[point[0] * n + point[1]]) {
+                    continue;
+                }
+                boolean flag = false;
+                for (int i = 0; i <= m - stampHeight; i++) {
+                    for (int j = 0; j <= n - stampWidth; j++) {
+                        if (isMatch(grid, stamp, i, j, point)) {
+                            next.add(new int[]{i, j});
+                            flag = true;
+                        }
+                    }
+                }
+                if (!flag) {
+                    return false;
+                }
+                visited[point[0] * n + point[1]] = true;
+            }
+            list = next;
+        }
+        return true;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] count = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                count[i] += grid[i][j];
+            }
+        }
+        int total = m * n;
+        boolean[] visited = new boolean[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    continue;
+                }
+                if (check(grid, i, j, stampHeight, stampWidth)) {
+                    total -= stampHeight * stampWidth;
+                    visited[i] = true;
+                    if (total == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean check(int[][] grid, int i, int j, int stampHeight, int stampWidth) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int total = 0;
+        for (int k = i; k < i + stampHeight; k++) {
+            for (int l = j; l < j + stampWidth; l++) {
+                if (k >= m || l >= n) {
+                    return false;
+                }
+                if (grid[k][l] == 0) {
+                    total++;
+                }
+            }
+        }
+        return total == stampHeight * stampWidth;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] row = new int[m];
+        int[] col = new int[n];
+        int[] row2 = new int[m];
+        int[] col2 = new int[n];
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    row[i]++;
+                    col[j]++;
+                    count++;
+                }
+            }
+        }
+        int[] row3 = new int[m];
+        int[] col3 = new int[n];
+        int[] row4 = new int[m];
+        int[] col4 = new int[n];
+        int count2 = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    row3[i]++;
+                    col3[j]++;
+                    count2++;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    row4[i]++;
+                    col4[j]++;
+                    count2++;
+                }
+            }
+        }
+        int count3 = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    row2[i]++;
+                    col2[j]++;
+                    count3++;
+                }
+            }
+        }
+        if (count == 0) {
+            return true;
+        }
+        if (count2 == 0) {
+            return false;
+        }
+        if (count3 == 0) {
+            return true;
+        }
+        if (count == count3) {
+            return true;
+        }
+        if (count == count2) {
+            return false;
+        }
+        return true;
+
+=======
+
+        return false;
+    }
+}

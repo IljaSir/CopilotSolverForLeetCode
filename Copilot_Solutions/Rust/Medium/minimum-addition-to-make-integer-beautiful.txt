@@ -1,0 +1,279 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut n = n;
+        let mut ans = 0;
+        let mut digits = vec![];
+        while n > 0 {
+            digits.push((n % 10) as i32);
+            n /= 10;
+        }
+        digits.reverse();
+        let mut s = digits.iter().sum::<i32>();
+        let mut i = 0;
+        while s > target {
+            ans += (10 - digits[i]) as i64;
+            s += 10 - digits[i];
+            i += 1;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut n = n;
+        let mut res = 0;
+        let mut digits = vec![];
+        while n > 0 {
+            digits.push((n % 10) as i32);
+            n /= 10;
+        }
+        digits.reverse();
+        let mut i = 0;
+        let mut sum = 0;
+        while i < digits.len() {
+            sum += digits[i];
+            if sum > target {
+                let diff = sum - target;
+                let mut j = i;
+                while j < digits.len() {
+                    let mut x = 10 - digits[j];
+                    while x - diff >= 0 {
+                        x -= diff;
+                        res += 1;
+                    }
+                    sum -= digits[j];
+                    j += 1;
+                }
+                break;
+            }
+            i += 1;
+        }
+        res
+
+=======
+
+        let mut n = n;
+        let mut sum = 0;
+        let mut digits = Vec::new();
+        while n > 0 {
+            digits.push(n % 10);
+            n /= 10;
+        }
+        digits.reverse();
+        for &d in digits.iter() {
+            sum += d as i32;
+        }
+        let mut i = 0;
+        while sum > target {
+            let mut d = digits[i];
+            while d < 9 && sum - d as i32 + (d + 1) as i32 <= target {
+                d += 1;
+            }
+            sum -= d as i32;
+            sum += (d + 1) as i32;
+            digits[i] = d + 1;
+            i += 1;
+        }
+        digits.iter().fold(0, |acc, &d| acc * 10 + d as i64)
+
+=======
+
+        let mut n = n;
+        let mut sum = 0;
+        let mut digits = Vec::new();
+        while n > 0 {
+            digits.push(n % 10);
+            n /= 10;
+        }
+        digits.reverse();
+        for d in digits {
+            sum += d;
+            if sum > target {
+                break;
+            }
+        }
+        let mut res = 0;
+        let mut carry = 0;
+        for d in digits {
+            let mut need = target - sum + carry;
+            if need < 0 {
+                need = 0;
+            }
+            if d + need <= 9 {
+                res = res * 10 + d + need;
+                carry = 0;
+            } else {
+                res = res * 10 + d + need - 10;
+                carry = 1;
+            }
+            sum -= d;
+        }
+        res
+
+=======
+
+        let mut n = n;
+        let mut sum = 0;
+        let mut multiplier = 1;
+        while n > 0 {
+            sum += (n % 10) as i32;
+            n /= 10;
+            multiplier *= 10;
+        }
+        if sum <= target {
+            0
+        } else {
+            let mut multiplier = 1;
+            let mut res = 0;
+            while sum > target {
+                let digit = (n / multiplier) % 10;
+                sum -= digit as i32;
+                res += (10 - digit) as i64 * multiplier;
+                multiplier *= 10;
+                sum += 9;
+            }
+            res
+        }
+
+=======
+
+        let mut n = n;
+        let mut target = target;
+        let mut ans = 0;
+        let mut digits = vec![];
+        while n > 0 {
+            digits.push(n % 10);
+            n /= 10;
+        }
+        digits.reverse();
+        let mut i = 0;
+        while i < digits.len() {
+            if digits[i] as i32 <= target {
+                target -= digits[i] as i32;
+                i += 1;
+            } else {
+                let mut j = i;
+                while j < digits.len() && digits[j] as i32 > target {
+                    j += 1;
+                }
+                if j == digits.len() {
+                    ans += (target + 1) as i64 * 10_i64.pow((digits.len() - i - 1) as u32);
+                    break;
+                } else {
+                    ans += (target + 1) as i64 * 10_i64.pow((digits.len() - i - 1) as u32);
+                    digits[j] -= 1;
+                    target = 9;
+                    i = j;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut n = n;
+        let mut count = 0;
+        while n > 0 {
+            count += n % 10;
+            n /= 10;
+        }
+        let mut result = 0;
+        let mut i = 1;
+        while count > target {
+            let x = (count - target) / 9 + 1;
+            result += x * i;
+            count -= x * 9;
+            i *= 10;
+        }
+        result
+    }
+}
+
+=======
+
+        let mut n = n;
+        let mut ans = 0;
+        let mut target = target as i64;
+        let mut digits = vec![];
+        while n > 0 {
+            digits.push(n % 10);
+            n /= 10;
+            target -= 1;
+        }
+        digits.reverse();
+        let mut i = 0;
+        while target > 0 {
+            if i >= digits.len() {
+                ans += target * 9;
+                break;
+            }
+            if digits[i] == 9 {
+                i += 1;
+            } else {
+                let delta = 9 - digits[i];
+                if delta <= target {
+                    ans += delta * (10i64.pow((digits.len() - i - 1) as u32));
+                    target -= delta;
+                    digits[i] = 9;
+                    i += 1;
+                } else {
+                    ans += target * (10i64.pow((digits.len() - i - 1) as u32));
+                    break;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut n = n;
+        let mut sum = 0;
+        let mut digits = 0;
+        let mut t = n;
+        while t > 0 {
+            sum += t % 10;
+            t /= 10;
+            digits += 1;
+        }
+        let mut res = 0;
+        let mut i = 0;
+        while sum > target {
+            let d = n % 10;
+            let c = 10 - d;
+            res += c * 10_i64.pow(i);
+            n /= 10;
+            n += c;
+            sum -= d;
+            sum += 9;
+            i += 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut n = n;
+        let mut sum = 0;
+        let mut num = 0;
+        let mut digits = Vec::new();
+        while n > 0 {
+            let d = (n % 10) as i32;
+            sum += d;
+            digits.push(d);
+            n /= 10;
+        }
+        digits.reverse();
+        let mut i = 0;
+        while sum > target {
+            let d = digits[i];
+            let diff = (d + 1) * 10_i32.pow(digits.len() - 1 - i) as i32 - d * 10_i32.pow(digits.len() - 1 - i) as i32;
+            sum -= d;
+            sum += 1;
+            num += diff as i64;
+            i += 1;
+        }
+        num

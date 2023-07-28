@@ -1,0 +1,198 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, -1), right(n, n);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) s.pop();
+            if (!s.empty()) left[i] = s.top();
+            s.push(i);
+        }
+        while (!s.empty()) s.pop();
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) s.pop();
+            if (!s.empty()) right[i] = s.top();
+            s.push(i);
+        }
+        int ans = nums[k];
+        for (int i = k; i >= 0; --i) {
+            ans = max(ans, nums[i] * (right[i] - left[i] - 1));
+            if (nums[i] <= nums[k]) break;
+        }
+        for (int i = k; i < n; ++i) {
+            ans = max(ans, nums[i] * (right[i] - left[i] - 1));
+            if (nums[i] <= nums[k]) break;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, -1), right(n, n);
+        stack<int> s;
+        for (int i = 0; i < n; i++) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) s.pop();
+            if (!s.empty()) left[i] = s.top();
+            s.push(i);
+        }
+        while (!s.empty()) s.pop();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) s.pop();
+            if (!s.empty()) right[i] = s.top();
+            s.push(i);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] < k && k < right[i])
+                res = max(res, nums[i] * (right[i] - left[i] - 1));
+        }
+        return res;
+
+=======
+
+        int ans = nums[k];
+        int l = k, r = k;
+        int mn = nums[k];
+        while (l > 0 || r < nums.size() - 1) {
+            if (l == 0) {
+                ++r;
+            } else if (r == nums.size() - 1) {
+                --l;
+            } else if (nums[l - 1] < nums[r + 1]) {
+                ++r;
+            } else {
+                --l;
+            }
+            mn = min(mn, min(nums[l], nums[r]));
+            ans = max(ans, mn * (r - l + 1));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int left = k, right = k;
+        int minVal = nums[k];
+        int res = minVal;
+        while (left > 0 || right < n - 1) {
+            if (left == 0) {
+                ++right;
+            } else if (right == n - 1) {
+                --left;
+            } else if (nums[left - 1] < nums[right + 1]) {
+                ++right;
+            } else {
+                --left;
+            }
+            minVal = min(minVal, min(nums[left], nums[right]));
+            res = max(res, minVal * (right - left + 1));
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = nums[k];
+        int min_val = nums[k];
+        int l = k, r = k;
+        while (l > 0 || r < n - 1) {
+            if (l == 0) {
+                ++r;
+            } else if (r == n - 1) {
+                --l;
+            } else if (nums[l - 1] < nums[r + 1]) {
+                ++r;
+            } else {
+                --l;
+            }
+            min_val = min(min_val, nums[l]);
+            min_val = min(min_val, nums[r]);
+            ans = max(ans, min_val * (r - l + 1));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int l = k;
+        int r = k;
+        int res = nums[k];
+        int minVal = nums[k];
+        while (l > 0 || r < n-1) {
+            if (l > 0 && r < n-1) {
+                if (nums[l-1] < nums[r+1]) {
+                    r++;
+                    minVal = min(minVal, nums[r]);
+                } else {
+                    l--;
+                    minVal = min(minVal, nums[l]);
+                }
+            } else if (l > 0) {
+                l--;
+                minVal = min(minVal, nums[l]);
+            } else {
+                r++;
+                minVal = min(minVal, nums[r]);
+            }
+            res = max(res, minVal * (r-l+1));
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = nums[k];
+        int l = k, r = k;
+        while (l > 0 || r < n-1) {
+            int nl = l > 0 ? l - 1 : -1;
+            int nr = r < n-1 ? r + 1 : -1;
+            int ml = nl >= 0 ? nums[nl] : INT_MAX;
+            int mr = nr >= 0 ? nums[nr] : INT_MAX;
+            if (ml < mr) {
+                r = nr;
+                ans = max(ans, (r-l+1) * min(nums[l], nums[r]));
+            } else {
+                l = nl;
+                ans = max(ans, (r-l+1) * min(nums[l], nums[r]));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int l = k, r = k;
+        int res = 0;
+        int minNum = nums[k];
+        while (l >= 0 || r < n) {
+            if (l == 0) {
+                r++;
+            } else if (r == n - 1) {
+                l--;
+            } else if (nums[l - 1] < nums[r + 1]) {
+                r++;
+            } else {
+                l--;
+            }
+            minNum = min(minNum, min(nums[l], nums[r]));
+            res = max(res, minNum * (r - l + 1));
+        }
+        return res;
+
+=======
+
+        int left = k, right = k, n = nums.size();
+        int minV = nums[k], res = minV;
+        while (left > 0 || right < n - 1) {
+            if ((left > 0 ? nums[left - 1] : 0) < (right < n - 1 ? nums[right + 1] : 0)) {
+                ++right;
+            } else {
+                --left;
+            }
+            minV = min(minV, nums[left]);
+            minV = min(minV, nums[right]);
+            res = max(res, minV * (right - left + 1));
+        }
+        return res;

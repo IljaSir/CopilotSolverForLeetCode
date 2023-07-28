@@ -1,0 +1,218 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = indices.size();
+        vector<pair<int, pair<string, string>>> v;
+        for (int i = 0; i < n; ++i) {
+            v.push_back({indices[i], {sources[i], targets[i]}});
+        }
+        sort(v.begin(), v.end());
+        string res;
+        int i = 0;
+        for (auto p : v) {
+            int pos = p.first;
+            string src = p.second.first;
+            string tgt = p.second.second;
+            res += s.substr(i, pos - i);
+            if (s.substr(pos, src.size()) == src) {
+                res += tgt;
+                i = pos + src.size();
+            } else {
+                i = pos;
+            }
+        }
+        res += s.substr(i, s.size() - i);
+        return res;
+
+=======
+
+        int n = indices.size();
+        vector<pair<int, int>> vp;
+        for (int i = 0; i < n; i++) {
+            vp.push_back({indices[i], i});
+        }
+        sort(vp.begin(), vp.end());
+        string ans;
+        int i = 0;
+        int m = s.size();
+        while (i < m) {
+            bool found = false;
+            for (int j = 0; j < n; j++) {
+                int idx = vp[j].first;
+                int sourceIdx = vp[j].second;
+                if (i == idx && s.substr(i, sources[sourceIdx].size()) == sources[sourceIdx]) {
+                    ans += targets[sourceIdx];
+                    i += sources[sourceIdx].size();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                ans += s[i];
+                i++;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<pair<int,int>> v;
+        for(int i=0;i<indices.size();i++){
+            v.push_back({indices[i],i});
+        }
+        sort(v.begin(),v.end());
+        for(int i=v.size()-1;i>=0;i--){
+            int index=v[i].first;
+            int id=v[i].second;
+            string source=sources[id];
+            string target=targets[id];
+            if(s.substr(index,source.size())==source){
+                s=s.substr(0,index)+target+s.substr(index+source.size());
+            }
+        }
+        return s;
+
+=======
+
+        int n = indices.size();
+        vector<int> order(n);
+        iota(order.begin(), order.end(), 0);
+        sort(order.begin(), order.end(), [&](int a, int b) { return indices[a] < indices[b]; });
+        string ans;
+        int i = 0;
+        for (int j = 0; j < n; ++j) {
+            int k = order[j];
+            int idx = indices[k];
+            ans += s.substr(i, idx - i);
+            if (s.substr(idx, sources[k].size()) == sources[k]) {
+                ans += targets[k];
+                i = idx + sources[k].size();
+            }
+        }
+        ans += s.substr(i);
+        return ans;
+
+=======
+
+        string result;
+        int i = 0;
+        while (i < s.length()) {
+            int j = 0;
+            while (j < indices.size()) {
+                if (i == indices[j]) {
+                    if (s.substr(i, sources[j].length()) == sources[j]) {
+                        result += targets[j];
+                        i += sources[j].length();
+                        break;
+                    } else {
+                        result += s[i];
+                        i++;
+                        break;
+                    }
+                } else {
+                    j++;
+                }
+            }
+            if (j == indices.size()) {
+                result += s[i];
+                i++;
+            }
+        }
+        return result;
+
+=======
+
+        string res = "";
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int n = s.length();
+        int m = indices.size();
+        while (i < n) {
+            if (j < m && i == indices[j]) {
+                if (s.substr(i, sources[j].length()) == sources[j]) {
+                    res += targets[j];
+                    i += sources[j].length();
+                    j++;
+                } else {
+                    res += s[i];
+                    i++;
+                }
+            } else {
+                res += s[i];
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = indices.size();
+        vector<bool> flag(n, false);
+        for (int i = 0; i < n; ++i) {
+            int idx = indices[i];
+            int len = sources[i].size();
+            if (s.substr(idx, len) == sources[i]) {
+                flag[i] = true;
+            }
+        }
+        string ans;
+        int idx = 0;
+        for (int i = 0; i < n; ++i) {
+            int pos = indices[i];
+            ans += s.substr(idx, pos - idx);
+            if (flag[i]) {
+                ans += targets[i];
+                idx = pos + sources[i].size();
+            } else {
+                idx = pos;
+            }
+        }
+        ans += s.substr(idx);
+        return ans;
+
+=======
+
+        string res = "";
+        int i = 0;
+        int n = indices.size();
+        int j = 0;
+        while(i < s.size()) {
+            if(j < n && i == indices[j]) {
+                if(s.substr(i, sources[j].size()) == sources[j]) {
+                    res += targets[j];
+                    i += sources[j].size();
+                } else {
+                    res += s[i];
+                    i++;
+                }
+                j++;
+            } else {
+                res += s[i];
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        string result = "";
+        int i = 0;
+        while(i < s.size()){
+            int j = 0;
+            for(; j < indices.size(); ++j){
+                if(indices[j] == i){
+                    if(s.substr(i, sources[j].size()) == sources[j]){
+                        result += targets[j];
+                        i += sources[j].size();
+                        break;
+                    }
+                }
+            }
+            if(j == indices.size()){
+                result += s[i];
+                ++i;
+            }
+        }
+        return result;

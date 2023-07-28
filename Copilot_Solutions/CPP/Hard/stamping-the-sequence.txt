@@ -1,0 +1,122 @@
+Synthesizing 4/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = stamp.length(), n = target.length();
+        vector<int> res;
+        vector<bool> vis(n, false);
+        int cnt = 0;
+        while (cnt < n) {
+            bool done = false;
+            for (int i = 0; i <= n - m; ++i) {
+                if (!vis[i] && canTransform(stamp, target, i)) {
+                    for (int j = 0; j < m; ++j) {
+                        if (target[i + j] != '?') {
+                            target[i + j] = '?';
+                            ++cnt;
+                        }
+                    }
+                    vis[i] = true;
+                    done = true;
+                    res.push_back(i);
+                }
+            }
+            if (!done) {
+                return {};
+            }
+        }
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        int n = stamp.size();
+        int m = target.size();
+        vector<int> res;
+        vector<int> visited(m, 0);
+        int count = 0;
+        while (count < m) {
+            bool found = false;
+            for (int i = 0; i <= m - n; ++i) {
+                if (visited[i]) continue;
+                int matched = 0;
+                for (int j = 0; j < n; ++j) {
+                    if (target[i + j] == '?') continue;
+                    if (target[i + j] == stamp[j]) ++matched;
+                    else break;
+                }
+                if (matched == n) {
+                    found = true;
+                    visited[i] = 1;
+                    count += n;
+                    res.push_back(i);
+                    for (int j = 0; j < n; ++j) {
+                        target[i + j] = '?';
+                    }
+                }
+            }
+            if (!found) return {};
+        }
+        reverse(res.begin(), res.end());
+        return res;
+
+=======
+
+        vector<int> ans;
+        int n = target.size();
+        int m = stamp.size();
+        vector<bool> vis(n, false);
+        vector<char> s(n, '?');
+        for (int i = 0; i < n; i++) {
+            if (target[i] == stamp[0]) {
+                bool flag = true;
+                for (int j = 0; j < m; j++) {
+                    if (target[i + j] != stamp[j]) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    for (int j = 0; j < m; j++) {
+                        s[i + j] = stamp[j];
+                        vis[i + j] = true;
+                    }
+                    ans.push_back(i);
+                }
+            }
+        }
+        while (true) {
+            bool flag = true;
+            for (int i = 0; i < n; i++) {
+                if (vis[i]) {
+                    continue;
+                }
+                flag = false;
+                for (int j = 0; j < m; j++) {
+                    if (s[i + j] == '?') {
+                        continue;
+                    }
+                    if (s[i + j] != stamp[j]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    for (int j = 0; j < m; j++) {
+                        s[i + j] = stamp[j];
+                        vis[i + j] = true;
+                    }
+                    ans.push_back(i);
+                }
+            }
+            if (flag) {
+                break;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (s[i] != target[i]) {
+                return {};
+            }
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;

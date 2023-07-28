@@ -1,0 +1,226 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k];
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 0; i <= k / 2; i++) {
+            if (i == 0 || k - i == i) {
+                ans += Math.max(cnt[i], 1);
+            } else {
+                ans += Math.max(cnt[i], cnt[k - i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k + 1];
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= k; j++) {
+                if (gcd(i, j) == 1) {
+                    ans += cnt[i] * cnt[j];
+                }
+            }
+        }
+        ans += cnt[1] * (cnt[1] + 1) / 2;
+        return ans;
+    }
+    private int gcd(int a, int b) {
+        if (a == 0 || b == 0) {
+            return a + b;
+        }
+        return gcd(b, a % b);
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k];
+        for (int num : nums) {
+            cnt[num % k]++;
+        }
+        int res = 0;
+        if (cnt[0] > 0) {
+            res++;
+        }
+        for (int i = 1; i <= k / 2; i++) {
+            if (i == k - i) {
+                if (cnt[i] > 0) {
+                    res++;
+                }
+            } else {
+                res += Math.max(cnt[i], cnt[k - i]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k+1];
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k; i++) {
+            if (cnt[i] > 0) {
+                for (int j = i; j <= k; j++) {
+                    if (gcd(i, j) == k) {
+                        ans += cnt[i] * cnt[j];
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    private int gcd(int a, int b) {
+        if (a < b) {
+            return gcd(b, a);
+        }
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k];
+        for (int num : nums) {
+            cnt[num % k]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k / 2; i++) {
+            ans += Math.max(cnt[i], cnt[k - i]);
+        }
+        ans += Math.min(cnt[0], 1);
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[k + 1];
+        for (int i = 0; i < n; i++) {
+            int x = nums[i] % k;
+            if (x < 0) x += k;
+            cnt[x]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k; i++) {
+            if (cnt[i] > 0) {
+                for (int j = i; j <= k; j++) {
+                    if (gcd(i, j) == 1) {
+                        ans += cnt[i] * cnt[j];
+                    }
+                }
+            }
+        }
+        return ans + cnt[0] * (cnt[0] + 1) / 2;
+
+=======
+
+        int[] f = new int[k];
+        for (int i = 0; i < nums.length; ++i) {
+            f[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 0; i <= k / 2; ++i) {
+            if (i == 0 || k % i == 0) {
+                int j = k - i;
+                if (i == j) {
+                    ans += f[i] > 0 ? 1 : 0;
+                } else {
+                    ans += f[i] > 0 && f[j] > 0 ? 1 : 0;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int n = nums.length;
+        int[] dp = new int[k];
+        for (int i = 0; i < n; i++) {
+            int[] temp = new int[k];
+            temp[nums[i] % k]++;
+            for (int j = 0; j < k; j++) {
+                if (dp[j] > 0) {
+                    int gcd = gcd(nums[i] % k, j);
+                    temp[gcd]++;
+                }
+            }
+            for (int j = 0; j < k; j++) {
+                dp[j] += temp[j];
+            }
+            if (dp[0] > 0) {
+                res++;
+            }
+        }
+        return res;
+    }
+    
+    private int gcd(int a, int b) {
+        if (a == 0) {
+            return b;
+        }
+        return gcd(b % a, a);
+
+=======
+
+        int res = 0;
+        int[] count = new int[k + 1];
+        for (int n : nums) {
+            int gcd = gcd(n, k);
+            count[gcd]++;
+        }
+        for (int i = k; i >= 1; i--) {
+            if (count[i] > 0) {
+                res += count[i];
+                for (int j = i + i; j <= k; j += i) {
+                    count[i] += count[j];
+                }
+            }
+        }
+        return res;
+    }
+    private int gcd(int a, int b) {
+        while (b > 0) {
+            int t = a;
+            a = b;
+            b = t % b;
+        }
+        return a;
+
+=======
+
+        int max = 0;
+        for(int n:nums){
+            max = Math.max(max,n);
+        }
+        int[] dp = new int[max+1];
+        for(int n:nums){
+            dp[n]++;
+        }
+        for(int i=2;i<=max;i++){
+            for(int j=i+i;j<=max;j+=i){
+                dp[i]+=dp[j];
+            }
+        }
+        int res = 0;
+        for(int i=1;i<=max;i++){
+            if(i%k==0&&dp[i]>0){
+                res+=dp[i];
+            }
+        }
+        return res;

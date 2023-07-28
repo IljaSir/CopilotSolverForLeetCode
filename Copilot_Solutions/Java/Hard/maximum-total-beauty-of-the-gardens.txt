@@ -1,0 +1,304 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = flowers.length;
+        long[] sum = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + flowers[i - 1];
+        }
+        long ans = 0;
+        for (int i = 0; i <= n; i++) {
+            int l = i, r = n;
+            while (l < r) {
+                int mid = (l + r + 1) >> 1;
+                if (sum[mid] - sum[i] >= target) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            long cur = (long) (l - i) * full + (sum[n] - sum[l]) * partial;
+            if (l < n) {
+                cur += Math.min(newFlowers, (long) (target - (sum[l + 1] - sum[i])) * (l - i + 1));
+            }
+            ans = Math.max(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int n = flowers.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + flowers[i];
+        }
+        long[] suffix = new long[n + 1];
+        for (int i = n - 1; i >= 0; --i) {
+            suffix[i] = suffix[i + 1] + flowers[i];
+        }
+        long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            long x = prefix[i + 1];
+            if (x >= target) {
+                ans = Math.max(ans, (x - target) / target * full + x % target * partial);
+            }
+            if (x < target && newFlowers >= target - x) {
+                ans = Math.max(ans, (x + newFlowers - target) / target * full + x % target * partial);
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            long x = suffix[i];
+            if (x >= target) {
+                ans = Math.max(ans, (x - target) / target * full + x % target * partial);
+            }
+            if (x < target && newFlowers >= target - x) {
+                ans = Math.max(ans, (x + newFlowers - target) / target * full + x % target * partial);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = flowers.length;
+        long[] preSum = new long[n+1];
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i-1] + flowers[i-1];
+        }
+        long ans = 0;
+        for (int i = 0; i <= n; i++) {
+            int j = i;
+            long sum = 0;
+            int cnt = 0;
+            while (j < n) {
+                int k = j + 1;
+                while (k < n && flowers[k] < target) {
+                    k++;
+                }
+                if (k == n && flowers[n-1] < target) {
+                    break;
+                }
+                long curSum = preSum[k] - preSum[j];
+                long curNewFlowers = newFlowers - (j - i) * target - curSum;
+                if (curNewFlowers >= 0) {
+                    cnt += k - j;
+                    sum += curSum;
+                    j = k;
+                } else {
+                    break;
+                }
+            }
+            if (j < n) {
+                long curNewFlowers = newFlowers - (j - i) * target - sum;
+                if (curNewFlowers >= 0) {
+                    cnt += (curNewFlowers / target) + (curNewFlowers % target > 0 ? 1 : 0);
+                }
+            }
+            ans = Math.max(ans, cnt * full + (n - cnt) * partial);
+        }
+        return ans;
+
+=======
+
+        int n = flowers.length;
+        int[] cnt = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] >= target) {
+                ++cnt[flowers[i] - target];
+            }
+        }
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + cnt[i];
+        }
+        long ans = 0;
+        for (int i = 0; i <= n; ++i) {
+            long left = newFlowers - (sum[n] - sum[i]);
+            if (left < 0) {
+                break;
+            }
+            long cur = (sum[i] + Math.min(left, (long) (n - i) * target)) * full;
+            if (i < n) {
+                cur += Math.min(left, (long) (n - i) * target) * partial;
+            }
+            ans = Math.max(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int n = flowers.length;
+        long sum = 0;
+        int cnt = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (flowers[i] >= target) {
+                sum += full;
+                cnt++;
+            } else {
+                min = Math.min(min, flowers[i]);
+            }
+        }
+        if (newFlowers >= n * target) {
+            return sum + (newFlowers - n * target) / target * full;
+        }
+        long res = sum + (n - cnt) * (long)min * partial;
+        int[] cnts = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            if (flowers[i] < target) {
+                cnts[flowers[i] % target]++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (cnts[i] == 0) {
+                continue;
+            }
+            long t = sum + (n - cnt) * (long)i * partial;
+            long x = newFlowers - (target - i);
+            if (x < 0) {
+                continue;
+            }
+            int c = 0;
+            for (int j = n; j >= 0 && x > 0; j--) {
+                if (j == i) {
+                    continue;
+                }
+                int d = Math.min(cnts[j], (int)(x / (target - j)));
+                c += d;
+                x -= (long)(target - j) * d;
+            }
+            t += (long)c * full;
+            res = Math.max(res, t);
+        }
+        return res;
+
+=======
+
+        int n = flowers.length;
+        int[] cnt = new int[100001];
+        for (int flower : flowers) {
+            cnt[flower]++;
+        }
+        long[] sum = new long[100001];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + i * cnt[i];
+        }
+        long ans = 0;
+        for (int i = target; i <= 100000; i++) {
+            long x = newFlowers - (i * cnt[i] - sum[i]);
+            if (x >= 0) {
+                ans = Math.max(ans, (n - cnt[i]) * partial + full * i);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = flowers.length;
+        int[] count = new int[n + 1];
+        int[] sum = new int[n + 1];
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            int f = flowers[i];
+            count[f]++;
+            sum[f] += f;
+            if (f >= target) {
+                res += full;
+            } else {
+                res += Math.min(f * partial, full);
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            count[i] += count[i - 1];
+            sum[i] += sum[i - 1];
+        }
+        for (int i = 1; i <= n; i++) {
+            if (i >= target) {
+                int remain = (int) (newFlowers - count[i - 1]);
+                if (remain >= 0) {
+                    res = Math.max(res, full * count[i] + partial * (sum[i - 1] + Math.min(remain, n - i + 1) * i));
+                }
+            } else {
+                int remain = (int) (newFlowers - (count[i - 1] - count[target - 1]));
+                if (remain >= 0) {
+                    res = Math.max(res, full * count[i] + partial * (sum[i - 1] - sum[target - 1] + Math.min(remain, n - i + 1) * i));
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = flowers.length;
+        int[] cnt = new int[100001];
+        long res = 0;
+        for (int f : flowers) {
+            cnt[f]++;
+        }
+        for (int i = 1; i <= 100000; i++) {
+            long cur = 0;
+            long rem = newFlowers;
+            for (int j = i; j <= 100000; j += i) {
+                long can = (target - cnt[j]) * i;
+                long use = Math.min(rem, can);
+                cur += use;
+                rem -= use;
+            }
+            res = Math.max(res, (cur / i) * full + (cur % i) * partial);
+        }
+        return res;
+
+=======
+
+        long maxBeauty = 0;
+        int[] flowersCount = new int[flowers.length + 1];
+        int[] completeCount = new int[flowers.length + 1];
+        for (int i = 0; i < flowers.length; i++) {
+            flowersCount[flowers[i]]++;
+            if (flowers[i] >= target) {
+                completeCount[flowers[i]]++;
+            }
+        }
+        for (int i = 1; i < flowersCount.length; i++) {
+            flowersCount[i] += flowersCount[i - 1];
+            completeCount[i] += completeCount[i - 1];
+        }
+        for (int i = 0; i < flowersCount.length; i++) {
+            int flowersToPlant = (int) Math.min(newFlowers, flowersCount[flowersCount.length - 1] - flowersCount[i]);
+            int completeGardens = completeCount[flowersCount.length - 1] - completeCount[i];
+            int incompleteGardens = flowersCount.length - 1 - i - completeGardens;
+            int minFlowers = incompleteGardens > 0 ? 1 : 0;
+            maxBeauty = Math.max(maxBeauty, (long) (completeGardens * full + minFlowers * partial) * flowersToPlant);
+            newFlowers -= flowersToPlant;
+            if (newFlowers == 0) {
+                break;
+            }
+        }
+        return maxBeauty;
+
+=======
+
+        long ans = 0;
+        long[] cnt = new long[100001];
+        for (int f : flowers) {
+            cnt[f]++;
+        }
+        int min = 0;
+        while (min < cnt.length && cnt[min] > 0) {
+            min++;
+        }
+        for (int i = min; i < cnt.length; i++) {
+            if (cnt[i] == 0) {
+                continue;
+            }
+            long need = (target - i) * cnt[i];
+            if (need <= newFlowers) {
+                ans += cnt[i] * full;
+                newFlowers -= need;
+            } else {
+                ans += newFlowers / (target - i) * full;
+                newFlowers %= target - i;
+            }
+        }
+        ans += newFlowers * partial;
+        return ans;

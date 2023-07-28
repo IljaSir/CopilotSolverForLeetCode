@@ -1,0 +1,187 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = colors.size();
+        vector<int> first(101, n);
+        vector<int> last(101, -1);
+        for (int i = 0; i < n; ++i) {
+            first[colors[i]] = min(first[colors[i]], i);
+            last[colors[i]] = max(last[colors[i]], i);
+        }
+        int ans = 0;
+        for (int i = 0; i < 101; ++i) {
+            for (int j = i + 1; j < 101; ++j) {
+                ans = max(ans, abs(last[i] - first[j]));
+                ans = max(ans, abs(last[j] - first[i]));
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> m;
+        int res = 0;
+        for (int i = 0; i < colors.size(); i++) {
+            if (m.count(colors[i]) > 0) {
+                res = max(res, i - m[colors[i]]);
+            }
+            m[colors[i]] = i;
+        }
+        return res;
+
+=======
+
+        int n = colors.size();
+        int ans = 0;
+        unordered_map<int, int> first, last;
+        for (int i = 0; i < n; i++) {
+            if (first.find(colors[i]) == first.end()) {
+                first[colors[i]] = i;
+            }
+            last[colors[i]] = i;
+        }
+        for (auto& [color, index]: first) {
+            if (index != last[color]) {
+                ans = max(ans, last[color] - index);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.size();
+        vector<int> left(n, -1);
+        vector<int> right(n, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = colors[i];
+            if (left[c] == -1) {
+                left[c] = i;
+            }
+            right[c] = i;
+        }
+        int maxDist = 0;
+        int minLeft = left[colors[0]];
+        int maxRight = right[colors[0]];
+        for (int i = 1; i < n; ++i) {
+            int c = colors[i];
+            if (c == colors[0]) {
+                continue;
+            }
+            maxDist = max(maxDist, max(i - minLeft, maxRight - i));
+            minLeft = min(minLeft, left[c]);
+            maxRight = max(maxRight, right[c]);
+        }
+        return maxDist;
+
+=======
+
+        int n = colors.size();
+        unordered_map<int, int> colorToLastPos;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (colorToLastPos.find(colors[i]) == colorToLastPos.end()) {
+                colorToLastPos[colors[i]] = i;
+            } else {
+                ans = max(ans, i - colorToLastPos[colors[i]]);
+                colorToLastPos[colors[i]] = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.size();
+        int maxDist = 0;
+        vector<int> first(101, INT_MAX), last(101, INT_MIN);
+        for (int i = 0; i < n; ++i) {
+            first[colors[i]] = min(first[colors[i]], i);
+            last[colors[i]] = max(last[colors[i]], i);
+        }
+        for (int i = 0; i < 101; ++i) {
+            for (int j = i + 1; j < 101; ++j) {
+                maxDist = max(maxDist, abs(first[i] - last[j]));
+                maxDist = max(maxDist, abs(first[j] - last[i]));
+            }
+        }
+        return maxDist;
+
+=======
+
+        int n = colors.size();
+        int max = 0;
+        for (int i = 0; i < 100; i++) {
+            int first = -1;
+            int last = -1;
+            for (int j = 0; j < n; j++) {
+                if (colors[j] == i + 1) {
+                    if (first == -1) first = j;
+                    last = j;
+                }
+            }
+            if (first != -1 && last != -1) {
+                int distance = last - first;
+                if (distance > max) max = distance;
+            }
+        }
+        return max;
+
+=======
+
+        int n = colors.size();
+        int maxDist = 0;
+        unordered_map<int, int> colorToFirstIndex;
+        for (int i = 0; i < n; ++i) {
+            if (colorToFirstIndex.find(colors[i]) == colorToFirstIndex.end()) {
+                colorToFirstIndex[colors[i]] = i;
+            }
+        }
+        unordered_map<int, int> colorToLastIndex;
+        for (int i = n-1; i >= 0; --i) {
+            if (colorToLastIndex.find(colors[i]) == colorToLastIndex.end()) {
+                colorToLastIndex[colors[i]] = i;
+            }
+        }
+        for (auto& it: colorToFirstIndex) {
+            maxDist = max(maxDist, colorToLastIndex[it.first] - it.second);
+        }
+        return maxDist;
+
+=======
+
+        int maxDistance = 0;
+        int lastColor = -1;
+        int firstColor = -1;
+        for (int i = 0; i < colors.size(); i++) {
+            if (lastColor == -1) {
+                lastColor = colors[i];
+                firstColor = i;
+            } else if (colors[i] != lastColor) {
+                maxDistance = max(maxDistance, i - firstColor);
+                firstColor = i;
+                lastColor = colors[i];
+            }
+        }
+        return maxDistance;
+
+=======
+
+        int n = colors.size();
+        int maxDistance = 0;
+        for (int i = 0; i < n; i++) {
+            int first = -1;
+            int last = -1;
+            for (int j = 0; j < n; j++) {
+                if (colors[j] == colors[i]) {
+                    continue;
+                }
+                if (first == -1) {
+                    first = j;
+                }
+                last = j;
+            }
+            if (first != -1) {
+                maxDistance = max(maxDistance, last - first);
+            }
+        }
+        return maxDistance;

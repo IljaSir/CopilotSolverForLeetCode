@@ -1,0 +1,136 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut nums = vec![];
+        let mut cost = 0;
+        for i in instructions {
+            let left = nums.binary_search(&i).unwrap_or_else(|x| x);
+            let right = nums.len() - left;
+            cost += std::cmp::min(left, right) as i32;
+            nums.insert(left, i);
+        }
+        cost % 1_000_000_007
+
+=======
+
+        let mut fenwick = vec![0; 100001];
+        let mut cost = 0;
+        for (i, &x) in instructions.iter().enumerate() {
+            let left = Self::query(&fenwick, x - 1);
+            let right = i - Self::query(&fenwick, x);
+            cost += std::cmp::min(left, right);
+            cost %= 1000000007;
+            Self::update(&mut fenwick, x);
+        }
+        cost as i32
+    }
+    
+    fn query(fenwick: &Vec<i32>, mut i: i32) -> i32 {
+        let mut sum = 0;
+        while i > 0 {
+            sum += fenwick[i as usize];
+            i -= i & -i;
+        }
+        sum
+    }
+    
+    fn update(fenwick: &mut Vec<i32>, mut i: i32) {
+        while i < 100001 {
+            fenwick[i as usize] += 1;
+            i += i & -i;
+        }
+
+=======
+
+        let mut bit = vec![0; 100001];
+        let mut res = 0;
+        let mut cost = 0;
+        let mut mod_ = 1000000007;
+        for i in 0..instructions.len() {
+            cost = (cost + std::cmp::min(get(&bit, instructions[i] - 1), i as i32 - get(&bit, instructions[i]))) % mod_;
+            update(&mut bit, instructions[i], 1);
+        }
+        cost
+    }
+}
+
+=======
+
+        let mut bit = vec![0; 100001];
+        let mut res = 0;
+        let mut cost = 0;
+        for (i, &n) in instructions.iter().enumerate() {
+            let left = Self::query(&bit, n-1);
+            let right = i - Self::query(&bit, n);
+            cost = (cost + std::cmp::min(left, right)) % 1000000007;
+            Self::update(&mut bit, n);
+            res = (res + cost) % 1000000007;
+        }
+        res
+    }
+    
+    fn update(bit: &mut Vec<i32>, mut i: i32) {
+        while i < bit.len() as i32 {
+            bit[i as usize] += 1;
+            i += i & -i;
+        }
+    }
+    
+    fn query(bit: &Vec<i32>, mut i: i32) -> i32 {
+        let mut res = 0;
+        while i > 0 {
+            res += bit[i as usize];
+            i -= i & -i;
+        }
+        res
+
+=======
+
+        let mut bit = BIT::new(100_001);
+        let mut cost = 0;
+        for (i, &val) in instructions.iter().enumerate() {
+            let less = bit.query(val - 1);
+            let greater = i as i32 - bit.query(val);
+            cost += std::cmp::min(less, greater);
+            bit.update(val, 1);
+        }
+        cost as i32 % 1_000_000_007
+    }
+}
+
+=======
+
+        let mut tree = vec![0; 100001];
+        let mut ret = 0;
+        let mut cost = 0;
+        for (i, &x) in instructions.iter().enumerate() {
+            let less = Self::count(&tree, x - 1);
+            let more = i - Self::count(&tree, x);
+            cost += std::cmp::min(less, more);
+            cost %= 1000000007;
+            Self::update(&mut tree, x);
+        }
+        cost
+    }
+    
+    fn update(tree: &mut Vec<i32>, mut x: i32) {
+        while x < 100001 {
+            tree[x as usize] += 1;
+            x += x & -x;
+        }
+    }
+    
+    fn count(tree: &Vec<i32>, mut x: i32) -> i32 {
+        let mut ret = 0;
+        while x > 0 {
+            ret += tree[x as usize];
+            x -= x & -x;
+        }
+        ret

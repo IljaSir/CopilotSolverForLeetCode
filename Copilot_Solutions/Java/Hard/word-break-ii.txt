@@ -1,0 +1,296 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<String, List<String>> map = new HashMap<>();
+        return dfs(s, wordDict, map);
+    }
+    
+    private List<String> dfs(String s, List<String> wordDict, Map<String, List<String>> map) {
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+        List<String> res = new ArrayList<>();
+        if (s.length() == 0) {
+            res.add("");
+            return res;
+        }
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                List<String> list = dfs(s.substring(word.length()), wordDict, map);
+                for (String str : list) {
+                    res.add(word + (str.isEmpty() ? "" : " ") + str);
+                }
+            }
+        }
+        map.put(s, res);
+        return res;
+
+=======
+
+        return wordBreak(s, new HashSet(wordDict), 0, new HashMap());
+    }
+
+    private List<String> wordBreak(String s, Set<String> wordDict, int start, Map<Integer, List<String>> memo) {
+        if (memo.containsKey(start)) {
+            return memo.get(start);
+        }
+
+        List<String> result = new ArrayList();
+        if (start == s.length()) {
+            result.add("");
+        }
+
+        for (int end = start + 1; end <= s.length(); end++) {
+            if (wordDict.contains(s.substring(start, end))) {
+                List<String> list = wordBreak(s, wordDict, end, memo);
+                for (String l : list) {
+                    result.add(s.substring(start, end) + (l.equals("") ? "" : " ") + l);
+                }
+            }
+        }
+        memo.put(start, result);
+        return result;
+
+=======
+
+        return wordBreak(s, new HashSet<String>(wordDict), 0, new HashMap<Integer, LinkedList<String>>());
+    }
+    
+    public List<String> wordBreak(String s, Set<String> wordDict, int start, HashMap<Integer, LinkedList<String>> map) {
+        if (map.containsKey(start)) {
+            return map.get(start);
+        }
+        
+        LinkedList<String> res = new LinkedList<String>();
+        if (start == s.length()) {
+            res.add("");
+        }
+        
+        for (int end = start + 1; end <= s.length(); end++) {
+            if (wordDict.contains(s.substring(start, end))) {
+                List<String> list = wordBreak(s, wordDict, end, map);
+                for (String l : list) {
+                    res.add(s.substring(start, end) + (l.equals("") ? "" : " ") + l);
+                }
+            }
+        }
+        
+        map.put(start, res);
+        return res;
+
+=======
+
+        Set<String> wordDictSet = new HashSet(wordDict);
+        Map<String, List<String>> memo = new HashMap();
+        return backtrack(s, wordDictSet, memo);
+    }
+    
+    public List<String> backtrack(String s, Set<String> wordDictSet, Map<String, List<String>> memo){
+        if(memo.containsKey(s)){
+            return memo.get(s);
+        }
+        List<String> res = new ArrayList();
+        if(s.length() == 0){
+            res.add("");
+            return res;
+        }
+        for(String word: wordDictSet){
+            if(s.startsWith(word)){
+                List<String> subList = backtrack(s.substring(word.length()), wordDictSet, memo);
+                for(String sub: subList){
+                    res.add(word + (sub.isEmpty() ? "" : " ") + sub);
+                }
+            }
+        }
+        memo.put(s, res);
+        return res;
+
+=======
+
+        Set<String> set = new HashSet<>(wordDict);
+        int len = s.length();
+        boolean[] dp = new boolean[len + 1];
+        dp[0] = true;
+        for (int i = 1; i <= len; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && set.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        List<String> res = new ArrayList<>();
+        if (dp[len]) {
+            dfs(s, res, new ArrayList<>(), 0, set);
+        }
+        return res;
+    }
+
+    private void dfs(String s, List<String> res, List<String> path, int idx, Set<String> set) {
+        if (idx == s.length()) {
+            res.add(String.join(" ", path));
+            return;
+        }
+        for (int i = idx + 1; i <= s.length(); i++) {
+            String sub = s.substring(idx, i);
+            if (set.contains(sub)) {
+                path.add(sub);
+                dfs(s, res, path, i, set);
+                path.remove(path.size() - 1);
+            }
+        }
+
+=======
+
+        if (s == null || s.length() == 0) {
+            return new ArrayList<>();
+        }
+        return dfs(s, wordDict, new HashMap<>());
+    }
+    
+    private List<String> dfs(String s, List<String> wordDict, Map<String, List<String>> map) {
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+        List<String> res = new ArrayList<>();
+        if (s.length() == 0) {
+            res.add("");
+            return res;
+        }
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                List<String> subList = dfs(s.substring(word.length()), wordDict, map);
+                for (String sub : subList) {
+                    res.add(word + (sub.isEmpty() ? "" : " ") + sub);
+                }
+            }
+        }
+        map.put(s, res);
+        return res;
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() == 0) {
+            return result;
+        }
+        Set<String> dict = new HashSet<>(wordDict);
+        Map<String, List<String>> map = new HashMap<>();
+        return find(s, dict, map);
+    }
+    private List<String> find(String s, Set<String> dict, Map<String, List<String>> map) {
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+        List<String> result = new ArrayList<>();
+        if (dict.contains(s)) {
+            result.add(s);
+        }
+        for (int i = 1; i < s.length(); i++) {
+            String right = s.substring(i);
+            if (dict.contains(right)) {
+                String left = s.substring(0, i);
+                List<String> lefts = find(left, dict, map);
+                for (String l : lefts) {
+                    result.add(l + " " + right);
+                }
+            }
+        }
+        map.put(s, result);
+        return result;
+
+=======
+
+        if (s == null || s.length() == 0) {
+            return new ArrayList<String>();
+        }
+        return wordBreakHelper(s, wordDict, new HashMap<String, List<String>>());
+    }
+    
+    private List<String> wordBreakHelper(String s, List<String> wordDict, Map<String, List<String>> map) {
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+        List<String> result = new ArrayList<String>();
+        if (s.length() == 0) {
+            result.add("");
+            return result;
+        }
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                List<String> subList = wordBreakHelper(s.substring(word.length()), wordDict, map);
+                for (String sub : subList) {
+                    result.add(word + (sub.isEmpty() ? "" : " ") + sub);
+                }
+            }
+        }
+        map.put(s, result);
+        return result;
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() == 0) {
+            return result;
+        }
+        Set<String> dict = new HashSet<>(wordDict);
+        List<String> path = new ArrayList<>();
+        dfs(s, dict, result, path);
+        return result;
+    }
+
+    private void dfs(String s, Set<String> dict, List<String> result, List<String> path) {
+        if (s.length() == 0) {
+            result.add(String.join(" ", path));
+            return;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            String prefix = s.substring(0, i);
+            if (dict.contains(prefix)) {
+                path.add(prefix);
+                dfs(s.substring(i), dict, result, path);
+                path.remove(path.size() - 1);
+            }
+        }
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() == 0) {
+            return result;
+        }
+        Set<String> wordSet = new HashSet<>(wordDict);
+        int maxLen = 0;
+        for (String word : wordDict) {
+            maxLen = Math.max(maxLen, word.length());
+        }
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        if (!dp[s.length()]) {
+            return result;
+        }
+        helper(s, wordSet, maxLen, 0, new ArrayList<>(), result);
+        return result;
+    }
+    private void helper(String s, Set<String> wordSet, int maxLen, int index, List<String> list, List<String> result) {
+        if (index == s.length()) {
+            result.add(String.join(" ", list));
+            return;
+        }
+        for (int i = index + 1; i <= s.length() && i - index <= maxLen; i++) {
+            String sub = s.substring(index, i);
+            if (wordSet.contains(sub)) {
+                list.add(sub);
+                helper(s, wordSet, maxLen, i, list, result);
+                list.remove(list.size() - 1);
+            }
+        }

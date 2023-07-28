@@ -1,0 +1,205 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut res = vec![];
+        for q in queries {
+            let mut c = 0;
+            for n in nums.iter() {
+                if n < &q {
+                    c += q - n;
+                }
+            }
+            res.push(c);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut freq = vec![0; 100001];
+        let mut prefix = vec![0; 100002];
+        for &n in nums.iter() {
+            freq[n as usize] += 1;
+        }
+        for i in 1..=100001 {
+            prefix[i] = prefix[i-1] + freq[i];
+        }
+        let mut ans = Vec::new();
+        for &q in queries.iter() {
+            let mut sum = 0;
+            for i in 1..=100001 {
+                if i as i32 > q {
+                    sum += (i as i32 - q) * (prefix[i] - prefix[i-1]);
+                } else {
+                    sum += (q - i as i32) * (prefix[i] - prefix[i-1]);
+                }
+            }
+            ans.push(sum);
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        for q in queries {
+            let mut cnt = 0;
+            for n in nums.iter() {
+                if q > *n {
+                    cnt += q - n;
+                }
+            }
+            res.push(cnt as i64);
+        }
+        return res;
+
+=======
+
+        let mut num = vec![0; 100001];
+        let mut sum = vec![0; 100002];
+        for n in nums {
+            num[n as usize] += 1;
+        }
+        for i in 1..=100000 {
+            sum[i] = sum[i - 1] + num[i];
+        }
+        let mut ans = vec![];
+        for q in queries {
+            let mut left = 1;
+            let mut right = 100000;
+            let mut mid = (left + right) / 2;
+            while left < right {
+                if sum[mid] < q {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+                mid = (left + right) / 2;
+            }
+            let mut l = mid - 1;
+            let mut r = mid + 1;
+            let mut res = 0;
+            while l >= 1 || r <= 100000 {
+                if l >= 1 {
+                    if sum[l] >= q {
+                        res += (sum[l] - q) * (mid - l) as i64;
+                        break;
+                    }
+                    l -= 1;
+                }
+                if r <= 100000 {
+                    if sum[r] >= q {
+                        res += (q - sum[r - 1]) * (r - mid) as i64;
+                        break;
+                    }
+                    r += 1;
+                }
+            }
+            ans.push(res);
+        }
+        ans
+
+=======
+
+        let mut nums = nums;
+        let mut queries = queries;
+        let mut res = Vec::new();
+        nums.sort();
+        for i in 0..queries.len() {
+            let mut count = 0;
+            for j in 0..nums.len() {
+                if nums[j] < queries[i] {
+                    count += 1;
+                } else {
+                    break;
+                }
+            }
+            let mut count2 = 0;
+            for j in (0..nums.len()).rev() {
+                if nums[j] > queries[i] {
+                    count2 += 1;
+                } else {
+                    break;
+                }
+            }
+            res.push((count * (nums.len() - count) + count2 * (nums.len() - count2)) as i64);
+        }
+        res
+
+=======
+
+        let mut res = vec![0; queries.len()];
+        let mut nums = nums;
+        nums.sort();
+        let mut count = vec![0; nums.len() + 1];
+        for i in 1..count.len() {
+            count[i] = count[i - 1] + nums[i - 1];
+        }
+        for (i, q) in queries.iter().enumerate() {
+            let idx = nums.binary_search(q).unwrap_or_else(|x| x);
+            res[i] = (idx as i64) * q as i64 - count[idx] + count[nums.len()] - count[idx] - (nums.len() as i64 - idx as i64) * q as i64;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let mut queries = queries;
+        let mut ans = vec![];
+        nums.sort();
+        for q in queries {
+            let mut count = 0;
+            let mut i = 0;
+            let mut j = nums.len() - 1;
+            while i < nums.len() {
+                if nums[i] < q {
+                    count += (j - i) as i64;
+                    i += 1;
+                } else {
+                    break;
+                }
+            }
+            while j >= 0 {
+                if nums[j] > q {
+                    count += (j - i) as i64;
+                    j -= 1;
+                } else {
+                    break;
+                }
+            }
+            ans.push(count);
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut freq = vec![0; 100001];
+        let mut sum = vec![0; 100001];
+        let mut res = vec![0; queries.len()];
+        let mut j = 0;
+        for i in nums {
+            freq[i as usize] += 1;
+        }
+        for i in 1..freq.len() {
+            sum[i] = sum[i - 1] + freq[i];
+        }
+        for i in queries {
+            while j < sum.len() && sum[j] <= i {
+                j += 1;
+            }
+            let mut tmp = 0;
+            for k in j..sum.len() {
+                tmp += (k as i64 - j as i64) * (sum[k] - sum[j - 1]);
+            }
+            res.push(tmp);
+        }
+        res
+    }
+}

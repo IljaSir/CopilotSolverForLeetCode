@@ -1,0 +1,188 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        pq.offer(new int[]{dp[0], 0});
+        for (int i = 1; i < n; i++) {
+            while (pq.peek()[1] < i - k) {
+                pq.poll();
+            }
+            dp[i] = pq.peek()[0] + nums[i];
+            pq.offer(new int[]{dp[i], i});
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.addLast(0);
+        for (int i = 1; i < n; i++) {
+            dp[i] = nums[i] + dp[dq.getFirst()];
+            while (!dq.isEmpty() && dp[i] >= dp[dq.getLast()]) {
+                dq.removeLast();
+            }
+            dq.addLast(i);
+            if (dq.getFirst() == i - k) {
+                dq.removeFirst();
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.addLast(0);
+        for (int i = 1; i < n; i++) {
+            while (!dq.isEmpty() && dq.peekFirst() < i - k) {
+                dq.pollFirst();
+            }
+            dp[i] = dp[dq.peekFirst()] + nums[i];
+            while (!dq.isEmpty() && dp[dq.peekLast()] <= dp[i]) {
+                dq.pollLast();
+            }
+            dq.addLast(i);
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> dq = new LinkedList<>();
+        dq.addLast(0);
+        for (int i = 1; i < n; ++i) {
+            while (!dq.isEmpty() && dq.peekFirst() < i - k) {
+                dq.pollFirst();
+            }
+            dp[i] = dp[dq.peekFirst()] + nums[i];
+            while (!dq.isEmpty() && dp[i] >= dp[dq.peekLast()]) {
+                dq.pollLast();
+            }
+            dq.addLast(i);
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> deque = new ArrayDeque<>();
+        deque.offer(0);
+        for (int i = 1; i < n; ++i) {
+            dp[i] = nums[i] + dp[deque.peekFirst()];
+            while (!deque.isEmpty() && dp[deque.peekLast()] <= dp[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+            if (deque.peekFirst() == i - k) {
+                deque.pollFirst();
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        pq.add(new int[]{dp[0], 0});
+        for (int i = 1; i < nums.length; i++) {
+            while (pq.peek()[1] < i - k)
+                pq.poll();
+            dp[i] = nums[i] + pq.peek()[0];
+            pq.add(new int[]{dp[i], i});
+        }
+        return dp[nums.length - 1];
+
+=======
+
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        Deque<Integer> deque = new LinkedList<>();
+        deque.addLast(0);
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = nums[i] + dp[deque.getFirst()];
+            while (!deque.isEmpty() && dp[deque.getLast()] < dp[i]) {
+                deque.removeLast();
+            }
+            deque.addLast(i);
+            if (deque.getFirst() == i - k) {
+                deque.removeFirst();
+            }
+        }
+        return dp[nums.length - 1];
+
+=======
+
+        int n = nums.length;
+        if (n == 1) {
+            return nums[0];
+        }
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> deque = new LinkedList<>();
+        deque.offerLast(0);
+        for (int i = 1; i < n; i++) {
+            while (!deque.isEmpty() && i - deque.peekFirst() > k) {
+                deque.pollFirst();
+            }
+            dp[i] = dp[deque.peekFirst()] + nums[i];
+            while (!deque.isEmpty() && dp[i] >= dp[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.addLast(0);
+        for(int i = 1; i < n; i++){
+            dp[i] = nums[i] + dp[dq.getFirst()];
+            while(!dq.isEmpty() && dp[i] > dp[dq.getLast()]){
+                dq.removeLast();
+            }
+            dq.addLast(i);
+            if(i - dq.getFirst() >= k){
+                dq.removeFirst();
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        int max = dp[0];
+        int[] q = new int[n];
+        int l = 0;
+        int r = 0;
+        for (int i = 1; i < n; i++) {
+            dp[i] = max + nums[i];
+            while (l < r && dp[q[r - 1]] < dp[i]) {
+                r--;
+            }
+            q[r++] = i;
+            if (q[l] < i - k + 1) {
+                l++;
+            }
+            max = dp[q[l]];
+        }
+        return dp[n - 1];

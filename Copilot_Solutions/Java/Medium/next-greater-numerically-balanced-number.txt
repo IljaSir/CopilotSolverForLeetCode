@@ -1,0 +1,318 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        String s = String.valueOf(n);
+        int[] count = new int[10];
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - '0']++;
+        }
+        int[] res = new int[s.length()];
+        int i = 0;
+        for (int j = 1; j <= 9; j++) {
+            if (count[j] > 0) {
+                res[i++] = j;
+                count[j]--;
+            }
+        }
+        for (int j = 0; j <= 9; j++) {
+            while (count[j] > 0) {
+                res[i++] = j;
+                count[j]--;
+            }
+        }
+        int ans = 0;
+        for (int j = 0; j < res.length; j++) {
+            ans = ans * 10 + res[j];
+        }
+        return ans;
+
+=======
+
+        int[] count = new int[10];
+        String s = Integer.toString(n);
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - '0']++;
+        }
+        for (int i = 0; i < 10; i++) {
+            if (count[i] > i) {
+                return -1;
+            }
+        }
+        int[] ans = new int[s.length()];
+        int j = 0;
+        for (int i = 1; i < 10; i++) {
+            while (count[i]-- > 0) {
+                ans[j++] = i;
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < ans.length; i++) {
+            res = res * 10 + ans[i];
+        }
+        return res;
+
+=======
+
+        char[] digits = String.valueOf(n).toCharArray();
+        int[] counts = new int[10];
+        for (int i = 0; i < digits.length; i++) {
+            counts[digits[i] - '0']++;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            if (counts[i] == 0) {
+                continue;
+            }
+            counts[i]--;
+            int sum = 0;
+            for (int j = 0; j < counts.length; j++) {
+                sum += counts[j];
+            }
+            if (sum <= i) {
+                counts[i]++;
+                continue;
+            }
+            int j = 0;
+            while (j < counts.length && counts[j] == 0) {
+                j++;
+            }
+            counts[j]++;
+            for (int k = 0; k < i + 1; k++) {
+                counts[k]++;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int k = 0; k < counts.length; k++) {
+                while (counts[k] > 0) {
+                    sb.append(k);
+                    counts[k]--;
+                }
+            }
+            return Integer.parseInt(sb.toString());
+        }
+        return -1;
+
+=======
+
+        int[] count = new int[10];
+        int num = n + 1;
+        while (true) {
+            int temp = num;
+            while (temp > 0) {
+                count[temp % 10]++;
+                temp /= 10;
+            }
+            boolean flag = true;
+            for (int i = 0; i < 10; i++) {
+                if (count[i] != 0 && count[i] != i) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                return num;
+            }
+            Arrays.fill(count, 0);
+            num++;
+        }
+
+=======
+
+        int[] count = new int[10];
+        int x = n;
+        while (x > 0) {
+            count[x % 10]++;
+            x /= 10;
+        }
+        int res = 0;
+        for (int i = 0; i < 10; i++) {
+            while (count[i] > 0) {
+                res = res * 10 + i;
+                count[i]--;
+            }
+        }
+        return res;
+    }
+    public int nextGreaterElement(int n) {
+        int[] count = new int[10];
+        int x = n;
+        while (x > 0) {
+            count[x % 10]++;
+            x /= 10;
+        }
+        for (int i = 0; i < 10; i++) {
+            if (count[i] > 0) {
+                count[i]--;
+                for (int j = i + 1; j < 10; j++) {
+                    if (count[j] > 0) {
+                        count[j]--;
+                        int res = nextBeautifulNumber(n);
+                        if (res > n) {
+                            return res;
+                        }
+                        count[j]++;
+                    }
+                }
+                count[i]++;
+            }
+        }
+        return -1;
+
+=======
+
+        int[] count = new int[10];
+        int num = n;
+        while (num > 0) {
+            count[num % 10]++;
+            num /= 10;
+        }
+        int nextNum = n + 1;
+        while (nextNum > 0) {
+            int[] nextCount = new int[10];
+            int temp = nextNum;
+            while (temp > 0) {
+                nextCount[temp % 10]++;
+                temp /= 10;
+            }
+            boolean balanced = true;
+            for (int i = 0; i < 10; i++) {
+                if (count[i] != nextCount[i]) {
+                    balanced = false;
+                    break;
+                }
+            }
+            if (balanced) {
+                return nextNum;
+            }
+            nextNum++;
+        }
+        return nextNum;
+
+=======
+
+        int[] freq = new int[10];
+        int tmp = n;
+        while (tmp > 0) {
+            freq[tmp % 10]++;
+            tmp /= 10;
+        }
+        int[] digits = new int[10];
+        int i = 0;
+        for (int d = 1; d < 10; d++) {
+            while (freq[d] > 0) {
+                digits[i++] = d;
+                freq[d]--;
+            }
+        }
+        int res = 0;
+        for (int j = 0; j < i; j++) {
+            res = res * 10 + digits[j];
+        }
+        return res;
+
+=======
+
+        int[] digitCounts = new int[10];
+        int m = n;
+        while (m > 0) {
+            digitCounts[m % 10]++;
+            m /= 10;
+        }
+        int[] newDigitCounts = new int[10];
+        int i = 1;
+        while (true) {
+            int d = i % 10;
+            newDigitCounts[d]++;
+            if (i >= 10) {
+                newDigitCounts[i / 10] += newDigitCounts[9];
+            }
+            if (i >= 100) {
+                newDigitCounts[i / 100] += newDigitCounts[9] * 2;
+            }
+            if (i >= 1000) {
+                newDigitCounts[i / 1000] += newDigitCounts[9] * 3;
+            }
+            if (i >= 10000) {
+                newDigitCounts[i / 10000] += newDigitCounts[9] * 4;
+            }
+            if (i >= 100000) {
+                newDigitCounts[i / 100000] += newDigitCounts[9] * 5;
+            }
+            boolean found = true;
+            for (int j = 0; j < 10; j++) {
+                if (newDigitCounts[j] != digitCounts[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                return i;
+            }
+            i++;
+        }
+
+=======
+
+        String s = String.valueOf(n);
+        int[] count = new int[10];
+        for(char c : s.toCharArray()) {
+            count[c-'0']++;
+        }
+        int i = 0;
+        int j = 0;
+        for(i = s.length()-1; i >= 0; i--) {
+            count[s.charAt(i)-'0']--;
+            j = s.charAt(i)-'0';
+            for(j++; j < 10; j++) {
+                if(count[j] < j) {
+                    break;
+                }
+            }
+            if(j < 10) {
+                break;
+            }
+        }
+        if(i < 0) {
+            return -1;
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int k = 0; k < i; k++) {
+            sb.append(s.charAt(k));
+        }
+        sb.append(j);
+        count[j]++;
+        for(j = 0; j < 10; j++) {
+            while(count[j] < j) {
+                sb.append(j);
+                count[j]++;
+            }
+        }
+        return Integer.parseInt(sb.toString());
+
+=======
+
+        int k = 0;
+        int[] arr = new int[10];
+        while (n > 0) {
+            arr[n % 10]++;
+            n /= 10;
+            k++;
+        }
+        int[] arr2 = Arrays.copyOf(arr, k);
+        int i = 0;
+        while (i < k) {
+            if (arr2[i] < 9) {
+                arr2[i]++;
+                break;
+            }
+            arr2[i] = 0;
+            i++;
+        }
+        if (i == k) {
+            arr2 = Arrays.copyOf(arr2, k + 1);
+            arr2[k] = 1;
+        }
+        int res = 0;
+        for (int j = arr2.length - 1; j >= 0; j--) {
+            res = res * 10 + arr2[j];
+        }
+        return res;

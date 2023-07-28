@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] prefixSum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            prefixSum[i + 1] = prefixSum[i] + nums[i];
+        }
+        int res = 0;
+        for (int i = firstLen; i <= nums.length - secondLen; i++) {
+            int firstSum = prefixSum[i] - prefixSum[i - firstLen];
+            int secondSum = prefixSum[nums.length] - prefixSum[nums.length - secondLen];
+            res = Math.max(res, firstSum + secondSum);
+        }
+        for (int i = secondLen; i <= nums.length - firstLen; i++) {
+            int firstSum = prefixSum[i] - prefixSum[i - secondLen];
+            int secondSum = prefixSum[nums.length] - prefixSum[nums.length - firstLen];
+            res = Math.max(res, firstSum + secondSum);
+        }
+        for (int i = firstLen; i <= nums.length - secondLen; i++) {
+            int firstSum = prefixSum[i] - prefixSum[i - firstLen];
+            int secondSum = prefixSum[i - firstLen] - prefixSum[i - firstLen - secondLen];
+            res = Math.max(res, firstSum + secondSum);
+        }
+        for (int i = secondLen; i <= nums.length - firstLen; i++) {
+            int firstSum = prefixSum[i] - prefixSum[i - secondLen];
+            int secondSum = prefixSum[i - secondLen] - prefixSum[i - secondLen - firstLen];
+            res = Math.max(res, firstSum + secondSum);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = firstLen; i <= n; i++) {
+            int first = sum[i] - sum[i - firstLen];
+            for (int j = 0; j + secondLen <= i - firstLen; j++) {
+                int second = sum[j + secondLen] - sum[j];
+                ans = Math.max(ans, first + second);
+            }
+            for (int j = i + secondLen; j <= n; j++) {
+                int second = sum[j] - sum[j - secondLen];
+                ans = Math.max(ans, first + second);
+            }
+        }
+        return ans;
+
+=======
+
+        int[] prefix = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        int max = 0;
+        for (int i = 0; i < nums.length - firstLen + 1; i++) {
+            int first = prefix[i + firstLen] - prefix[i];
+            int second = 0;
+            for (int j = 0; j < nums.length - secondLen + 1; j++) {
+                if (j >= i && j <= i + firstLen) {
+                    continue;
+                }
+                second = Math.max(second, prefix[j + secondLen] - prefix[j]);
+            }
+            max = Math.max(max, first + second);
+        }
+        for (int i = 0; i < nums.length - secondLen + 1; i++) {
+            int first = prefix[i + secondLen] - prefix[i];
+            int second = 0;
+            for (int j = 0; j < nums.length - firstLen + 1; j++) {
+                if (j >= i && j <= i + secondLen) {
+                    continue;
+                }
+                second = Math.max(second, prefix[j + firstLen] - prefix[j]);
+            }
+            max = Math.max(max, first + second);
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        for (int i = firstLen; i <= n; i++) {
+            int first = sum[i] - sum[i - firstLen];
+            int max = 0;
+            for (int j = 0; j < i - firstLen; j++) {
+                max = Math.max(max, sum[j + secondLen] - sum[j]);
+            }
+            for (int j = i + secondLen; j <= n; j++) {
+                max = Math.max(max, sum[j] - sum[j - secondLen]);
+            }
+            res = Math.max(res, first + max);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        int res = 0;
+        for (int i = firstLen; i <= n; i++) {
+            int first = preSum[i] - preSum[i - firstLen];
+            res = Math.max(res, first + Math.max(preSum[i - firstLen + secondLen] - preSum[i - firstLen], preSum[n] - preSum[i]));
+        }
+        for (int i = secondLen; i <= n; i++) {
+            int second = preSum[i] - preSum[i - secondLen];
+            res = Math.max(res, second + Math.max(preSum[i - secondLen + firstLen] - preSum[i - secondLen], preSum[n] - preSum[i]));
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        for (int i = 0; i <= n - firstLen; i++) {
+            int firstSum = preSum[i + firstLen] - preSum[i];
+            int secondSum = 0;
+            for (int j = 0; j <= n - secondLen; j++) {
+                if (j >= i && j <= i + firstLen) {
+                    continue;
+                }
+                secondSum = Math.max(secondSum, preSum[j + secondLen] - preSum[j]);
+            }
+            res = Math.max(res, firstSum + secondSum);
+        }
+        for (int i = 0; i <= n - secondLen; i++) {
+            int secondSum = preSum[i + secondLen] - preSum[i];
+            int firstSum = 0;
+            for (int j = 0; j <= n - firstLen; j++) {
+                if (j >= i && j <= i + secondLen) {
+                    continue;
+                }
+                firstSum = Math.max(firstSum, preSum[j + firstLen] - preSum[j]);
+            }
+            res = Math.max(res, firstSum + secondSum);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        int res = 0;
+        for (int i = 0; i + firstLen <= n; i++) {
+            int a = sum[i+firstLen] - sum[i];
+            for (int j = 0; j + secondLen <= n; j++) {
+                if (j >= i + firstLen || j + secondLen <= i) {
+                    res = Math.max(res, a + sum[j+secondLen] - sum[j]);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] + nums[i];
+        }
+        int max = dp[firstLen + secondLen - 1];
+        int firstMax = dp[firstLen - 1];
+        int secondMax = dp[secondLen - 1];
+        for (int i = firstLen + secondLen; i < n; i++) {
+            firstMax = Math.max(firstMax, dp[i - secondLen] - dp[i - secondLen - firstLen]);
+            secondMax = Math.max(secondMax, dp[i - firstLen] - dp[i - firstLen - secondLen]);
+            max = Math.max(max, Math.max(firstMax + dp[i] - dp[i - secondLen], secondMax + dp[i] - dp[i - firstLen]));
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            preSum[i+1] = preSum[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i + firstLen <= n; i++) {
+            int firstSum = preSum[i+firstLen] - preSum[i];
+            ans = Math.max(ans, firstSum + maxSum(preSum, i, secondLen));
+            ans = Math.max(ans, firstSum + maxSum(preSum, i + firstLen, secondLen));
+        }
+        return ans;
+    }
+    
+    private int maxSum(int[] preSum, int start, int len) {
+        int n = preSum.length;
+        int ans = 0;
+        for (int i = start; i + len <= n; i++) {
+            int sum = preSum[i+len] - preSum[i];
+            ans = Math.max(ans, sum);
+        }
+        return ans;
+
+=======
+
+        int[] sum = new int[nums.length+1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i + firstLen <= nums.length; i++) {
+            int first = sum[i+firstLen] - sum[i];
+            for (int j = 0; j + secondLen <= nums.length; j++) {
+                if (i >= j + secondLen || j >= i + firstLen) {
+                    int second = sum[j+secondLen] - sum[j];
+                    ans = Math.max(ans, first + second);
+                }
+            }
+        }
+        return ans;

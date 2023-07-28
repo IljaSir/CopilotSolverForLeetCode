@@ -1,0 +1,105 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut p = 1;
+        for i in 0..k as usize {
+            p = (p * power) % modulo;
+        }
+        let mut h = 0;
+        for i in 0..k as usize {
+            h = (h * power + (s.chars().nth(i).unwrap() as i32 - 'a' as i32 + 1)) % modulo;
+        }
+        if h == hash_value {
+            return s[0..k as usize].to_string();
+        }
+        let mut i = 0;
+        let mut j = k as usize;
+        while j < s.len() {
+            h = (h - (s.chars().nth(i).unwrap() as i32 - 'a' as i32 + 1) * p) % modulo;
+            h = (h + modulo) % modulo;
+            h = (h * power + (s.chars().nth(j).unwrap() as i32 - 'a' as i32 + 1)) % modulo;
+            if h == hash_value {
+                return s[i+1..j+1].to_string();
+            }
+            i += 1;
+            j += 1;
+        }
+        return "".to_string();
+
+=======
+
+        let mut p = 1;
+        let mut hash = 0;
+        let mut result = String::new();
+        for (i, c) in s.chars().enumerate() {
+            if i < k as usize {
+                hash = (hash + (c as i32 - 96) * p) % modulo;
+                p = (p * power) % modulo;
+            } else {
+                hash = (hash + modulo - (s.chars().nth(i - k as usize).unwrap() as i32 - 96) * p % modulo) % modulo;
+                hash = (hash * power + (c as i32 - 96)) % modulo;
+            }
+            if i >= k as usize - 1 && hash == hash_value {
+                result = s[i - k as usize + 1..=i].to_string();
+                break;
+            }
+        }
+        result
+
+=======
+
+        let mut p = 1;
+        let mut h = 0;
+        let mut s = s.as_bytes().to_vec();
+        let mut ans = String::new();
+        for i in 0..k {
+            h = (h + (s[i as usize] - 'a' as u8 + 1) as i32 * p) % modulo;
+            p = p * power % modulo;
+        }
+        if h == hash_value {
+            for i in 0..k {
+                ans.push(s[i as usize] as char);
+            }
+            return ans;
+        }
+        for i in k..s.len() as i32 {
+            h = (h - (s[(i - k) as usize] - 'a' as u8 + 1) as i32 + modulo) % modulo;
+            h = (h * power + (s[i as usize] - 'a' as u8 + 1) as i32) % modulo;
+            if h == hash_value {
+                for j in (i - k + 1)..(i + 1) {
+                    ans.push(s[j as usize] as char);
+                }
+                return ans;
+            }
+        }
+        ans
+
+=======
+
+        let mut power = power;
+        let mut hash = 0;
+        let mut p = 1;
+        let mut s = s.as_bytes().to_vec();
+        for i in 0..k {
+            hash = (hash + (s[i as usize] - b'a' + 1) as i32 * p) % modulo;
+            p = (p * power) % modulo;
+        }
+        if hash == hash_value {
+            return String::from_utf8(s[0..k as usize].to_vec()).unwrap();
+        }
+        for i in k..s.len() as i32 {
+            hash = (hash - (s[(i - k) as usize] - b'a' + 1) as i32 * power) % modulo;
+            hash = (hash * power) % modulo;
+            hash = (hash + (s[i as usize] - b'a' + 1) as i32) % modulo;
+            if hash == hash_value {
+                return String::from_utf8(s[(i - k + 1) as usize..(i + 1) as usize].to_vec()).unwrap();
+            }
+        }
+        "".to_string()

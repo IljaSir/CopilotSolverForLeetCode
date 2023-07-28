@@ -1,0 +1,257 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        res = []
+        while matrix:
+            res += matrix.pop(0)
+            if matrix and matrix[0]:
+                for row in matrix:
+                    res.append(row.pop())
+            if matrix:
+                res += matrix.pop()[::-1]
+            if matrix and matrix[0]:
+                for row in matrix[::-1]:
+                    res.append(row.pop(0))
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        left, right, top, bottom = 0, n-1, 0, m-1
+        res = []
+        while left <= right and top <= bottom:
+            for i in range(left, right+1):
+                res.append(matrix[top][i])
+            for i in range(top+1, bottom+1):
+                res.append(matrix[i][right])
+            if left < right and top < bottom:
+                for i in range(right-1, left, -1):
+                    res.append(matrix[bottom][i])
+                for i in range(bottom, top, -1):
+                    res.append(matrix[i][left])
+            left, right, top, bottom = left+1, right-1, top+1, bottom-1
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        visited = [[False for _ in range(n)] for _ in range(m)]
+        directions = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+        direction_index = 0
+        row, column = 0, 0
+        result = []
+        for _ in range(m * n):
+            result.append(matrix[row][column])
+            visited[row][column] = True
+            next_row, next_column = row + directions[direction_index][0], column + directions[direction_index][1]
+            if not (0 <= next_row < m and 0 <= next_column < n and not visited[next_row][next_column]):
+                direction_index = (direction_index + 1) % 4
+            row += directions[direction_index][0]
+            column += directions[direction_index][1]
+        return result
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        i, j = 0, 0
+        result = []
+        while m > 0 and n > 0:
+            # if one row/column left, no circle can be formed
+            if m == 1:
+                for _ in range(n):
+                    result.append(matrix[i][j])
+                    j += 1
+                break
+            elif n == 1:
+                for _ in range(m):
+                    result.append(matrix[i][j])
+                    i += 1
+                break
+            # below, process a circle
+            # top - move right
+            for _ in range(n-1):
+                result.append(matrix[i][j])
+                j += 1
+            # right - move down
+            for _ in range(m-1):
+                result.append(matrix[i][j])
+                i += 1
+            # bottom - move left
+            for _ in range(n-1):
+                result.append(matrix[i][j])
+                j -= 1
+            # left - move up
+            for _ in range(m-1):
+                result.append(matrix[i][j])
+                i -= 1
+            i += 1
+            j += 1
+            m -= 2
+            n -= 2
+        return result
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        visited = [[False] * n for _ in range(m)]
+        res = []
+        i, j = 0, 0
+        di, dj = 0, 1
+        for _ in range(m * n):
+            res.append(matrix[i][j])
+            visited[i][j] = True
+            if not visited[(i + di) % m][(j + dj) % n]:
+                i += di
+                j += dj
+            else:
+                di, dj = dj, -di
+                i += di
+                j += dj
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        res = []
+        i, j = 0, 0
+        while len(res) < m * n:
+            while j < n and matrix[i][j] is not None:
+                res.append(matrix[i][j])
+                matrix[i][j] = None
+                j += 1
+            j -= 1
+            i += 1
+            while i < m and matrix[i][j] is not None:
+                res.append(matrix[i][j])
+                matrix[i][j] = None
+                i += 1
+            i -= 1
+            j -= 1
+            while j >= 0 and matrix[i][j] is not None:
+                res.append(matrix[i][j])
+                matrix[i][j] = None
+                j -= 1
+            j += 1
+            i -= 1
+            while i >= 0 and matrix[i][j] is not None:
+                res.append(matrix[i][j])
+                matrix[i][j] = None
+                i -= 1
+            i += 1
+            j += 1
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix: return []
+        m, n = len(matrix), len(matrix[0])
+        res = []
+        i, j = 0, 0
+        while i < m and j < n:
+            for k in range(j, n):
+                res.append(matrix[i][k])
+            i += 1
+            for k in range(i, m):
+                res.append(matrix[k][n-1])
+            n -= 1
+            if i < m:
+                for k in range(n-1, j-1, -1):
+                    res.append(matrix[m-1][k])
+                m -= 1
+            if j < n:
+                for k in range(m-1, i-1, -1):
+                    res.append(matrix[k][j])
+                j += 1
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        n = len(matrix[0])
+        m = len(matrix)
+        l = 0
+        r = n - 1
+        t = 0
+        b = m - 1
+        res = []
+        while l <= r and t <= b:
+            for i in range(l, r + 1):
+                res.append(matrix[t][i])
+            t += 1
+            for i in range(t, b + 1):
+                res.append(matrix[i][r])
+            r -= 1
+            if l <= r and t <= b:
+                for i in range(r, l - 1, -1):
+                    res.append(matrix[b][i])
+                b -= 1
+                for i in range(b, t - 1, -1):
+                    res.append(matrix[i][l])
+                l += 1
+        return res
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix:
+            return []
+        m, n = len(matrix), len(matrix[0])
+        ans = []
+        seen = [[False] * n for _ in range(m)]
+        def dfs(i, j, di, dj):
+            if seen[i][j]:
+                return
+            ans.append(matrix[i][j])
+            seen[i][j] = True
+            if 0 <= i + di < m and 0 <= j + dj < n and not seen[i + di][j + dj]:
+                dfs(i + di, j + dj, di, dj)
+            else:
+                dfs(j, m - i - 1, dj, -di)
+        dfs(0, 0, 0, 1)
+        return ans
+
+=======
+
+def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        m = len(matrix)
+        n = len(matrix[0])
+        #print(m, n)
+        res = []
+        i, j = 0, 0
+        while i < m and j < n:
+            #print(i, j)
+            for k in range(j, n):
+                res.append(matrix[i][k])
+            i += 1
+            for k in range(i, m):
+                res.append(matrix[k][n-1])
+            n -= 1
+            if i < m:
+                for k in range(n-1, j-1, -1):
+                    res.append(matrix[m-1][k])
+                m -= 1
+            if j < n:
+                for k in range(m-1, i-1, -1):
+                    res.append(matrix[k][j])
+                j += 1
+        return res

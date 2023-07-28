@@ -1,0 +1,161 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int max_ending_here = 1;
+        int min_ending_here = 1;
+        int max_so_far = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > 0) {
+                max_ending_here = max_ending_here * nums[i];
+                min_ending_here = min(min_ending_here * nums[i], 1);
+            } else if (nums[i] == 0) {
+                max_ending_here = 1;
+                min_ending_here = 1;
+            } else {
+                int temp = max_ending_here;
+                max_ending_here = max(min_ending_here * nums[i], 1);
+                min_ending_here = temp * nums[i];
+            }
+            if (max_so_far < max_ending_here) {
+                max_so_far = max_ending_here;
+            }
+        }
+        return max_so_far;
+
+=======
+
+        int n = nums.size();
+        vector<int> dpmax(n), dpmin(n);
+        dpmax[0] = nums[0];
+        dpmin[0] = nums[0];
+        int ans = nums[0];
+        for (int i = 1; i < n; i++) {
+            dpmax[i] = max(nums[i], max(dpmax[i - 1] * nums[i], dpmin[i - 1] * nums[i]));
+            dpmin[i] = min(nums[i], min(dpmax[i - 1] * nums[i], dpmin[i - 1] * nums[i]));
+            ans = max(ans, dpmax[i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = nums[0];
+        int max_val = nums[0];
+        int min_val = nums[0];
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < 0) swap(max_val, min_val);
+            max_val = max(nums[i], max_val * nums[i]);
+            min_val = min(nums[i], min_val * nums[i]);
+            ans = max(ans, max_val);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = nums[0];
+        int max_prod = nums[0];
+        int min_prod = nums[0];
+        for (int i = 1; i < n; i++) {
+            int curr = nums[i];
+            int temp_max = max({curr, curr*max_prod, curr*min_prod});
+            int temp_min = min({curr, curr*max_prod, curr*min_prod});
+            max_prod = temp_max;
+            min_prod = temp_min;
+            ans = max(ans, max_prod);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxVal = nums[0];
+        int minVal = nums[0];
+        int maxProd = nums[0];
+        for (int i = 1; i < n; i++) {
+            if (nums[i] < 0) {
+                swap(maxVal, minVal);
+            }
+            maxVal = max(nums[i], maxVal * nums[i]);
+            minVal = min(nums[i], minVal * nums[i]);
+            maxProd = max(maxProd, maxVal);
+        }
+        return maxProd;
+
+=======
+
+        int maxProduct = nums[0];
+        int minProduct = nums[0];
+        int ans = nums[0];
+        for (int i = 1; i < nums.size(); i++) {
+            int num = nums[i];
+            int maxProductNext = max(num, max(num * maxProduct, num * minProduct));
+            int minProductNext = min(num, min(num * maxProduct, num * minProduct));
+            maxProduct = maxProductNext;
+            minProduct = minProductNext;
+            ans = max(ans, maxProduct);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxProd = nums[0];
+        int minProd = nums[0];
+        int maxAns = nums[0];
+        for (int i = 1; i < n; i++) {
+            int curr = nums[i];
+            int newMax = max({curr, maxProd * curr, minProd * curr});
+            int newMin = min({curr, maxProd * curr, minProd * curr});
+            maxProd = newMax;
+            minProd = newMin;
+            maxAns = max(maxAns, maxProd);
+        }
+        return maxAns;
+
+=======
+
+        int n = nums.size();
+        int maxProduct = nums[0];
+        int minProduct = nums[0];
+        int ans = nums[0];
+        
+        for (int i = 1; i < n; i++) {
+            int maxTemp = maxProduct;
+            int minTemp = minProduct;
+            maxProduct = max(max(maxTemp*nums[i], minTemp*nums[i]), nums[i]);
+            minProduct = min(min(maxTemp*nums[i], minTemp*nums[i]), nums[i]);
+            ans = max(ans, maxProduct);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxProd = 1;
+        int minProd = 1;
+        int ans = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] < 0) swap(maxProd, minProd);
+            maxProd = max(maxProd * nums[i], nums[i]);
+            minProd = min(minProd * nums[i], nums[i]);
+            ans = max(ans, maxProd);
+        }
+        return ans;
+
+=======
+
+        int size = nums.size();
+        if (size == 0) return 0;
+        int minVal = nums[0];
+        int maxVal = nums[0];
+        int maxProd = nums[0];
+        for (int i = 1; i < size; ++i) {
+            int tmp = maxVal;
+            maxVal = max(max(maxVal * nums[i], minVal * nums[i]), nums[i]);
+            minVal = min(min(tmp * nums[i], minVal * nums[i]), nums[i]);
+            maxProd = max(maxProd, maxVal);
+        }
+        return maxProd;

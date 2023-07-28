@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int flipgame(vector<int>& fronts, vector<int>& backs) {
+        
+        int n = fronts.size();
+        unordered_set<int> both;
+        for (int i = 0; i < n; ++i) {
+            if (fronts[i] == backs[i]) both.insert(fronts[i]);
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (both.find(fronts[i]) == both.end()) ans = min(ans, fronts[i]);
+            if (both.find(backs[i]) == both.end()) ans = min(ans, backs[i]);
+        }
+        return ans == INT_MAX ? 0 : ans;
+    }
+};

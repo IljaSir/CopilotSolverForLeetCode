@@ -1,0 +1,533 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut dominoes = dominoes.into_bytes();
+        let n = dominoes.len();
+        let mut force = vec![0; n];
+        let mut f = 0;
+        for i in 0..n {
+            if dominoes[i] == b'R' {
+                f = n;
+            } else if dominoes[i] == b'L' {
+                f = 0;
+            } else {
+                f = f.saturating_sub(1);
+            }
+            force[i] += f;
+        }
+        for i in (0..n).rev() {
+            if dominoes[i] == b'L' {
+                f = n;
+            } else if dominoes[i] == b'R' {
+                f = 0;
+            } else {
+                f = f.saturating_sub(1);
+            }
+            force[i] -= f;
+        }
+        for i in 0..n {
+            dominoes[i] = match force[i] {
+                x if x > 0 => b'R',
+                x if x < 0 => b'L',
+                _ => b'.',
+            }
+        }
+        String::from_utf8(dominoes).unwrap()
+
+=======
+
+        let mut dominoes = dominoes.into_bytes();
+        let n = dominoes.len();
+        let mut force = vec![0; n];
+        let mut f = 0;
+        for i in 0..n {
+            if dominoes[i] == b'R' {
+                f = n;
+            } else if dominoes[i] == b'L' {
+                f = 0;
+            } else {
+                f = f.saturating_sub(1);
+            }
+            force[i] += f;
+        }
+        for i in (0..n).rev() {
+            if dominoes[i] == b'L' {
+                f = n;
+            } else if dominoes[i] == b'R' {
+                f = 0;
+            } else {
+                f = f.saturating_sub(1);
+            }
+            force[i] -= f;
+        }
+        for i in 0..n {
+            dominoes[i] = match force[i] {
+                x if x > 0 => b'R',
+                x if x < 0 => b'L',
+                _ => b'.',
+            }
+        }
+        String::from_utf8(dominoes).unwrap()
+
+=======
+
+        let mut dominoes = dominoes.into_bytes();
+        let n = dominoes.len();
+        let mut forces = vec![0; n];
+        let mut force = 0;
+        for i in 0..n {
+            if dominoes[i] == b'R' {
+                force = n;
+            } else if dominoes[i] == b'L' {
+                force = 0;
+            } else {
+                force = force.saturating_sub(1);
+            }
+            forces[i] += force;
+        }
+        force = 0;
+        for i in (0..n).rev() {
+            if dominoes[i] == b'L' {
+                force = n;
+            } else if dominoes[i] == b'R' {
+                force = 0;
+            } else {
+                force = force.saturating_sub(1);
+            }
+            forces[i] -= force;
+        }
+        for i in 0..n {
+            dominoes[i] = if forces[i] > 0 {
+                b'R'
+            } else if forces[i] < 0 {
+                b'L'
+            } else {
+                b'.'
+            };
+        }
+        unsafe { String::from_utf8_unchecked(dominoes) }
+    }
+}
+
+=======
+
+        let n = dominoes.len();
+        let mut res = vec!['.'; n];
+        let mut l = -1;
+        let mut r = -1;
+        for i in 0..n {
+            if dominoes[i..].starts_with('L') {
+                if l == -1 {
+                    for j in 0..i {
+                        res[j] = 'L';
+                    }
+                } else {
+                    let mut j = l + 1;
+                    while j < i {
+                        res[j] = 'L';
+                        j += 1;
+                    }
+                }
+                l = i as i32;
+            } else if dominoes[i..].starts_with('R') {
+                if l == -1 {
+                    r = i as i32;
+                } else {
+                    let mut j = l + 1;
+                    let mut k = i as i32 - 1;
+                    while j < k {
+                        res[j as usize] = 'R';
+                        res[k as usize] = 'L';
+                        j += 1;
+                        k -= 1;
+                    }
+                    if j == k {
+                        res[j as usize] = '.';
+                    }
+                    l = i as i32;
+                }
+            }
+        }
+        if l != -1 {
+            for j in (l + 1) as usize..n {
+                res[j] = 'R';
+            }
+        } else if r != -1 {
+            for j in r as usize..n {
+                res[j] = 'R';
+            }
+        }
+        res.iter().collect()
+    }
+}
+
+=======
+
+        let mut dominoes = dominoes.as_bytes().to_vec();
+        let mut left = -1;
+        let mut right = -1;
+        for i in 0..dominoes.len() {
+            if dominoes[i] == b'R' {
+                right = i as i32;
+            } else if dominoes[i] == b'L' {
+                if right > left {
+                    let mut j = right + 1;
+                    let mut k = i as i32 - 1;
+                    while j < k {
+                        dominoes[j as usize] = b'R';
+                        dominoes[k as usize] = b'L';
+                        j += 1;
+                        k -= 1;
+                    }
+                    if j == k {
+                        dominoes[j as usize] = b'.';
+                    }
+                } else {
+                    for j in (left + 1)..i as i32 {
+                        dominoes[j as usize] = b'L';
+                    }
+                }
+                left = i as i32;
+            }
+        }
+        if right > left {
+            for j in (left + 1)..dominoes.len() as i32 {
+                dominoes[j as usize] = b'R';
+            }
+        }
+        std::str::from_utf8(&dominoes).unwrap().to_string()
+    }
+}
+
+=======
+
+        let mut dominoes = dominoes.into_bytes();
+        let mut left = vec![];
+        let mut right = vec![];
+        for i in 0..dominoes.len() {
+            if dominoes[i] == b'L' {
+                left.push(i);
+            } else if dominoes[i] == b'R' {
+                right.push(i);
+            }
+        }
+        for i in left {
+            let mut j = i;
+            while j > 0 && dominoes[j-1] == b'.' {
+                dominoes[j-1] = b'L';
+                j -= 1;
+            }
+        }
+        for i in right {
+            let mut j = i;
+       
+     while j < dominoes.len() - 1 && dominoes[j+1] == b'.' {
+        let mut states = vec![None; dominoes.len()];                dominoes[j+1] = b'R';
+          t mu  prev = No e;
+        for (i, c) in dominoes.chars().enumerate() {
+            match c {
+                'L' => {
+                    states[i] = Some(c);
+                    prev = Some(c);
+                }
+                'R' => {
+                    states[i] = Some(c);
+                    prev = Some(c);
+                }
+                _ => {
+                    if let Some(p) = prev {
+                        states[i] = Some(p);
+                    }
+                }
+            }
+        }
+        let mut prev   None;
+        for i in (0..j += 1;()).rev() {
+            match states[i] {
+                Some(c) => {
+                    prev = Some(c);
+                }
+                None => {
+                    if let Some(p) = prev {
+                        states[i] = Somep
+                    }
+                }
+            }
+        }
+            }ut result = String::new();
+        for (i, c) in states.iter().enumerate() {
+            match c {
+                Some('L') => result.push('L'),
+                Some('R') => reslt.push('R'),
+                _ => {
+                    if i > 0 && i < states.len() - 1 {
+                        if sates[i - 1] ==Some('R') && states[i + 1] == Some('L') {
+                            sult.puh('.');
+                       } else if states[i - 1] = Some('R') {
+                           result.push('R');
+                        } else if states[i + 1] == Some('L') {
+                            result.push('L');
+                        } else {
+                            result.push('.');
+                        }
+                    } else if i == 0 {
+                        if states[i + 1] == Some('L') {
+                            result.push('L');
+                        } else {
+                            result.push('.');
+                        }
+                    } else if i == states.len() - 1 {
+                        if states[i - 1] == Some('R') {
+                            result.push('R');
+                        } else {
+                            result.push('.');
+                        }
+                    }
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let n = dominoes.len();
+        let mut res = 
+        }
+        String::from_utf8(dominoes).unwrap()
+    }
+}
+
+=======
+
+        let mut dominoes = dominoes.as_bytes().to_vec();
+        let mut changed = true;
+        while changed {
+            changed = false;
+            let mut next = vec![b'.'; dominoes.len()];
+            for i in 0..dominoes.len() {
+                if dominoes[i] == b'L' {
+                    if i > 0 && next[i-1] == b'.' {
+                        next[i-1] = b'L';
+                        changed = true;
+                    }
+                } else if dominoes[i] == b'R' {
+                    if i < dominoes.len() - 1 && next[i+1] == b'.' {
+                        next[i+1] = b'R';
+                        changed = true;
+                    }
+                }
+            }
+            dominoes = next;
+        }
+        String::from_utf8(dominoes).unwrap()
+    }
+}
+
+=======
+
+        let mut states = vec![None; dominoes.len()];
+        let mut prev = None;
+        for (i, c) in dominoes.chars().enumerate() {
+            match c {
+                'L' => {
+                    states[i] = Some(c);
+                    prev = Some(c);
+                }
+                'R' => {
+                    states[i] = Some(c);
+                    prev = Some(c);
+                }
+                _ => {
+                    if let Some(p) = prev {
+                        states[i] = Some(p);
+                    }
+                }
+            }
+        }
+        let mut prev = None;
+        for i in (0..dominoes.len()).rev() {
+            match states[i] {
+                Some(c) => {
+                    prev = Some(c);
+                }
+                None => {
+                    if let Some(p) = prev {
+                        states[i] = Some(p);
+                    }
+                }
+            }
+        }
+        let mut result = String::new();
+        for (i, c) in states.iter().enumerate() {
+            match c {
+                Some('L') => result.push('L'),
+                Some('R') => result.push('R'),
+                _ => {
+                    if i > 0 && i < states.len() - 1 {
+                        if states[i - 1] == Some('R') && states[i + 1] == Some('L') {
+                            result.push('.');
+                        } else if states[i - 1] == Some('R') {
+                            result.push('R');
+                        } else if states[i + 1] == Some('L') {
+                            result.push('L');
+                        } else {
+                            result.push('.');
+                        }
+                    } else if i == 0 {
+ 
+
+=======
+
+        let mut res = String::new();
+        let mut left = 0;
+        let mut right = 0;
+        let mut cur = 0;
+        let mut dominoes = dominoes.chars().collect::<Vec<char>>();
+        while right < dominoes.len() {
+            if dominoes[right] == '.' {
+                right += 1;
+                continue;
+            }
+            if dominoes[right] == 'L' {
+                if dominoes[left] == 'L' {
+                    for i in left..right {
+                        dominoes[i] = 'L';
+                    }
+                } else if dominoes[left] == 'R' {
+                    let mut i = left;
+                    let mut j = right;
+                    while i < j {
+                        dominoes[i] = 'R';
+                        dominoes[j] = 'L';
+                        i += 1;
+                        j -= 1;
+                    }
+                }
+                left = right;
+            } else {
+                if dominoes[left] == 'R' {
+                    for i in left..right {
+                        dominoes[i] = 'R';
+                    }
+                }
+                left = right;
+            }
+            right += 1;
+        }
+        if dominoes[left] == 'R' {
+            for i in left..right {
+                dominoes[i] = 'R';
+            }
+        }
+        for c in dominoes {
+            res.push(c);
+        }
+        res                       if states[i + 1] == Some('L') {
+                            result.push('L');
+                        } else {
+                            result.push('.');
+                        }
+                    } else if i == states.len() - 1 {
+                        if states[i - 1] == Some('R') {
+                            result.push('R');
+                        } else {
+                            result.push('.');
+                        }
+                    }
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let n = dominoes.len();
+        let mut res = vec!['.'; n];
+        let mut last = -1;
+        let mut last_dir = 'L';
+        for (i, c) in dominoes.chars().enumerate() {
+            if c == 'R' {
+                if last_dir == 'L' {
+                    let mid = (i - last) / 2;
+                    for j in 0..mid {
+                        res[last + 1 + j] = 'R';
+                        res[i - 1 - j] = 'L';
+                    }
+                    if (i - last) % 2 == 1 {
+                        res[last + mid + 1] = '.';
+                    }
+                } else {
+                    for j in last + 1..i {
+                        res[j] = 'R';
+                    }
+                }
+                last = i as i32;
+                last_dir = 'R';
+            } else if c == 'L' {
+                if last_dir == 'R' {
+                    for j in last + 1..i {
+                        res[j] = 'R';
+                    }
+                }
+                last = i as i32;
+                last_dir = 'L';
+            }
+        }
+        if last_dir == 'R' {
+            for j in last + 1..n {
+                res[j] = 'R';
+            }
+        }
+        res.into_iter().collect()
+    }
+}
+
+=======
+
+        let mut result = dominoes.clone();
+        let mut last = '.';
+        let mut last_i = 0;
+        for (i, c) in dominoes.chars().enumerate() {
+            match c {
+                'R' => {
+                    if last == 'R' {
+                        for j in last_i..i {
+                            result.as_bytes_mut()[j] = 'R' as u8;
+                        }
+                    }
+                    last = 'R';
+                    last_i = i;
+                }
+                'L' => {
+                    if last == 'R' {
+                        let mid = (i + last_i) / 2;
+                        for j in last_i..mid {
+                            result.as_bytes_mut()[j] = 'R' as u8;
+                        }
+                        for j in mid..i {
+                            result.as_bytes_mut()[j] = 'L' as u8;
+                        }
+                    } else {
+                        for j in last_i..i {
+                            result.as_bytes_mut()[j] = 'L' as u8;
+                        }
+                    }
+                    last = 'L';
+                    last_i = i;
+                }
+                _ => {}
+            }
+        }
+        if last == 'R' {
+            for j in last_i..dominoes.len() {
+                result.as_bytes_mut()[j] = 'R' as u8;
+            }
+        }
+        result
+    }
+}

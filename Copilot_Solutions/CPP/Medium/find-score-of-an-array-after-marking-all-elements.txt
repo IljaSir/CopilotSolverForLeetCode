@@ -1,0 +1,242 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, -1);
+        vector<int> right(n, n);
+        stack<int> st;
+        for (int i = 0; i < n; ++i) {
+            while (!st.empty() && nums[st.top()] > nums[i]) {
+                right[st.top()] = i;
+                st.pop();
+            }
+            if (!st.empty()) {
+                left[i] = st.top();
+            }
+            st.push(i);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (left[i] != -1 && right[i] != n) {
+                ans += nums[i];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, -1), right(n, n);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) {
+                right[s.top()] = i;
+                s.pop();
+            }
+            if (!s.empty()) left[i] = s.top();
+            s.push(i);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (left[i] == -1 && right[i] == n) {
+                ans += nums[i];
+            }
+        }
+        return ans;
+
+=======
+
+        long long sum = 0;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                if (nums[i] < nums[i + 1]) {
+                    sum += nums[i];
+                    nums[i] = INT_MAX;
+                }
+            } else if (i == n - 1) {
+                if (nums[i] < nums[i - 1]) {
+                    sum += nums[i];
+                    nums[i] = INT_MAX;
+                }
+            } else {
+                if (nums[i] < nums[i - 1] && nums[i] < nums[i + 1]) {
+                    sum += nums[i];
+                    nums[i] = INT_MAX;
+                }
+            }
+        }
+        return sum;
+
+=======
+
+        int n = nums.size();
+        int i = 0;
+        long long score = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && nums[j] == nums[i]) j++;
+            score += nums[i];
+            i = j + 1;
+        }
+        return score;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            pre[i+1] = pre[i] + nums[i];
+        }
+        long long ans = 0;
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; i++) {
+            int l = max(0, i-1);
+            int r = min(n-1, i+1);
+            int sum = pre[r+1] - pre[l];
+            int mn = nums[i];
+            if (l > 0) {
+                mn = min(mn, nums[l-1]);
+            }
+            if (r < n-1) {
+                mn = min(mn, nums[r+1]);
+            }
+            dp[i] = sum - mn;
+        }
+        for (int i = 0; i < n; i++) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n, 0);
+        for (int i = 0; i < n; ++i) {
+            pre[i] = nums[i];
+            if (i > 0) pre[i] = min(pre[i], pre[i - 1]);
+            if (i > 1) pre[i] = min(pre[i], pre[i - 2]);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (i > 0 && nums[i] == pre[i - 1]) continue;
+            if (i > 1 && nums[i] == pre[i - 2]) continue;
+            ans += nums[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> mark(n, 0);
+        long long score = 0;
+        while (true) {
+            int min = INT_MAX;
+            int minIndex = -1;
+            for (int i = 0; i < n; i++) {
+                if (mark[i] == 0 && nums[i] < min) {
+                    min = nums[i];
+                    minIndex = i;
+                }
+            }
+            if (minIndex == -1) {
+                break;
+            }
+            score += nums[minIndex];
+            mark[minIndex] = 1;
+            if (minIndex - 1 >= 0) {
+                mark[minIndex - 1] = 1;
+            }
+            if (minIndex + 1 < n) {
+                mark[minIndex + 1] = 1;
+            }
+        }
+        return score;
+
+=======
+
+        long long score = 0;
+        int n = nums.size();
+        vector<int> mark(n, 0);
+        int i = 0;
+        while(i < n) {
+            int j = i;
+            while(j < n && nums[j] == nums[i]) {
+                j++;
+            }
+            int x = i + 1;
+            while(x < n && mark[x] == 1) {
+                x++;
+            }
+            if(x < n) {
+                score += nums[i];
+                mark[x] = 1;
+                if(x > 0) {
+                    mark[x - 1] = 1;
+                }
+                if(x < n - 1) {
+                    mark[x + 1] = 1;
+                }
+            }
+            i = j;
+        }
+        return score;
+
+=======
+
+        long long score = 0;
+        int n = nums.size();
+        vector<bool> marked(n);
+        while (true) {
+            int minVal = INT_MAX;
+            int minIndex = -1;
+            for (int i = 0; i < n; ++i) {
+                if (marked[i]) continue;
+                if (nums[i] < minVal) {
+                    minVal = nums[i];
+                    minIndex = i;
+                }
+            }
+            if (minIndex == -1) break;
+            score += minVal;
+            marked[minIndex] = true;
+            if (minIndex > 0) marked[minIndex - 1] = true;
+            if (minIndex < n - 1) marked[minIndex + 1] = true;
+        }
+        return score;
+
+=======
+
+        vector<int> v(nums.size(),0);
+        long long score = 0;
+        int i = 0;
+        while(i < nums.size()){
+            int j = i;
+            while(j < nums.size() && v[j] == 1){
+                j++;
+            }
+            if(j == nums.size()){
+                break;
+            }
+            int k = j;
+            while(k < nums.size() && v[k] == 0){
+                k++;
+            }
+            int index = j;
+            for(int m = j; m < k; m++){
+                if(nums[m] < nums[index]){
+                    index = m;
+                }
+            }
+            score += nums[index];
+            v[index] = 1;
+            if(index > 0){
+                v[index - 1] = 1;
+            }
+            if(index < nums.size() - 1){
+                v[index + 1] = 1;
+            }
+            i = index + 1;
+        }
+        return score;

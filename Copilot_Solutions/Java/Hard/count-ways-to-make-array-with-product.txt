@@ -1,0 +1,291 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] dp = new int[k + 1];
+            for (int j = 1; j <= k; j++) {
+                dp[j] = j;
+            }
+            for (int j = 2; j <= n; j++) {
+                int[] temp = new int[k + 1];
+                for (int l = 1; l <= k; l++) {
+                    for (int m = l; m <= k; m += l) {
+                        temp[m] = (temp[m] + dp[l]) % mod;
+                    }
+                }
+                dp = temp;
+            }
+            int sum = 0;
+            for (int j = 1; j <= k; j++) {
+                sum = (sum + dp[j]) % mod;
+            }
+            ans[i] = sum;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] dp = new int[k + 1];
+            for (int j = 1; j <= k; j++) {
+                dp[j] = pow(j, n, mod);
+                for (int l = 2; j * l <= k; l++) {
+                    dp[j] = (dp[j] - dp[j * l] + mod) % mod;
+                }
+            }
+            ans[i] = dp[1];
+        }
+        return ans;
+    }
+
+    private int pow(int x, int n, int mod) {
+        if (n == 0) {
+            return 1;
+        }
+        long u = pow(x, n / 2, mod);
+        u = u * u % mod;
+        if (n % 2 == 1) {
+            u = u * x % mod;
+        }
+        return (int) u;
+
+=======
+
+        int[] result = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] dp = new int[k + 1];
+            dp[0] = 0;
+            dp[1] = 1;
+            for (int j = 2; j <= k; j++) {
+                int temp = 0;
+                for (int l = 1; l * l <= j; l++) {
+                    if (j % l == 0) {
+                        temp += dp[l];
+                        if (l * l != j) {
+                            temp += dp[j / l];
+                        }
+                    }
+                }
+                dp[j] = temp % 1000000007;
+            }
+            result[i] = dp[k];
+        }
+        return result;
+
+=======
+
+        int mod = 1000000007;
+        int[] ret = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] dp = new int[n + 1];
+            dp[0] = 1;
+            for (int j = 1; j <= n; j++) {
+                for (int m = 1; m * j <= n; m++) {
+                    dp[m * j] = (dp[m * j] + dp[j]) % mod;
+                }
+            }
+            ret[i] = (int) (((long) dp[n] * k) % mod);
+        }
+        return ret;
+
+=======
+
+        int M = 1000000007;
+        int[] result = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] f = new int[k + 1];
+            for (int j = 1; j <= k; j++) {
+                f[j] = j;
+            }
+            for (int j = 2; j <= n; j++) {
+                for (int l = k; l >= 1; l--) {
+                    for (int m = 1; m <= k; m++) {
+                        if (m * l > k) {
+                            break;
+                        }
+                        f[m * l] = (f[m * l] + f[l]) % M;
+                    }
+                }
+            }
+            result[i] = f[k];
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[queries.length];
+        for(int i=0; i<queries.length; i++){
+            ans[i] = helper(queries[i][0], queries[i][1]);
+        }
+        return ans;
+    }
+    public int helper(int n, int k){
+        int mod = 1000000007;
+        int[][] dp = new int[n+1][k+1];
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=k; j++){
+                if(i==1){
+                    dp[i][j] = 1;
+                }else{
+                    for(int l=1; l<=j/l; l++){
+                        if(j%l==0){
+                            dp[i][j] = (dp[i][j]+dp[i-1][l])%mod;
+                            if(j/l!=l){
+                                dp[i][j] = (dp[i][j]+dp[i-1][j/l])%mod;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int mod = 1000000007;
+        int[] dp = new int[10001];
+        dp[1] = 1;
+        for (int i = 2; i < dp.length; i++) {
+            dp[i] = (int) ((long) dp[i - 1] * i % mod);
+        }
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int[] primeFactor = new int[10001];
+            for (int j = 2; j <= k; j++) {
+                while (k % j == 0) {
+                    primeFactor[j]++;
+                    k /= j;
+                }
+            }
+            long res = 1;
+            for (int j = 1; j < primeFactor.length; j++) {
+                if (primeFactor[j] > 0) {
+                    res = res * dp[primeFactor[j] * n] % mod;
+                    res = res * pow(dp[primeFactor[j]], mod - 2, mod) % mod;
+                }
+            }
+            ans[i] = (int) res;
+        }
+        return ans;
+    }
+
+    private int pow(int x, int p, int mod) {
+        long res = 1;
+        while (p > 0) {
+            if ((p & 1) == 1) {
+                res = res * x % mod;
+            }
+            x = (int) ((long) x * x % mod);
+            p >>= 1;
+        }
+        return (int) res;
+
+=======
+
+        int[] answer = new int[queries.length];
+        for(int i=0; i<queries.length; i++){
+            answer[i] = waysToFillArray(queries[i][0], queries[i][1]);
+        }
+        return answer;
+    }
+    
+    public int waysToFillArray(int n, int k){
+        int M = 1000000007;
+        int[] dp = new int[k+1];
+        for(int i=1; i<=k; i++){
+            dp[i] = k/i;
+        }
+        for(int i=2; i<=n; i++){
+            int[] dp1 = new int[k+1];
+            for(int j=1; j<=k; j++){
+                for(int l=j; l<=k; l+=j){
+                    dp1[j] = (dp1[j] + dp[l])%M;
+                }
+            }
+            dp = dp1;
+        }
+        int ans = 0;
+        for(int i=1; i<=k; i++){
+            ans = (ans + dp[i])%M;
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[queries.length];
+        for(int i=0;i<queries.length;i++){
+            int n = queries[i][0];
+            int k = queries[i][1];
+            res[i] = helper(n,k);
+        }
+        return res;
+    }
+    public int helper(int n, int k){
+        int mod = 1000000007;
+        int[] dp = new int[k+1];
+        for(int i=1;i<=k;i++){
+            dp[i] = k/i;
+        }
+        for(int i=2;i<=n;i++){
+            int[] temp = new int[k+1];
+            for(int j=1;j<=k;j++){
+                for(int l=1;l*j<=k;l++){
+                    temp[j*l] = (temp[j*l] + dp[j])%mod;
+                }
+            }
+            dp = temp;
+        }
+        int sum = 0;
+        for(int i=1;i<=k;i++){
+            sum = (sum + dp[i])%mod;
+        }
+        return sum;
+
+=======
+
+        int mod = 1000000007;
+        int[] res = new int[queries.length];
+        int[] dp = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            dp[i] = 1;
+            for (int j = 2 * i; j <= 100000; j += i) {
+                dp[j] = (dp[j] + dp[i]) % mod;
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int n = queries[i][0];
+            int k = queries[i][1];
+            int ways = 1;
+            for (int j = 2; j * j <= k; j++) {
+                if (k % j == 0) {
+                    int cnt = 0;
+                    while (k % j == 0) {
+                        k /= j;
+                        cnt++;
+                    }
+                    ways = (int) ((long) ways * dp[n + cnt - 1] % mod);
+                }
+            }
+            if (k > 1) {
+                ways = (int) ((long) ways * dp[n] % mod);
+            }
+            res[i] = ways;
+        }
+        return res;

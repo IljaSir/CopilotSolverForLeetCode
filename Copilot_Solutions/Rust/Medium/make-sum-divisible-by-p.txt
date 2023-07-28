@@ -1,0 +1,159 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut sum = 0;
+        for &x in &nums {
+            sum = (sum + x) % p;
+        }
+        if sum == 0 {
+            return 0;
+        }
+        let mut mp = std::collections::HashMap::new();
+        mp.insert(0, -1);
+        let mut cur = 0;
+        let mut res = n as i32;
+        for i in 0..n {
+            cur = (cur + nums[i]) % p;
+            mp.insert(cur, i as i32);
+            let want = (cur - sum + p) % p;
+            if let Some(&j) = mp.get(&want) {
+                res = res.min(i as i32 - j);
+            }
+        }
+        if res < n as i32 {
+            res
+        } else {
+            -1
+        }
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let sum: i32 = nums.iter().sum();
+        let target = sum % p;
+        if target == 0 {
+            return 0;
+        }
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, -1);
+        let mut cur_sum = 0;
+        let mut min = nums.len();
+        for i in 0..nums.len() {
+            cur_sum = (cur_sum + nums[i]) % p;
+            map.insert(cur_sum, i as i32);
+            let need = (cur_sum - target + p) % p;
+            if let Some(&j) = map.get(&need) {
+                if i as i32 - j < min as i32 {
+                    min = i - j as usize;
+                }
+            }
+        }
+        if min == nums.len() { -1 } else { min as i32 }
+
+=======
+
+        let mut sum = 0;
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, -1);
+        for (i, &n) in nums.iter().enumerate() {
+            sum = (sum + n) % p;
+            map.insert(sum, i as i32);
+        }
+        let mut res = nums.len() as i32;
+        sum = 0;
+        for (i, &n) in nums.iter().enumerate() {
+            sum = (sum + n) % p;
+            map.remove(&sum);
+            if let Some(&j) = map.get(&(p - sum) % p) {
+                res = std::cmp::min(res, j - i as i32);
+            }
+        }
+        if res < nums.len() as i32 {res} else {-1}
+    }
+}
+
+=======
+
+        let mut sum = nums.iter().fold(0, |acc, x| acc + x);
+        if sum % p == 0 {
+            return 0;
+        }
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, -1);
+        let mut min = nums.len() as i32;
+        let mut cur = 0;
+        for (i, &x) in nums.iter().enumerate() {
+            cur = (cur + x) % p;
+            map.insert(cur, i as i32);
+        }
+        cur = 0;
+        for (i, &x) in nums.iter().enumerate() {
+            cur = (cur + x) % p;
+            let target = (sum - x) % p;
+            if let Some(&j) = map.get(&target) {
+                if j >= i as i32 {
+                    min = min.min(j - i as i32);
+                }
+            }
+        }
+        if min == nums.len() as i32 {
+            -1
+        } else {
+            min
+        }
+
+=======
+
+        let n = nums.len();
+        let mut sum = 0;
+        let mut m = std::collections::HashMap::new();
+        m.insert(0, -1);
+        let mut result = n as i32;
+        for i in 0..n {
+            sum = (sum + nums[i]) % p;
+            m.insert(sum, i as i32);
+        }
+        sum = 0;
+        for i in (0..n).rev() {
+            sum = (sum + nums[i]) % p;
+            if let Some(j) = m.get(&(p - sum) % p) {
+                result = result.min((i as i32 - j) as i32);
+            }
+        }
+        if result == n as i32 || sum != 0 { -1 } else { result }
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let mut sum = 0;
+        for i in 0..n {
+            sum += nums[i] as i64;
+        }
+        let mut res = n as i32;
+        let mut map = std::collections::HashMap::new();
+        map.insert(0, -1);
+        let mut cur = 0;
+        for i in 0..n {
+            cur += nums[i] as i64;
+            let target = (cur - sum % p as i64 + p as i64) % p as i64;
+            if let Some(&j) = map.get(&(target as i32)) {
+                res = std::cmp::min(res, (i as i32 - j) as i32);
+            }
+            map.insert(cur as i32, i as i32);
+        }
+        if res == n as i32 {
+            -1
+        } else {
+            res
+        }

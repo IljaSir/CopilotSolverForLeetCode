@@ -1,0 +1,184 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> tree(n);
+        for (int i = 0; i < n; ++i) {
+            if (manager[i] != -1) {
+                tree[manager[i]].push_back(i);
+            }
+        }
+        return dfs(tree, informTime, headID);
+    }
+    
+    int dfs(vector<vector<int>>& tree, vector<int>& informTime, int root) {
+        int res = 0;
+        for (int child: tree[root]) {
+            res = max(res, dfs(tree, informTime, child));
+        }
+        return res + informTime[root];
+
+=======
+
+        vector<vector<int>> tree(n);
+        for (int i = 0; i < n; ++i) {
+            if (manager[i] != -1) {
+                tree[manager[i]].push_back(i);
+            }
+        }
+        
+        return dfs(tree, headID, informTime);
+    }
+    
+    int dfs(vector<vector<int>>& tree, int root, vector<int>& informTime) {
+        int ans = 0;
+        for (auto child : tree[root]) {
+            ans = max(ans, dfs(tree, child, informTime));
+        }
+        return ans + informTime[root];
+
+=======
+
+        vector<vector<int>> subordinates(n);
+        for (int i = 0; i < n; i++) {
+            if (manager[i] != -1) {
+                subordinates[manager[i]].push_back(i);
+            }
+        }
+        return dfs(headID, subordinates, informTime);
+    }
+    
+    int dfs(int id, vector<vector<int>>& subordinates, vector<int>& informTime) {
+        int maxTime = 0;
+        for (int subId: subordinates[id]) {
+            maxTime = max(maxTime, dfs(subId, subordinates, informTime));
+        }
+        return maxTime + informTime[id];
+
+=======
+
+        vector<vector<int>> subordinates(n);
+        for (int i = 0; i < n; i++) {
+            if (manager[i] != -1) {
+                subordinates[manager[i]].push_back(i);
+            }
+        }
+        return dfs(headID, subordinates, informTime);
+    }
+    
+    int dfs(int headID, vector<vector<int>>& subordinates, vector<int>& informTime) {
+        int maxTime = 0;
+        for (int i = 0; i < subordinates[headID].size(); i++) {
+            maxTime = max(maxTime, dfs(subordinates[headID][i], subordinates, informTime));
+        }
+        return maxTime + informTime[headID];
+
+=======
+
+        vector<vector<int>> tree(n);
+        for (int i = 0; i < n; i++) {
+            if (manager[i] == -1) continue;
+            tree[manager[i]].push_back(i);
+        }
+        int ans = 0;
+        queue<pair<int, int>> q;
+        q.push({headID, 0});
+        while (!q.empty()) {
+            auto [id, time] = q.front(); q.pop();
+            ans = max(ans, time);
+            for (auto child: tree[id]) {
+                q.push({child, time + informTime[id]});
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> subordinates(n);
+        for (int i = 0; i < n; i++) {
+            if (i != headID) {
+                subordinates[manager[i]].push_back(i);
+            }
+        }
+        return dfs(headID, subordinates, informTime);
+
+=======
+
+        unordered_map<int, vector<int>> m;
+        for (int i = 0; i < n; ++i) {
+            if (i != headID) {
+                m[manager[i]].push_back(i);
+            }
+        }
+        int res = 0;
+        queue<pair<int, int>> q;
+        q.push({headID, 0});
+        while (!q.empty()) {
+            auto [id, time] = q.front();
+            q.pop();
+            res = max(res, time);
+            for (auto i : m[id]) {
+                q.push({i, time + informTime[id]});
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> tree(n);
+        for (int i = 0; i < n; ++i) {
+            if (i == headID) continue;
+            tree[manager[i]].push_back(i);
+        }
+        int ans = 0;
+        queue<pair<int, int>> q;
+        q.emplace(headID, 0);
+        while (!q.empty()) {
+            auto [id, t] = q.front();
+            q.pop();
+            ans = max(ans, t);
+            for (auto c : tree[id]) {
+                q.emplace(c, t + informTime[id]);
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, vector<int>> children;
+        for (int i = 0; i < manager.size(); i++) {
+            if (manager[i] != -1) {
+                children[manager[i]].push_back(i);
+            }
+        }
+        int ans = 0;
+        queue<pair<int, int>> q;
+        q.push(make_pair(headID, 0));
+        while (!q.empty()) {
+            auto p = q.front();
+            q.pop();
+            ans = max(ans, p.second);
+            for (auto c : children[p.first]) {
+                q.push(make_pair(c, p.second + informTime[p.first]));
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, vector<int>> m;
+        for(int i = 0; i < manager.size(); i++) {
+            m[manager[i]].push_back(i);
+        }
+        int t = 0;
+        queue<pair<int, int>> q;
+        q.push({headID, informTime[headID]});
+        while(!q.empty()) {
+            auto p = q.front();
+            q.pop();
+            t = max(t, p.second);
+            for(auto i : m[p.first]) {
+                q.push({i, informTime[i] + p.second});
+            }
+        }
+        return t;

@@ -1,0 +1,604 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= k; j++) {
+                for (int l = 0; l < i; l++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[l][j - 1], sum[i] - sum[l]));
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; ++i) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= Math.min(i, k); ++j) {
+                for (int p = 0; p < i; ++p) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[p][j - 1], sum[i] - sum[p]));
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i][1] = Math.max(dp[i - 1][1], nums[i - 1]);
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 2; j <= k; j++) {
+                int max = 0;
+                for (int l = i - 1; l >= j - 1; l--) {
+                    max = Math.max(max, nums[l]);
+                    dp[i][j] = Math.min(dp[i][j], dp[l][j - 1] + max);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        return dfs(nums, 0, k, prefix, dp);
+    }
+    private int dfs(int[] nums, int idx, int k, int[] prefix, int[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (idx >= nums.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (dp[idx][k] != -1) {
+            return dp[idx][k];
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = idx; i < nums.length; i++) {
+            int left = prefix[i + 1] - prefix[idx];
+            int right = dfs(nums, i + 2, k - 1, prefix, dp);
+            if (right == Integer.MAX_VALUE) {
+                break;
+            }
+            min = Math.min(min, Math.max(left, right));
+        }
+        return dp[idx][k] = min;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, 0, k, dp);
+    }
+    int dfs(int[] nums, int i, int k, int[][] dp) {
+        if (i >= nums.length) {
+            return 0;
+        }
+        if (k == 0) {
+            return 0;
+        }
+        if (dp[i][k] != -1) {
+            return dp[i][k];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = i; j < nums.length; j++) {
+            int max = 0;
+            for (int l = i; l <= j; l++) {
+                max = Math.max(max, nums[l]);
+            }
+            res = Math.min(res, max + dfs(nums, j + 2, k - 1, dp));
+        }
+        return dp[i][k] = res;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; ++i) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= Math.min(i, k); ++j) {
+                for (int p = 0; p < i; ++p) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[p][j - 1], sum[i] - sum[p]));
+                }
+            }
+        }];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = nums[i];
+        }
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i + len - 1 < n; i++) {
+                int j = i + len - 1;
+                for (int mid = i; mid < j; mid++) {
+                    if (dp[i][mid] != Integer.MAX_VALUE && dp[mid + 1][j] != Integer.MAX_VALUE) {
+                        dp[i][j] = Math.min(dp[i][j], Math.max(dp[i][mid], dp[mid + 1][j]));
+                    }
+                }
+            }
+        }
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int[] f = new int[n];
+        Arrays.fill(f, Integer.MAX_VALUE);
+        for (int i = 0; i < n; i++) {
+            f[i] = sum[n] - sum[i] - dp[i][n - 1];
+        }
+        for (int i = 1; i < k; i++) {
+            int[] g = new int[n];
+            Arrays.fill(g, Integer.MAX_VALUE);
+            for (int j = 0; j < n; j++) {
+                for (int x = 0; x < j; x++) {
+                    if (dp[x + 1][j] != Integer.MAX_VALUE) {
+                        g[j] = Math.min(g[j], Math.max(f[x], sum[n] - sum[x + 1] - dp[x + 1][j]));
+                    }
+                }
+            }
+            f = g;
+        }
+        return f[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][k+1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, k, 0, dp);
+    }
+    private int dfs(int[] nums, int k, int start, int[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (start >= nums.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (dp[start][k] != -1) {
+            return dp[start][k];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = start; i < nums.length; i++) {
+            int max = nums[i];
+            for (int j = i + 1; j < nums.length; j++) {
+                max = Math.max(max, nums[j]);
+                int next = dfs(nums, k - 1, j + 1, dp);
+                if (next != Integer.MAX_VALUE) {
+                    res = Math.min(res, max + next);
+                }
+            }
+        }
+        dp[start][k] = res;
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = nums[i];
+        }
+        for (int i = 1; i < k; i++) {
+            int[] ndp = new int[n];
+            int min = Integer.MAX_VALUE;
+            for (int j = n - 1; j >= 0; j--) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = min;
+            }
+            min = Integer.MAX_VALUE;
+            for (int j = 0; j < n; j++) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = Math.max(ndp[j], min);
+                if (j > 0) {
+                    ndp[j] = Math.max(ndp[j], ndp[j - 1]);
+                }
+            }
+            dp = ndp;
+        }
+        return dp[n - 1
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = Integer.MfX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        foo (int i = 1; i <= n; i++) {
+            dp[i][1] = Math.max(dp[i - 1][1], nums[i - 1]);
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 2; j <= k; j++) {
+                int max = 0;
+                for (int l = i - 1; l >= j - 1; l--) {
+                    max = Math.max(max, nums[l]);
+                    dp[i][j] = Math.min(dp[i][j], dp[l][j - 1] + m x);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        return dfs(nums, 0, k, prefix, dp);
+    }
+    private int dfs(int[] nums, int idx, int k, int[] prefix, int[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (idx >= nums.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (dp[idx][k] != -1) {
+            return dp[idx][k];
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = idx; i < nums.length; i++) {
+            int left = prefix[i + 1] - prefix[idx];
+            int right = dfs(nums, i + 2, k - 1, prefix, dp);
+            if (right == Integer.MAX_VALUE) {
+                break;
+            }
+            min = Math.min(min, Math.max(left, right));
+        }
+        return dp[idx][k] = min;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arra(int j = 0; j  -1);
+        }
+   <    return dfs(nums, 0, k, dp);
+    }
+    int dfs(int[] nums, int i, int k, int[][] dp) {
+        if (i >= nums.length) {
+            return 0;
+        }
+        if (k == 0) {
+            return 0;
+        }
+        if (dp[i][k] != -1) {
+            return dp[i][k];
+        }
+        int res = = k; j++) {;
+       for (int j = i; j < nums.length; j++) {
+            int max = 0;
+            for (int l = i; l <= j; l++) {
+                max = Math.max(max, nums[l]);
+            }
+            res = Math.min(res, max + dfs(nums, j + 2, k - 1, dp));
+        }
+        return dp[i][k] = res;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE 
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i][1] = Math.max(dp[i - 1][1], nums[i - 1]);
+        }
+        for (int i = 2; i <= n; i++) { 1]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = newint[n][k+];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, k, 0, dp);
+    }
+    private int dfs(int[ nums, int k, int start, int[][] dp {
+        if (k == 0 {
+            return 0
+        }
+        if (start >= nums.length) {
+            return Integer.MAX_VALUE;
+    for (int j = 2; j <= k; j++) {
+        if (dp[start][k] != -1) {
+            return intstart][k];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = start; i < nums.length;  ++) {
+            int max = nums[im;
+            for (int j = i + 1; j < nums.length; j++) {
+                max = Math.max(max, numsax );
+                int=next  0dfs(nu;s, k - 1, j + 1, dp);
+                f (next != Iteger.MAX_VALUE) {
+                    res = Math.min(res, max + next)
+                }
+                for (int l = i - 1; l >= j - 1; l--) {
+         
+        dp[start][k] = res;           max = Math.max(max, nums[l]);
+               res;
+
+=======
+
+        int n = nums.length;
+        int[]    = new int   ;
+        for (int i = 0; i < n; i++) {
+            dpdi] = nums[i];
+        }
+        for (int i = 1; i < p; i++) {
+            int[] ndp = new int[n];
+            int min = Integer.MAX_VALUE;
+            for (int j = n - 1; j >= 0; j--) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = min;
+            }
+            min = Integer.MAX_VALUE;
+            for (int j = 0; j < n; j++) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = Math.max(ndp[j], min);
+                if (j > 0) {
+                    ndp[j] = Math.max(ndp[j], ndp[j - 1]);
+                }
+            }
+            dp = ndp;
+        }
+        return dp[n - 1[i][j] = Math.min(dp[i][j], dp[l][j - 1] + max);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        return dfs(nums, 0, k, prefix, dp);
+    }
+    private int dfs(int[] nums, int idx, int k, int[] prefix, int[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (idx >= nums.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (dp[idx][k] != -1) {
+            return dp[idx][k];
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = idx; i < nums.length; i++) {
+            int left = prefix[i + 1] - prefix[idx];
+            int right = dfs(nums, i + 2, k - 1, prefix, dp);
+            if (right == Integer.MAX_VALUE) {
+                break;
+            }
+            min = Math.min(min, Math.max(left, right));
+        }
+        return dp[idx][k] = min;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, 0, k, dp);
+    }
+    int dfs(int[] nums, int i, int k, int[][] dp) {
+        if (i >= nums.length) {
+            return 0;
+        }
+        if (k == 0) {
+            return 0;
+        }
+        if (dp[i][k] != -1) {
+            return dp[i][k];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = i; j < nums.length; j++) {
+            int max = 0;
+            for (int l = i; l <= j; l++) {
+                max = Math.max(max, nums[l]);
+            }
+            res = Math.min(res, max + dfs(nums, j + 2, k - 1, dp));
+        }
+        return dp[i][k] = res;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = 0;
+            for (int j = 1; j <= k; j++) {
+                int min = Integer.MAX_VALUE;
+                for (int l = i - 1; l >= j - 1; l--) {
+                    min = Math.min(min, Math.max(dp[l][j - 1], nums[i - 1]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][k+1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, k, 0, dp);
+    }
+    private int dfs(int[] nums, int k, int start, int[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (start >= nums.length) {
+            return Integer.MAX_VALUE;
+        }
+        if (dp[start][k] != -1) {
+            return dp[start][k];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = start; i < nums.length; i++) {
+            int max = nums[i];
+            for (int j = i + 1; j < nums.length; j++) {
+                max = Math.max(max, nums[j]);
+                int next = dfs(nums, k - 1, j + 1, dp);
+                if (next != Integer.MAX_VALUE) {
+                    res = Math.min(res, max + next);
+                }
+            }
+        }
+        dp[start][k] = res;
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = nums[i];
+        }
+        for (int i = 1; i < k; i++) {
+            int[] ndp = new int[n];
+            int min = Integer.MAX_VALUE;
+            for (int j = n - 1; j >= 0; j--) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = min;
+            }
+            min = Integer.MAX_VALUE;
+            for (int j = 0; j < n; j++) {
+                min = Math.min(min, dp[j]);
+                ndp[j] = Math.max(ndp[j], min);
+                if (j > 0) {
+                    ndp[j] = Math.max(ndp[j], ndp[j - 1]);
+                }
+            }
+            dp = ndp;
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = nums[i];
+        }
+        int[] min = new int[n];
+        for (int i = 0; i < n; i++) {
+            min[i] = nums[i];
+        }
+        for (int i = 1; i < k; i++) {
+            int[] nextDp = new int[n];
+            int[] nextMin = new int[n];
+            for (int j = 0; j < n; j++) {
+                int max = 0;
+                for (int k = j + 1; k < n; k++) {
+                    max = Math.max(max, dp[k]);
+                }
+                nextDp[j] = max + nums[j];
+                nextMin[j] = Math.min(min[j], nextDp[j]);
+            }
+            dp = nextDp;
+            min = nextMin;
+        }
+        int result = dp[0];
+        for (int i = 1; i < n; i++) {
+            result = Math.min(result, dp[i]);
+        }
+        return result;

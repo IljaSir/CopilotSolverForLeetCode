@@ -1,0 +1,42 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; pattern.len() + 1]; text.len() + 1];
+        let text: Vec<char> = text.chars().collect();
+        let pattern: Vec<char> = pattern.chars().collect();
+        for i in 0..text.len() {
+            for j in 0..pattern.len() {
+                if text[i] == pattern[j] {
+                    dp[i + 1][j + 1] = dp[i][j] + 1;
+                } else {
+                    dp[i + 1][j + 1] = dp[i][j + 1];
+                }
+            }
+        }
+        let mut ans = 0;
+        for i in 0..text.len() {
+            if text[i] == pattern[0] || text[i] == pattern[1] {
+                ans += dp[i][pattern.len()];
+            }
+        }
+        ans
+
+=======
+
+        let mut dp = vec![vec![0; 3]; text.len() + 1];
+        let mut i = 1;
+        for c in text.chars() {
+            dp[i][0] = dp[i - 1][0] + (c == pattern.chars().nth(0).unwrap()) as i64;
+            dp[i][1] = dp[i - 1][1] + (c == pattern.chars().nth(1).unwrap()) as i64;
+            dp[i][2] = dp[i - 1][2] + (c == pattern.chars().nth(0).unwrap()) as i64;
+            dp[i][2] = dp[i][2].max(dp[i - 1][1] + (c == pattern.chars().nth(1).unwrap()) as i64);
+            i += 1;
+        }
+        dp[text.len()][2]

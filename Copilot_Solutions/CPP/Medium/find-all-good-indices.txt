@@ -1,0 +1,216 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        vector<int> left(n, 0);
+        vector<int> right(n, 0);
+        left[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            if (i < k) {
+                left[i] = max(left[i - 1], nums[i]);
+            } else {
+                left[i] = max(left[i - 1], nums[i - k]);
+            }
+        }
+        right[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; --i) {
+            if (i >= n - k) {
+                right[i] = min(right[i + 1], nums[i]);
+            } else {
+                right[i] = min(right[i + 1], nums[i + k]);
+            }
+        }
+        for (int i = k; i < n - k; ++i) {
+            if (left[i] <= nums[i] && nums[i] <= right[i]) {
+                res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        for (int i = k; i < n - k; ++i) {
+            int j = i - 1;
+            while (j >= i - k && nums[j] >= nums[j + 1]) --j;
+            if (j == i - k - 1) {
+                j = i + 1;
+                while (j <= i + k && nums[j] >= nums[j - 1]) ++j;
+                if (j == i + k + 1) res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> ans;
+        vector<int> left(n), right(n);
+        left[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            left[i] = max(left[i - 1], nums[i]);
+        }
+        right[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; --i) {
+            right[i] = min(right[i + 1], nums[i]);
+        }
+        for (int i = k; i <= n - k - 1; ++i) {
+            if (left[i - 1] <= nums[i] && nums[i] <= right[i + 1]) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        for (int i = k; i < nums.size() - k; ++i) {
+            bool good = true;
+            for (int j = i - 1; j > i - k - 1; --j) {
+                if (nums[j] < nums[j + 1]) {
+                    good = false;
+                    break;
+                }
+            }
+            if (!good) continue;
+            for (int j = i + 1; j < i + k + 1; ++j) {
+                if (nums[j] < nums[j - 1]) {
+                    good = false;
+                    break;
+                }
+            }
+            if (good) ans.push_back(i);
+        }
+        return ans;
+
+=======
+
+        vector<int> result;
+        int n = nums.size();
+        vector<int> left(n), right(n);
+        left[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            left[i] = max(left[i-1], nums[i]);
+        }
+        right[n-1] = nums[n-1];
+        for (int i = n-2; i >= 0; i--) {
+            right[i] = min(right[i+1], nums[i]);
+        }
+        for (int i = k; i < n-k; i++) {
+            if (left[i] <= nums[i] && nums[i] <= right[i]) {
+                result.push_back(i);
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> left(n, 0);
+        vector<int> right(n, 0);
+        left[0] = nums[0];
+        right[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            if (i < k) {
+                left[i] = min(left[i - 1], nums[i]);
+            }
+            if (i >= n - k) {
+                right[i] = max(right[i + 1], nums[i]);
+            }
+        }
+        for (int i = k; i < n - k; i++) {
+            if (left[i - 1] <= nums[i] && nums[i] <= right[i + 1]) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> pre(n, 0);
+        vector<int> suf(n, 0);
+        pre[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            pre[i] = max(pre[i - 1], nums[i]);
+        }
+        suf[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suf[i] = min(suf[i + 1], nums[i]);
+        }
+        for (int i = k; i < n - k; i++) {
+            if (pre[i - 1] <= nums[i] && suf[i + 1] >= nums[i]) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> result;
+        vector<int> maxLeft(n);
+        vector<int> minRight(n);
+        int mx = nums[0];
+        for (int i = 0; i < n; i++) {
+            mx = max(mx, nums[i]);
+            maxLeft[i] = mx;
+        }
+        int mn = nums[n - 1];
+        for (int i = n - 1; i >= 0; i--) {
+            mn = min(mn, nums[i]);
+            minRight[i] = mn;
+        }
+        for (int i = k; i <= n - k - 1; i++) {
+            if (maxLeft[i - 1] <= nums[i] && nums[i] <= minRight[i + 1]) {
+                result.push_back(i);
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.size();
+        vector<int> max_pre(n, 0);
+        vector<int> min_post(n, 0);
+        max_pre[k] = nums[k];
+        for(int i = k + 1; i < n - k; i++) {
+            max_pre[i] = max(max_pre[i - 1], nums[i]);
+        }
+        min_post[n - k - 1] = nums[n - k - 1];
+        for(int i = n - k - 2; i >= k; i--) {
+            min_post[i] = min(min_post[i + 1], nums[i]);
+        }
+        vector<int> res;
+        for(int i = k; i < n - k; i++) {
+            if(nums[i] >= max_pre[i - 1] && nums[i] <= min_post[i + 1]) {
+                res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        int left = 0, right = k;
+        int leftMax = nums[left], rightMax = nums[right];
+        while (right < n - k) {
+            for (int i = left; i < right; ++i) {
+                leftMax = max(leftMax, nums[i]);
+            }
+            for (int i = right; i < right + k; ++i) {
+                rightMax = max(rightMax, nums[i]);
+            }
+            if (leftMax < nums[right] && rightMax > nums[right]) {
+                res.push_back(right);
+            }
+            leftMax = nums[++left];
+            rightMax = nums[++right];
+        }
+        return res;

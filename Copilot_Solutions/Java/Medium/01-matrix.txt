@@ -1,0 +1,329 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[][] result = new int[mat.length][mat[0].length];
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[0].length; j++) {
+                if (mat[i][j] == 0) {
+                    result[i][j] = 0;
+                } else {
+                    result[i][j] = Integer.MAX_VALUE;
+                }
+            }
+        }
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[0].length; j++) {
+                if (i - 1 >= 0) {
+                    result[i][j] = Math.min(result[i][j], result[i - 1][j] + 1);
+                }
+                if (j - 1 >= 0) {
+                    result[i][j] = Math.min(result[i][j], result[i][j - 1] + 1);
+                }
+            }
+        }
+        for (int i = mat.length - 1; i >= 0; i--) {
+            for (int j = mat[0].length - 1; j >= 0; j--) {
+                if (i + 1 < mat.length) {
+                    result[i][j] = Math.min(result[i][j], result[i + 1][j] + 1);
+                }
+                if (j + 1 < mat[0].length) {
+                    result[i][j] = Math.min(result[i][j], result[i][j + 1] + 1);
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[][] result = new int[mat.length][mat[0].length];
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[i].length; j++) {
+                result[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 0) {
+                    result[i][j] = 0;
+                }
+                if (i > 0) {
+                    result[i][j] = Math.min(result[i][j], result[i - 1][j] + 1);
+                }
+                if (j > 0) {
+                    result[i][j] = Math.min(result[i][j], result[i][j - 1] + 1);
+                }
+            }
+        }
+        for (int i = mat.length - 1; i >= 0; i--) {
+            for (int j = mat[i].length - 1; j >= 0; j--) {
+                if (i < mat.length - 1) {
+                    result[i][j] = Math.min(result[i][j], result[i + 1][j] + 1);
+                }
+                if (j < mat[i].length - 1) {
+                    result[i][j] = Math.min(result[i][j], result[i][j + 1] + 1);
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[][] result = new int[mat.length][mat[0].length];
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 0) {
+                    result[i][j] = 0;
+                } else {
+                    result[i][j] = getDistance(mat, i, j);
+                }
+            }
+        }
+        return result;
+    }
+    
+    private int getDistance(int[][] mat, int row, int col) {
+        int distance = 0;
+        boolean found = false;
+        while (!found) {
+            distance++;
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    if (row + i >= 0 && row + i < mat.length && col + j >= 0 && col + j < mat[0].length) {
+                        if (mat[row + i][col + j] == 0) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found) {
+                    break;
+                }
+            }
+        }
+        return distance;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    queue.offer(new int[]{i, j});
+                }
+                else{
+                    mat[i][j] = -1;
+                }
+            }
+        }
+        int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        int distance = 0;
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for(int i = 0; i < size; i++){
+                int[] cell = queue.poll();
+                int x = cell[0];
+                int y = cell[1];
+                mat[x][y] = distance;
+                for(int[] direction : directions){
+                    int newX = x + direction[0];
+                    int newY = y + direction[1];
+                    if(newX >= 0 && newX < m && newY >= 0 && newY < n && mat[newX][newY] == -1){
+                        queue.offer(new int[]{newX, newY});
+                    }
+                }
+            }
+            distance++;
+        }
+        return mat;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    queue.add(new int[]{i, j});
+                }else{
+                    mat[i][j] = Integer.MAX_VALUE;
+                }
+            }
+        }
+        int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while(!queue.isEmpty()){
+            int[] curr = queue.poll();
+            for(int i = 0; i < 4; i++){
+                int x = curr[0] + dir[i][0];
+                int y = curr[1] + dir[i][1];
+                if(x >= 0 && x < m && y >= 0 && y < n && mat[x][y] > mat[curr[0]][curr[1]] + 1){
+                    mat[x][y] = mat[curr[0]][curr[1]] + 1;
+                    queue.add(new int[]{x, y});
+                }
+            }
+        }
+        return mat;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] ans = new int[m][n];
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    ans[i][j] = 0;
+                }else{
+                    ans[i][j] = 100000;
+                }
+            }
+        }
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(i > 0){
+                    ans[i][j] = Math.min(ans[i][j], ans[i - 1][j] + 1);
+                }
+                if(j > 0){
+                    ans[i][j] = Math.min(ans[i][j], ans[i][j - 1] + 1);
+                }
+            }
+        }
+        for(int i = m - 1; i >= 0; i--){
+            for(int j = n - 1; j >= 0; j--){
+                if(i < m - 1){
+                    ans[i][j] = Math.min(ans[i][j], ans[i + 1][j] + 1);
+                }
+                if(j < n - 1){
+                    ans[i][j] = Math.min(ans[i][j], ans[i][j + 1] + 1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] res = new int[m][n];
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                if(mat[i][j] == 0){
+                    res[i][j] = 0;
+                }else{
+                    res[i][j] = m*n;
+                }
+                if(i>0){
+                    res[i][j] = Math.min(res[i][j], res[i-1][j]+1);
+                }
+                if(j>0){
+                    res[i][j] = Math.min(res[i][j], res[i][j-1]+1);
+                }
+            }
+        }
+        for(int i=m-1; i>=0; i--){
+            for(int j=n-1; j>=0; j--){
+                if(i<m-1){
+                    res[i][j] = Math.min(res[i][j], res[i+1][j]+1);
+                }
+                if(j<n-1){
+                    res[i][j] = Math.min(res[i][j], res[i][j+1]+1);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] dist = new int[m][n];
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = mat[i][j] == 0 ? 0 : 10000;
+                if (mat[i][j] == 0) {
+                    q.offer(new int[] {i, j});
+                }
+            }
+        }
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            for (int[] dir : dirs) {
+                int x = cur[0] + dir[0];
+                int y = cur[1] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || dist[x][y] <= dist[cur[0]][cur[1]] + 1) {
+                    continue;
+                }
+                dist[x][y] = dist[cur[0]][cur[1]] + 1;
+                q.offer(new int[] {x, y});
+            }
+        }
+        return dist;
+
+=======
+
+        int[][] result = new int[mat.length][mat[0].length];
+        int[][] visited = new int[mat.length][mat[0].length];
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[0].length; j++) {
+                if (mat[i][j] == 0) {
+                    queue.add(new int[] {i, j});
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int x = cur[0] + dir[i][0];
+                int y = cur[1] + dir[i][1];
+                if (x >= 0 && x < mat.length && y >= 0 && y < mat[0].length && visited[x][y] == 0) {
+                    result[x][y] = result[cur[0]][cur[1]] + 1;
+                    visited[x][y] = 1;
+                    queue.add(new int[] {x, y});
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] result = new int[m][n];
+        for(int[] row : result){
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    result[i][j] = 0;
+                    queue.offer(new int[]{i, j});
+                }
+            }
+        }
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while(!queue.isEmpty()){
+            int[] cell = queue.poll();
+            for(int[] direction : directions){
+                int row = cell[0] + direction[0];
+                int col = cell[1] + direction[1];
+                if(row >= 0 && row < m && col >= 0 && col < n){
+                    if(result[row][col] > result[cell[0]][cell[1]] + 1){
+                        result[row][col] = result[cell[0]][cell[1]] + 1;
+                        queue.offer(new int[]{row, col});
+                    }
+                }
+            }
+        }
+        return result;

@@ -1,0 +1,220 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def backtrack(idx):
+            if idx == n:
+                return len(fib) >= 3
+            curr = 0
+            for i in range(idx, n):
+                if i > idx and num[idx] == '0':
+                    break
+                curr = curr * 10 + ord(num[i]) - ord('0')
+                if curr > 2**31 - 1:
+                    break
+                if len(fib) >= 2:
+                    if curr < fib[-1] + fib[-2]:
+                        continue
+                    elif curr > fib[-1] + fib[-2]:
+                        break
+                fib.append(curr)
+                if backtrack(i + 1):
+                    return True
+                fib.pop()
+            return False
+        n = len(num)
+        fib = []
+        backtrack(0)
+        return fib
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        n = len(num)
+        for i in range(1, min(11, n)):
+            for j in range(i+1, min(i+11, n)):
+                x, y = int(num[:i]), int(num[i:j])
+                if x > 2**31-1 or y > 2**31-1:
+                    break
+                fib = [x, y]
+                k = j
+                while k < n:
+                    z = fib[-1] + fib[-2]
+                    if z > 2**31-1:
+                        break
+                    s = str(z)
+                    if num[k:].startswith(s):
+                        k += len(s)
+                        fib.append(z)
+                    else:
+                        break
+                if k == n and len(fib) > 2:
+                    return fib
+        return []
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def dfs(index, path):
+            if index == len(num):
+                return len(path) >= 3
+            
+            cur = 0
+            for i in range(index, len(num)):
+                if i > index and num[index] == "0":
+                    break
+                cur = cur * 10 + int(num[i])
+                if cur > 2 ** 31 - 1:
+                    break
+                if len(path) < 2 or cur == path[-1] + path[-2]:
+                    path.append(cur)
+                    if dfs(i + 1, path):
+                        return True
+                    path.pop()
+            return False
+        
+        return dfs(0, [])
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        n = len(num)
+        if n < 3: return []
+        for i in range(n):
+            if i > 0 and num[0] == '0': break
+            for j in range(i+1, n):
+                if j > i+1 and num[i+1] == '0': break
+                a, b = int(num[:i+1]), int(num[i+1:j+1])
+                c = a+b
+                fib = [a, b, c]
+                while len(num) > j+1:
+                    j += 1
+                    c = str(c)
+                    if j+len(c) > n or num[j:j+len(c)] != c: break
+                    j += len(c)-1
+                    fib.append(int(c))
+                    a, b = b, c
+                    c = a+b
+                if len(num) == j+1: return fib
+        return []
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def dfs(s, path):
+            if not s and len(path) >= 3:
+                return path
+            for i in range(1, len(s)+1):
+                if s[:i].lstrip('0') != s[:i]:
+                    continue
+                if len(path) >= 2 and int(s[:i]) > path[-1] + path[-2]:
+                    break
+                if len(path) <= 1 or int(s[:i]) == path[-1] + path[-2]:
+                    if dfs(s[i:], path + [int(s[:i])]):
+                        return path + [int(s[:i])]
+        return dfs(num, [])
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def dfs(i, pre, cur, res):
+            if i == len(num):
+                return len(res) >= 3
+            cur = cur * 10 + int(num[i])
+            if cur > 2 ** 31 - 1:
+                return False
+            if pre + cur == res[-1]:
+                res.append(cur)
+                if dfs(i + 1, cur, 0, res):
+                    return True
+                res.pop()
+            elif len(res) < 2 or pre + cur < res[-1]:
+                if dfs(i + 1, pre, cur, res):
+                    return True
+            return False
+        return dfs(0, 0, 0, []) and [int(i) for i in num.split('0')]
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        if len(num) < 3:
+            return []
+        self.res = []
+        self.dfs(num, 0)
+        return self.res
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        n = len(num)
+        if n < 3:
+            return []
+        
+        def dfs(i, j, num, path):
+            if i == n:
+                if len(path) > 2:
+                    return path
+                else:
+                    return []
+            for k in range(j, n):
+                if k > i and num[i] == '0':
+                    break
+                if k - i > 10:
+                    break
+                if int(num[i:k+1]) > 2**31 - 1:
+                    break
+                if len(path) >= 2 and int(num[i:k+1]) != path[-1] + path[-2]:
+                    continue
+                path.append(int(num[i:k+1]))
+                res = dfs(k + 1, k + 1, num, path)
+                if res:
+                    return res
+                path.pop()
+            return []
+        
+        return dfs(0, 0, num, [])
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def backtrack(a, b, num, fib):
+            if not num:
+                return True
+            c = a + b
+            if str(c) == num[:len(str(c))]:
+                fib.append(c)
+                return backtrack(b, c, num[len(str(c)):], fib)
+            return False
+        
+        for i in range(1, len(num)):
+            a = int(num[:i])
+            if str(a) != num[:i]:
+                break
+            for j in range(i+1, len(num)):
+                b = int(num[i:j])
+                if str(b) != num[i:j]:
+                    break
+                fib = [a, b]
+                if backtrack(a, b, num[j:], fib):
+                    return fib
+        return []
+
+=======
+
+def splitIntoFibonacci(self, num: str) -> List[int]:
+        def backtrack(first, second, num, path):
+            if not num:
+                return True
+            if first == 2**31-1 or second == 2**31-1:
+                return False
+            for i in range(1, len(num)+1):
+                if num[:i] == '0' or (num[0] != '0' and int(num[:i]) < 2**31-1):
+                    third = int(num[:i])
+                    if third == first + second:
+                        path.append(third)
+                        if backtrack(second, third, num[i:], path):
+                            return True
+                        path.pop()
+            return False
+        return backtrack(0, 0, num, [])

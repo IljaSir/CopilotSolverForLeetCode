@@ -1,0 +1,138 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int n = prevRoom.size();
+        vector<vector<int>> g(n);
+        for (int i = 1; i < n; ++i) {
+            g[prevRoom[i]].push_back(i);
+        }
+        vector<int> f(n, 1), s(n, 1);
+        function<void(int)> dfs = [&](int u) {
+            for (int v : g[u]) {
+                dfs(v);
+                s[u] = (long long)s[u] * s[v] % 1000000007;
+                f[u] = (long long)f[u] * f[v] % 1000000007 * ++s[v] % 1000000007;
+            }
+        };
+        dfs(0);
+        return f[0];
+
+=======
+
+        int n = prevRoom.size();
+        vector<vector<int>> adj(n);
+        for (int i = 1; i < n; ++i) {
+            adj[prevRoom[i]].push_back(i);
+        }
+        vector<int> dp(n);
+        dfs(adj, dp, 0);
+        return dp[0];
+    }
+    void dfs(vector<vector<int>>& adj, vector<int>& dp, int u) {
+        dp[u] = 1;
+        for (auto v : adj[u]) {
+            dfs(adj, dp, v);
+            dp[u] = (dp[u] * 1LL * (dp[v] + 1)) % 1000000007;
+        }
+
+=======
+
+        int n = prevRoom.size();
+        vector<vector<int>> tree(n);
+        for (int i = 1; i < n; ++i) {
+            tree[prevRoom[i]].push_back(i);
+        }
+        vector<int> num(n, 0);
+        dfs(tree, num, 0);
+        long long ans = 1;
+        for (int i = 1; i < n; ++i) {
+            ans = ans * num[i] % 1000000007;
+        }
+        return ans;
+    }
+    void dfs(vector<vector<int>>& tree, vector<int>& num, int root) {
+        num[root] = 1;
+        for (int child : tree[root]) {
+            dfs(tree, num, child);
+            num[root] += num[child];
+        }
+
+=======
+
+        int n = prevRoom.size();
+        vector<vector<int>> adj(n);
+        for (int i = 1; i < n; ++i) {
+            adj[prevRoom[i]].push_back(i);
+        }
+        vector<long> fact(n);
+        fact[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            fact[i] = fact[i - 1] * i % 1000000007;
+        }
+        vector<int> size(n);
+        function<void(int)> dfs = [&](int u) {
+            size[u] = 1;
+            for (int v : adj[u]) {
+                dfs(v);
+                size[u] += size[v];
+            }
+        };
+        dfs(0);
+        long ans = 1;
+        for (int i = 1; i < n; ++i) {
+            ans = ans * fact[size[i]] % 1000000007;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> tree(prevRoom.size());
+        for (int i = 1; i < prevRoom.size(); ++i) {
+            tree[prevRoom[i]].push_back(i);
+        }
+        vector<int> dp(prevRoom.size());
+        return dfs(tree, dp, 0);
+    }
+    int dfs(vector<vector<int>>& tree, vector<int>& dp, int node) {
+        if (dp[node] > 0) {
+            return dp[node];
+        }
+        dp[node] = 1;
+        for (int child: tree[node]) {
+            dp[node] = (long long)dp[node] * (dfs(tree, dp, child) + 1) % 1000000007;
+        }
+        return dp[node];
+
+=======
+
+        int n = prevRoom.size();
+        vector<vector<int>> adj(n);
+        vector<int> indeg(n, 0);
+        for(int i = 1; i < n; i++) {
+            adj[prevRoom[i]].push_back(i);
+            indeg[i]++;
+        }
+        vector<int> dp(n, 1);
+        queue<int> q;
+        for(int i = 0; i < n; i++) {
+            if(indeg[i] == 0) {
+                q.push(i);
+            }
+        }
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for(int v : adj[u]) {
+                dp[v] = (dp[v] * 1ll * dp[u]) % 1000000007;
+                indeg[v]--;
+                if(indeg[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        int ans = 1;
+        for(int i = 1; i < n; i++) {
+            ans = (ans * 1ll * dp[i]) % 1000000007;
+        }
+        return ans;

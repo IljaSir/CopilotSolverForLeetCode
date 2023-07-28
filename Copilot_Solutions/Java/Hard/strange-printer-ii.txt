@@ -1,0 +1,352 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int m = targetGrid.length;
+        int n = targetGrid[0].length;
+        int[] minRow = new int[61];
+        int[] minCol = new int[61];
+        int[] maxRow = new int[61];
+        int[] maxCol = new int[61];
+        Arrays.fill(minRow, Integer.MAX_VALUE);
+        Arrays.fill(minCol, Integer.MAX_VALUE);
+        Arrays.fill(maxRow, Integer.MIN_VALUE);
+        Arrays.fill(maxCol, Integer.MIN_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int color = targetGrid[i][j];
+                minRow[color] = Math.min(minRow[color], i);
+                minCol[color] = Math.min(minCol[color], j);
+                maxRow[color] = Math.max(maxRow[color], i);
+                maxCol[color] = Math.max(maxCol[color], j);
+            }
+        }
+        boolean[] visited = new boolean[61];
+        boolean[] printed = new boolean[61];
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int color = 1; color <= 60; color++) {
+                if (visited[color]) {
+                    continue;
+                }
+                if (printed[color]) {
+                    changed = true;
+                    visited[color] = true;
+                    continue;
+                }
+                boolean canPrint = true;
+                for (int i = minRow[color]; i <= maxRow[color]; i++) {
+                    for (int j = minCol[color]; j <= maxCol[color]; j++) {
+                        if (targetGrid[i][j] != color && !printed[targetGrid[i][j]]) {
+                            canPrint = false;
+                            break;
+                        }
+                    }
+                }
+                if (canPrint) {
+                    changed = true;
+                    for (int i = minRow[color]; i <= maxRow[color]; i++) {
+                        for (int j = minCol[color]; j <= maxCol[color]; j++) {
+                            printed[targetGrid[i][j]] = true;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 1; i <= 60; i++) {
+            if (!visited[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int m = targetGrid.length;
+        int n = targetGrid[0].length;
+        int[] minR = new int[61];
+        int[] maxR = new int[61];
+        int[] minC = new int[61];
+        int[] maxC = new int[61];
+        Arrays.fill(minR, Integer.MAX_VALUE);
+        Arrays.fill(minC, Integer.MAX_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int c = targetGrid[i][j];
+                minR[c] = Math.min(minR[c], i);
+                maxR[c] = Math.max(maxR[c], i);
+                minC[c] = Math.min(minC[c], j);
+                maxC[c] = Math.max(maxC[c], j);
+            }
+        }
+        boolean[] visited = new boolean[61];
+        while (true) {
+            boolean changed = false;
+            for (int c = 1; c <= 60; c++) {
+                if (visited[c]) {
+                    continue;
+                }
+                if (minR[c] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                boolean canPrint = true;
+                for (int i = minR[c]; i <= maxR[c]; i++) {
+                    for (int j = minC[c]; j <= maxC[c]; j++) {
+                        if (targetGrid[i][j] != c && !visited[targetGrid[i][j]]) {
+                            canPrint = false;
+                            break;
+                        }
+                    }
+                }
+                if (canPrint) {
+                    for (int i = minR[c]; i <= maxR[c]; i++) {
+                        for (int j = minC[c]; j <= maxC[c]; j++) {
+                            targetGrid[i][j] = 0;
+                        }
+                    }
+                    visited[c] = true;
+                    changed = true;
+                }
+            }
+            if (!changed) {
+                break;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (targetGrid[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int m = targetGrid.length;
+        int n = targetGrid[0].length;
+        int[] minR = new int[61];
+        int[] minC = new int[61];
+        int[] maxR = new int[61];
+        int[] maxC = new int[61];
+        int[] count = new int[61];
+        Arrays.fill(minR, Integer.MAX_VALUE);
+        Arrays.fill(minC, Integer.MAX_VALUE);
+        Arrays.fill(maxR, Integer.MIN_VALUE);
+        Arrays.fill(maxC, Integer.MIN_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int color = targetGrid[i][j];
+                minR[color] = Math.min(minR[color], i);
+                minC[color] = Math.min(minC[color], j);
+                maxR[color] = Math.max(maxR[color], i);
+                maxC[color] = Math.max(maxC[color], j);
+                count[color]++;
+            }
+        }
+        int[] color = new int[61];
+        int[] visited = new int[61];
+        for (int i = 1; i <= 60; i++) {
+            if (count[i] == 0) {
+                continue;
+            }
+            for (int j = 1; j <= 60; j++) {
+                if (count[j] == 0) {
+                    continue;
+                }
+                if (minR[i] >= minR[j] && minC[i] >= minC[j] && maxR[i] <= maxR[j] && maxC[i] <= maxC[j]) {
+                    color[i] = j;
+                }
+            }
+        }
+        boolean[] visitedColor = new boolean[61];
+        for (int i = 1; i <= 60; i++) {
+            if (count[i] == 0) {
+                continue;
+            }
+            int c = i;
+            while (color[c] != 0) {
+                if (visitedColor[color[c]]) {
+                    return false;
+                }
+                visitedColor[color[c]] = true;
+                c = color[c];
+            }
+            Arrays.fill(visitedColor, false);
+        }
+        return true;
+
+=======
+
+        int m = targetGrid.length;
+        int n = targetGrid[0].length;
+        int[][] colors = new int[61][4];
+        for (int i = 0; i < colors.length; i++) {
+            colors[i][0] = Integer.MAX_VALUE;
+            colors[i][1] = Integer.MIN_VALUE;
+            colors[i][2] = Integer.MAX_VALUE;
+            colors[i][3] = Integer.MIN_VALUE;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int c = targetGrid[i][j];
+                colors[c][0] = Math.min(colors[c][0], j);
+                colors[c][1] = Math.max(colors[c][1], j);
+                colors[c][2] = Math.min(colors[c][2], i);
+                colors[c][3] = Math.max(colors[c][3], i);
+            }
+        }
+        boolean[] used = new boolean[61];
+        int[] visited = new int[61];
+        while (true) {
+            int color = 0;
+            for (int i = 1; i < colors.length; i++) {
+                if (used[i]) {
+                    continue;
+                }
+                if (color == 0 || visited[i] < visited[color]) {
+                    color = i;
+                }
+            }
+            if (color == 0) {
+                break;
+            }
+            used[color] = true;
+            for (int i = colors[color][2]; i <= colors[color][3]; i++) {
+                for (int j = colors[color][0]; j <= colors[color][1]; j++) {
+                    if (targetGrid[i][j] != color) {
+                        visited[targetGrid[i][j]]++;
+                    }
+                }
+            }
+        }
+        for (int i = 1; i < colors.length; i++) {
+            if (!used[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int m = targetGrid.length;
+        int n = targetGrid[0].length;
+        int[] color = new int[61];
+        int[] x1 = new int[61];
+        int[] x2 = new int[61];
+        int[] y1 = new int[61];
+        int[] y2 = new int[61];
+        Arrays.fill(x1, Integer.MAX_VALUE);
+        Arrays.fill(y1, Integer.MAX_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                color[targetGrid[i][j]]++;
+                x1[targetGrid[i][j]] = Math.min(x1[targetGrid[i][j]], i);
+                y1[targetGrid[i][j]] = Math.min(y1[targetGrid[i][j]], j);
+                x2[targetGrid[i][j]] = Math.max(x2[targetGrid[i][j]], i);
+                y2[targetGrid[i][j]] = Math.max(y2[targetGrid[i][j]], j);
+            }
+        }
+        boolean[] visited = new boolean[61];
+        while (true) {
+            boolean changed = false;
+            for (int i = 1; i <= 60; i++) {
+                if (visited[i]) {
+                    continue;
+                }
+                if (color[i] == 0) {
+                    visited[i] = true;
+                    changed = true;
+                    continue;
+                }
+                boolean canPrint = true;
+                for (int j = x1[i]; j <= x2[i]; j++) {
+                    for (int k = y1[i]; k <= y2[i]; k++) {
+                        if (targetGrid[j][k] != i && !visited[targetGrid[j][k]]) {
+                            canPrint = false;
+                            break;
+                        }
+                    }
+                    if (!canPrint) {
+                        break;
+                    }
+                }
+                if (canPrint) {
+                    for (int j = x1[i]; j <= x2[i]; j++) {
+                        for (int k = y1[i]; k <= y2[i]; k++) {
+                            color[targetGrid[j][k]]--;
+                        }
+                    }
+                    visited[i] = true;
+                    changed = true;
+                }
+            }
+            if (!changed) {
+                break;
+            }
+        }
+        for (int i = 1; i <= 60;
+
+=======
+
+        int[] min = new int[61];
+        int[] max = new int[61];
+        int[] min2 = new int[61];
+        int[] max2 = new int[61];
+        Arrays.fill(min, 60);
+        Arrays.fill(max, -1);
+        Arrays.fill(min2, 60);
+        Arrays.fill(max2, -1);
+        int n = targetGrid.length;
+        int m = targetGrid[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int c = targetGrid[i][j];
+                min[c] = Math.min(min[c], i);
+                max[c] = Math.max(max[c], i);
+                min2[c] = Math.min(min2[c], j);
+                max2[c] = Math.max(max2[c], j);
+            }
+        }
+        boolean[] visited = new boolean[61];
+        while (true) {
+            boolean any = false;
+            for (int c = 1; c <= 60; c++) {
+                if (visited[c]) {
+                    continue;
+                }
+                boolean can = true;
+                for (int i = min[c]; i <= max[c]; i++) {
+                    for (int j = min2[c]; j <= max2[c]; j++) {
+                        if (targetGrid[i][j] != 0 && targetGrid[i][j] != c) {
+                            can = false;
+                            break;
+                        }
+                    }
+                    if (!can) {
+                        break;
+                    }
+                }
+                if (can) {
+                    visited[c] = true;
+                    for (int i = min[c]; i <= max[c]; i++) {
+                        for (int j = min2[c]; j <= max2[c]; j++) {
+                            targetGrid[i][j] = 0;
+                        }
+                    }
+                    any = true;
+                }
+            }
+            if (!any) {
+                break;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (targetGrid[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;

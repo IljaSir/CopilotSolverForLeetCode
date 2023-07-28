@@ -1,0 +1,1006 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        int mod = 1e9 + 7;
+        for (int i = n-1; i >= 0; --i) {
+            for (int j = n-1; j >= 0; --j) {
+                if (board[i][j] == 'X') {
+                    continue;
+                }
+                if (i == n-1 && j == n-1) {
+                    continue;
+                }
+                int a = 0, b = 0, c = 0;
+                if (i + 1 < n && j < n) {
+                    a = dp[i+1][j];
+                    if (a > 0) {
+                        cnt[i][j] += cnt[i+1][j];
+                        cnt[i][j] %= mod;
+                    }
+                }
+                if (i < n && j + 1 < n) {
+                    b = dp[i][j+1];
+                    if (b > 0) {
+                        cnt[i][j] += cnt[i][j+1];
+                        cnt[i][j] %= mod;
+                    }
+                }
+                if (i + 1 < n && j + 1 < n) {
+                    c = dp[i+1][j+1];
+                    if (c > 0) {
+                        cnt[i][j] += cnt[i+1][j+1];
+                        cnt[i][j] %= mod;
+                    }
+                }
+                dp[i][j] = max({a, b, c}) + (board[i][j] == 'S' ? 0 : board[i][j] - '0');
+            }
+        }
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-2; i >= 0; i--) {
+            if (board[i][n-1] != 'X') {
+                dp[i][n-1] = dp[i+1][n-1] + board[i][n-1] - '0';
+                cnt[i][n-1] = cnt[i+1][n-1];
+            }
+        }
+        for (int j = n-2; j >= 0; j--) {
+            if (board[n-1][j] != 'X') {
+                dp[n-1][j] = dp[n-1][j+1] + board[n-1][j] - '0';
+                cnt[n-1][j] = cnt[n-1][j+1];
+            }
+        }
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = n-2; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                int max = 0;
+                if (dp[i+1][j] > max) max = dp[i+1][j];
+                if (dp[i][j+1] > max) max = dp[i][j+1];
+                if (dp[i+1][j+1] > max) max = dp[i+1][j+1];
+                dp[i][j] = max + board[i][j] - '0';
+                if (dp[i+1][j] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j]) % 1000000007;
+                if (dp[i][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i][j+1]) % 1000000007;
+                if (dp[i+1][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j+1])
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n - 1][n - 1] = 0;
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1];
+                    cnt[i][j] = cnt[i][j + 1];
+                } else if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j];
+                    cnt[i][j] = cnt[i + 1][j];
+                } else {
+                    int a = dp[i + 1][j];
+                    int b = dp[i][j + 1];
+                    int c = dp[i + 1][j + 1];
+                    int max_dp = max(a, max(b, c));
+                    dp[i][j] = max_dp;
+                    if (a == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j]) % 1000000007;
+                    if (b == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i][j + 1]) % 1000000007;
+                    if (c == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j + 1]) % 1000000007;
+                }
+                if (board[i][j] != 'S' && board[i][j] != 'E') {
+                    dp[i][j] += (board[i][j] - '0');
+                }
+            }
+        }
+        if (dp[0][0] == 0) return {0, 0};
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> paths(n, vector<int>(n, 0));
+        paths[n-1][n-1] = 1;
+        int mod = pow(10, 9) + 7;
+        for(int i=n-1; i>=0; i--) {
+            for(int j=n-1; j>=0; j--) {
+                if(i == n-1 && j == n-1) continue;
+                if(board[i][j] == 'X') continue;
+                int a = 0, b = 0, c = 0;
+                if(i+1 < n) {
+                    a = dp[i+1][j];
+                    if(paths[i+1][j] > 0) b = paths[i+1][j];
+                }
+                if(j+1 < n) {
+                    a = max(a, dp[i][j+1]);
+                    if(paths[i][j+1] > 0) c = paths[i][j+1];
+                }
+                if(i+1 < n && j+1 < n) {
+                    a = max(a, dp[i+1][j+1]);
+                    if(paths[i+1][j+1] > 0) c = paths[i+1][j+1];
+                }
+                dp[i][j] = a + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                paths[i][j] = (b + c) % mod;
+            }
+        }
+        return {dp[0][0], paths[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                int val = board[i][j] - '0';
+                if (i + 1 < n && j + 1 < n) {
+                    if (dp[i + 1][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j + 1];
+                        cnt[i][j] = cnt[i + 1][j + 1];
+                    } else if (dp[i + 1][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (i + 1 < n) {
+                    if (dp[i + 1][j] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j];
+                        cnt[i][j] = cnt[i + 1][j];
+                    } else if (dp[i + 1][j] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (j + 1 < n) {
+                    if (dp[i][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i][j + 1];
+                        cnt[i][j] = cnt[i][j + 1];
+                    } else if (dp[i][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                dp[i][j
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> path(n, vector<int>(n, 0));
+        path[n-1][n-1] = 1;
+        int mod = 1e9+7;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n-1 && j == n-1) continue;
+                int maxVal = 0, cnt = 0;
+                if (i+1 < n && j+1 < n && board[i+1][j+1] != 'X') {
+                    if (dp[i+1][j+1] > maxVal) {
+                        maxVal = dp[i+1][j+1];
+                        cnt = path[i+1][j+1];
+                    } else if (dp[i+1][j+1] == maxVal) {
+                        cnt += path[i+1][j+1];
+                    }
+                }
+                if (i+1 < n && board[i+1][j] != 'X') {
+                    if (dp[i+1][j] > maxVal) {
+                        maxVal = dp[i+1][j];
+                        cnt = path[i+1][j];
+                    } else if (dp[i+1][j] == maxVal) {
+                        cnt += path[i+1][j];
+                    }
+                }
+                if (j+1 < n && board[i][j+1] != 'X') {
+                    if (dp[i][j+1] > maxVal) {
+                        maxVal = dp[i][j+1];
+                        cnt = path[i][j+1];
+                    } else if (dp[i][j+1] == maxVal) {
+                        cnt += path[i][j+1];
+                    }
+                }
+                dp[i][j] = maxVal;
+                path[i][j] = cnt;
+                if (board[i][j] != 'E' && board[i][j] != 'S') {
+                    dp[i][j] += board[i][j] - '0';
+                    path[i][j] %= mod;
+                }
+            }
+        }
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n-1][n-1] = 1;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') {
+                    count[i][j] = 0;
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (i == n-1 && j == n-1) {
+                    count[i][j] = 1;
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (i == n-1) {
+                    count[i][j] = count[i][j+1];
+                    dp[i][j] = dp[i][j+1];
+                    continue;
+                }
+                if (j == n-1) {
+                    count[i][j] = count[i+1][j];
+                    dp[i][j] = dp[i+1][j];
+                    continue;
+                }
+                int maxScore = max(dp[i+1][j], max(dp[i][j+1], dp[i+1][j+1]));
+                if (maxScore == dp[i+1][j]) {
+                    count[i][j] = (count[i][j] + count[i+1][j]) % 1000000007;
+                }
+                if (maxScore == dp[i][j+1]) {
+                    count[i][j] = (count[i][j] + count[i][j+1]) % 1000000007;
+                }
+                if (maxScore == dp[i+1][j+1]) {
+                    count[i][j] = (count[i][j] + count[i+1][j+1]) % 1000000007;
+                }
+                dp[i][j] = maxScore + (board[i][j] == 'S' ? 0 : board[i][j] - '0');
+            }
+        }
+        return {dp[0][0], count[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (board[i][j] == 'X') {
+                    continue;
+                }
+                int val = board[i][j] == 'E' ? 0 : board[i][j] - '0';
+                if (i == n - 1 && j == n - 1) {
+                    dp[i][j] = val;
+                    continue;
+                }
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1] + val;
+                    count[i][j] = count[i][j + 1];
+                    continue;
+                }
+                if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j] + val;
+                    count[i][j] = count[i + 1][j];
+                    continue;
+                }
+                int maxVal = max(dp[i + 1][j], max(dp[i][j + 1], dp[i + 1][j + 1]));
+                dp[i][j] = maxVal + val;
+                if (dp[i + 1][j] == maxVal) {
+                    count[i][j] += count[i + 1][j];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i][j + 1] == maxVal) {
+                    count[i][j] += count[i][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i + 1][j + 1] == maxVal) {
+                    count[i][j] += count[i + 1][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+            }
+        }
+        return {dp[0][0], count[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MIN));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') {
+                    dp[i][j] = INT_MIN;
+                    continue;
+                }
+                if (i == n-1 && j == n-1) continue;
+                int maxScore = INT_MIN, maxCnt = 0;
+                for (int k = 0; k < 3; k++) {
+                    int x = i + dx[k];
+                    int y = j + dy[k];
+                    if (x < 0 || x >= n || y < 0 || y >= n) continue;
+                    if (dp[x][y] == INT_MIN) continue;
+                    if (dp[x][y] > maxScore) {
+                        maxScore = dp[x][y];
+                        maxCnt = cnt[x][y];
+                    } else if (dp[x][y] == maxScore) {
+                        maxCnt = (maxCnt + cnt[x][y]) % MOD;
+                    }
+                }
+                if (maxScore == INT_MIN) continue;
+                dp[i][j] = maxScore + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                cnt[i][j] = maxCnt;
+            }
+        }
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        int mod = 1e9+7;
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-2; i >= 0; i--) {
+            if (board[i][n-1] == 'X') break;
+            dp[i][n-1] = dp[i+1][n-1] + board[i][n-1] - '0';
+            cnt[i][n-1] = 1;
+        }
+        for (int j = n-2; j >= 0; j--) {
+            if (board[n-1][j] == 'X') break;
+            dp[n-1][j] = dp[n-1][j+1] + board[n-1][j] - '0';
+            cnt[n-1][j] = 1;
+        }
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = n-2; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                int x = max(dp[i+1][j], max(dp[i][j+1], dp[i+1][j+1]));
+                if (x == dp[i+1][j]) {
+                    cnt[i][j] = (cnt[i][j] + cnt[i+1][j]) % mod;
+                }
+                if (x == dp[i][j+1]) {
+                    cnt[i][j] = (cnt[i][j] + cnt[i][j+1]) % mod;
+                }
+                if (x == dp[i+1][j+1]) {
+                    cnt[i][j] = (cnt[i][j] + cnt[i+1][j+1]) % mod;
+                }
+                dp[i][j] = x + board[i][j] - '0';
+            }
+        }
+        return {dp[0][0], cnt[0][0]};
+            for (int j = n-2; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                int max = 0;
+                if (dp[i+1][j] > max) max = dp[i+1][j];
+                if (dp[i][j+1] > max) max = dp[i][j+1];
+                if (dp[i+1][j+1] > max) max = dp[i+1][j+1];
+                dp[i][j] = max + board[i][j] - '0';
+                if (dp[i+1][j] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j]) % 1000000007;
+                if (dp[i][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i][j+1]) % 1000000007;
+                if (dp[i+1][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j+1])
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n - 1][n - 1] = 0;
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1];
+                    cnt[i][j] = cnt[i][j + 1];
+                } else if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j];
+                    cnt[i][j] = cnt[i + 1][j];
+                } else {
+                    int a = dp[i + 1][j];
+                    int b = dp[i][j + 1];
+                    int c = dp[i + 1][j + 1];
+                    int max_dp = max(a, max(b, c));
+                    dp[i][j] = max_dp;
+                    if (a == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j]) % 1000000007;
+                    if (b == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i][j + 1]) % 1000000007;
+                    if (c == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j + 1]) % 1000000007;
+                }
+                if (board[i][j] != 'S' && board[i][j] != 'E') {
+                    dp[i][j] += (board[i][j] - '0');
+                }
+            }
+        }
+        if (dp[0][0] == 0) return {0, 0};
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> paths(n, vector<int>(n, 0));
+        paths[n-1][n-1] = 1;
+        int mod = pow(10, 9) + 7;
+        for(int i=n-1; i>=0; i--) {
+            for(int j=n-1; j>=0; j--) {
+                if(i == n-1 && j == n-1) continue;
+                if(board[i][j] == 'X') continue;
+                int a = 0, b = 0, c = 0;
+                if(i+1 < n) {
+                    a = dp[i+1][j];
+                    if(paths[i+1][j] > 0) b = paths[i+1][j];
+                }
+                if(j+1 < n) {
+                    a = max(a, dp[i][j+1]);
+                    if(paths[i][j+1] > 0) c = paths[i][j+1];
+                }
+                if(i+1 < n && j+1 < n) {
+                    a = max(a, dp[i+1][j+1]);
+                    if(paths[i+1][j+1] > 0) c = paths[i+1][j+1];
+                }
+                dp[i][j] = a + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                paths[i][j] = (b + c) % mod;
+            }
+        }
+        return {dp[0][0], paths[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                int val = board[i][j] - '0';
+                if (i + 1 < n && j + 1 < n) {
+                    if (dp[i + 1][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j + 1];
+                        cnt[i][j] = cnt[i + 1][j + 1];
+                    } else if (dp[i + 1][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (i + 1 < n) {
+                    if (dp[i + 1][j] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j];
+                        cnt[i][j] = cnt[i + 1][j];
+                    } else if (dp[i + 1][j] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (j + 1 < n) {
+                    if (dp[i][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i][j + 1];
+                        cnt[i][j] = cnt[i][j + 1];
+                    } else if (dp[i][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                dp[i][j
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> path(n, vector<int>(n, 0));
+        path[n-1][n-1] = 1;
+        int mod = 1e9+7;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n-1 && j == n-1) continue;
+                int maxVal = 0, cnt = 0;
+                if (i+1 < n && j+1 < n && board[i+1][j+1] != 'X') {
+                    if (dp[i+1][j+1] > maxVal) {
+                        maxVal = dp[i+1][j+1];
+                        cnt = path[i+1][j+1];
+                    } else if (dp[i+1][j+1] == maxVal) {
+                        cnt += path[i+1][j+1];
+                    }
+                }
+                if (i+1 < n && board[i+1][j] != 'X') {
+                    if (dp[i+1][j] > maxVal) {
+                        maxVal = dp[i+1][j];
+                        cnt = path[i+1][j];
+                    } else if (dp[i+1][j] == maxVal) {
+                        cnt += path[i+1][j];
+                    }
+                }
+                if (j+1 < n && board[i][j+1] != 'X') {
+                    if (dp[i][j+1] > maxVal) {
+                        maxVal = dp[i][j+1];
+                        cnt = path[i][j+1];
+                    } else if (dp[i][j+1] == maxVal) {
+                        cnt += path[i][j+1];
+                    }
+                }
+                dp[i][j] = maxVal;
+                path[i][j] = cnt;
+                if (board[i][j] != 'E' && board[i][j] != 'S') {
+                    dp[i][j] += board[i][j] - '0';
+                    path[i][j] %= mod;
+                }
+            }
+        }
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n-1][n-1] = 1;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') {
+                    count[i][j] = 0;
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (i == n-1 && j == n-1) {
+                    count[i][j] = 1;
+                    dp[i][j] = 0;
+                    continue;
+                }
+                if (i == n-1) {
+                    count[i][j] = count[i][j+1];
+                    dp[i][j] = dp[i][j+1];
+                    continue;
+                }
+                if (j == n-1) {
+                    count[i][j] = count[i+1][j];
+                    dp[i][j] = dp[i+1][j];
+                    continue;
+                }
+                int maxScore = max(dp[i+1][j], max(dp[i][j+1], dp[i+1][j+1]));
+                if (maxScore == dp[i+1][j]) {
+                    count[i][j] = (count[i][j] + count[i+1][j]) % 1000000007;
+                }
+                if (maxScore == dp[i][j+1]) {
+                    count[i][j] = (count[i][j] + count[i][j+1]) % 1000000007;
+                }
+                if (maxScore == dp[i+1][j+1]) {
+                    count[i][j] = (count[i][j] + count[i+1][j+1]) % 1000000007;
+                }
+                dp[i][j] = maxScore + (board[i][j] == 'S' ? 0 : board[i][j] - '0');
+            }
+        }
+        return {dp[0][0], count[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (board[i][j] == 'X') {
+                    continue;
+                }
+                int val = board[i][j] == 'E' ? 0 : board[i][j] - '0';
+                if (i == n - 1 && j == n - 1) {
+                    dp[i][j] = val;
+                    continue;
+                }
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1] + val;
+                    count[i][j] = count[i][j + 1];
+                    continue;
+                }
+                if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j] + val;
+                    count[i][j] = count[i + 1][j];
+                    continue;
+                }
+                int maxVal = max(dp[i + 1][j], max(dp[i][j + 1], dp[i + 1][j + 1]));
+                dp[i][j] = maxVal + val;
+                if (dp[i + 1][j] == maxVal) {
+                    count[i][j] += count[i + 1][j];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i][j + 1] == maxVal) {
+                    count[i][j] += count[i][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i + 1][j + 1] == maxVal) {
+                    count[i][j] += count[i + 1][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+            }
+        }
+        return {dp[0][0], count[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MIN));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') {
+                    dp[i][j] = INT_MIN;
+                    continue;
+                }
+                if (i == n-1 && j == n-1) continue;
+                int maxScore = INT_MIN, maxCnt = 0;
+                for (int k = 0; k < 3; k++) {
+                    int x = i + dx[k];
+                    int y = j + dy[k];
+                    if (x < 0 || x >= n || y < 0 || y >= n) continue;
+                    if (dp[x][y] == INT_MIN) continue;
+                    if (dp[x][y] > maxScore) {
+                        maxScore = dp[x][y];
+                        maxCnt = cnt[x][y];
+                    } else if (dp[x][y] == maxScore) {
+                        maxCnt = (maxCnt + cnt[x][y]) % MOD;
+                    }
+                }
+                if (maxScore == INT_MIN) continue;
+                dp[i][j] = maxScore + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                cnt[i][j] = maxCnt;
+            }
+        }
+        return {dp[0][0], cnt[0][0]};
+            for (int j = n-2; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                int max = 0;
+                if (dp[i+1][j] > max) max = dp[i+1][j];
+                if (dp[i][j+1] > max) max = dp[i][j+1];
+                if (dp[i+1][j+1] > max) max = dp[i+1][j+1];
+                dp[i][j] = max + board[i][j] - '0';
+                if (dp[i+1][j] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j]) % 1000000007;
+                if (dp[i][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i][j+1]) % 1000000007;
+                if (dp[i+1][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j+1])
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n - 1][n - 1] = 0;
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1];
+                    cnt[i][j] = cnt[i][j + 1];
+                } else if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j];
+                    cnt[i][j] = cnt[i + 1][j];
+                } else {
+                    int a = dp[i + 1][j];
+                    int b = dp[i][j + 1];
+                    int c = dp[i + 1][j + 1];
+                    int max_dp = max(a, max(b, c));
+                    dp[i][j] = max_dp;
+                    if (a == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j]) % 1000000007;
+                    if (b == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i][j + 1]) % 1000000007;
+                    if (c == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j + 1]) % 1000000007;
+                }
+                if (board[i][j] != 'S' && board[i][j] != 'E') {
+                    dp[i][j] += (board[i][j] - '0');
+                }
+            }
+        }
+        if (dp[0][0] == 0) return {0, 0};
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> pat(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-2; i >= 0; i--) {
+            if (board[i][n-1] != 'X') {
+                dp[i][n-1] = dp[i+1][n-1] + board[i][n-1] - '0';
+                cnt[i][n-1] = cnt[i+1][n-1];
+            }
+        }
+        for (int j = n-2; j >= 0; j--) {
+            if (board[n-1][j] != 'X') {
+                dp[n-1][j] = dp[n-1][j+1] + board[n-1][j] - '0';
+                cnt[n-1][j] = cnt[n-1][j+1];
+            }
+        }
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = n-2; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                int max = 0;
+                if (dp[i+1][j] > max) max = dp[i+1][j];
+                if (dp[i][j+1] > max) max = dp[i][j+1];
+                if (dp[i+1][j+1] > max) max = dp[i+1][j+1];
+                dp[i][j] = max + board[i][j] - '0';
+                if (dp[i+1][j] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j]) % 1000000007;
+                if (dp[i][j+1]s[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                int val = board[i][j] - '0';
+                if (i + 1 < n && j + 1 < n) {
+                    if (dp[i + 1][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j + 1];
+                        cnt[i][j] = cnt[i + 1][j + 1];
+                    } else if (dp[i + 1][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (i + 1 < n) {
+                    if (dp[i + 1][j] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j];
+                        cnt[i][j] = cnt[i + 1][j];
+                    } else if (dp[i + 1][j] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (j + 1 < n) {
+                    if (dp[i][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i][j + 1];
+                        cnt[i][j] = cnt[i][j + 1];
+                    } el e if (dp[i][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                dp[i][j
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (board[i][j] == 'X') {
+                    continue;
+                }
+                int val = board[i][j] == 'E' ? 0 : board[i][j] - '0';
+                if (i == n - 1 && j == n - 1) {
+                    dp[i][j] = val;
+                    continue;
+                }
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1] + val;
+                    count[i][j] = count[i][j + 1];
+                    continue;
+                }
+                if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j] + val;
+                    count[i][j] = count[i + 1][j];
+                    continue;
+                }
+                int maxVal = max(dp[i + 1][j], max(dp[i][j + 1], dp[i + 1][j + 1]));
+                dp[i][j] = maxVal + val;
+                if (dp[i + 1][j] == maxVal) {
+                    count[i][j] += count[i + 1][j];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i][j + 1] == maxVal) {
+                    count[i][j] += count[i][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i + 1][j + 1] == maxVal) {
+                    count[i][j] += count[i + 1][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+            }
+        }
+        return {dp[0][0], count== max) cnt[i][j] = (cnt[i][j] + cnt[i][j+1]) % 1000000007;
+                if (dp[i+1][j+1] == max) cnt[i][j] = (cnt[i][j] + cnt[i+1][j+1])
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n - 1][n - 1] = 0;
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1];
+                    cnt[i][j] = cnt[i][j + 1];
+                } else if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j];
+                    cnt[i][j] = cnt[i + 1][j];
+                } else {
+                    int a = dp[i + 1][j];
+                    int b = dp[i][j + 1];
+                    int c = dp[i + 1][j + 1];
+                    int max_dp = max(a, max(b, c));
+                    dp[i][j] = max_dp;
+                    if (a == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j]) % 1000000007;
+                    if (b == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i][j + 1]) % 1000000007;
+                    if (c == max_dp) cnt[i][j] = (cnt[i][j] + cnt[i + 1][j + 1]) % 1000000007;
+                }
+                if (board[i][j] != 'S' && board[i][j] != 'E') {
+                    dp[i][j] += (board[i][j] - '0');
+                }
+            }
+        }
+        if (dp[0][0] == 0) return {0, 0};
+        return {dp[0][0], cnt[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> paths(n, vector<int>(n, 0));
+        paths[n-1][n-1] = 1;
+        int mod = pow(10, 9) + 7;
+        for(int i=n-1; i>=0; i--) {
+            for(int j=n-1; j>=0; j--) {
+                if(i == n-1 && j == n-1) continue;
+                if(board[i][j] == 'X') continue;
+                int a = 0, b = 0, c = 0;
+                if(i+1 < n) {
+                    a = dp[i+1][j];
+                    if(paths[i+1][j] > 0) b = paths[i+1][j];
+                }
+                if(j+1 < n) {
+                    a = max(a, dp[i][j+1]);
+                    if(paths[i][j+1] > 0) c = paths[i][j+1];
+                }
+                if(i+1 < n && j+1 < n) {
+                    a = max(a, dp[i+1][j+1]);
+                    if(paths[i+1][j+1] > 0) c = paths[i+1][j+1];
+                }
+                dp[i][j] = a + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                paths[i][j] = (b + c) % mod;
+            }
+        }
+        return {dp[0][0], paths[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        cnt[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board[i][j] == 'X') continue;
+                if (i == n - 1 && j == n - 1) continue;
+                int val = board[i][j] - '0';
+                if (i + 1 < n && j + 1 < n) {
+                    if (dp[i + 1][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j + 1];
+                        cnt[i][j] = cnt[i + 1][j + 1];
+                    } else if (dp[i + 1][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (i + 1 < n) {
+                    if (dp[i + 1][j] > dp[i][j]) {
+                        dp[i][j] = dp[i + 1][j];
+                        cnt[i][j] = cnt[i + 1][j];
+                    } else if (dp[i + 1][j] == dp[i][j]) {
+                        cnt[i][j] += cnt[i + 1][j];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                if (j + 1 < n) {
+                    if (dp[i][j + 1] > dp[i][j]) {
+                        dp[i][j] = dp[i][j + 1];
+                        cnt[i][j] = cnt[i][j + 1];
+                    } else if (dp[i][j + 1] == dp[i][j]) {
+                        cnt[i][j] += cnt[i][j + 1];
+                        cnt[i][j] %= 1000000007;
+                    }
+                }
+                dp[i][j
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<vector<int>> count(n, vector<int>(n, 0));
+        count[n - 1][n - 1] = 1;
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (board[i][j] == 'X') {
+                    continue;
+                }
+                int val = board[i][j] == 'E' ? 0 : board[i][j] - '0';
+                if (i == n - 1 && j == n - 1) {
+                    dp[i][j] = val;
+                    continue;
+                }
+                if (i == n - 1) {
+                    dp[i][j] = dp[i][j + 1] + val;
+                    count[i][j] = count[i][j + 1];
+                    continue;
+                }
+                if (j == n - 1) {
+                    dp[i][j] = dp[i + 1][j] + val;
+                    count[i][j] = count[i + 1][j];
+                    continue;
+                }
+                int maxVal = max(dp[i + 1][j], max(dp[i][j + 1], dp[i + 1][j + 1]));
+                dp[i][j] = maxVal + val;
+                if (dp[i + 1][j] == maxVal) {
+                    count[i][j] += count[i + 1][j];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i][j + 1] == maxVal) {
+                    count[i][j] += count[i][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+                if (dp[i + 1][j + 1] == maxVal) {
+                    count[i][j] += count[i + 1][j + 1];
+                    count[i][j] %= 1000000007;
+                }
+            }
+        }
+        return {dp[0][0], count[0][0]};
+
+=======
+
+        int n = board.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MIN));
+        vector<vector<int>> cnt(n, vector<int>(n, 0));
+        dp[n-1][n-1] = 0;
+        cnt[n-1][n-1] = 1;
+        for (int i = n-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                if (board[i][j] == 'X') {
+                    dp[i][j] = INT_MIN;
+                    continue;
+                }
+                if (i == n-1 && j == n-1) continue;
+                int maxScore = INT_MIN, maxCnt = 0;
+                for (int k = 0; k < 3; k++) {
+                    int x = i + dx[k];
+                    int y = j + dy[k];
+                    if (x < 0 || x >= n || y < 0 || y >= n) continue;
+                    if (dp[x][y] == INT_MIN) continue;
+                    if (dp[x][y] > maxScore) {
+                        maxScore = dp[x][y];
+                        maxCnt = cnt[x][y];
+                    } else if (dp[x][y] == maxScore) {
+                        maxCnt = (maxCnt + cnt[x][y]) % MOD;
+                    }
+                }
+                if (maxScore == INT_MIN) continue;
+                dp[i][j] = maxScore + (board[i][j] == 'E' ? 0 : board[i][j] - '0');
+                cnt[i][j] = maxCnt;
+            }
+        }
+        return {dp[0][0], cnt[0][0]};

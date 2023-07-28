@@ -1,0 +1,239 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        Map<String, Integer> dp = new HashMap<>();
+        int ans = 0;
+        for (String word : words) {
+            int best = 0;
+            for (int i = 0; i < word.length(); ++i)
+                best = Math.max(best, dp.getOrDefault(word.substring(0, i) + word.substring(i + 1), 0) + 1);
+            dp.put(word, best);
+            ans = Math.max(ans, best);
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int[] dp = new int[words.length];
+        int res = 0;
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (words[i].length() == words[j].length() + 1 && isPredecessor(words[j], words[i])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            res = Math.max(res, dp[i]);
+        }
+        return res + 1;
+    }
+    private boolean isPredecessor(String a, String b) {
+        int i = 0, j = 0;
+        while (i < a.length() && j < b.length()) {
+            if (a.charAt(i) == b.charAt(j)) {
+                i++;
+                j++;
+            } else {
+                j++;
+            }
+        }
+        return i == a.length();
+
+=======
+
+        Map<String, Integer> dp = new HashMap<>();
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int res = 0;
+        for (String word : words) {
+            int best = 0;
+            for (int i = 0; i < word.length(); ++i) {
+                String prev = word.substring(0, i) + word.substring(i + 1);
+                best = Math.max(best, dp.getOrDefault(prev, 0) + 1);
+            }
+            dp.put(word, best);
+            res = Math.max(res, best);
+        }
+        return res;
+
+=======
+
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+        int[] dp = new int[words.length];
+        int max = 0;
+        for (int i = 0; i < words.length; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (words[i].length() - words[j].length() > 1) {
+                    continue;
+                }
+                if (isPredecessor(words[j], words[i])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+    }
+
+    private boolean isPredecessor(String a, String b) {
+        int i = 0, j = 0;
+        while (i < a.length() && j < b.length()) {
+            if (a.charAt(i) == b.charAt(j)) {
+                i++;
+                j++;
+            } else if (i != j) {
+                return false;
+            } else {
+                j++;
+            }
+        }
+        return true;
+
+=======
+
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int n = words.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int ans = 1;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (words[i].length() - words[j].length() > 1) continue;
+                if (isPred(words[j], words[i])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                    ans = Math.max(ans, dp[i]);
+                }
+            }
+        }
+        return ans;
+    }
+    
+    private boolean isPred(String a, String b) {
+        int i = 0, j = 0;
+        while (i < a.length() && j < b.length()) {
+            if (a.charAt(i) == b.charAt(j)) {
+                i++;
+                j++;
+            } else {
+                if (i != j) return false;
+                j++;
+            }
+        }
+        return true;
+
+=======
+
+        int n = words.length;
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (words[i].length() - words[j].length() != 1) {
+                    continue;
+                }
+                if (isPredecessor(words[j], words[i])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+    private boolean isPredecessor(String a, String b) {
+        int i = 0, j = 0;
+        while (i < a.length() && j < b.length()) {
+            if (a.charAt(i) == b.charAt(j)) {
+                i++;
+                j++;
+            } else {
+                j++;
+            }
+        }
+        return i == a.length();
+
+=======
+
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+        int n = words.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (words[i].length() - words[j].length() > 1) {
+                    continue;
+                }
+                if (isPredecessor(words[i], words[j])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+
+    private boolean isPredecessor(String a, String b) {
+        if (a.length() != b.length() + 1) {
+            return false;
+        }
+        for (int i = 0; i < a.length(); i++) {
+            if (a.substring(0, i).equals(b.substring(0, i)) && a.substring(i + 1).equals(b.substring(i))) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int n = words.length, ans = 1;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) map.put(words[i], i);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                String s = words[i].substring(0, j) + words[i].substring(j + 1);
+                if (map.containsKey(s)) {
+                    int k = map.get(s);
+                    dp[i] = Math.max(dp[i], dp[k] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int max = 0;
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+        Map<String, Integer> dp = new HashMap<>();
+        for (String word : words) {
+            dp.put(word, 1);
+            for (int i = 0; i < word.length(); i++) {
+                String prev = word.substring(0, i) + word.substring(i + 1);
+                dp.put(word, Math.max(dp.getOrDefault(prev, 0) + 1, dp.get(word)));
+            }
+            max = Math.max(max, dp.get(word));
+        }
+        return max;
+
+=======
+
+        int[] dp = new int[17];
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        for (String word : words) {
+            int best = 0;
+            for (int i = 0; i < word.length(); ++i) {
+                String prev = word.substring(0, i) + word.substring(i + 1);
+                best = Math.max(best, dp[prev.length()]);
+            }
+            dp[word.length()] = best + 1;
+        }
+        int ans = 0;
+        for (int x : dp) ans = Math.max(ans, x);
+        return ans;

@@ -1,0 +1,254 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long[] bits = new long[60];
+        for (int num : nums) {
+            for (int i = 0; i < 60; i++) {
+                bits[i] += (num >> i) & 1;
+            }
+        }
+        long[] or = new long[60];
+        long[] and = new long[60];
+        for (int i = 0; i < 60; i++) {
+            or[i] = bits[i] * (nums.length - bits[i]);
+            and[i] = bits[i] * bits[i];
+        }
+        long ans = 0;
+        for (int i = 0; i < 60; i++) {
+            if (or[i] + and[i] >= k) {
+                ans += (1L << i);
+            }
+        }
+        return ans;
+
+=======
+
+        long ans = 0;
+        int[] cnt = new int[60];
+        for (int num : nums) {
+            for (int i = 0; i < 60; i++) {
+                if ((num & (1 << i)) != 0) {
+                    cnt[i]++;
+                }
+            }
+        }
+        for (int num : nums) {
+            long cnt1 = 0;
+            long cnt2 = 0;
+            for (int i = 0; i < 60; i++) {
+                if ((num & (1 << i)) != 0) {
+                    cnt1 += cnt[i];
+                } else {
+                    cnt2 += cnt[i];
+                }
+            }
+            ans += cnt1 * cnt2;
+        }
+        ans /= 2;
+        for (int num : nums) {
+            int bits = 0;
+            for (int i = 0; i < 60; i++) {
+                if ((num & (1 << i)) != 0) {
+                    bits++;
+                }
+            }
+            if (bits >= k) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] cnt = new int[60];
+        for (int n : nums) {
+            for (int i = 0; i < 60; i++) {
+                if ((n & (1 << i)) > 0) {
+                    cnt[i]++;
+                }
+            }
+        }
+        long ans = 0;
+        for (int n : nums) {
+            long sum = 0;
+            for (int i = 0; i < 60; i++) {
+                if ((n & (1 << i)) > 0) {
+                    sum += cnt[i];
+                } else {
+                    sum += nums.length - cnt[i];
+                }
+            }
+            if (sum >= k) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        long[] count = new long[60];
+        for (int n : nums) {
+            for (int i = 0; i < 60; i++) {
+                if ((n & (1L << i)) != 0) {
+                    count[i]++;
+                }
+            }
+        }
+        long ans = 0;
+        for (int n : nums) {
+            long sum = 0;
+            for (int i = 0; i < 60; i++) {
+                if ((n & (1L << i)) != 0) {
+                    sum += (1L << i) * count[i];
+                } else {
+                    sum += (1L << i) * (nums.length - count[i]);
+                }
+            }
+            if (sum >= k) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        long ans = 0;
+        int[] bitCount = new int[32];
+        for (int n : nums) {
+            for (int i = 0; i < 32; i++) {
+                if ((n & (1 << i)) != 0) {
+                    bitCount[i]++;
+                }
+            }
+        }
+        for (int n : nums) {
+            int bitSum = 0;
+            for (int i = 0; i < 32; i++) {
+                if ((n & (1 << i)) != 0) {
+                    bitSum += bitCount[i];
+                } else {
+                    bitSum += nums.length - bitCount[i];
+                }
+            }
+            if (bitSum >= k) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] bitCounts = new int[32];
+        for (int num : nums) {
+            bitCounts[Integer.bitCount(num)]++;
+        }
+        long result = 0;
+        for (int i = 0; i < 32; i++) {
+            for (int j = 0; j < 32; j++) {
+                if (i + j >= k) {
+                    result += bitCounts[i] * bitCounts[j];
+                }
+            }
+        }
+        return result;
+
+=======
+
+        long ans = 0;
+        int[] bits = new int[31];
+        for (int num : nums) {
+            for (int i = 0; i < 31; ++i) {
+                if ((num & (1 << i)) != 0) {
+                    bits[i]++;
+                }
+            }
+        }
+        for (int num : nums) {
+            long sum = 0;
+            for (int i = 0; i < 31; ++i) {
+                if ((num & (1 << i)) != 0) {
+                    sum += bits[i];
+                } else {
+                    sum += nums.length - bits[i];
+                }
+            }
+            if (sum >= k) {
+                ans++;
+            }
+        }
+        return ans / 2;
+
+=======
+
+        int[] cnt = new int[61];
+        long res = 0;
+        for (int num : nums) {
+            cnt[Integer.bitCount(num)]++;
+        }
+        for (int i = 0; i < 61; i++) {
+            for (int j = i; j < 61; j++) {
+                if (i + j >= k) {
+                    if (i == j) {
+                        res += cnt[i] * (cnt[i] - 1L) / 2;
+                    }
+                    else {
+                        res += cnt[i] * cnt[j];
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        long ans = 0;
+        int[] bits = new int[31];
+        for (int num : nums) {
+            int b = 0;
+            while (num > 0) {
+                if ((num & 1) == 1) {
+                    bits[b]++;
+                }
+                b++;
+                num >>= 1;
+            }
+        }
+        for (int i = 0; i < 31; i++) {
+            int val = 1 << i;
+            for (int j = i; j < 31; j++) {
+                if ((val | (1 << j)) >= k) {
+                    ans += (long)bits[i] * bits[j];
+                    if (i == j) {
+                        ans -= bits[i];
+                    }
+                }
+            }
+        }
+        return ans / 2;
+
+=======
+
+        long result = 0;
+        int[] count = new int[31];
+        for (int i : nums) {
+            int bitCount = 0;
+            for (int j = 0; j < 31; j++) {
+                if ((i & (1 << j)) > 0) {
+                    bitCount++;
+                }
+            }
+            count[bitCount]++;
+        }
+        for (int i = 1; i <= 30; i++) {
+            for (int j = i; j <= 30; j++) {
+                if (i + j >= k) {
+                    if (i == j) {
+                        result += (long) count[i] * (count[i] - 1) / 2;
+                    } else {
+                        result += (long) count[i] * count[j];
+                    }
+                }
+            }
+        }
+        return result;

@@ -1,0 +1,192 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < nums.length; i++) {
+            pq.add(nums[i]);
+        }
+        for (int i = 0; i < k; i++) {
+            int min = pq.poll();
+            pq.add(min + 1);
+        }
+        long result = 1;
+        while (!pq.isEmpty()) {
+            result *= pq.poll();
+            result %= 1000000007;
+        }
+        return (int)result;
+
+=======
+
+        int n = nums.length;
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < n; i++) {
+            pq.add(nums[i]);
+        }
+        for (int i = 0; i < k; i++) {
+            int x = pq.poll();
+            pq.add(x + 1);
+        }
+        long res = 1;
+        while (!pq.isEmpty()) {
+            res = (res * pq.poll()) % 1000000007;
+        }
+        return (int) res;
+
+=======
+
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < nums.length; i++) {
+            minHeap.offer(nums[i]);
+        }
+        for (int i = 0; i < k; i++) {
+            int min = minHeap.poll();
+            minHeap.offer(min + 1);
+        }
+        int res = 1;
+        for (int i = 0; i < nums.length; i++) {
+            res = (res * minHeap.poll()) % (int)(Math.pow(10, 9) + 7);
+        }
+        return res;
+
+=======
+
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int n : nums) {
+            minHeap.add(n);
+        }
+        for (int i = 0; i < k; i++) {
+            int n = minHeap.poll();
+            minHeap.add(n + 1);
+        }
+        long product = 1;
+        for (int n : minHeap) {
+            product *= n;
+        }
+        return (int) (product % (1000000000 + 7));
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        int[] preSum = new int[n];
+        preSum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i];
+        }
+        int res = 1;
+        for (int i = 0; i <= k; i++) {
+            int left = i;
+            int right = k - i;
+            if (right > n - 1) {
+                continue;
+            }
+            int min = preSum[left] + (right > 0 ? preSum[n - 1] - preSum[n - 1 - right] : 0);
+            int max = preSum[n - 1] - preSum[n - 1 - left] + (right > 0 ? preSum[right - 1] : 0);
+            res = Math.max(res, max - min);
+        }
+        return res;
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        long ans = 1;
+        for (int i = 0; i < k; i++) {
+            ans = ans * nums[i] % 1000000007;
+        }
+        if (nums[0] >= 0) {
+            return (int) ans;
+        }
+        long ans2 = 1;
+        int i = 0, j = n - 1;
+        while (i < k) {
+            ans2 = ans2 * nums[j] % 1000000007;
+            i++;
+            j--;
+        }
+        return (int) Math.max(ans, ans2);
+
+=======
+
+        int n = nums.length;
+        PriorityQueue<Integer> pq = new PriorityQueue<Integer>();
+        for (int i=0; i<n; i++) {
+            pq.offer(nums[i]);
+        }
+        for (int i=0; i<k; i++) {
+            int x = pq.poll();
+            pq.offer(x+1);
+        }
+        long res = 1;
+        while (!pq.isEmpty()) {
+            res = res * pq.poll() % 1000000007;
+        }
+        return (int)res;
+
+=======
+
+        int n = nums.length;
+        int mod = 1000000007;
+        Arrays.sort(nums);
+        long max = 1;
+        int i = 0;
+        int j = n - 1;
+        if (k % 2 == 1) {
+            max = nums[j];
+            j--;
+            k--;
+        }
+        while (k > 0) {
+            long a = nums[i] * nums[i + 1];
+            long b = nums[j] * nums[j - 1];
+            if (a > b) {
+                max = (max * a) % mod;
+                i += 2;
+            } else {
+                max = (max * b) % mod;
+                j -= 2;
+            }
+            k -= 2;
+        }
+        return (int) max;
+
+=======
+
+        int n = nums.length;
+        Arrays.sort(nums);
+        int prod = 1;
+        int left = 0, right = n - 1;
+        while (k > 0) {
+            if (k >= 2 && left < n - 1 && right > 0 && nums[left] < nums[right]) {
+                prod = prod * nums[left] * nums[left + 1];
+                left += 2;
+                k -= 2;
+            } else {
+                prod = prod * nums[right];
+                right--;
+                k--;
+            }
+        }
+        return prod;
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        int maxProduct = 1;
+        int i = 0;
+        int j = n - 1;
+        int count = 0;
+        while (count < k) {
+            if (i < j && nums[i] < nums[j]) {
+                maxProduct *= nums[j];
+                j--;
+            } else {
+                maxProduct *= nums[i];
+                i++;
+            }
+            count++;
+        }
+        return maxProduct;

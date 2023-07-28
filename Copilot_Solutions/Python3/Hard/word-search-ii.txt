@@ -1,0 +1,242 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        trie = {}
+        for word in words:
+            node = trie
+            for ch in word:
+                node = node.setdefault(ch, {})
+            node['#'] = word
+        m, n = len(board), len(board[0])
+        ans = []
+        def dfs(i, j, node):
+            ch = board[i][j]
+            if ch not in node:
+                return
+            node = node[ch]
+            if '#' in node:
+                ans.append(node.pop('#'))
+            board[i][j] = '@'
+            if i > 0:
+                dfs(i-1, j, node)
+            if i < m-1:
+                dfs(i+1, j, node)
+            if j > 0:
+                dfs(i, j-1, node)
+            if j < n-1:
+                dfs(i, j+1, node)
+            board[i][j] = ch
+        for i in range(m):
+            for j in range(n):
+                dfs(i, j, trie)
+        return ans
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        m, n = len(board), len(board[0])
+        def dfs(i, j, word):
+            if not word:
+                return True
+            if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != word[0]:
+                return False
+            board[i][j] = '#'
+            res = dfs(i + 1, j, word[1:]) or dfs(i - 1, j, word[1:]) or dfs(i, j + 1, word[1:]) or dfs(i, j - 1, word[1:])
+            board[i][j] = word[0]
+            return res
+        return [word for word in words if any(dfs(i, j, word) for i in range(m) for j in range(n))]
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        root = {}
+        for word in words:
+            node = root
+            for letter in word:
+                node = node.setdefault(letter, {})
+            node['#'] = '#'
+        self.res = set()
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] in root:
+                    self.dfs(board, i, j, '', root)
+        return list(self.res)
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        # Build a trie from words
+        trie = {}
+        for word in words:
+            node = trie
+            for char in word:
+                if char not in node:
+                    node[char] = {}
+                node = node[char]
+            node['#'] = word
+
+        # Search for words in board
+        def dfs(i, j, node, pre, visited):
+            if '#' in node:
+                res.add(node['#'])
+            for di, dj in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                ni, nj = i + di, j + dj
+                if 0 <= ni < m and 0 <= nj < n and (ni, nj) not in visited and board[ni][nj] in node:
+                    visited.add((ni, nj))
+                    dfs(ni, nj, node[board[ni][nj]], pre + board[ni][nj], visited)
+                    visited.remove((ni, nj))
+
+        res = set()
+        m, n = len(board), len(board[0])
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] in trie:
+                    dfs(i, j, trie[board[i][j]], board[i][j], {(i, j)})
+        return list(res)
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        if not board or not board[0]:
+            return []
+        if not words:
+            return []
+        self.rows = len(board)
+        self.cols = len(board[0])
+        self.board = board
+        self.result = set()
+        self.root = {}
+        for word in words:
+            node = self.root
+            for char in word:
+                node = node.setdefault(char, {})
+            node['#'] = word
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if board[row][col] in self.root:
+                    self.backtrack(row, col, '', self.root)
+        return list(self.result)
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        self.board = board
+        self.ans = set()
+        self.root = {}
+        for word in words:
+            node = self.root
+            for c in word:
+                node = node.setdefault(c, {})
+            node['#'] = True
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] in self.root:
+                    self.dfs(i, j, '', self.root)
+        return list(self.ans)
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        # 1. Build Trie
+        trie = {}
+        for word in words:
+            node = trie
+            for char in word:
+                node = node.setdefault(char, {})
+            node['#'] = word
+        
+        # 2. DFS
+        def dfs(i, j, node, pre, visited):
+            if '#' in node:
+                res.append(node['#'])
+                node.pop('#')
+            
+            for x, y in ((i-1, j), (i+1, j), (i, j-1), (i, j+1)):
+                if 0 <= x < m and 0 <= y < n and board[x][y] in node and (x, y) not in visited:
+                    dfs(x, y, node[board[x][y]], pre+board[x][y], visited | {(x, y)})
+        
+        # 3. Search
+        res = []
+        m, n = len(board), len(board[0])
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] in trie:
+                    dfs(i, j, trie[board[i][j]], board[i][j], {(i, j)})
+        return res
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        def dfs(i, j, node, pre):
+            c = board[i][j]
+            if c not in node:
+                return
+            node = node[c]
+            if node['#'] == 1:
+                res.append(pre+c)
+                node['#'] = 0
+            board[i][j] = '#'
+            for x, y in ((i+1,j),(i-1,j),(i,j+1),(i,j-1)):
+                if 0 <= x < m and 0 <= y < n and board[x][y] != '#':
+                    dfs(x, y, node, pre+c)
+            board[i][j] = c
+        trie = {}
+        for word in words:
+            node = trie
+            for c in word:
+                node = node.setdefault(c, {})
+            node['#'] = 1
+        m, n = len(board), len(board[0])
+        res = []
+        for i in range(m):
+            for j in range(n):
+                dfs(i, j, trie, '')
+        return res
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        self.words = words
+        self.board = board
+        self.m = len(board)
+        self.n = len(board[0])
+        self.res = set()
+        self.trie = self.build_trie()
+        for i in range(self.m):
+            for j in range(self.n):
+                self.dfs(i, j, '', self.trie)
+        return list(self.res)
+
+=======
+
+def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        def dfs(i, j, root, word):
+            if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]):
+                return
+            if board[i][j] == '#':
+                return
+            ch = board[i][j]
+            if ch not in root:
+                return
+            root = root[ch]
+            word += ch
+            if root['#']:
+                res.add(word)
+            board[i][j] = '#'
+            for x, y in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+                dfs(x, y, root, word)
+            board[i][j] = ch
+
+        res = set()
+        root = {}
+        for word in words:
+            node = root
+            for ch in word:
+                node = node.setdefault(ch, {})
+            node['#'] = True
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                dfs(i, j, root, '')
+        return list(res)

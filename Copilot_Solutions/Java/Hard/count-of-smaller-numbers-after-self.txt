@@ -1,0 +1,483 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] count = new int[n];
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, count, index, 0, n - 1);
+        List<Integer> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            res.add(count[i]);
+        }
+        return res;
+    }
+
+    private void mergeSort(int[] nums, int[] count, int[] index, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+
+        int mid = (start + end) / 2;
+        mergeSort(nums, count, index, start, mid);
+        mergeSort(nums, count, index, mid + 1, end);
+        merge(nums, count, index, start, end);
+    }
+
+    private void merge(int[] nums, int[] count, int[] index, int start, int end) {
+        int mid = (start + end) / 2;
+        int left = start;
+        int right = mid + 1;
+        int[] tmp = new int[end - start + 1];
+        int indexTmp = 0;
+        while (left <= mid && right <= end) {
+            if (nums[index[left]] <= nums[index[right]]) {
+                count[index[left]] += right - mid - 1;
+                tmp[indexTmp++] = index[left++];
+            } else {
+                tmp[indexTmp++] = index[right++];
+            }
+        }
+
+        while (left <= mid) {
+            count[index[left]] += right - mid - 1;
+            tmp[indexTmp++] = index[left++];
+        }
+
+        while (right <= end) {
+            tmp[indexTmp++] = index[right++];
+        }
+
+        for (int i = start; i <= end; i++) {
+            index[i] = tmp[i - start];
+        }
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n];
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, index, 0, n - 1, res);
+        List<Integer> ans = new ArrayList<>();
+        for (int i : res) {
+            ans.add(i);
+        }
+        return ans;
+    }
+
+    private void mergeSort(int[] nums, int[] index, int start, int end, int[] res) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, index, start, mid, res);
+        mergeSort(nums, index, mid + 1, end, res);
+        merge(nums, index, start, mid, end, res);
+    }
+
+    private void merge(int[] nums, int[] index, int start, int mid, int end, int[] res) {
+        int[] temp = new int[end - start + 1];
+        int left = start;
+        int right = mid + 1;
+        int count = 0;
+        int rightCount = 0;
+        while (left <= mid || right <= end) {
+            if (left > mid) {
+                temp[count] = index[right];
+                right++;
+            } else if (right > end) {
+                temp[count] = index[left];
+                res[index[left]] += rightCount;
+                left++;
+            } else if (nums[index[left]] <= nums[index[right]]) {
+                temp[count] = index[left];
+                res[index[left]] += rightCount;
+                left++;
+            } else {
+                temp[count] = index[right];
+                right++;
+                rightCount++;
+            }
+            count++;
+        }
+        for (int i = 0; i < temp.length; i++) {
+            index[start + i] = temp[i];
+        }
+
+=======
+
+        Integer[] res = new Integer[nums.length];
+        int[] index = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, index, 0, nums.length - 1, res);
+        return Arrays.asList(res);
+    }
+    
+    private void mergeSort(int[] nums, int[] index, int start, int end, Integer[] res) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, index, start, mid, res);
+        mergeSort(nums, index, mid + 1, end, res);
+        merge(nums, index, start, end, res);
+    }
+    
+    private void merge(int[] nums, int[] index, int start, int end, Integer[] res) {
+        int mid = start + (end - start) / 2;
+        int i = start;
+        int j = mid + 1;
+        int k = 0;
+        int[] newIndex = new int[end - start + 1];
+        while (i <= mid && j <= end) {
+            if (nums[index[i]] > nums[index[j]]) {
+                newIndex[k++] = index[j++];
+                res[index[i]] += mid - i + 1;
+            } else {
+                newIndex[k++] = index[i++];
+            }
+        }
+        while (i <= mid) {
+            newIndex[k++] = index[i++];
+        }
+        while (j <= end) {
+            newIndex[k++] = index[j++];
+        }
+        for (int l = 0; l < newIndex.length; l++) {
+            index[start + l] = newIndex[l];
+        }
+
+=======
+
+        List<Integer> result = new ArrayList<Integer>();
+        if (nums == null || nums.length == 0) {
+            return result;
+        }
+        int[] count = new int[nums.length];
+        int[] index = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, count, index, 0, nums.length - 1);
+        for (int i = 0; i < count.length; i++) {
+            result.add(count[i]);
+        }
+        return result;
+    }
+    private void mergeSort(int[] nums, int[] count, int[] index, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, count, index, start, mid);
+        mergeSort(nums, count, index, mid + 1, end);
+        merge(nums, count, index, start, end);
+    }
+    private void merge(int[] nums, int[] count, int[] index, int start, int end) {
+        int mid = start + (end - start) / 2;
+        int left = start;
+        int right = mid + 1;
+        int[] temp = new int[end - start + 1];
+        int indexTemp = 0;
+        while (left <= mid && right <= end) {
+            if (nums[index[left]] <= nums[index[right]]) {
+                temp[indexTemp] = index[left];
+                count[index[left]] += right - mid - 1;
+                indexTemp++;
+                left++;
+            } else {
+                temp[indexTemp] = index[right];
+                indexTemp++;
+                right++;
+            }
+        }
+        while (left <= mid) {
+            temp[indexTemp] = index[left];
+            count[index[left]] += right - mid - 1;
+            indexTemp++;
+            left++;
+        }
+        while (right <= end) {
+            temp[indexTemp] = index[right];
+            indexTemp++;
+            right++;
+        }
+        for (int i = 0; i < temp.length; i++) {
+            index[start + i] = temp[i];
+        }
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return ans;
+        }
+        int n = nums.length;
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        int[] count = new int[n];
+        mergeSort(nums, index, count, 0, n - 1);
+        for (int i = 0; i < n; i++) {
+            ans.add(count[i]);
+        }
+        return ans;
+    }
+    private void mergeSort(int[] nums, int[] index, int[] count, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, index, count, start, mid);
+        mergeSort(nums, index, count, mid + 1, end);
+        merge(nums, index, count, start, end);
+    }
+    private void merge(int[] nums, int[] index, int[] count, int start, int end) {
+        int mid = start + (end - start) / 2;
+        int[] left = Arrays.copyOfRange(index, start, mid + 1);
+        int[] right = Arrays.copyOfRange(index, mid + 1, end + 1);
+        int i = 0, j = 0;
+        int rightCount = 0;
+        while (i < left.length && j < right.length) {
+            if (nums[left[i]] > nums[right[j]]) {
+                rightCount++;
+                index[start++] = right[j++];
+            } else {
+                count[left[i]] += rightCount;
+                index[start++] = left[i++];
+            }
+        }
+        while (i < left.length) {
+            count[left[i]] += rightCount;
+            index[start++] = left[i++];
+        }
+        while (j < right.length) {
+            index[start++] = right[j++];
+        }
+
+=======
+
+        int n = nums.length;
+        List<Integer> result = new ArrayList<>();
+        if (n == 0) {
+            return result;
+        }
+        int[] counts = new int[n];
+        int[] indexes = new int[n];
+        for (int i = 0; i < n; i++) {
+            indexes[i] = i;
+        }
+        mergeSort(nums, counts, indexes, 0, n - 1);
+        for (int count : counts) {
+            result.add(count);
+        }
+        return result;
+    }
+
+    public void mergeSort(int[] nums, int[] counts, int[] indexes, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, counts, indexes, start, mid);
+        mergeSort(nums, counts, indexes, mid + 1, end);
+        merge(nums, counts, indexes, start, end);
+    }
+
+    public void merge(int[] nums, int[] counts, int[] indexes, int start, int end) {
+        int mid = start + (end - start) / 2;
+        int i = start;
+        int j = mid + 1;
+        int rightCount = 0;
+        int[] newIndexes = new int[end - start + 1];
+        int index = 0;
+        while (i <= mid || j <= end) {
+            if (i > mid) {
+                newIndexes[index] = indexes[j];
+                j++;
+            } else if (j > end) {
+                newIndexes[index] = indexes[i];
+                counts[indexes[i]] += rightCount;
+                i++;
+            } else if (nums[indexes[i]] <= nums[indexes[j]]) {
+                newIndexes[index] = indexes[i];
+                counts[indexes[i]] += rightCount;
+                i++;
+            } else {
+                newIndexes[index] = indexes[j];
+                rightCount++;
+                j++;
+            }
+            index++;
+        }
+        for (int k = 0; k < newIndexes.length; k++) {
+            indexes[start + k] = newIndexes[k];
+        }
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return result;
+        }
+        int n = nums.length;
+        int[] smaller = new int[n];
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, smaller, index, 0, n - 1);
+        for (int i = 0; i < n; i++) {
+            result.add(smaller[i]);
+        }
+        return result;
+    }
+
+    private void mergeSort(int[] nums, int[] smaller, int[] index, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int mid = left + (right - left) / 2;
+        mergeSort(nums, smaller, index, left, mid);
+        mergeSort(nums, smaller, index, mid + 1, right);
+        merge(nums, smaller, index, left, mid, right);
+    }
+
+    private void merge(int[] nums, int[] smaller, int[] index, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+        int count = 0;
+        while (i <= mid && j <= right) {
+            if (nums[index[i]] <= nums[index[j]]) {
+                smaller[index[i]] += count;
+                temp[k++] = index[i++];
+            } else {
+                count++;
+                temp[k++] = index[j++];
+            }
+        }
+        while (i <= mid) {
+            smaller[index[i]] += count;
+            temp[k++] = index[i++];
+        }
+        while (j <= right) {
+            temp[k++] = index[j++];
+        }
+        for (int p = 0; p < temp.length; p++) {
+            index[left + p] = temp[p];
+        }
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (nums == null) {
+            return result;
+        }
+        int[] count = new int[nums.length];
+        int[] index = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            index[i] = i;
+        }
+        mergeSort(nums, index, count, 0, nums.length - 1);
+        for (int i = 0; i < count.length; i++) {
+            result.add(count[i]);
+        }
+        return result;
+    }
+    private void mergeSort(int[] nums, int[] index, int[] count, int start, int end) {
+        if (start >= end) {
+            return;
+        }
+        int mid = start + (end - start) / 2;
+        mergeSort(nums, index, count, start, mid);
+        mergeSort(nums, index, count, mid + 1, end);
+        merge(nums, index, count, start, mid, end);
+    }
+    private void merge(int[] nums, int[] index, int[] count, int start, int mid, int end) {
+        int[] temp = new int[end - start + 1];
+        int left = start;
+        int right = mid + 1;
+        int indexTemp = 0;
+        while (left <= mid && right <= end) {
+            if (nums[index[left]] <= nums[index[right]]) {
+                count[index[left]] += right - mid - 1;
+                temp[indexTemp++] = index[left++];
+            } else {
+                temp[indexTemp++] = index[right++];
+            }
+        }
+        while (left <= mid) {
+            count[index[left]] += right - mid - 1;
+            temp[indexTemp++] = index[left++];
+        }
+        while (right <= end) {
+            temp[indexTemp++] = index[right++];
+        }
+        for (int i = 0; i < temp.length; i++) {
+            index[start + i] = temp[i];
+        }
+
+=======
+
+        List<Integer> result = new ArrayList<Integer>();
+        int[] count = new int[nums.length];
+        for (int i = nums.length - 1; i >= 0; i--) {
+            int index = binarySearch(nums, i + 1, nums.length - 1, nums[i]);
+            if (index == nums.length) {
+                count[i] = 0;
+            } else {
+                count[i] = index - i;
+            }
+        }
+        for (int i = 0; i < count.length; i++) {
+            result.add(count[i]);
+        }
+        return result;
+    }
+
+    private int binarySearch(int[] nums, int start, int end, int target) {
+        if (start > end) {
+            return nums.length;
+        }
+        int mid = start + (end - start) / 2;
+        if (nums[mid] < target) {
+            return binarySearch(nums, mid + 1, end, target);
+        } else {
+            return binarySearch(nums, start, mid - 1, target);
+        }
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int n = nums.length;
+        int[] sorted = new int[n];
+        for (int i = n-1; i >= 0; i--) {
+            int index = findIndex(sorted, 0, n-1, nums[i]);
+            result.add(0, index);
+            for (int j = n-1; j > index; j--) {
+                sorted[j] = sorted[j-1];
+            }
+            sorted[index] = nums[i];
+        }
+        return result;
+    }
+    
+    private int findIndex(int[] sorted, int start, int end, int target) {
+        if (start > end) return start;
+        int mid = start + (end - start) / 2;
+        if (sorted[mid] < target) {
+            return findIndex(sorted, mid + 1, end, target);
+        } else {
+            return findIndex(sorted, start, mid - 1, target);
+        }

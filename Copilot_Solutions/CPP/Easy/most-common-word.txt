@@ -1,0 +1,222 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_map<string, int> count;
+        for (auto &ch: paragraph) ch = isalpha(ch) ? tolower(ch) : ' ';
+        istringstream iss(paragraph);
+        string word;
+        while (iss >> word) count[word]++;
+        for (auto &b: banned) count.erase(b);
+        auto cmp = [](const pair<string, int> &a, const pair<string, int> &b) {
+            return a.second < b.second;
+        };
+        return max_element(count.begin(), count.end(), cmp)->first;
+
+=======
+
+        unordered_map<string, int> count;
+        for (auto &ch : paragraph) {
+            ch = isalpha(ch) ? tolower(ch) : ' ';
+        }
+        istringstream iss(paragraph);
+        string word;
+        while (iss >> word) {
+            count[word]++;
+        }
+        for (auto &ban : banned) {
+            count[ban] = 0;
+        }
+        string res;
+        for (auto &[k, v] : count) {
+            if (v > count[res]) {
+                res = k;
+            }
+        }
+        return res;
+
+=======
+
+        unordered_set<string> ban(banned.begin(), banned.end());
+        unordered_map<string, int> count;
+        string ans;
+        for (int i = 0, j = 0; i < paragraph.size(); i = j) {
+            while (i < paragraph.size() && !isalpha(paragraph[i])) i++;
+            j = i + 1;
+            while (j < paragraph.size() && isalpha(paragraph[j])) j++;
+            if (i < paragraph.size()) {
+                string word = paragraph.substr(i, j - i);
+                transform(word.begin(), word.end(), word.begin(), ::tolower);
+                if (ban.find(word) == ban.end()) {
+                    count[word]++;
+                    if (ans.empty() || count[word] > count[ans]) {
+                        ans = word;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> map;
+        for (int i = 0; i < paragraph.size(); i++) {
+            if (isalpha(paragraph[i])) {
+                int j = i;
+                while (j < paragraph.size() && isalpha(paragraph[j])) {
+                    paragraph[j] = tolower(paragraph[j]);
+                    j++;
+                }
+                string word = paragraph.substr(i, j - i);
+                if (find(banned.begin(), banned.end(), word) == banned.end()) {
+                    map[word]++;
+                }
+                i = j;
+            }
+        }
+        
+        int max = 0;
+        string result;
+        for (auto it = map.begin(); it != map.end(); it++) {
+            if (it->second > max) {
+                max = it->second;
+                result = it->first;
+            }
+        }
+        return result;
+
+=======
+
+        unordered_set<string> banned_words(banned.begin(), banned.end());
+        unordered_map<string, int> counter;
+        for (auto& ch : paragraph) {
+            ch = isalpha(ch) ? tolower(ch) : ' ';
+        }
+        istringstream iss(paragraph);
+        string word;
+        while (iss >> word) {
+            if (banned_words.find(word) == banned_words.end()) {
+                ++counter[word];
+            }
+        }
+        return max_element(counter.begin(), counter.end(), [](const auto& lhs, const auto& rhs) {
+            return lhs.second < rhs.second;
+        })->first;
+
+=======
+
+        for (auto& c : paragraph) {
+            if (ispunct(c)) {
+                c = ' ';
+            }
+        }
+        for (auto& c : paragraph) {
+            if (isupper(c)) {
+                c = tolower(c);
+            }
+        }
+        std::istringstream iss(paragraph);
+        std::string s;
+        std::unordered_map<std::string, int> m;
+        while (iss >> s) {
+            ++m[s];
+        }
+        for (auto& b : banned) {
+            m.erase(b);
+        }
+        std::pair<std::string, int> res;
+        for (auto& p : m) {
+            if (p.second > res.second) {
+                res = p;
+            }
+        }
+        return res.first;
+
+=======
+
+        unordered_map<string, int> m;
+        for (auto& c : paragraph) {
+            if (c >= 'A' && c <= 'Z') c += 32;
+            if (c < 'a' || c > 'z') c = ' ';
+        }
+        istringstream iss(paragraph);
+        string word;
+        while (iss >> word) {
+            if (find(banned.begin(), banned.end(), word) == banned.end()) {
+                ++m[word];
+            }
+        }
+        string res;
+        int maxCnt = 0;
+        for (auto& [w, c] : m) {
+            if (c > maxCnt) {
+                maxCnt = c;
+                res = w;
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> freq;
+        string word;
+        for (auto c : paragraph) {
+            if (isalpha(c)) {
+                word += tolower(c);
+            } else if (!word.empty()) {
+                freq[word]++;
+                word = "";
+            }
+        }
+        if (!word.empty()) {
+            freq[word]++;
+        }
+        string res;
+        int maxFreq = 0;
+        for (auto& [w, f] : freq) {
+            if (f > maxFreq && find(banned.begin(), banned.end(), w) == banned.end()) {
+                maxFreq = f;
+                res = w;
+            }
+        }
+        return res;
+
+=======
+
+        for(auto& c : paragraph) {
+            if(c == ',' || c == '!' || c == '?' || c == ';' || c == '\'' || c == '.' || c == ' ') {
+                c = ' ';
+            } else {
+                c = tolower(c);
+            }
+        }
+        unordered_set<string> ban(banned.begin(), banned.end());
+        unordered_map<string, int> cnt;
+        istringstream iss(paragraph);
+        string word;
+        int maxCnt = 0;
+        string res;
+        while(iss >> word) {
+            if(ban.find(word) == ban.end()) {
+                if(++cnt[word] > maxCnt) {
+                    maxCnt = cnt[word];
+                    res = word;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        string result;
+        unordered_map<string, int> map;
+        for (char& c : paragraph) c = isalpha(c) ? tolower(c) : ' ';
+        istringstream iss(paragraph);
+        string word;
+        while (iss >> word) map[word]++;
+        for (auto& p : map) {
+            if (find(banned.begin(), banned.end(), p.first) == banned.end() && (result.empty() || p.second > map[result])) {
+                result = p.first;
+            }
+        }
+        return result;

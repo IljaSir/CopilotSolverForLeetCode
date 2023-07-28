@@ -1,0 +1,111 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for edge in edges {
+            graph[edge[0] as usize].push(edge[1] as usize);
+            graph[edge[1] as usize].push(edge[0] as usize);
+        }
+        let mut leaves = Vec::new();
+        for i in 0..n {
+            if graph[i].len() == 1 {
+                leaves.push(i);
+            }
+        }
+        let mut count = n;
+        while count > 2 {
+            count -= leaves.len();
+            let mut new_leaves = Vec::new();
+            for leaf in leaves {
+                let neighbor = graph[leaf][0];
+                graph[neighbor].retain(|&v| v != leaf);
+                if graph[neighbor].len() == 1 {
+                    new_leaves.push(neighbor);
+                }
+            }
+            leaves = new_leaves;
+        }
+        leaves
+
+=======
+Suggestion 2
+
+        
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut ans = vec![];
+        let mut adj = vec![vec![]; n as usize];
+        let mut degree = vec![0; n as usize];
+        for edge in edges {
+            adj[edge[0] as usize].push(edge[1] as usize);
+            adj[edge[1] as usize].push(edge[0] as usize);
+            degree[edge[0] as usize] += 1;
+            degree[edge[1] as usize] += 1;
+        }
+        let mut q = std::collections::VecDeque::new();
+        for i in 0..n {
+            if degree[i as usize] == 1 {
+                q.push_back(i);
+            }
+        }
+        while n - q.len() as i32 > 2 {
+            let size = q.len();
+            for _ in 0..size {
+                if let Some(node) = q.pop_front() {
+                    for i in &adj[node as usize] {
+                        degree[*i] -= 1;
+                        if degree[*i] == 1 {
+                            q.push_back(*i as i32);
+                        }
+                    }
+                }
+            }
+        }
+        while let Some(node) = q.pop_front() {
+            ans.push(node);
+        }
+        ans
+
+=======
+Suggestion 4
+
+        let n = n as usize;
+        let mut degrees = vec![0; n];
+        let mut edges = edges;
+        let mut graph = vec![vec![]; n];
+        for edge in edges.iter_mut() {
+            let (a, b) = (edge[0] as usize, edge[1] as usize);
+            degrees[a] += 1;
+            degrees[b] += 1;
+            graph[a].push(b);
+            graph[b].push(a);
+        }
+        let mut leaves = vec![];
+        for i in 0..n {
+            if degrees[i] == 1 {
+                leaves.push(i);
+            }
+        }
+        let mut remain = n;
+        while remain > 2 {
+            remain -= leaves.len();
+            let mut new_leaves = vec![];
+            for leaf in leaves {
+                degrees[leaf] -= 1;
+                for &node in graph[leaf].iter() {
+                    degrees[node] -= 1;
+                    if degrees[node] == 1 {
+                        new_leaves.push(node);
+                    }
+                }
+            }
+            leaves = new_leaves;
+        }
+        leaves

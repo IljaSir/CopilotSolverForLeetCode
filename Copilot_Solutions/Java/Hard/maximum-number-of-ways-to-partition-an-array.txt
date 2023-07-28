@@ -1,0 +1,377 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i;
+            while (left[i] > 0 && sum[i + 1] - sum[left[i]] >= sum[left[i]]) {
+                left[i] = left[left[i] - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = i;
+            while (right[i] < n - 1 && sum[n] - sum[right[i] + 1] >= sum[right[i] + 1] - sum[i]) {
+                right[i] = right[right[i] + 1];
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (sum[i] == sum[n] - sum[i]) {
+                res++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            int l = left[i];
+            int r = right[i];
+            int s = sum[i + 1] - sum[l];
+            int t = sum[r + 1] - sum[i + 1];
+            if (s - t == k) {
+                res = Math.max(res, r - l + 1);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long[] prefix = new long[n + 1];
+        long[] suffix = new long[n + 1];
+        long[] prefixMax = new long[n + 1];
+        long[] suffixMax = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = sum[i] - Math.min(sum[i], sum[n] - sum[i]);
+            prefixMax[i] = Math.max(prefixMax[i - 1], prefix[i]);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            suffix[i] = sum[n] - sum[i] - Math.min(sum[i], sum[n] - sum[i]);
+            suffixMax[i] = Math.max(suffixMax[i + 1], suffix[i]);
+        }
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            ans = Math.max(ans, (int) (prefixMax[i] + suffixMax[i]));
+        }
+        for (int i = 0; i < n; i++) {
+            nums[i] = k;
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = sum[i] - Math.min(sum[i], sum[n] - sum[i]);
+            prefixMax[i] = Math.max(prefixMax[i - 1], prefix[i]);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            suffix[i] = sum[n] - sum[i] - Math.min(sum[i], sum[n] - sum[i]);
+            suffixMax[i] = Math.max(suffixMax[i + 1], suffix[i]);
+        }
+        for (int i = 1; i < n; i++) {
+            ans = Math.max(ans, (int) (prefixMax[i] + suffixMax[i]));
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        prefix[0] = nums[0];
+        suffix[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+            suffix[n - i - 1] = suffix[n - i] + nums[n - i - 1];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                left[i] = 1;
+            }
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            if (left[i + 1] == 1) {
+                left[i] = 1;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                right[i] = 1;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            if (right[i - 1] == 1) {
+                right[i] = 1;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] == 1) {
+                ans++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                ans = Math.max(ans, 1);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                ans = Math.max(ans, 1 + right[i + 1]);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                ans = Math.max(ans, 1 + left[i - 1]);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                int sum = prefix[i];
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        prefix[0] = nums[0];
+        suffix[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+            suffix[n - i - 1] = suffix[n - i] + nums[n - i - 1];
+        }
+        int count = 0;
+        for (int i = 1; i < n; i++) {
+            if (prefix[i - 1] == suffix[i]) {
+                count++;
+            }
+        }
+        int max = count;
+        for (int i = 0; i < n; i++) {
+            int sum = prefix[i] - nums[i] + k;
+            int j = i + 1;
+            while (j < n && prefix[j - 1] < sum) {
+                j++;
+            }
+            if (j < n && prefix[j - 1] == sum) {
+                int cnt = count;
+                if (j < n && prefix[j - 1] == suffix[j]) {
+                    cnt--;
+                }
+                if (i > 0 && prefix[i - 1] == suffix[i]) {
+                    cnt--;
+                }
+                max = Math.max(max, cnt + 1);
+            }
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            prefix[i+1] = prefix[i] + nums[i];
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int left = prefix[i+1];
+            int right = prefix[n] - prefix[i+1];
+            if (left == right) max++;
+        }
+        int[] diff = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            diff[i+1] = diff[i];
+            if (nums[i] > k) diff[i+1]++;
+            if (nums[i] < k) diff[i+1]--;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(diff[i], map.getOrDefault(diff[i], 0) + 1);
+        }
+        for (int val: map.values()) {
+            max = Math.max(max, val);
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] prefixSum = new int[n];
+        int[] suffixSum = new int[n];
+        prefixSum[0] = nums[0];
+        suffixSum[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i - 1] + nums[i];
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            suffixSum[i] = suffixSum[i + 1] + nums[i];
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (prefixSum[i] == suffixSum[i]) {
+                max++;
+            }
+        }
+        int diff = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            int left = i == 0 ? 0 : prefixSum[i - 1];
+            int right = i == n - 1 ? 0 : suffixSum[i + 1];
+            if (left + k == right + k) {
+                diff = Math.max(diff, 1);
+            }
+            if (left + k == right) {
+                diff = Math.max(diff, 1);
+            }
+            if (left == right + k) {
+                diff = Math.max(diff, 1);
+            }
+        }
+        return diff == Integer.MIN_VALUE ? max : max + diff;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            prefix[i] = sum;
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            sum += nums[i];
+            suffix[i] = sum;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (prefix[i] == suffix[i]) {
+                res++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == k) {
+                continue;
+            }
+            int diff = k - nums[i];
+            nums[i] = k;
+            sum = 0;
+            for (int j = 0; j < n; j++) {
+                sum += nums[j];
+                prefix[j] = sum;
+            }
+            sum = 0;
+            for (int j = n - 1; j >= 0; j--) {
+                sum += nums[j];
+                suffix[j] = sum;
+            }
+            for (int j = 0; j < n; j++) {
+                if (prefix[j] == suffix[j]) {
+                    res++;
+                }
+            }
+            nums[i] = k - diff;
+        }
+        return res;
+
+=======
+
+        int[] prefix = new int[nums.length];
+        int[] suffix = new int[nums.length];
+        prefix[0] = nums[0];
+        suffix[nums.length - 1] = nums[nums.length - 1];
+        for (int i = 1; i < nums.length; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+            suffix[nums.length - i - 1] = suffix[nums.length - i] + nums[nums.length - i - 1];
+        }
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            int left = i == 0 ? 0 : prefix[i - 1];
+            int right = i == nums.length - 1 ? 0 : suffix[i + 1];
+            int ways = 0;
+            if (left == right) {
+                ways++;
+            }
+            for (int j = 0; j < nums.length; j++) {
+                if (nums[j] == k) {
+                    int l = j == 0 ? 0 : prefix[j - 1];
+                    int r = j == nums.length - 1 ? 0 : suffix[j + 1];
+                    if (l + r == left + right + k) {
+                        ways++;
+                    }
+                }
+            }
+            max = Math.max(max, ways);
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        for (int i = 0; i < n; i++) {
+            prefix[i] = nums[i] + (i > 0 ? prefix[i - 1] : 0);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            suffix[i] = nums[i] + (i + 1 < n ? suffix[i + 1] : 0);
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(suffix[i], map.getOrDefault(suffix[i], 0) + 1);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int left = prefix[i];
+            int right = suffix[i + 1];
+            map.put(suffix[i + 1], map.get(suffix[i + 1]) - 1);
+            if (left == right) {
+                res = Math.max(res, map.get(right));
+            }
+            res = Math.max(res, map.getOrDefault(left, 0));
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n];
+        int[] sufSum = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == k) {
+                nums[i] = 0;
+            }
+            preSum[i] = nums[i];
+            if (i > 0) {
+                preSum[i] += preSum[i - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            sufSum[i] = nums[i];
+            if (i < n - 1) {
+                sufSum[i] += sufSum[i + 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = 0;
+            if (preSum[i] == sufSum[i]) {
+                cur++;
+            }
+            if (i > 0 && preSum[i - 1] == sufSum[i]) {
+                cur++;
+            }
+            if (i < n - 1 && preSum[i] == sufSum[i + 1]) {
+                cur++;
+            }
+            ans = Math.max(ans, cur);
+        }
+        return ans;

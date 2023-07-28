@@ -1,0 +1,155 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let mut res = vec![vec![0; mat[0].len()]; mat.len()];
+        let mut queue = Vec::new();
+        for i in 0..mat.len() {
+            for j in 0..mat[0].len() {
+                if mat[i][j] == 0 {
+                    queue.push((i, j));
+                } else {
+                    res[i][j] = -1;
+                }
+            }
+        }
+        let mut step = 0;
+        while !queue.is_empty() {
+            let mut next = Vec::new();
+            for (i, j) in queue {
+                if res[i][j] == -1 {
+                    res[i][j] = step;
+                }
+                if i > 0 && res[i - 1][j] == -1 {
+                    next.push((i - 1, j));
+                }
+                if j > 0 && res[i][j - 1] == -1 {
+                    next.push((i, j - 1));
+                }
+                if i < mat.len() - 1 && res[i + 1][j] == -1 {
+                    next.push((i + 1, j));
+                }
+                if j < mat[0].len() - 1 && res[i][j + 1] == -1 {
+                    next.push((i, j + 1));
+                }
+            }
+            queue = next;
+            step += 1;
+        }
+        res
+
+=======
+Suggestion 2
+
+        let mut result = vec![vec![0; mat[0].len()]; mat.len()];
+        let mut queue = Vec::new();
+        for i in 0..mat.len() {
+            for j in 0..mat[i].len() {
+                if mat[i][j] == 0 {
+                    queue.push((i, j));
+                } else {
+                    result[i][j] = std::i32::MAX;
+                }
+            }
+        }
+        while !queue.is_empty() {
+            let (i, j) = queue.remove(0);
+            if i > 0 && result[i][j] + 1 < result[i - 1][j] {
+                result[i - 1][j] = result[i][j] + 1;
+                queue.push((i - 1, j));
+            }
+            if i < mat.len() - 1 && result[i][j] + 1 < result[i + 1][j] {
+                result[i + 1][j] = result[i][j] + 1;
+                queue.push((i + 1, j));
+            }
+            if j > 0 && result[i][j] + 1 < result[i][j - 1] {
+                result[i][j - 1] = result[i][j] + 1;
+                queue.push((i, j - 1));
+            }
+            if j < mat[i].len() - 1 && result[i][j] + 1 < result[i][j + 1] {
+                result[i][j + 1] = result[i][j] + 1;
+                queue.push((i, j + 1));
+            }
+        }
+        result
+
+=======
+Suggestion 3
+
+        
+    }
+}
+
+=======
+Suggestion 4
+
+        let mut res = vec![vec![0; mat[0].len()]; mat.len()];
+        let mut queue: Vec<(usize, usize)> = Vec::new();
+        for i in 0..mat.len() {
+            for j in 0..mat[i].len() {
+                if mat[i][j] == 0 {
+                    queue.push((i, j));
+                } else {
+                    res[i][j] = -1;
+                }
+            }
+        }
+        let mut step = 1;
+        while !queue.is_empty() {
+            let mut new_queue: Vec<(usize, usize)> = Vec::new();
+            for (i, j) in queue {
+                if i > 0 && res[i-1][j] == -1 {
+                    res[i-1][j] = step;
+                    new_queue.push((i-1, j));
+                }
+                if i < mat.len()-1 && res[i+1][j] == -1 {
+                    res[i+1][j] = step;
+                    new_queue.push((i+1, j));
+                }
+                if j > 0 && res[i][j-1] == -1 {
+                    res[i][j-1] = step;
+                    new_queue.push((i, j-1));
+                }
+                if j < mat[i].len()-1 && res[i][j+1] == -1 {
+                    res[i][j+1] = step;
+                    new_queue.push((i, j+1));
+                }
+            }
+            queue = new_queue;
+            step += 1;
+        }
+        res
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut ans = vec![vec![0; mat[0].len()]; mat.len()];
+        let mut q = std::collections::VecDeque::new();
+        for (i, row) in mat.iter().enumerate() {
+            for (j, &v) in row.iter().enumerate() {
+                if v == 0 {
+                    q.push_back((i, j));
+                } else {
+                    ans[i][j] = i32::MAX;
+                }
+            }
+        }
+        let mut dir = vec![(0, 1), (1, 0), (0, -1), (-1, 0)];
+        while let Some((i, j)) = q.pop_front() {
+            for (di, dj) in dir.iter() {
+                let ni = i as i32 + di;
+                let nj = j as i32 + dj;
+                if ni >= 0 && ni < mat.len() as i32 && nj >= 0 && nj < mat[0].len() as i32 {
+                    let ni = ni as usize;
+                    let nj = nj as usize;
+                    if ans[ni][nj] > ans[i][j] + 1 {
+                        ans[ni][nj] = ans[i][j] + 1;
+                        q.push_back((ni, nj));
+                    }
+                }
+            }
+        }
+        ans

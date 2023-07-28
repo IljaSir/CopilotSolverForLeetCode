@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.length();
+        int[][] index = new int[26][2];
+        for (int i = 0; i < 26; ++i) {
+            Arrays.fill(index[i], -1);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = s.charAt(i) - 'A';
+            ans += (i - index[x][1]) * (index[x][1] - index[x][0]);
+            index[x] = new int[]{index[x][1], i};
+        }
+        for (int i = 0; i < 26; ++i) {
+            ans += (n - index[i][1]) * (index[i][1] - index[i][0]);
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        int n = s.length();
+        int[][] pos = new int[26][2];
+        for (int i = 0; i < 26; ++i)
+            Arrays.fill(pos[i], -1);
+        for (int i = 0; i < n; ++i) {
+            int x = s.charAt(i) - 'A';
+            ans += (i - pos[x][1]) * (pos[x][1] - pos[x][0]);
+            pos[x] = new int[]{pos[x][1], i};
+        }
+        for (int i = 0; i < 26; ++i)
+            ans += (n - pos[i][1]) * (pos[i][1] - pos[i][0]);
+        return ans;
+
+=======
+
+        int[][] prev = new int[s.length()][26];
+        int[][] next = new int[s.length()][26];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < 26; j++) {
+                prev[i][j] = -1;
+                next[i][j] = -1;
+            }
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            for (int j = 0; j < 26; j++) {
+                if (j == c - 'A') {
+                    prev[i][j] = i;
+                } else {
+                    prev[i][j] = i == 0 ? -1 : prev[i - 1][j];
+                }
+            }
+        }
+        for (int i = s.length() - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            for (int j = 0; j < 26; j++) {
+                if (j == c - 'A') {
+                    next[i][j] = i;
+                } else {
+                    next[i][j] = i == s.length() - 1 ? -1 : next[i + 1][j];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int left = i - prev[i][c - 'A'];
+            int right = next[i][c - 'A'] == -1 ? s.length() - i : next[i][c - 'A'] - i;
+            ans += left * right;
+        }
+        return ans;
+
+=======
+
+        int[] last = new int[26];
+        int[] prev = new int[26];
+        Arrays.fill(last, -1);
+        Arrays.fill(prev, -1);
+        int res = 0, n = s.length();
+        for (int i = 0; i < n; ++i) {
+            int c = s.charAt(i) - 'A';
+            res += (i - last[c]) * (last[c] - prev[c]);
+            prev[c] = last[c];
+            last[c] = i;
+        }
+        for (int c = 0; c < 26; ++c)
+            res += (n - last[c]) * (last[c] - prev[c]);
+        return res;
+
+=======
+
+        int n = s.length();
+        int[] last = new int[26];
+        int[] pre = new int[26];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int x = s.charAt(i) - 'A';
+            ans += (i + 1 - pre[x]) * (pre[x] - last[x]);
+            last[x] = pre[x];
+            pre[x] = i + 1;
+        }
+        for (int i = 0; i < 26; i++) {
+            ans += (n + 1 - pre[i]) * (pre[i] - last[i]);
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        int n = s.length();
+        int[] last = new int[26];
+        int[] next = new int[26];
+        Arrays.fill(last, -1);
+        Arrays.fill(next, n);
+        for (int i = n - 1; i >= 0; i--) {
+            int c = s.charAt(i) - 'A';
+            next[c] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'A';
+            ans += (i - last[c]) * (next[c] - i);
+            last[c] = i;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = s.length();
+        int[] last = new int[26];
+        Arrays.fill(last, -1);
+        int[] prev = new int[n];
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            prev[i] = last[c - 'A'];
+            last[c - 'A'] = i;
+        }
+        Arrays.fill(last, n);
+        int[] next = new int[n];
+        for (int i = n - 1; i >= 0; i--) {
+            char c = s.charAt(i);
+            next[i] = last[c - 'A'];
+            last[c - 'A'] = i;
+        }
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res = (res + (i - prev[i]) * (next[i] - i)) % mod;
+        }
+        return (int) res;
+
+=======
+
+        if (s == null || s.isEmpty()) {
+            return 0;
+        }
+        int n = s.length();
+        int[] last = new int[26];
+        int[] next = new int[26];
+        Arrays.fill(last, -1);
+        Arrays.fill(next, -1);
+        int[] dp = new int[n];
+        dp[0] = 1;
+        last[s.charAt(0) - 'A'] = 0;
+        for (int i = 1; i < n; i++) {
+            int idx = s.charAt(i) - 'A';
+            next[idx] = i;
+            dp[i] = dp[i - 1] + i - last[idx] - (next[idx] - last[idx]) + 1;
+            last[idx] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] last = new int[26];
+        int[] count = new int[26];
+        int[] pos = new int[26];
+        Arrays.fill(last, -1);
+        Arrays.fill(pos, -1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int ch = s.charAt(i) - 'A';
+            ans += (i - last[ch]) * (last[ch] - pos[ch]);
+            pos[ch] = last[ch];
+            last[ch] = i;
+            count[ch]++;
+        }
+        for (int i = 0; i < 26; i++) {
+            ans += (n - last[i]) * (last[i] - pos[i]);
+        }
+        return ans;
+
+=======
+
+        int N = s.length();
+        int[] last = new int[26];
+        int[] dp = new int[N + 1];
+        int[] dp2 = new int[N + 1];
+        for (int i = 0; i < 26; ++i) last[i] = -1;
+        for (int i = 0; i < N; ++i) {
+            int x = s.charAt(i) - 'A';
+            dp[i + 1] = dp[i] + (i + 1) - last[x];
+            last[x] = i + 1;
+        }
+        for (int i = 0; i < 26; ++i) last[i] = N + 1;
+        for (int i = N - 1; i >= 0; --i) {
+            int x = s.charAt(i) - 'A';
+            dp2[i] = dp2[i + 1] + last[x] - (i + 1);
+            last[x] = i + 1;
+        }
+        int ans = 0;
+        for (int i = 0; i < N; ++i) {
+            int x = s.charAt(i) - 'A';
+            ans += dp[i + 1] * dp2[i + 1];
+        }
+        return ans;

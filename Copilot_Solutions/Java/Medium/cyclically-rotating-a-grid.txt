@@ -1,0 +1,426 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int layers = Math.min(m, n) / 2;
+        for (int i = 0; i < layers; i++) {
+            int[] tmp = new int[(m - 2 * i) * 2 + (n - 2 * i) * 2 - 4];
+            int index = 0;
+            for (int j = i; j < n - i; j++) {
+                tmp[index++] = grid[i][j];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                tmp[index++] = grid[j][n - i - 1];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                tmp[index++] = grid[m - i - 1][j];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                tmp[index++] = grid[j][i];
+            }
+            int[] tmp2 = new int[tmp.length];
+            for (int j = 0; j < tmp.length; j++) {
+                tmp2[(j + k) % tmp.length] = tmp[j];
+            }
+            index = 0;
+            for (int j = i; j < n - i; j++) {
+                grid[i][j] = tmp2[index++];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                grid[j][n - i - 1] = tmp2[index++];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                grid[m - i - 1][j] = tmp2[index++];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                grid[j][i] = tmp2[index++];
+            }
+        }
+        return grid;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int r1 = 0, r2 = m - 1;
+        int c1 = 0, c2 = n - 1;
+        while (r1 < r2 && c1 < c2) {
+            int size = (r2 - r1 + 1) * 2 + (c2 - c1 + 1) * 2 - 4;
+            int kk = k % size;
+            for (int i = 0; i < kk; i++) {
+                int tmp = grid[r1][c1];
+                for (int j = c1; j < c2; j++) {
+                    grid[r1][j] = grid[r1][j + 1];
+                }
+                for (int j = r1; j < r2; j++) {
+                    grid[j][c2] = grid[j + 1][c2];
+                }
+                for (int j = c2; j > c1; j--) {
+                    grid[r2][j] = grid[r2][j - 1];
+                }
+                for (int j = r2; j > r1; j--) {
+                    grid[j][c1] = grid[j - 1][c1];
+                }
+                grid[r1 + 1][c1] = tmp;
+            }
+            r1++;
+            r2--;
+            c1++;
+            c2--;
+        }
+        return grid;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] ans = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                ans[i][j] = grid[i][j];
+            }
+        }
+        int r = 0;
+        int c = 0;
+        int min = Math.min(m, n);
+        while (r < m && c < n) {
+            if (r + 1 == m || c + 1 == n) {
+                break;
+            }
+            int len = 2 * (m + n - 2 - 2 * r);
+            int shift = k % len;
+            int[][] tmp = new int[m][n];
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    tmp[i][j] = ans[i][j];
+                }
+            }
+            for (int i = r; i < m - r - 1; i++) {
+                int x = i - r;
+                int y = c;
+                ans[i][y] = tmp[(x + shift) % len + r][y];
+            }
+            for (int i = c; i < n - c - 1; i++) {
+                int x = m - r - 1 - r;
+                int y = i - c;
+                ans[m - r - 1][i] = tmp[x + r][(y + shift) % len + c];
+            }
+            for (int i = m - r - 1; i > r; i--) {
+                int x = m - r - 1 - i;
+                int y = n - c - 1 - c;
+                ans[i][n - c - 1] = tmp[(x + shift) % len + r][y + c];
+            }
+            for (int i = n - c - 1; i > c; i--) {
+                int x = 0;
+                int y = n - c - 1 - i;
+                ans[r][i] = tmp[x + r][(y + shift) % len + c];
+            }
+            r++;
+            c++;
+        }
+        return ans;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int numLayer = Math.min(m, n) / 2;
+        for (int layer = 0; layer < numLayer; layer++) {
+            int[] nums = new int[(m - 2 * layer) * 2 + (n - 2 * layer) * 2 - 4];
+            int idx = 0;
+            for (int i = layer; i < n - layer; i++) {
+                nums[idx++] = grid[layer][i];
+            }
+            for (int i = layer + 1; i < m - layer; i++) {
+                nums[idx++] = grid[i][n - layer - 1];
+            }
+            for (int i = n - layer - 2; i >= layer; i--) {
+                nums[idx++] = grid[m - layer - 1][i];
+            }
+            for (int i = m - layer - 2; i > layer; i--) {
+                nums[idx++] = grid[i][layer];
+            }
+            int shift = k % nums.length;
+            idx = 0;
+            for (int i = layer; i < n - layer; i++) {
+                grid[layer][i] = nums[(idx - shift + nums.length) % nums.length];
+                idx++;
+            }
+            for (int i = layer + 1; i < m - layer; i++) {
+                grid[i][n - layer - 1] = nums[(idx - shift + nums.length) % nums.length];
+                idx++;
+            }
+            for (int i = n - layer - 2; i >= layer; i--) {
+                grid[m - layer - 1][i] = nums[(idx - shift + nums.length) % nums.length];
+                idx++;
+            }
+            for (int i = m - layer - 2; i > layer; i--) {
+                grid[i][layer] = nums[(idx - shift + nums.length) % nums.length];
+                idx++;
+            }
+        }
+        return grid;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] res = new int[m][n];
+        int layers = Math.min(m, n) / 2;
+        for (int i = 0; i < layers; i++) {
+            int[] layer = new int[(m - i * 2) * 2 + (n - i * 2) * 2 - 4];
+            int index = 0;
+            for (int j = i; j < n - i; j++) {
+                layer[index++] = grid[i][j];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                layer[index++] = grid[j][n - i - 1];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                layer[index++] = grid[m - i - 1][j];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                layer[index++] = grid[j][i];
+            }
+            int[] newLayer = new int[layer.length];
+            for (int j = 0; j < layer.length; j++) {
+                newLayer[(j + k) % layer.length] = layer[j];
+            }
+            index = 0;
+            for (int j = i; j < n - i; j++) {
+                res[i][j] = newLayer[index++];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                res[j][n - i - 1] = newLayer[index++];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                res[m - i - 1][j] = newLayer[index++];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                res[j][i] = newLayer[index++];
+            }
+        }
+        return res;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int layers = Math.min(m, n) / 2;
+        for (int i = 0; i < layers; i++) {
+            int[] layer = new int[(m - 2 * i) * 2 + (n - 2 * i) * 2 - 4];
+            int index = 0;
+            for (int j = i; j < n - i; j++) {
+                layer[index++] = grid[i][j];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                layer[index++] = grid[j][n - i - 1];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                layer[index++] = grid[m - i - 1][j];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                layer[index++] = grid[j][i];
+            }
+            int[] newLayer = new int[layer.length];
+            for (int j = 0; j < layer.length; j++) {
+                newLayer[(j + k) % layer.length] = layer[j];
+            }
+            index = 0;
+            for (int j = i; j < n - i; j++) {
+                grid[i][j] = newLayer[index++];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                grid[j][n - i - 1] = newLayer[index++];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                grid[m - i - 1][j] = newLayer[index++];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                grid[j][i] = newLayer[index++];
+            }
+        }
+        return grid;
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        int layers = Math.min(n, m) / 2;
+        int[][] res = new int[n][m];
+        for (int i = 0; i < layers; i++) {
+            int len = 2 * (n - i * 2) + 2 * (m - i * 2) - 4;
+            int[] tmp = new int[len];
+            int idx = 0;
+            for (int j = i; j < m - i; j++) {
+                tmp[idx++] = grid[i][j];
+            }
+            for (int j = i + 1; j < n - i; j++) {
+                tmp[idx++] = grid[j][m - i - 1];
+            }
+            for (int j = m - i - 2; j >= i; j--) {
+                tmp[idx++] = grid[n - i - 1][j];
+            }
+            for (int j = n - i - 2; j > i; j--) {
+                tmp[idx++] = grid[j][i];
+            }
+            int start = k % len;
+            idx = 0;
+            for (int j = i; j < m - i; j++) {
+                res[i][j] = tmp[start++];
+                if (start == len) {
+                    start = 0;
+                }
+            }
+            for (int j = i + 1; j < n - i; j++) {
+                res[j][m - i - 1] = tmp[start++];
+                if (start == len) {
+                    start = 0;
+                }
+            }
+            for (int j = m - i - 2; j >= i; j--) {
+                res[n - i - 1][j] = tmp[start++];
+                if (start == len) {
+                    start = 0;
+                }
+            }
+            for (int j = n - i - 2; j > i; j--) {
+                res[j][i] = tmp[start++];
+                if (start == len) {
+                    start = 0;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int min = Math.min(m, n) / 2;
+        int[][] ans = new int[m][n];
+        for (int i = 0; i < min; i++) {
+            int[] tmp = new int[2 * (m - 2 * i) + 2 * (n - 2 * i) - 4];
+            int idx = 0;
+            for (int j = i; j < n - i; j++) {
+                tmp[idx++] = grid[i][j];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                tmp[idx++] = grid[j][n - i - 1];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                tmp[idx++] = grid[m - i - 1][j];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                tmp[idx++] = grid[j][i];
+            }
+            int[] rot = new int[tmp.length];
+            for (int j = 0; j < tmp.length; j++) {
+                rot[(j + k) % tmp.length] = tmp[j];
+            }
+            idx = 0;
+            for (int j = i; j < n - i; j++) {
+                ans[i][j] = rot[idx++];
+            }
+            for (int j = i + 1; j < m - i; j++) {
+                ans[j][n - i - 1] = rot[idx++];
+            }
+            for (int j = n - i - 2; j >= i; j--) {
+                ans[m - i - 1][j] = rot[idx++];
+            }
+            for (int j = m - i - 2; j > i; j--) {
+                ans[j][i] = rot[idx++];
+            }
+        }
+        return ans;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] result = new int[m][n];
+        int l = 0;
+        int r = n - 1;
+        int t = 0;
+        int b = m - 1;
+        while (l < r && t < b) {
+            int size = (r - l + 1) * 2 + (b - t - 1) * 2;
+            int[] nums = new int[size];
+            int index = 0;
+            for (int i = l; i <= r; i++) {
+                nums[index++] = grid[t][i];
+            }
+            for (int i = t + 1; i <= b - 1; i++) {
+                nums[index++] = grid[i][r];
+            }
+            for (int i = r; i >= l; i--) {
+                nums[index++] = grid[b][i];
+            }
+            for (int i = b - 1; i >= t + 1; i--) {
+                nums[index++] = grid[i][l];
+            }
+            int[] temp = new int[size];
+            for (int i = 0; i < size; i++) {
+                temp[(i + k) % size] = nums[i];
+            }
+            index = 0;
+            for (int i = l; i <= r; i++) {
+                result[t][i] = temp[index++];
+            }
+            for (int i = t + 1; i <= b - 1; i++) {
+                result[i][r] = temp[index++];
+            }
+            for (int i = r; i >= l; i--) {
+                result[b][i] = temp[index++];
+            }
+            for (int i = b - 1; i >= t + 1; i--) {
+                result[i][l] = temp[index++];
+            }
+            l++;
+            r--;
+            t++;
+            b--;
+        }
+        return result;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] newGrid = new int[m][n];
+        int layer = 0;
+        while (m - 2 * layer > 0 && n - 2 * layer > 0) {
+            int[] items = new int[2 * (m - 2 * layer) + 2 * (n - 2 * layer) - 4];
+            int index = 0;
+            for (int i = layer; i < n - layer; i++) {
+                items[index++] = grid[layer][i];
+            }
+            for (int i = layer + 1; i < m - layer; i++) {
+                items[index++] = grid[i][n - layer - 1];
+            }
+            for (int i = n - layer - 2; i >= layer; i--) {
+                items[index++] = grid[m - layer - 1][i];
+            }
+            for (int i = m - layer - 2; i > layer; i--) {
+                items[index++] = grid[i][layer];
+            }
+            int[] newItems = new int[items.length];
+            for (int i = 0; i < items.length; i++) {
+                newItems[(i + k) % items.length] = items[i];
+            }
+            index = 0;
+            for (int i = layer; i < n - layer; i++) {
+                newGrid[layer][i] = newItems[index++];
+            }
+            for (int i = layer + 1; i < m - layer; i++) {
+                newGrid[i][n - layer - 1] = newItems[index++];
+            }
+            for (int i = n - layer - 2; i >= layer; i--) {
+                newGrid[m - layer - 1][i] = newItems[index++];
+            }
+            for (int i = m - layer - 2; i > layer; i--) {
+                newGrid[i][layer] = newItems[index++];
+            }
+            layer++;
+        }
+        return newGrid;

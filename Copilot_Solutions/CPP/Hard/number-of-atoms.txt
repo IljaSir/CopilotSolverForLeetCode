@@ -1,0 +1,221 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int n = formula.size();
+        stack<map<string, int>> st;
+        st.push({});
+        for (int i = 0; i < n; ++i) {
+            if (formula[i] == '(') {
+                st.push({});
+            } else if (formula[i] == ')') {
+                int iStart = ++i;
+                while (i < n && isdigit(formula[i])) ++i;
+                int mul = i > iStart ? stoi(formula.substr(iStart, i - iStart)) : 1;
+                auto atom = st.top(); st.pop();
+                for (auto& [name, cnt]: atom) {
+                    st.top()[name] += cnt * mul;
+                }
+                --i;
+            } else {
+                int iStart = i++;
+                while (i < n && islower(formula[i])) ++i;
+                string name = formula.substr(iStart, i - iStart);
+                iStart = i;
+                while (i < n && isdigit(formula[i])) ++i;
+                int cnt = i > iStart ? stoi(formula.substr(iStart, i - iStart)) : 1;
+                st.top()[name] += cnt;
+                --i;
+            }
+        }
+        string ans;
+        for (auto& [name, cnt]: st.top()) {
+            ans += name;
+            if (cnt > 1) ans += to_string(cnt);
+        }
+        return ans;
+
+=======
+
+        string res;
+        int i = 0;
+        unordered_map<string, int> m = parse(formula, i);
+        for (auto& p : m) {
+            res += p.first;
+            if (p.second > 1) res += to_string(p.second);
+        }
+        return res;
+    }
+    unordered_map<string, int> parse(string& s, int& i) {
+        unordered_map<string, int> res;
+        while (i < s.size() && s[i] != ')') {
+            if (s[i] == '(') {
+                ++i;
+                auto m = parse(s, i);
+                ++i;
+                int n = 0;
+                while (i < s.size() && isdigit(s[i])) {
+                    n = n * 10 + s[i++] - '0';
+                }
+                if (n == 0) n = 1;
+                for (auto& p : m) {
+                    res[p.first] += n * p.second;
+                }
+            } else {
+                string t(1, s[i++]);
+                while (i < s.size() && islower(s[i])) {
+                    t += s[i++];
+                }
+                int n = 0;
+                while (i < s.size() && isdigit(s[i])) {
+                    n = n * 10 + s[i++] - '0';
+                }
+                if (n == 0) n = 1;
+                res[t] += n;
+            }
+        }
+        return res;
+
+=======
+
+        int i = 0;
+        map<string, int> m;
+        parseFormula(formula, i, m);
+        string res;
+        for (auto& p : m) {
+            res += p.first;
+            if (p.second > 1) {
+                res += to_string(p.second);
+            }
+        }
+        return res;
+    }
+    void parseFormula(string& formula, int& i, map<string, int>& m) {
+        while (i < formula.size() && formula[i] != ')') {
+            if (formula[i] == '(') {
+                i++;
+                map<string, int> m2;
+                parseFormula(formula, i, m2);
+                i++;
+                int num = 0;
+                while (i < formula.size() && isdigit(formula[i])) {
+                    num = num * 10 + formula[i++] - '0';
+                }
+                if (num == 0) num = 1;
+                for (auto& p : m2) {
+                    m[p.first] += p.second * num;
+                }
+            } else {
+                string name = string(1, formula[i++]);
+                while (i < formula.size() && islower(formula[i])) {
+                    name += formula[i++];
+                }
+                int num = 0;
+                while (i < formula.size() && isdigit(formula[i])) {
+                    num = num * 10 + formula[i++] - '0';
+                }
+                if (num == 0) num = 1;
+                m[name] += num;
+            }
+        }
+
+=======
+
+        int i = 0;
+        auto parse = [&]() -> map<string, int> {
+            map<string, int> m;
+            while (i < formula.size()) {
+                if (formula[i] == '(') {
+                    i++;
+                    auto m2 = parse();
+                    int val = 0;
+                    while (i < formula.size() && isdigit(formula[i])) {
+                        val = val * 10 + formula[i] - '0';
+                        i++;
+                    }
+                    if (val == 0) val = 1;
+                    for (auto &p : m2) {
+                        m[p.first] += p.second * val;
+                    }
+                } else if (formula[i] == ')') {
+                    i++;
+                    return m;
+                } else {
+                    string s;
+                    s += formula[i++];
+                    while (i < formula.size() && islower(formula[i])) {
+                        s += formula[i++];
+                    }
+                    int val = 0;
+                    while (i < formula.size() && isdigit(formula[i])) {
+                        val = val * 10 + formula[i] - '0';
+                        i++;
+                    }
+                    if (val == 0) val = 1;
+                    m[s] += val;
+                }
+            }
+            return m;
+        };
+        auto m = parse();
+        string ans;
+        for (auto &p : m) {
+            ans += p.first;
+            if (p.second > 1) ans += to_string(p.second);
+        }
+        return ans;
+
+=======
+
+        int i = 0;
+        auto atoms = parse(formula, i);
+        string result;
+        for (auto &atom : atoms) {
+            result += atom.first;
+            if (atom.second > 1) {
+                result += to_string(atom.second);
+            }
+        }
+        return result;
+
+=======
+
+        int n = formula.size();
+        int i = 0;
+        map<string, int> m = parse(formula, i);
+        string ans;
+        for (auto p: m) {
+            ans += p.first;
+            if (p.second > 1) ans += to_string(p.second);
+        }
+        return ans;
+    }
+    map<string, int> parse(string& s, int& i) {
+        map<string, int> m;
+        while (i < s.size() && s[i] != ')') {
+            if (s[i] == '(') {
+                i++;
+                map<string, int> t = parse(s, i);
+                i++;
+                int cnt = 0;
+                while (i < s.size() && isdigit(s[i])) {
+                    cnt = cnt * 10 + s[i++] - '0';
+                }
+                if (cnt == 0) cnt = 1;
+                for (auto& p: t) {
+                    m[p.first] += p.second * cnt;
+                }
+            } else {
+                int j = i + 1;
+                while (j < s.size() && islower(s[j])) j++;
+                string atom = s.substr(i, j - i);
+                i = j;
+                int cnt = 0;
+                while (i < s.size() && isdigit(s[i])) {
+                    cnt = cnt * 10 + s[i++] - '0';
+                }
+                if (cnt == 0) cnt = 1;
+                m[atom] += cnt;
+            }
+        }
+        return m;

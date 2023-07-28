@@ -1,0 +1,290 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int[] pre = new int[n];
+        for (int[] r : relations) {
+            pre[r[1] - 1] |= 1 << (r[0] - 1);
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = n;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < dp.length; i++) {
+            int canTake = 0;
+            for (int j = 0; j < n; j++) {
+                if ((pre[j] & i) == pre[j]) {
+                    canTake |= 1 << j;
+                }
+            }
+            canTake &= ~i;
+            for (int j = canTake; j > 0; j = (j - 1) & canTake) {
+                if (Integer.bitCount(j) <= k) {
+                    dp[i | j] = Math.min(dp[i | j], dp[i] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] pre = new int[n];
+        for (int[] r : relations) {
+            pre[r[1] - 1] |= 1 << (r[0] - 1);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int canTake = 0;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0 && (i & pre[j]) == pre[j]) {
+                    canTake |= 1 << j;
+                }
+            }
+            for (int c = canTake; c > 0; c = (c - 1) & canTake) {
+                if (Integer.bitCount(c) <= k) {
+                    dp[i | c] = Math.min(dp[i | c], dp[i] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] prereqs = new int[n];
+        for (int[] relation : relations) {
+            prereqs[relation[1] - 1] |= 1 << (relation[0] - 1);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int state = 0; state < 1 << n; state++) {
+            int taken = 0;
+            for (int i = 0; i < n; i++) {
+                if ((state & 1 << i) == 0 && (prereqs[i] & state) == prereqs[i]) {
+                    taken |= 1 << i;
+                }
+            }
+            for (int subset = taken; subset > 0; subset = (subset - 1) & taken) {
+                if (Integer.bitCount(subset) <= k) {
+                    dp[state | subset] = Math.min(dp[state | subset], dp[state] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] pre = new int[n];
+        int[] mask = new int[n];
+        for (int[] r : relations) {
+            pre[r[1] - 1]++;
+            mask[r[0] - 1] |= 1 << (r[1] - 1);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n);
+        dp[0] = 0;
+        for (int s = 0; s < (1 << n); s++) {
+            int taken = 0;
+            for (int i = 0; i < n; i++) {
+                if ((s & (1 << i)) == 0 && pre[i] == 0) {
+                    taken |= 1 << i;
+                }
+            }
+            for (int t = taken; t > 0; t = (t - 1) & taken) {
+                if (Integer.bitCount(t) > k) {
+                    continue;
+                }
+                int ns = s | t;
+                if (ns == s) {
+                    continue;
+                }
+                for (int i = 0; i < n; i++) {
+                    if ((t & (1 << i)) > 0) {
+                        pre[i]--;
+                    }
+                }
+                boolean valid = true;
+                for (int i = 0; i < n; i++) {
+                    if ((s & (1 << i)) == 0 && (mask[i] & ns) != mask[i]) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) {
+                    dp[ns] = Math.min(dp[ns], dp[s] + 1);
+                }
+                for (int i = 0; i < n; i++) {
+                    if ((t & (1 << i)) > 0) {
+                        pre[i]++;
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] in = new int[n];
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] r : relations) {
+            int a = r[0] - 1, b = r[1] - 1;
+            graph[a].add(b);
+            in[b]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) {
+                q.offer(i);
+            }
+        }
+        int res = 0;
+        while (!q.isEmpty()) {
+            int size = Math.min(q.size(), k);
+            for (int i = 0; i < size; i++) {
+                int cur = q.poll();
+                for (int next : graph[cur]) {
+                    if (--in[next] == 0) {
+                        q.offer(next);
+                    }
+                }
+            }
+            res++;
+        }
+        return res;
+
+=======
+
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        int[] adj = new int[n];
+        for (int[] r : relations) {
+            int u = r[0] - 1, v = r[1] - 1;
+            adj[u] |= 1 << v;
+        }
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int avail = 0, taken = 0;
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) == 0) {
+                    avail |= 1 << i;
+                } else {
+                    taken++;
+                }
+            }
+            for (int i = 0; i < n; i++) {
+                if ((avail & (1 << i)) == 0 || (adj[i] & mask) != adj[i]) {
+                    continue;
+                }
+                int next = mask | (1 << i);
+                dp[next] = Math.min(dp[next], dp[mask] + (taken % k == 0 ? 1 : 0));
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] p = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            p[i] = i;
+        }
+        int[] in = new int[n + 1];
+        for (int[] r : relations) {
+            int f = r[0], t = r[1];
+            int pf = find(p, f);
+            int pt = find(p, t);
+            if (pf != pt) {
+                p[pf] = pt;
+                in[t]++;
+            }
+        }
+        int[] q = new int[n + 1];
+        int l = 0, r = 0;
+        for (int i = 1; i <= n; i++) {
+            if (in[i] == 0) {
+                q[r++] = i;
+            }
+        }
+        int ans = 0;
+        while (l < r) {
+            ans++;
+            int nr = 0;
+            for (int i = 0; i < k && l < r; i++) {
+                int u = q[l++];
+                for (int[] r : relations) {
+                    int f = r[0], t = r[1];
+                    if (f == u) {
+                        in[t]--;
+                        if (in[t] == 0) {
+                            q[r + nr++] = t;
+                        }
+                    }
+                }
+            }
+            r += nr;
+        }
+        return ans;
+    }
+
+    int find(int[] p, int x) {
+        if (p[x] != x) {
+            p[x] = find(p, p[x]);
+        }
+        return p[x];
+
+=======
+
+        int[] graph = new int[n];
+        for (int[] relation: relations) {
+            int prev = relation[0] - 1;
+            int next = relation[1] - 1;
+            graph[next] |= (1 << prev);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n + 1);
+        dp[0] = 0;
+        for (int state = 0; state < (1 << n); state++) {
+            int canTake = 0;
+            for (int i = 0; i < n; i++) {
+                if (((state >> i) & 1) == 0 && (state & graph[i]) == graph[i]) {
+                    canTake |= (1 << i);
+                }
+            }
+            for (int take = canTake; take > 0; take = (take - 1) & canTake) {
+                if (Integer.bitCount(take) <= k) {
+                    dp[state | take] = Math.min(dp[state | take], dp[state] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] pre = new int[n];
+        int[] next = new int[n];
+        for (int[] r: relations) {
+            pre[r[1] - 1] |= (1 << (r[0] - 1));
+            next[r[0] - 1] |= (1 << (r[1] - 1));
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int temp = 0;
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) == 0 && (mask & pre[i]) == pre[i]) {
+                    temp |= (1 << i);
+                }
+            }
+            for (int sub = temp; sub > 0; sub = (sub - 1) & temp) {
+                if (Integer.bitCount(sub) <= k) {
+                    dp[mask | sub] = Math.min(dp[mask | sub], dp[mask] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];

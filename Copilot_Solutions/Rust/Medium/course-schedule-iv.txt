@@ -1,0 +1,204 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let n = num_courses as usize;
+        let mut g = vec![vec![]; n];
+        for p in prerequisites {
+            g[p[0] as usize].push(p[1] as usize);
+        }
+        let mut dp = vec![vec![false; n]; n];
+        for i in 0..n {
+            let mut q = vec![];
+            let mut vis = vec![false; n];
+            q.push(i);
+            vis[i] = true;
+            while !q.is_empty() {
+                let u = q.remove(0);
+                for &v in &g[u] {
+                    if !vis[v] {
+                        vis[v] = true;
+                        q.push(v);
+                        dp[i][v] = true;
+                    }
+                }
+            }
+        }
+        let mut res = vec![];
+        for q in queries {
+            res.push(dp[q[0] as usize][q[1] as usize]);
+        }
+        res
+
+=======
+
+        let mut adj = vec![vec![false; num_courses as usize]; num_courses as usize];
+        for p in prerequisites {
+            adj[p[0] as usize][p[1] as usize] = true;
+        }
+        for k in 0..num_courses as usize {
+            for i in 0..num_courses as usize {
+                for j in 0..num_courses as usize {
+                    adj[i][j] = adj[i][j] || (adj[i][k] && adj[k][j]);
+                }
+            }
+        }
+        let mut ans = vec![false; queries.len()];
+        for (i, q) in queries.into_iter().enumerate() {
+            ans[i] = adj[q[0] as usize][q[1] as usize];
+        }
+        ans
+
+=======
+
+        let mut g = vec![vec![]; num_courses as usize];
+        for p in prerequisites {
+            g[p[0] as usize].push(p[1] as usize);
+        }
+        let mut dp = vec![vec![false; num_courses as usize]; num_courses as usize];
+        for i in 0..num_courses as usize {
+            let mut q = vec![];
+            let mut visited = vec![false; num_courses as usize];
+            q.push(i);
+            visited[i] = true;
+            while !q.is_empty() {
+                let cur = q.pop().unwrap();
+                for &next in &g[cur] {
+                    if !visited[next] {
+                        dp[i][next] = true;
+                        q.push(next);
+                        visited[next] = true;
+                    }
+                }
+            }
+        }
+        let mut ans = vec![];
+        for q in queries {
+            ans.push(dp[q[0] as usize][q[1] as usize]);
+        }
+        ans
+
+=======
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        for p in prerequisites {
+            graph[p[0] as usize].push(p[1] as usize);
+        }
+        let mut dp = vec![vec![false; num_courses as usize]; num_courses as usize];
+        for i in 0..num_courses {
+            let mut visited = vec![false; num_courses as usize];
+            Self::dfs(i as usize, &graph, &mut visited, &mut dp);
+        }
+        let mut ans = vec![];
+        for q in queries {
+            ans.push(dp[q[0] as usize][q[1] as usize]);
+        }
+        ans
+    }
+    fn dfs(i: usize, graph: &Vec<Vec<usize>>, visited: &mut Vec<bool>, dp: &mut Vec<Vec<bool>>) {
+        if visited[i] {
+            return;
+        }
+        visited[i] = true;
+        for &j in graph[i].iter() {
+            dp[i][j] = true;
+            Self::dfs(j, graph, visited, dp);
+        }
+
+=======
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        for p in prerequisites {
+            graph[p[0] as usize].push(p[1] as usize);
+        }
+        let mut dp = vec![vec![false; num_courses as usize]; num_courses as usize];
+        for i in 0..num_courses {
+            let mut visited = vec![false; num_courses as usize];
+            visited[i as usize] = true;
+            Self::dfs(i as usize, &graph, &mut visited, &mut dp);
+        }
+        queries.iter().map(|q| dp[q[0] as usize][q[1] as usize]).collect()
+    }
+    fn dfs(i: usize, graph: &Vec<Vec<usize>>, visited: &mut Vec<bool>, dp: &mut Vec<Vec<bool>>) {
+        for j in &graph[i] {
+            if !visited[*j] {
+                visited[*j] = true;
+                dp[i][*j] = true;
+                Self::dfs(*j, graph, visited, dp);
+            }
+        }
+
+=======
+
+        let num_courses = num_courses as usize;
+        let mut graph = vec![vec![]; num_courses];
+        for [a, b] in prerequisites {
+            graph[a as usize].push(b as usize);
+        }
+        let mut reachable = vec![vec![false; num_courses]; num_courses];
+        for node in 0..num_courses {
+            let mut queue = vec![];
+            queue.push(node);
+            while let Some(front) = queue.pop() {
+                for &neigh in &graph[front] {
+                    if !reachable[node][neigh] {
+                        reachable[node][neigh] = true;
+                        queue.push(neigh);
+                    }
+                }
+            }
+        }
+        queries.iter().map(|[a, b]| reachable[*a as usize][*b as usize]).collect()
+
+=======
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[0] as usize].push(edge[1] as usize);
+        }
+        let num_courses = num_courses as usize;
+        let mut dp = vec![vec![false; num_courses]; num_courses];
+        for i in 0..num_courses {
+            let mut visited = vec![false; num_courses];
+            let mut stack = vec![i];
+            while let Some(node) = stack.pop() {
+                if !visited[node] {
+                    visited[node] = true;
+                    for &next in &graph[node] {
+                        dp[i][next] = true;
+                        stack.push(next);
+                    }
+                }
+            }
+        }
+        let mut result = Vec::new();
+        for query in queries {
+            result.push(dp[query[0] as usize][query[1] as usize]);
+        }
+        result
+
+=======
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut dp = vec![vec![false; num_courses as usize]; num_courses as usize];
+        for (i, j) in prerequisites {
+            graph[i as usize].push(j as usize);
+        }
+        for i in 0..num_courses as usize {
+            let mut queue = vec![i];
+            while let Some(j) = queue.pop() {
+                for &k in &graph[j] {
+                    if !dp[i][k] {
+                        dp[i][k] = true;
+                        queue.push(k);
+                    }
+                }
+            }
+        }
+        queries.iter().map(|q| dp[q[0] as usize][q[1] as usize]).collect()
+
+=======
+
+        
+    }
+}

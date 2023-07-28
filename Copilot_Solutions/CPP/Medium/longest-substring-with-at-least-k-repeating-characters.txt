@@ -1,0 +1,225 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.size();
+        int ans = 0;
+        for (int t = 1; t <= 26; t++) {
+            vector<int> cnt(26);
+            int total = 0, less = 0;
+            int l = 0, r = 0;
+            while (r < n) {
+                cnt[s[r] - 'a']++;
+                if (cnt[s[r] - 'a'] == 1) {
+                    total++;
+                    less++;
+                }
+                if (cnt[s[r] - 'a'] == k) {
+                    less--;
+                }
+                while (total > t) {
+                    cnt[s[l] - 'a']--;
+                    if (cnt[s[l] - 'a'] == k - 1) {
+                        less++;
+                    }
+                    if (cnt[s[l] - 'a'] == 0) {
+                        total--;
+                        less--;
+                    }
+                    l++;
+                }
+                if (less == 0) {
+                    ans = max(ans, r - l + 1);
+                }
+                r++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        if (n < k) {
+            return 0;
+        }
+        vector<int> cnt(26, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[s[i] - 'a']++;
+        }
+        int i = 0;
+        while (i < n && cnt[s[i] - 'a'] >= k) {
+            i++;
+        }
+        if (i == n) {
+            return n;
+        }
+        int left = longestSubstring(s.substr(0, i), k);
+        while (i < n && cnt[s[i] - 'a'] < k) {
+            i++;
+        }
+        int right = longestSubstring(s.substr(i), k);
+        return max(left, right);
+
+=======
+
+        int n = s.size();
+        int res = 0;
+        for (int t = 1; t <= 26; t++) {
+            int l = 0, r = 0;
+            int cnt[26] = {0};
+            int tot = 0;
+            int less = 0;
+            while (r < n) {
+                cnt[s[r] - 'a']++;
+                if (cnt[s[r] - 'a'] == 1) {
+                    tot++;
+                    less++;
+                }
+                if (cnt[s[r] - 'a'] == k) {
+                    less--;
+                }
+                while (tot > t) {
+                    cnt[s[l] - 'a']--;
+                    if (cnt[s[l] - 'a'] == k - 1) {
+                        less++;
+                    }
+                    if (cnt[s[l] - 'a'] == 0) {
+                        tot--;
+                        less--;
+                    }
+                    l++;
+                }
+                if (less == 0) {
+                    res = max(res, r - l + 1);
+                }
+                r++;
+            }
+        }
+        return res;
+
+=======
+
+        return longestSubstring(s, 0, s.size(), k);
+    }
+    int longestSubstring(string &s, int start, int end, int k) {
+        if (end - start < k) return 0;
+        vector<int> count(26, 0);
+        for (int i = start; i < end; i++) {
+            count[s[i] - 'a']++;
+        }
+        int i = start;
+        while (i < end && count[s[i] - 'a'] >= k) i++;
+        if (i == end) return end - start;
+        int left = longestSubstring(s, start, i, k);
+        while (i < end && count[s[i] - 'a'] < k) i++;
+        int right = longestSubstring(s, i, end, k);
+        return max(left, right);
+
+=======
+
+        int n = s.size();
+        if (n == 0) return 0;
+        if (k == 1) return n;
+        int cnt[26] = {0};
+        for (int i = 0; i < n; i++) {
+            cnt[s[i] - 'a']++;
+        }
+        int start = 0;
+        while (start < n && cnt[s[start] - 'a'] >= k) {
+            start++;
+        }
+        if (start == n) return n;
+        int left = longestSubstring(s.substr(0, start), k);
+        while (start < n && cnt[s[start] - 'a'] < k) {
+            start++;
+        }
+        int right = longestSubstring(s.substr(start), k);
+        return max(left, right);
+
+=======
+
+        int n = s.size();
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int cnt[26] = {0};
+            int mask = 0;
+            for (int j = i; j < n; j++) {
+                int t = s[j] - 'a';
+                cnt[t]++;
+                if (cnt[t] < k) mask |= (1 << t);
+                else mask &= (~(1 << t));
+                if (mask == 0) res = max(res, j - i + 1);
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        if (n < k) return 0;
+        vector<int> cnt(26, 0);
+        for (auto c : s) cnt[c - 'a']++;
+        int i = 0;
+        while (i < n && cnt[s[i] - 'a'] >= k) i++;
+        if (i == n) return n;
+        int left = longestSubstring(s.substr(0, i), k);
+        while (i < n && cnt[s[i] - 'a'] < k) i++;
+        int right = longestSubstring(s.substr(i), k);
+        return max(left, right);
+
+=======
+
+        if (s.length() < k) return 0;
+        if (k == 1) return s.length();
+        int res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int m[26] = {0};
+            for (int j = i; j < s.length(); j++) {
+                m[s[j] - 'a']++;
+                int cnt = 0;
+                for (int c = 0; c < 26; c++) {
+                    if (m[c] > 0 && m[c] < k) {
+                        cnt++;
+                    }
+                }
+                if (cnt == 0) {
+                    res = max(res, j - i + 1);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        if (n == 0 || n < k) return 0;
+        vector<int> cnt(26, 0);
+        for (char c : s) ++cnt[c-'a'];
+        int i = 0;
+        while (i < n && cnt[s[i]-'a'] >= k) ++i;
+        if (i == n) return n;
+        int left = longestSubstring(s.substr(0, i), k);
+        while (i < n && cnt[s[i]-'a'] < k) ++i;
+        int right = longestSubstring(s.substr(i), k);
+        return max(left, right);
+
+=======
+
+        if (s.size() < k) return 0;
+        int res = 0;
+        for (int i = 0; i <= s.size() - k; i++) {
+            unordered_map<char, int> cnt;
+            for (int j = i; j < s.size(); j++) {
+                cnt[s[j]]++;
+                if (j - i + 1 < k) continue;
+                int flag = true;
+                for (auto it: cnt) {
+                    if (it.second < k) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) res = max(res, j - i + 1);
+            }
+        }
+        return res;

@@ -1,0 +1,373 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Set<String> dict = new HashSet<>(wordList);
+        if (!dict.contains(endWord)) {
+            return 0;
+        }
+        Set<String> beginSet = new HashSet<>();
+        Set<String> endSet = new HashSet<>();
+        beginSet.add(beginWord);
+        endSet.add(endWord);
+        int len = 1;
+        Set<String> visited = new HashSet<>();
+        while (!beginSet.isEmpty() && !endSet.isEmpty()) {
+            if (beginSet.size() > endSet.size()) {
+                Set<String> temp = beginSet;
+                beginSet = endSet;
+                endSet = temp;
+            }
+            Set<String> nextSet = new HashSet<>();
+            for (String word : beginSet) {
+                for (int i = 0; i < word.length(); i++) {
+                    char[] chars = word.toCharArray();
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+                        chars[i] = ch;
+                        String temp = new String(chars);
+                        if (endSet.contains(temp)) {
+                            return len + 1;
+                        }
+                        if (!visited.contains(temp) && dict.contains(temp)) {
+                            nextSet.add(temp);
+                            visited.add(temp);
+                        }
+                    }
+                }
+            }
+            beginSet = nextSet;
+            len++;
+        }
+        return 0;
+
+=======
+
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return 0;
+        Set<String> beginSet = new HashSet<>(), endSet = new HashSet<>();
+        beginSet.add(beginWord);
+        endSet.add(endWord);
+        int len = 1;
+        int strLen = beginWord.length();
+        while (!beginSet.isEmpty() && !endSet.isEmpty()) {
+            if (beginSet.size() > endSet.size()) {
+                Set<String> set = beginSet;
+                beginSet = endSet;
+                endSet = set;
+            }
+            Set<String> temp = new HashSet<>();
+            for (String word : beginSet) {
+                char[] chs = word.toCharArray();
+                for (int i = 0; i < chs.length; i++) {
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        char old = chs[i];
+                        chs[i] = c;
+                        String target = String.valueOf(chs);
+                        if (endSet.contains(target)) return len + 1;
+                        if (!wordSet.contains(target)) continue;
+                        wordSet.remove(target);
+                        temp.add(target);
+                        chs[i] = old;
+                    }
+                }
+            }
+            beginSet = temp;
+            len++;
+        }
+        return 0;
+
+=======
+
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) {
+            return 0;
+        }
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        int step = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String word = queue.poll();
+                char[] wordArray = word.toCharArray();
+                for (int j = 0; j < wordArray.length; j++) {
+                    char origin = wordArray[j];
+                    for (char k = 'a'; k <= 'z'; k++) {
+                        if (k == origin) {
+                            continue;
+                        }
+                        wordArray[j] = k;
+                        String nextWord = String.valueOf(wordArray);
+                        if (wordSet.contains(nextWord)) {
+                            if (nextWord.equals(endWord)) {
+                                return step + 1;
+                            }
+                            queue.offer(nextWord);
+                            wordSet.remove(nextWord);
+                        }
+                    }
+                    wordArray[j] = origin;
+                }
+            }
+            step++;
+        }
+        return 0;
+
+=======
+
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) return 0;
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        visited.add(beginWord);
+        int step = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; ++i) {
+                String word = queue.poll();
+                if (word.equals(endWord)) return step;
+                for (int j = 0; j < word.length(); ++j) {
+                    char[] chars = word.toCharArray();
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        chars[j] = c;
+                        String newWord = String.valueOf(chars);
+                        if (wordSet.contains(newWord) && !visited.contains(newWord)) {
+                            queue.offer(newWord);
+                            visited.add(newWord);
+                        }
+                    }
+                }
+            }
+            ++step;
+        }
+        return 0;
+
+=======
+
+        Set<String> dict = new HashSet<>(wordList);
+        if (!dict.contains(endWord)) {
+            return 0;
+        }
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        int res = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String cur = queue.poll();
+                if (cur.equals(endWord)) {
+                    return res;
+                }
+                for (int j = 0; j < cur.length(); j++) {
+                    char[] chars = cur.toCharArray();
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        chars[j] = c;
+                        String newWord = new String(chars);
+                        if (dict.contains(newWord)) {
+                            queue.offer(newWord);
+                            dict.remove(newWord);
+                        }
+                    }
+                }
+            }
+            res++;
+        }
+        return 0;
+
+=======
+
+        Set<String> dict = new HashSet<>();
+        for (String word : wordList) {
+            dict.add(word);
+        }
+        if (!dict.contains(endWord)) {
+            return 0;
+        }
+        Set<String> start = new HashSet<>();
+        start.add(beginWord);
+        Set<String> end = new HashSet<>();
+        end.add(endWord);
+        return bfs(start, end, dict, 2);
+    }
+    private int bfs(Set<String> start, Set<String> end, Set<String> dict, int level) {
+        if (start.size() == 0) {
+            return 0;
+        }
+        if (start.size() > end.size()) {
+            return bfs(end, start, dict, level);
+        }
+        dict.removeAll(start);
+        Set<String> next = new HashSet<>();
+        for (String word : start) {
+            char[] chars = word.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char temp = chars[i];
+                for (char c = 'a'; c <= 'z'; c++) {
+                    chars[i] = c;
+                    String nextWord = new String(chars);
+                    if (dict.contains(nextWord)) {
+                        if (end.contains(nextWord)) {
+                            return level;
+                        }
+                        next.add(nextWord);
+                    }
+                }
+                chars[i] = temp;
+            }
+        }
+        return bfs(next, end, dict, level + 1);
+
+=======
+
+        if (!wordList.contains(endWord)) return 0;
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        int level = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String word = queue.poll();
+                if (word.equals(endWord)) return level;
+                for (int j = 0; j < word.length(); j++) {
+                    char[] chars = word.toCharArray();
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+                        chars[j] = ch;
+                        String newWord = new String(chars);
+                        if (wordList.contains(newWord)) {
+                            queue.offer(newWord);
+                            wordList.remove(newWord);
+                        }
+                    }
+                }
+            }
+            level++;
+        }
+        return 0;
+
+=======
+
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        Set<String> dict = new HashSet<>(wordList);
+        queue.offer(beginWord);
+        visited.add(beginWord);
+        int level = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String cur = queue.poll();
+                if (cur.equals(endWord)) {
+                    return level;
+                }
+                for (String next : getNextWords(cur, dict)) {
+                    if (!visited.contains(next)) {
+                        queue.offer(next);
+                        visited.add(next);
+                    }
+                }
+            }
+            level++;
+        }
+        return 0;
+    }
+    
+    private List<String> getNextWords(String cur, Set<String> dict) {
+        List<String> res = new ArrayList<>();
+        char[] chars = cur.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char old = chars[i];
+            for (char c = 'a'; c <= 'z'; c++) {
+                if (c == old) {
+                    continue;
+                }
+                chars[i] = c;
+                String next = new String(chars);
+                if (dict.contains(next)) {
+                    res.add(next);
+                }
+            }
+            chars[i] = old;
+        }
+        return res;
+
+=======
+
+        Set<String> dict = new HashSet<String>(wordList);
+        if (!dict.contains(endWord)) {
+            return 0;
+        }
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        int step = 0;
+        while (!queue.isEmpty()) {
+            ++step;
+            int size = queue.size();
+            for (int i = 0; i < size; ++i) {
+                String word = queue.poll();
+                for (int j = 0; j < word.length(); ++j) {
+                    char[] chars = word.toCharArray();
+                    for (char ch = 'a'; ch <= 'z'; ++ch) {
+                        chars[j] = ch;
+                        String nextWord = new String(chars);
+                        if (dict.contains(nextWord)) {
+                            if (nextWord.equals(endWord)) {
+                                return step + 1;
+                            }
+                            queue.offer(nextWord);
+                            dict.remove(nextWord);
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        int n = wordList.size();
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (diff(wordList.get(i), wordList.get(j))) {
+                    graph[i][j] = 1;
+                }
+            }
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, -1);
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (diff(beginWord, wordList.get(i))) {
+                q.add(i);
+                dist[i] = 2;
+            }
+        }
+        while (!q.isEmpty()) {
+            int u = q.remove();
+            for (int v = 0; v < n; v++) {
+                if (graph[u][v] == 1 && dist[v] == -1) {
+                    dist[v] = dist[u] + 1;
+                    q.add(v);
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (wordList.get(i).equals(endWord)) {
+                min = Math.min(min, dist[i]);
+            }
+        }
+        if (min == Integer.MAX_VALUE) {
+            return 0;
+        }
+        return min;
+    }
+    private boolean diff(String a, String b) {
+        int cnt = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                cnt++;
+            }
+        }
+        return cnt == 1;

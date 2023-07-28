@@ -1,0 +1,189 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        string ans = s;
+        int n = s.size();
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (j % 2 == 1) {
+                    s[j] = (s[j] - '0' + a) % 10 + '0';
+                }
+            }
+            ans = min(ans, s);
+            s = s.substr(n - b) + s.substr(0, n - b);
+        }
+        return ans;
+
+=======
+
+        set<string> seen;
+        queue<string> q;
+        q.push(s);
+        while (!q.empty()) {
+            string t = q.front();
+            q.pop();
+            if (seen.count(t)) continue;
+            seen.insert(t);
+            q.push(t);
+            for (int i = 1; i < t.size(); i += 2) {
+                t[i] = (t[i] - '0' + a) % 10 + '0';
+            }
+            q.push(t);
+            q.push(t.substr(t.size() - b) + t.substr(0, t.size() - b));
+        }
+        return *seen.begin();
+
+=======
+
+        int n = s.size();
+        set<string> st;
+        queue<string> q;
+        q.push(s);
+        st.insert(s);
+        while (!q.empty()) {
+            string t = q.front();
+            q.pop();
+            string u = t;
+            for (int i = 1; i < n; i += 2) {
+                u[i] = (u[i] - '0' + a) % 10 + '0';
+            }
+            if (!st.count(u)) {
+                q.push(u);
+                st.insert(u);
+            }
+            u = t.substr(n - b) + t.substr(0, n - b);
+            if (!st.count(u)) {
+                q.push(u);
+                st.insert(u);
+            }
+        }
+        return *st.begin();
+
+=======
+
+        string ans = s;
+        int n = s.size();
+        for (int i = 0; i < n; i++) {
+            string t = s.substr(i) + s.substr(0, i);
+            for (int j = 0; j < n; j += 2) {
+                t[j] = (t[j] - '0' + a) % 10 + '0';
+            }
+            ans = min(ans, t);
+            ans = min(ans, findLexSmallestString(t, a, b));
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        string res = s;
+        for (int i = 0; i < n; i++) {
+            string t = s;
+            for (int j = 0; j < n; j++) {
+                if (j & 1) {
+                    t[j] = (t[j] - '0' + a) % 10 + '0';
+                }
+            }
+            res = min(res, t);
+            s = s.substr(n - b) + s.substr(0, n - b);
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        set<string> st;
+        st.insert(s);
+        queue<string> q;
+        q.push(s);
+        while (!q.empty()) {
+            string cur = q.front();
+            q.pop();
+            string nxt = cur;
+            for (int i = 1; i < n; i += 2) {
+                nxt[i] = (nxt[i] - '0' + a) % 10 + '0';
+            }
+            if (!st.count(nxt)) {
+                st.insert(nxt);
+                q.push(nxt);
+            }
+            nxt = cur.substr(n - b) + cur.substr(0, n - b);
+            if (!st.count(nxt)) {
+                st.insert(nxt);
+                q.push(nxt);
+            }
+        }
+        return *st.begin();
+
+=======
+
+        int n = s.size();
+        string res = s;
+        for (int i = 0; i < n; ++i) {
+            string tmp = s;
+            for (int j = 1; j < n; j += 2) {
+                tmp[j] = (tmp[j] - '0' + a) % 10 + '0';
+            }
+            s = tmp.substr(n - b) + tmp.substr(0, n - b);
+            res = min(res, min(s, tmp));
+        }
+        return res;
+
+=======
+
+        string ans = s;
+        set<string> st;
+        queue<string> q;
+        q.push(s);
+        st.insert(s);
+        while (!q.empty()) {
+            string t = q.front(); q.pop();
+            string t1 = t;
+            for (int i = 1; i < t1.size(); i += 2) {
+                t1[i] = (t1[i] - '0' + a) % 10 + '0';
+            }
+            if (!st.count(t1)) {
+                st.insert(t1);
+                q.push(t1);
+            }
+            string t2 = t1.substr(t1.size() - b) + t1.substr(0, t1.size() - b);
+            if (!st.count(t2)) {
+                st.insert(t2);
+                q.push(t2);
+            }
+            ans = min(ans, t2);
+        }
+        return ans;
+
+=======
+
+        string ans = s;
+        for (int i = 0; i < s.length(); i++) {
+            string t = s;
+            for (int j = i; j < t.length(); j += b) {
+                t[j] = (t[j] - '0' + a) % 10 + '0';
+            }
+            ans = min(ans, t);
+            ans = min(ans, findLexSmallestString(t, a, b));
+        }
+        return ans;
+
+=======
+
+        string res = s;
+        int n = s.size();
+        vector<bool> vis(n);
+        for (int i = 0; i < n; i++) {
+            if (vis[i]) continue;
+            int j = i, k = 0;
+            string t = s;
+            do {
+                vis[j] = true;
+                if (k % 2) t[j] = (t[j] - '0' + a) % 10 + '0';
+                j = (j + b) % n;
+                k++;
+            } while (j != i);
+            res = min(res, t);
+        }
+        return res;

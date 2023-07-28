@@ -1,0 +1,182 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = stones.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i < n; ++i) {
+            if (stones[i] - stones[i - 1] > i) return false;
+        }
+        for (int i = 1; i < n; ++i) {
+            for (int j = i - 1; j >= 0; --j) {
+                int k = stones[i] - stones[j];
+                if (k > j + 1) break;
+                dp[i][k] = dp[j][k - 1] || dp[j][k] || dp[j][k + 1];
+                if (i == n - 1 && dp[i][k]) return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = stones.size();
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; ++i) {
+            mp[stones[i]] = i;
+        }
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        dp[0][0] = true;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int k = stones[j] - stones[i];
+                if (k > j + 1) {
+                    break;
+                }
+                dp[j][k] = (k > 0 && dp[i][k - 1]) || dp[i][k] || (k < j && dp[i][k + 1]);
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (dp[n - 1][i]) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = stones.size();
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; i++) {
+            mp[stones[i]] = i;
+        }
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        dp[0][0] = true;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                int k = stones[i] - stones[j];
+                if (k > j + 1) {
+                    break;
+                }
+                dp[i][k] = dp[j][k - 1] || dp[j][k] || dp[j][k + 1];
+                if (i == n - 1 && dp[i][k]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        unordered_map<int, unordered_set<int>> m;
+        for (int i = 0; i < stones.size(); ++i) {
+            m[stones[i]] = unordered_set<int>();
+        }
+        m[0].insert(1);
+        for (int i = 0; i < stones.size(); ++i) {
+            for (auto& k : m[stones[i]]) {
+                for (int step = k - 1; step <= k + 1; ++step) {
+                    if (step > 0 && m.count(stones[i] + step)) {
+                        m[stones[i] + step].insert(step);
+                    }
+                }
+            }
+        }
+        return !m[stones.back()].empty();
+
+=======
+
+        int n = stones.size();
+        unordered_map<int, int> pos;
+        for (int i = 0; i < n; i++)
+            pos[stones[i]] = i;
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        dp[0][0] = true;
+        for (int i = 1; i < n; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                int k = stones[i] - stones[j];
+                if (k > j + 1) break;
+                dp[i][k] = dp[j][k - 1] || dp[j][k] || dp[j][k + 1];
+                if (i == n - 1 && dp[i][k]) return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = stones.size();
+        if (n == 0) return false;
+        if (n == 1) return true;
+        if (stones[1] != 1) return false;
+        vector<unordered_set<int>> dp(n);
+        dp[1].insert(1);
+        for (int i = 2; i < n; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                int k = stones[i] - stones[j];
+                if (dp[j].find(k) != dp[j].end() || dp[j].find(k - 1) != dp[j].end() || dp[j].find(k + 1) != dp[j].end()) {
+                    dp[i].insert(k);
+                }
+            }
+        }
+        return dp[n - 1].size() > 0;
+
+=======
+
+        if (stones[1] != 1) return false;
+        if (stones.size() == 2) return true;
+        unordered_map<int, unordered_set<int>> m;
+        m[1].insert(1);
+        for (int i = 1; i < stones.size(); ++i) {
+            for (auto j : m[stones[i]]) {
+                for (int k = j - 1; k <= j + 1; ++k) {
+                    if (k > 0 && m.find(stones[i] + k) != m.end()) {
+                        m[stones[i] + k].insert(k);
+                    }
+                }
+            }
+        }
+        return m[stones.back()].size() > 0;
+
+=======
+
+        unordered_map<int, unordered_set<int>> m;
+        for (auto x : stones) {
+            m[x] = unordered_set<int>();
+        }
+        m[0].insert(1);
+        for (auto x : stones) {
+            for (auto step : m[x]) {
+                int reach = x + step;
+                if (reach == stones.back()) {
+                    return true;
+                }
+                if (m.find(reach) != m.end()) {
+                    m[reach].insert(step);
+                    if (step > 1) {
+                        m[reach].insert(step - 1);
+                    }
+                    m[reach].insert(step + 1);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        if (stones.empty()) return true;
+        if (stones[0] != 0) return false;
+        int n = stones.size();
+        if (n == 1) return true;
+        if (stones[1] != 1) return false;
+        unordered_map<int, unordered_set<int>> dp;
+        dp[0].insert(0);
+        dp[1].insert(1);
+        for (int i = 1; i < n; ++i) {
+            for (int j = i - 1; j >= 0; --j) {
+                int diff = stones[i] - stones[j];
+                if (dp[j].find(diff - 1) != dp[j].end() || dp[j].find(diff) != dp[j].end() || dp[j].find(diff + 1) != dp[j].end()) {
+                    dp[i].insert(diff);
+                }
+            }
+        }
+        return !dp[n - 1].empty();

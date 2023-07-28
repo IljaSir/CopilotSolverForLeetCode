@@ -1,0 +1,323 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut ans = vec![];
+        let mut word_map = std::collections::HashMap::new();
+        for word in words {
+            *word_map.entry(word).or_insert(0) += 1;
+        }
+        let word_len = words[0].len();
+        for i in 0..word_len {
+            let mut left = i;
+            let mut right = i;
+            let mut cur_map = std::collections::HashMap::new();
+            while right + word_len <= s.len() {
+                let word = &s[right..right + word_len];
+                right += word_len;
+                *cur_map.entry(word.to_string()).or_insert(0) += 1;
+                while *cur_map.get(word).unwrap() > *word_map.get(word).unwrap() {
+                    let left_word = &s[left..left + word_len];
+                    left += word_len;
+                    cur_map.entry(left_word.to_string()).and_modify(|e| *e -= 1);
+                }
+                if right - left == word_len * words.len() {
+                    ans.push(left as i32);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut res = Vec::new();
+        if s.is_empty() || words.is_empty() {
+            return res;
+        }
+        let mut word_map = std::collections::HashMap::new();
+        for w in words.iter() {
+            *word_map.entry(w).or_insert(0) += 1;
+        }
+        let word_len = words[0].len();
+        let mut cur_map = std::collections::HashMap::new();
+        for i in 0..word_len {
+            cur_map.clear();
+            let mut left = i;
+            let mut right = i;
+            let mut count = 0;
+            while right + word_len <= s.len() {
+                let word = s.get(right..right + word_len).unwrap();
+                right += word_len;
+                let count = cur_map.entry(word).or_insert(0);
+                *count += 1;
+                count += 1;
+                while *count > *word_map.get(word).unwrap_or(&0) {
+                    let left_word = s.get(left..left + word_len).unwrap();
+                    left += word_len;
+                    let count = cur_map.entry(left_word).or_insert(0);
+                    *count -= 1;
+                    count -= 1;
+                }
+                if right - left == word_len * words.len() {
+                    res.push(left as i32);
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        if words.is_empty() {
+            return res;
+        }
+        let n = s.len();
+        let m = words.len();
+        let w = words[0].len();
+        let mut map = std::collections::HashMap::new();
+        for word in words {
+            *map.entry(word).or_insert(0) += 1;
+        }
+        for i in 0..w {
+            let mut left = i;
+            let mut right = i;
+            let mut count = 0;
+            let mut cur_map = std::collections::HashMap::new();
+            while right + w <= n {
+                let word = s[right..right+w].to_string();
+                right += w;
+                if !map.contains_key(&word) {
+                    count = 0;
+                    cur_map.clear();
+                    left = right;
+                } else {
+                    *cur_map.entry(word).or_insert(0) += 1;
+                    count += 1;
+                    while *cur_map.get(&word).unwrap() > *map.get(&word).unwrap() {
+                        let word = s[left..left+w].to_string();
+                        left += w;
+                        count -= 1;
+                        *cur_map.get_mut(&word).unwrap() -= 1;
+                    }
+                    if count == m {
+                        res.push(left as i32);
+                        let word = s[left..left+w].to_string();
+                        left += w;
+                        count -= 1;
+                        *cur_map.get_mut(&word).unwrap() -= 1;
+                    }
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        if words.len() == 0 {
+            return ans;
+        }
+        let len = words[0].len();
+        let total_len = len * words.len();
+        let mut map = std::collections::HashMap::new();
+        let mut tmp = vec![];
+        for word in words {
+            let count = map.entry(word.clone()).or_insert(0);
+            *count += 1;
+            tmp.push(word);
+        }
+        for i in 0..s.len() - total_len + 1 {
+            let mut map = map.clone();
+            let mut ok = true;
+            for j in 0..words.len() {
+                let word = s[i + j * len..i + (j + 1) * len].to_string();
+                if let Some(count) = map.get_mut(&word) {
+                    *count -= 1;
+                    if *count == 0 {
+                        map.remove(&word);
+                    }
+                } else {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                ans.push(i as i32);
+            }
+        }
+        ans
+
+=======
+
+        
+    }
+}
+
+=======
+
+        if words.is_empty() {
+            return Vec::new();
+        }
+        let mut ans = Vec::new();
+        let mut word_map = std::collections::HashMap::new();
+        let mut word_len = 0;
+        for word in words {
+            *word_map.entry(word).or_insert(0) += 1;
+            word_len = word.len();
+        }
+        let word_len = word_len as i32;
+        let s_len = s.len() as i32;
+        let mut i = 0;
+        while i < word_len {
+            let mut cur_map = std::collections::HashMap::new();
+            let mut count = 0;
+            let mut left = i;
+            let mut right = i;
+            while right + word_len <= s_len {
+                let cur_str = s.get((right as usize)..((right + word_len) as usize)).unwrap();
+                right += word_len;
+                if word_map.contains_key(cur_str) {
+                    *cur_map.entry(cur_str.to_string()).or_insert(0) += 1;
+                    count += 1;
+                    while *cur_map.get(cur_str).unwrap() > *word_map.get(cur_str).unwrap() {
+                        let left_str = s.get((left as usize)..((left + word_len) as usize)).unwrap();
+                        left += word_len;
+                        *cur_map.get_mut(left_str).unwrap() -= 1;
+                        count -= 1;
+                    }
+                    if count == words.len() {
+                        ans.push(left);
+                    }
+                } else {
+                    cur_map.clear();
+                    count = 0;
+                    left = right;
+                }
+            }
+            i += 1;
+        }
+        ans
+    }
+}
+
+=======
+
+        let s = s.as_bytes();
+        let mut ret = Vec::new();
+        let mut words_map = std::collections::HashMap::new();
+        for word in words {
+            *words_map.entry(word).or_insert(0) += 1;
+        }
+        let word_len = words[0].len();
+        let s_len = s.len();
+        for i in 0..word_len {
+            let mut cur_map = std::collections::HashMap::new();
+            let mut left = i;
+            let mut right = i;
+            let mut count = 0;
+            while right + word_len <= s_len {
+                let word = std::str::from_utf8(&s[right..right + word_len]).unwrap();
+                right += word_len;
+                match words_map.get(word) {
+                    Some(&v) => {
+                        *cur_map.entry(word.to_string()).or_insert(0) += 1;
+                        if cur_map[word] <= v {
+                            count += 1;
+                        }
+                        while cur_map[word] > v {
+                            let left_word = std::str::from_utf8(&s[left..left + word_len]).unwrap();
+                            left += word_len;
+                            if cur_map[left_word] <= v {
+                                count -= 1;
+                            }
+                            cur_map.entry(left_word.to_string()).and_modify(|e| *e -= 1);
+                        }
+                        if count == words.len() {
+                            ret.push(left as i32);
+                        }
+                    }
+                    None => {
+                        cur_map.clear();
+                        left = right;
+                        count = 0;
+                    }
+                }
+            }
+        }
+        ret
+    }
+}
+
+=======
+
+        let mut res: Vec<i32> = vec![];
+        let s = s.as_bytes();
+        let mut words = words;
+        words.sort();
+        let words_len = words.len();
+        let word_len = words[0].len();
+        let s_len = s.len();
+        let mut i = 0;
+        while i + word_len * words_len <= s_len {
+            let mut temp = vec![];
+            let mut j = i;
+            while j + word_len <= s_len {
+                temp.push(String::from_utf8(s[j..j+word_len].to_vec()).unwrap());
+                j += word_len;
+            }
+            temp.sort();
+            if temp == words {
+                res.push(i as i32);
+            }
+            i += 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        let s: Vec<char> = s.chars().collect();
+        let mut word_map = HashMap::new();
+        let mut word_len = 0;
+        for word in words {
+            let word: Vec<char> = word.chars().collect();
+            word_len = word.len();
+            let count = word_map.entry(word).or_insert(0);
+            *count += 1;
+        }
+        let mut start = 0;
+        let mut end = word_len;
+        let mut count = word_map.len();
+        while end <= s.len() {
+            let sub = &s[start..end];
+            if let Some(count) = word_map.get_mut(sub) {
+                *count -= 1;
+                if *count == 0 {
+                    count -= 1;
+                }
+            }
+            if count == 0 {
+                result.push(start as i32);
+                let sub = &s[start..start+word_len];
+                if let Some(count) = word_map.get_mut(sub) {
+                    *count += 1;
+                    if *count == 1 {
+                        count += 1;
+                    }
+                }
+                start += word_len;
+                end += word_len;
+            } else {
+                start += 1;
+                end += 1;
+            }
+        }
+        result
+    }
+}

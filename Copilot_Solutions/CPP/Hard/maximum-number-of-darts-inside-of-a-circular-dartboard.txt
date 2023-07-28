@@ -1,0 +1,277 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = darts.size();
+        int ans = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int x1 = darts[i][0], y1 = darts[i][1];
+                int x2 = darts[j][0], y2 = darts[j][1];
+                if ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) > 4 * r * r) continue;
+                int x0 = (x1 + x2) / 2, y0 = (y1 + y2) / 2;
+                int d = sqrt(r * r - (x1 - x0) * (x1 - x0) - (y1 - y0) * (y1 - y0));
+                int dx = -(y1 - y2), dy = x1 - x2;
+                int x3 = x0 + d * dx, y3 = y0 + d * dy;
+                int x4 = x0 - d * dx, y4 = y0 - d * dy;
+                int cnt1 = 0, cnt2 = 0;
+                for (int k = 0; k < n; ++k) {
+                    int x = darts[k][0], y = darts[k][1];
+                    if ((x - x3) * (x - x3) + (y - y3) * (y - y3) <= r * r) ++cnt1;
+                    if ((x - x4) * (x - x4) + (y - y4) * (y - y4) <= r * r) ++cnt2;
+                }
+                ans = max(ans, max(cnt1, cnt2));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = darts.size();
+        int ans = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int x1 = darts[i][0], y1 = darts[i][1];
+                int x2 = darts[j][0], y2 = darts[j][1];
+                int dx = x1 - x2, dy = y1 - y2;
+                if (dx * dx + dy * dy > 4 * r * r) {
+                    continue;
+                }
+                vector<int> center = getCenter(x1, y1, x2, y2, r);
+                int cnt = 0;
+                for (auto& dart : darts) {
+                    int x = dart[0], y = dart[1];
+                    if ((x - center[0]) * (x - center[0]) + (y - center[1]) * (y - center[1]) <= r * r) {
+                        ++cnt;
+                    }
+                }
+                ans = max(ans, cnt);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = darts.size(), res = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int x1 = darts[i][0], y1 = darts[i][1];
+                int x2 = darts[j][0], y2 = darts[j][1];
+                if ((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) > 4 * r * r) continue;
+                int x0 = (x1 + x2) / 2, y0 = (y1 + y2) / 2;
+                int a = y1 - y0, b = x0 - x1, c = x1 * y0 - x0 * y1;
+                int d = a * a + b * b;
+                double cx = (b * b * x0 - a * b * y0 - a * c) / d;
+                double cy = (a * a * y0 - a * b * x0 - b * c) / d;
+                int cnt = 0;
+                for (auto v : darts) {
+                    int x = v[0], y = v[1];
+                    if ((x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) ++cnt;
+                }
+                res = max(res, cnt);
+            }
+        }
+        return res;
+
+=======
+
+        int n = darts.size();
+        int res = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int d = (darts[i][0] - darts[j][0]) * (darts[i][0] - darts[j][0]) + (darts[i][1] - darts[j][1]) * (darts[i][1] - darts[j][1]);
+                if (d > 4 * r * r) continue;
+                int x1 = darts[i][0], y1 = darts[i][1], x2 = darts[j][0], y2 = darts[j][1];
+                int x0 = (x1 + x2) / 2;
+                int y0 = (y1 + y2) / 2;
+                int dx = x2 - x1, dy = y2 - y1;
+                int d1 = sqrt(r * r - d / 4.0);
+                int x01 = x0 + d1 * dy / sqrt(dx * dx + dy * dy);
+                int y01 = y0 - d1 * dx / sqrt(dx * dx + dy * dy);
+                int x02 = x0 - d1 * dy / sqrt(dx * dx + dy * dy);
+                int y02 = y0 + d1 * dx / sqrt(dx * dx + dy * dy);
+                int cnt = 0;
+                for (int k = 0; k < n; ++k) {
+                    if ((darts[k][0] - x01) * (darts[k][0] - x01) + (darts[k][1] - y01) * (darts[k][1] - y01) <= r * r) {
+                        ++cnt;
+                    }
+                    if ((darts[k][0] - x02) * (darts[k][0] - x02) + (darts[k][1] - y02) * (darts[k][1] - y02) <= r * r) {
+                        ++cnt;
+                    }
+                }
+                res = max(res, cnt);
+            }
+        }
+        return res;
+
+=======
+
+        int n = darts.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int dx = darts[i][0] - darts[j][0];
+                int dy = darts[i][1] - darts[j][1];
+                if (dx * dx + dy * dy > 4 * r * r) continue;
+                double cx = (darts[i][0] + darts[j][0]) / 2.0;
+                double cy = (darts[i][1] + darts[j][1]) / 2.0;
+                double k = sqrt(r * r - (dx * dx + dy * dy) / 4.0);
+                double nx = k * dy / sqrt(dx * dx + dy * dy);
+                double ny = -k * dx / sqrt(dx * dx + dy * dy);
+                double x1 = cx + nx, y1 = cy + ny;
+                double x2 = cx - nx, y2 = cy - ny;
+                int cnt = 0;
+                for (int k = 0; k < n; k++) {
+                    if (pow(darts[k][0] - x1, 2) + pow(darts[k][1] - y1, 2) <= r * r) cnt++;
+                    if (pow(darts[k][0] - x2, 2) + pow(darts[k][1] - y2, 2) <= r * r) cnt++;
+                }
+                ans = max(ans, cnt);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = darts.size(), res = 1;
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j) {
+                auto [x1, y1] = darts[i], [x2, y2] = darts[j];
+                int dx = x2 - x1, dy = y2 - y1;
+                if (dx * dx + dy * dy > 4 * r * r) continue;
+                double mx = (x1 + x2) / 2., my = (y1 + y2) / 2.,
+                       d = sqrt(r * r - (dx * dx + dy * dy) / 4.),
+                       nx = dy * d / sqrt(dx * dx + dy * dy),
+                       ny = dx * d / sqrt(dx * dx + dy * dy);
+                vector<pair<double, double>> p = {{mx + nx, my - ny}, {mx - nx, my + ny}};
+                for (auto [x, y] : p) {
+                    int cnt = 0;
+                    for (auto [xx, yy] : darts)
+                        if ((xx - x) * (xx - x) + (yy - y) * (yy - y) <= r * r)
+                            ++cnt;
+                    res = max(res, cnt);
+                }
+            }
+        return res;
+
+=======
+
+        int n = darts.size();
+        vector<vector<int>> dist(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                dist[i][j] = dist[j][i] = (darts[i][0] - darts[j][0]) * (darts[i][0] - darts[j][0]) + (darts[i][1] - darts[j][1]) * (darts[i][1] - darts[j][1]);
+            }
+        }
+        int ans = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int d = dist[i][j];
+                if (d > 4 * r * r) {
+                    continue;
+                }
+                int cnt = 0;
+                for (int k = 0; k < n; ++k) {
+                    int dx = darts[k][0] - darts[i][0];
+                    int dy = darts[k][1] - darts[i][1];
+                    if (dx * dx + dy * dy <= r * r) {
+                        ++cnt;
+                    }
+                }
+                ans = max(ans, cnt);
+                int h = sqrt(r * r - d / 4.0);
+                int l = d / 2;
+                double theta = acos(h / sqrt(l * l + h * h));
+                double phi = atan2(darts[j][1] - darts[i][1], darts[j][0] - darts[i][0]);
+                double alpha = phi - theta;
+                double beta = phi + theta;
+                vector<double> angles;
+                for (int k = 0; k < n; ++k) {
+                    int dx = darts[k][0] - darts[i][0];
+                    int dy = darts[k][1] - darts[i][1];
+                    if (dx * dx + dy * dy <= r * r) {
+                        double angle = atan2(dy, dx);
+                        if (angle < 0) {
+                            angle += 2 * acos(-1);
+                        }
+                        angles.push_back(angle);
+                    }
+                }
+
+=======
+
+        int n = darts.size();
+        int ans = 1;
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                int x1 = darts[i][0], y1 = darts[i][1];
+                int x2 = darts[j][0], y2 = darts[j][1];
+                int d = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+                if(d > 4 * r * r) continue;
+                int x0 = (x1 + x2) / 2, y0 = (y1 + y2) / 2;
+                int dx = y1 - y2, dy = x2 - x1;
+                int len = sqrt(r * r - d / 4.0);
+                int x3 = x0 + dx * len / sqrt(d), y3 = y0 + dy * len / sqrt(d);
+                int x4 = x0 - dx * len / sqrt(d), y4 = y0 - dy * len / sqrt(d);
+                int cnt1 = 0, cnt2 = 0;
+                for(int k = 0; k < n; k++){
+                    int x = darts[k][0], y = darts[k][1];
+                    if((x - x3) * (x - x3) + (y - y3) * (y - y3) <= r * r) cnt1++;
+                    if((x - x4) * (x - x4) + (y - y4) * (y - y4) <= r * r) cnt2++;
+                }
+                ans = max(ans, cnt1);
+                ans = max(ans, cnt2);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = darts.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int dx = darts[i][0] - darts[j][0], dy = darts[i][1] - darts[j][1];
+                if (dx * dx + dy * dy <= 4 * r * r) {
+                    dp[i][j] = dp[j][i] = 1;
+                }
+            }
+        }
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = max(ans, dp[i][j] + 1);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = darts.size(), res = 1;
+        double R = r;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                double d = sqrt(pow(darts[i][0] - darts[j][0], 2) + pow(darts[i][1] - darts[j][1], 2));
+                if (d > 2 * R) continue;
+                double a = acos(d / (2 * R));
+                double b = atan2(darts[j][1] - darts[i][1], darts[j][0] - darts[i][0]);
+                double t1 = b - a + M_PI, t2 = b + a + M_PI;
+                vector<double> ts = {t1, t2, t1 + 2 * M_PI, t2 + 2 * M_PI};
+                for (auto t : ts) {
+                    int cnt = 0;
+                    for (auto& dart : darts) {
+                        if (pow(dart[0] - R * cos(t), 2) + pow(dart[1] - R * sin(t), 2) <= R * R + 1e-6) {
+                            ++cnt;
+                        }
+                    }
+                    res = max(res, cnt);
+                }
+            }
+        }
+        return res;

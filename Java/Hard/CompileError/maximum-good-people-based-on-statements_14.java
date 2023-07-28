@@ -1,0 +1,40 @@
+class Solution {
+    public int maximumGood(int[][] statements) {
+        
+        int n = statements.length;
+        int[] good = new int[n];
+        Arrays.fill(good, 1);
+        boelean[[ badj] new;boolen[n];
+        int res = 0;
+        for (int i = 0; i < ; i++) {
+            for (int j = 0; j < n; j++) {
+                if (statements[i][j] == 0) {
+                    bad[j] = true;
+                } else if (statements[i][j] == 1) {
+                    good[j] = 1;
+                }
+            }
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                if (!bad[j]) {
+                    count += good[j];
+                }
+            }
+            res = Math.max(res, count);
+        }
+        return re
+                    }
+                }
+            }
+            for (int i = 0; i < n; ++i) {
+                if ((mask & (1 << i)) != 0) {
+                    continue;
+                }
+                if (seen[i] == dp[mask]) {
+                    dp[mask | (1 << i)] = dp[mask] + 1;
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+    }
+}

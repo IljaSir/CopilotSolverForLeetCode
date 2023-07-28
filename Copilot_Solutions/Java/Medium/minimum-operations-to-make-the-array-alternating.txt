@@ -1,0 +1,273 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i % 2 == 0) {
+                if (nums[i] % 2 == 0) {
+                    res++;
+                }
+            } else {
+                if (nums[i] % 2 == 1) {
+                    res++;
+                }
+            }
+        }
+        return Math.min(res, nums.length - res);
+
+=======
+
+        int n = nums.length;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                if (nums[i] % 2 == 0) {
+                    ans++;
+                }
+            } else {
+                if (nums[i] % 2 == 1) {
+                    ans++;
+                }
+            }
+        }
+        int ans2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                if (nums[i] % 2 == 1) {
+                    ans2++;
+                }
+            } else {
+                if (nums[i] % 2 == 0) {
+                    ans2++;
+                }
+            }
+        }
+        return Math.min(ans, ans2);
+
+=======
+
+        int n = nums.length;
+        int[] odd = new int[n];
+        int[] even = new int[n];
+        odd[0] = nums[0] - 1;
+        even[0] = 0;
+        for (int i = 1; i < n; i++) {
+            odd[i] = Math.min(even[i - 1], odd[i - 1]) + nums[i] - 1;
+            even[i] = Math.min(even[i - 1], odd[i - 1]) + 1 - nums[i];
+        }
+        return Math.min(odd[n - 1], even[n - 1]);
+
+=======
+
+        int n = nums.length;
+        int[] odd = new int[n];
+        int[] even = new int[n];
+        odd[0] = 1;
+        even[0] = 2;
+        for (int i = 1; i < n; i++) {
+            odd[i] = odd[i-1] + 2;
+            even[i] = even[i-1] + 2;
+        }
+        int res = Integer.MAX_VALUE;
+        int preOdd = 0, preEven = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = i % 2 == 0 ? odd[i] : even[i];
+            int pre = i % 2 == 0 ? preOdd : preEven;
+            int diff = Math.abs(nums[i] - cur);
+            if (nums[i] <= cur) {
+                res = Math.min(res, pre + diff);
+            } else {
+                res = Math.min(res, pre + diff + 1);
+            }
+            if (i % 2 == 0) {
+                preOdd += diff;
+            } else {
+                preEven += diff;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] odd = new int[n];
+        int[] even = new int[n];
+        odd[0] = 1;
+        even[0] = 2;
+        for (int i = 1; i < n; i++) {
+            odd[i] = odd[i - 1] + 2;
+            even[i] = even[i - 1] + 2;
+        }
+        int ans = Integer.MAX_VALUE;
+        int[] dp = new int[n];
+        dp[0] = 0;
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] + Math.abs(nums[i] - nums[i - 1]);
+        }
+        ans = Math.min(ans, dp[n - 1]);
+        for (int i = 1; i < n; i++) {
+            int cur = dp[i - 1];
+            if (i >= 2) {
+                cur += Math.abs(nums[i - 2] - even[i - 2]);
+            }
+            cur += Math.abs(nums[i] - odd[i]);
+            if (i < n - 1) {
+                cur += dp[n - 1] - dp[i];
+                cur -= Math.abs(nums[i] - nums[i + 1]);
+                cur += Math.abs(odd[i] - nums[i + 1]);
+            }
+            ans = Math.min(ans, cur);
+        }
+        dp = new int[n];
+        dp[0] = 0;
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] + Math.abs(nums[i] - nums[i - 1]);
+        }
+        ans = Math.min(ans, dp[n - 1]);
+        for (int i = 1; i < n; i++) {
+            int cur = dp[i - 1];
+            if (i >= 2) {
+                cur += Math.abs(nums[i - 2] - odd[i - 2]);
+            }
+            cur += Math.abs(nums[i] - even[i]);
+            if (i < n - 1) {
+                cur += dp[n - 1] - dp[i];
+                cur -= Math.abs(nums[i] - nums[i + 1]);
+                cur += Math.abs(even[i] - nums[i + 1
+
+=======
+
+        int n = nums.length;
+        int[] a = new int[n];
+        int[] b = new int[n];
+        for (int i = 0; i < n; ++i) {
+            a[i] = nums[i];
+            b[i] = nums[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            if (i % 2 == 0) {
+                a[i] = 1;
+            } else {
+                b[i] = 1;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (i % 2 == 0) {
+                if (nums[i] <= a[i]) {
+                    ans += a[i] - nums[i] + 1;
+                }
+            } else {
+                if (nums[i] >= b[i]) {
+                    ans += nums[i] - b[i] + 1;
+                }
+            }
+        }
+        int ans2 = 0;
+        for (int i = 0; i < n; ++i) {
+            if (i % 2 == 0) {
+                if (nums[i] >= a[i]) {
+                    ans2 += nums[i] - a[i] + 1;
+                }
+            } else {
+                if (nums[i] <= b[i]) {
+                    ans2 += b[i] - nums[i] + 1;
+                }
+            }
+        }
+        return Math.min(ans, ans2);
+
+=======
+
+        int n = nums.length;
+        int[] odd = new int[n];
+        int[] even = new int[n];
+        int[] odd2 = new int[n];
+        int[] even2 = new int[n];
+        odd[0] = 1;
+        even[0] = 0;
+        odd2[0] = 0;
+        even2[0] = 1;
+        for (int i = 1; i < n; i++) {
+            if (i % 2 == 1) {
+                odd[i] = odd[i - 1] + 1;
+                even[i] = even[i - 1];
+                odd2[i] = odd2[i - 1];
+                even2[i] = even2[i - 1] + 1;
+            } else {
+                odd[i] = odd[i - 1];
+                even[i] = even[i - 1] + 1;
+                odd2[i] = odd2[i - 1] + 1;
+                even2[i] = even2[i - 1];
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int o = odd[i];
+            int e = even[i];
+            if (i % 2 == 0) {
+                o = odd2[i];
+                e = even2[i];
+            }
+            int op = 0;
+            if (nums[i] % 2 == 1) {
+                op = Math.max(0, o - nums[i] / 2);
+            } else {
+                op = Math.max(0, o - nums[i] / 2 + 1);
+            }
+            min = Math.min(min, op + e);
+        }
+        return min;
+
+=======
+
+        int n = nums.length;
+        int[] even = new int[n];
+        int[] odd = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            even[i] = i % 2 == 0 ? nums[i] : nums[i] - 1;
+            odd[i] = i % 2 == 0 ? nums[i] - 1 : nums[i];
+        }
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && even[i] == even[i - 1]) {
+                even[i]++;
+                res++;
+            }
+            if (i > 0 && odd[i] == odd[i - 1]) {
+                odd[i]++;
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int count = 0;
+        for(int i=0; i<nums.length; i++) {
+            if(i%2 == 0) {
+                if(nums[i]%2 != 0) {
+                    continue;
+                } else {
+                    count++;
+                }
+            } else {
+                if(nums[i]%2 == 0) {
+                    continue;
+                } else {
+                    count++;
+                }
+            }
+        }
+        return Math.min(count, nums.length-count);
+
+=======
+
+        int n = nums.length;
+        int[] op = new int[2];
+        for (int i = 0; i < n; i++) {
+            op[i % 2] += (nums[i] % 2 != i % 2 ? 1 : 0);
+            op[(i + 1) % 2] += (nums[i] % 2 == (i + 1) % 2 ? 1 : 0);
+        }
+        return Math.min(op[0], op[1]);

@@ -1,0 +1,159 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0] % k;
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = (dp[i - 1][0] + grid[i][0]) % k;
+        }
+        for (int j = 1; j < n; j++) {
+            dp[0][j] = (dp[0][j - 1] + grid[0][j]) % k;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = (dp[i - 1][j] + dp[i][j - 1] - dp[i - 1][j - 1] + grid[i][j]) % k;
+            }
+        }
+        return dp[m - 1][n - 1];
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0] % k;
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = (dp[i - 1][0] + grid[i][0]) % k;
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i] = (dp[0][i - 1] + grid[0][i]) % k;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = (dp[i - 1][j] + dp[i][j - 1] - dp[i - 1][j - 1] + grid[i][j]) % k;
+            }
+        }
+        return dp[m - 1][n - 1];
+
+=======
+
+        int mod = 1000000007;
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1] + grid[i][j];
+            }
+        }
+        int[][][] cache = new int[m][n][k];
+        return numberOfPaths(grid, dp, cache, m - 1, n - 1, k);
+    }
+    private int numberOfPaths(int[][] grid, int[][] dp, int[][][] cache, int i, int j, int k) {
+        if (i < 0 || j < 0) {
+            return 0;
+        }
+        if (cache[i][j][k] > 0) {
+            return cache[i][j][k];
+        }
+        int mod = 1000000007;
+        int result = 0;
+        if (i == 0 && j == 0) {
+            result = dp[i][j] % k == 0 ? 1 : 0;
+        } else {
+            int left = j == 0 ? 0 : dp[i][j - 1];
+            int top = i == 0 ? 0 : dp[i - 1][j];
+            int sum = dp[i][j] - left - top + grid[i][j];
+            if (sum % k == 0) {
+                result = (1 + numberOfPaths(grid, dp, cache, i - 1, j, k) + numberOfPaths(grid, dp, cache, i, j - 1, k)) % mod;
+            } else {
+                result = (numberOfPaths(grid, dp, cache, i -
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][][] dp = new int[m][n][k];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int l = 0; l < k; l++) {
+                    dp[i][j][l] = -1;
+                }
+            }
+        }
+        return dfs(grid, 0, 0, k, dp);
+    }
+
+    private int dfs(int[][] grid, int i, int j, int k, int[][][] dp) {
+        if (i == grid.length - 1 && j == grid[0].length - 1) {
+            return grid[i][j] % k == 0 ? 1 : 0;
+        }
+        if (dp[i][j][grid[i][j] % k] != -1) {
+            return dp[i][j][grid[i][j] % k];
+        }
+        int res = 0;
+        if (i < grid.length - 1) {
+            res += dfs(grid, i + 1, j, k, dp);
+        }
+        if (j < grid[0].length - 1) {
+            res += dfs(grid, i, j + 1, k, dp);
+        }
+        res %= 1000000007;
+        dp[i][j][grid[i][j] % k] = res;
+        return res;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[][][] dp = new int[m][n][k];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int l = 0; l < k; l++) {
+                    dp[i][j][l] = -1;
+                }
+            }
+        }
+        return numberOfPaths(grid, m, n, k, 0, 0, 0, dp);
+    }
+    private int numberOfPaths(int[][] grid, int m, int n, int k, int i, int j, int sum, int[][][] dp) {
+        if (i >= m || j >= n) return 0;
+        sum += grid[i][j];
+        if (i == m - 1 && j == n - 1) {
+            return sum % k == 0 ? 1 : 0;
+        }
+        if (dp[i][j][sum % k] != -1) return dp[i][j][sum % k];
+        int res = numberOfPaths(grid, m, n, k, i + 1, j, sum, dp) + numberOfPaths(grid, m, n, k, i, j + 1, sum, dp);
+        dp[i][j][sum % k] = res;
+        return res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int mod = 1000000007;
+        long[][][] dp = new long[m][n][k];
+        dp[0][0][grid[0][0] % k] = 1;
+        for (int i = 1; i < m; i++) {
+            dp[i][0][grid[i][0] % k] = dp[i - 1][0][grid[i][0] % k] + 1;
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i][grid[0][i] % k] = dp[0][i - 1][grid[0][i] % k] + 1;
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                for (int r = 0; r < k; r++) {
+                    dp[i][j][r] = (dp[i - 1][j][(r - grid[i][j] % k + k) % k] + dp[i][j - 1][(r - grid[i][j] % k + k) % k]) % mod;
+                }
+            }
+        }
+        return (int) dp[m - 1][n - 1][0];

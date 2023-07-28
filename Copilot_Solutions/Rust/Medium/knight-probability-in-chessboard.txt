@@ -1,0 +1,253 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let n = n as usize;
+        let k = k as usize;
+        let row = row as usize;
+        let column = column as usize;
+        let mut dp = vec![vec![vec![0.0; n]; n]; k + 1];
+        let mut ans = 0.0;
+        let mut next = vec![vec![0.0; n]; n];
+        for i in 0..n {
+            for j in 0..n {
+                dp[0][i][j] = 1.0;
+            }
+        }
+        let mut dirs = vec![(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2)];
+        for i in 1..=k {
+            for j in 0..n {
+                for l in 0..n {
+                    for dir in dirs.iter() {
+                        let x = j as i32 + dir.0;
+                        let y = l as i32 + dir.1;
+                        if x >= 0 && x < n as i32 && y >= 0 && y < n as i32 {
+                            let x = x as usize;
+                            let y = y as usize;
+                            next[j][l] += dp[i - 1][x][y];
+                        }
+                    }
+                }
+            }
+            dp[i] = next.clone();
+            for j in 0..n {
+                for l in 0..n {
+                    next[j][l] = 0.0;
+                }
+            }
+        }
+        for i in 0..n {
+            for j in 0..n {
+                ans += dp[k][i][j];
+            }
+        }
+        ans / 8.0f64.powi(k as i32)
+
+=======
+Suggestion 2
+
+        let n = n as usize;
+        let k = k as usize;
+        let row = row as usize;
+        let column = column as usize;
+        let mut dp = vec![vec![vec![0.0; n]; n]; k + 1];
+        for i in 0..n {
+            for j in 0..n {
+                dp[0][i][j] = 1.0;
+            }
+        }
+        for step in 1..=k {
+            for i in 0..n {
+                for j in 0..n {
+                    let mut prob = 0.0;
+                    if i >= 2 {
+                        if j >= 1 {
+                            prob += dp[step - 1][i - 2][j - 1];
+                        }
+                        if j < n - 1 {
+                            prob += dp[step - 1][i - 2][j + 1];
+                        }
+                    }
+                    if i >= 1 {
+                        if j >= 2 {
+                            prob += dp[step - 1][i - 1][j - 2];
+                        }
+                        if j < n - 2 {
+                            prob += dp[step - 1][i - 1][j + 2];
+                        }
+                    }
+                    if i < n - 2 {
+                        if j >= 1 {
+                            prob += dp[step - 1][i + 2][j - 1];
+                        }
+                        if j < n - 1 {
+                            prob += dp[step - 1][i + 2][j + 1];
+                        }
+                    }
+                    if i < n - 1 {
+                        if j >= 2 {
+                            prob += dp[step - 1][i + 1][j - 2];
+                        }
+                        if j < n - 2 {
+                            prob += dp[step - 1][i + 1][j + 2];
+                        }
+                    }
+                    dp[step][i][j] = prob / 8.0;
+                }
+            }
+        }
+        dp[k][row][column]
+
+=======
+Suggestion 3
+
+        let mut dp = vec![vec![vec![0.0; n as usize]; n as usize]; k as usize + 1];
+        dp[0][row as usize][column as usize] = 1.0;
+        let dir = vec![[2, 1], [1, 2], [-1, 2], [-2, 1], [-2, -1], [-1, -2], [1, -2], [2, -1]];
+        for i in 1..=k {
+            for r in 0..n {
+                for c in 0..n {
+                    for d in &dir {
+                        let nr = r + d[0];
+                        let nc = c + d[1];
+                        if nr >= 0 && nr < n && nc >= 0 && nc < n {
+                            dp[i as usize][nr as usize][nc as usize] += dp[(i - 1) as usize][r as usize][c as usize] / 8.0;
+                        }
+                    }
+                }
+            }
+        }
+        let mut ans = 0.0;
+        for r in 0..n {
+            for c in 0..n {
+                ans += dp[k as usize][r as usize][c as usize];
+            }
+        }
+        ans
+
+=======
+Suggestion 4
+
+        let (n, k, row, column) = (n as usize, k as usize, row as usize, column as usize);
+        let mut dp = vec![vec![vec![0.0; n]; n]; k+1];
+        for i in 0..n {
+            for j in 0..n {
+                dp[0][i][j] = 1.0;
+            }
+        }
+        let mut res = 0.0;
+        for i in 1..=k {
+            for j in 0..n {
+                for l in 0..n {
+                    let mut cnt = 0;
+                    if j > 1 && l > 0 { cnt += 1; dp[i][j][l] += dp[i-1][j-2][l-1]; }
+                    if j > 1 && l < n-1 { cnt += 1; dp[i][j][l] += dp[i-1][j-2][l+1]; }
+                    if j > 0 && l > 1 { cnt += 1; dp[i][j][l] += dp[i-1][j-1][l-2]; }
+                    if j > 0 && l < n-2 { cnt += 1; dp[i][j][l] += dp[i-1][j-1][l+2]; }
+                    if j < n-2 && l > 0 { cnt += 1; dp[i][j][l] += dp[i-1][j+2][l-1]; }
+                    if j < n-2 && l < n-1 { cnt += 1; dp[i][j][l] += dp[i-1][j+2][l+1]; }
+                    if j < n-1 && l > 1 { cnt += 1; dp[i][j][l] += dp[i-1][j+1][l-2]; }
+                    if j < n-1 && l < n-2 { cnt += 1; dp[i][j][l] += dp[i-1][j+1][l+2]; }
+                    dp[i][j][l] /= cnt as f64;
+                }
+            }
+        }
+        dp[k][row][column]
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut dp = vec![vec![vec![0.0; n as usize]; n as usize]; (k + 1) as usize];
+        dp[0][row as usize][column as usize] = 1.0;
+        for i in 1..=k {
+            for r in 0..n {
+                for c in 0..n {
+                    for &(dr, dc) in &[(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)] {
+                        let nr = r + dr;
+                        let nc = c + dc;
+                        if nr >= 0 && nr < n && nc >= 0 && nc < n {
+                            dp[i as usize][nr as usize][nc as usize] += dp[(i - 1) as usize][r as usize][c as usize] / 8.0;
+                        }
+                    }
+                }
+            }
+        }
+        dp[k as usize].iter().flatten().sum()
+
+=======
+Suggestion 6
+
+        let n = n as usize;
+        let k = k as usize;
+        let row = row as usize;
+        let column = column as usize;
+        let mut dp = vec![vec![vec![0.0; k+1]; n]; n];
+        for t in 0..k+1 {
+            for i in 0..n {
+                for j in 0..n {
+                    dp[i][j][t] = if t == k { 1.0 } else { 0.0 };
+                }
+            }
+        }
+        for t in (0..k).rev() {
+            for i in 0..n {
+                for j in 0..n {
+                    let mut sum = 0.0;
+                    for (dx, dy) in vec![(2, 1), (2, -1), (1, 2), (1, -2), (-1, 2), (-1, -2), (-2, 1), (-2, -1)] {
+                        let x = i as i32 + dx;
+                        let y = j as i32 + dy;
+                        if x >= 0 && x < n as i32 && y >= 0 && y < n as i32 {
+                            sum += dp[x as usize][y as usize][t+1];
+                        }
+                    }
+                    dp[i][j][t] = sum / 8.0;
+                }
+            }
+        }
+        dp[row][column][0]
+
+=======
+Suggestion 7
+
+        let mut dp = vec![vec![vec![0.0; n as usize]; n as usize]; k as usize + 1];
+        let mut dp_next = vec![vec![vec![0.0; n as usize]; n as usize]; k as usize + 1];
+        let mut res = 0.0;
+        dp[0][row as usize][column as usize] = 1.0;
+        for i in 0..k {
+            for j in 0..n {
+                for m in 0..n {
+                    if dp[i as usize][j as usize][m as usize] == 0.0 {
+                        continue;
+                    }
+                    let mut count = 0;
+                    if j > 1 && m > 0 {
+                        count += 1;
+                        dp_next[(i + 1) as usize][j as usize - 2][m as usize - 1] += dp[i as usize][j as usize][m as usize] / 8.0;
+                    }
+                    if j > 1 && m < n - 1 {
+                        count += 1;
+                        dp_next[(i + 1) as usize][j as usize - 2][m as usize + 1] += dp[i as usize][j as usize][m as usize] / 8.0;
+                    }
+                    if j > 0 && m > 1 {
+                        count += 1;
+                        dp_next[(i + 1) as usize][j as usize - 1][m as usize - 2] += dp[i as usize][j as usize][m as usize] / 8.0;
+                    }
+                    if j > 0 && m < n - 2 {
+                        count += 1;
+                        dp_next[(i + 1) as usize][j as usize - 1][m as usize + 2] += dp[i as usize][j as usize][m as usize] / 8.0;
+                    }
+                    if j < n - 1 && m > 1 {
+                        count += 1;
+                        dp_next[(i + 1) as usize][j as usize + 1][m as usize - 2] += dp[i as usize][j as usize][m as usize] / 8.0;
+                    }
+                    if j < n - 1 && m < n
+
+=======
+Suggestion 8
+
+        
+    }
+}

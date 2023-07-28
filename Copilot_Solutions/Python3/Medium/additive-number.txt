@@ -1,0 +1,211 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        for i in range(1, len(num)):
+            for j in range(i+1, len(num)):
+                a, b = num[:i], num[i:j]
+                if a != str(int(a)) or b != str(int(b)):
+                    continue
+                while j < len(num):
+                    c = str(int(a) + int(b))
+                    if not num.startswith(c, j):
+                        break
+                    j += len(c)
+                    a, b = b, c
+                if j == len(num):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        for i in range(1, len(num)):
+            for j in range(i+1, len(num)):
+                if num[0] == '0' and i > 1:
+                    break
+                if num[i] == '0' and j > i+1:
+                    break
+                a = int(num[:i])
+                b = int(num[i:j])
+                c = a + b
+                k = j
+                while k < len(num):
+                    if num[k] == '0' and c > 0:
+                        break
+                    if num[k] != str(c)[0]:
+                        break
+                    if num[k:].startswith(str(c)):
+                        a = b
+                        b = c
+                        c = a + b
+                        k += len(str(c))
+                    else:
+                        break
+                if k == len(num):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        n = len(num)
+        for i in range(1, n):
+            for j in range(i+1, n):
+                if num[0] == '0' and i > 1:
+                    break
+                if num[i] == '0' and j > i+1:
+                    break
+                a, b = int(num[:i]), int(num[i:j])
+                while j < n:
+                    c = a + b
+                    if not num.startswith(str(c), j):
+                        break
+                    j += len(str(c))
+                    a, b = b, c
+                if j == n:
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        for i in range(1, len(num) // 2 + 1):
+            for j in range(1, (len(num) - i) // 2 + 1):
+                if self.isAdditive(num, i, j):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        def dfs(i, j, k):
+            if k == len(num):
+                return True
+            if num[i] == '0' and j - i > 1:
+                return False
+            if num[j] == '0' and k - j > 1:
+                return False
+            a, b = int(num[i:j]), int(num[j:k])
+            c = a + b
+            if str(c) != num[k:k + len(str(c))]:
+                return False
+            return dfs(j, k, k + len(str(c)))
+        for i in range(1, len(num) - 1):
+            for j in range(i + 1, len(num)):
+                if dfs(0, i, j):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        def helper(num1, num2, num):
+            if not num:
+                return True
+            num3 = str(int(num1) + int(num2))
+            if num.startswith(num3):
+                return helper(num2, num3, num[len(num3):])
+            return False
+        for i in range(1, len(num)):
+            for j in range(i+1, len(num)):
+                if helper(num[:i], num[i:j], num[j:]):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        n = len(num)
+        def dfs(i, j, k):
+            if i >= n or j >= n or k >= n:
+                return False
+            if num[i] == '0' and j-i > 1:
+                return False
+            if num[j] == '0' and k-j > 1:
+                return False
+            x = int(num[i:j])
+            y = int(num[j:k])
+            z = str(x+y)
+            if num[k:].startswith(z):
+                if k+len(z) == n:
+                    return True
+                else:
+                    return dfs(j, k, k+len(z))
+            else:
+                return False
+        for j in range(1, n//2+1):
+            for k in range(j+1, n):
+                if dfs(0, j, k):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        def dfs(i, j, num):
+            if num[i] == '0' and j - i > 1:
+                return False
+            if num[j] == '0' and len(num) - j > 1:
+                return False
+            a, b = int(num[:i]), int(num[i:j])
+            for k in range(j, len(num)):
+                c = a + b
+                if num[k:].startswith(str(c)):
+                    if k == len(num) - 1:
+                        return True
+                    if dfs(j, k + 1, num):
+                        return True
+            return False
+        for i in range(1, len(num)):
+            for j in range(i + 1, len(num)):
+                if dfs(i, j, num):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        n = len(num)
+        def helper(i, j, k):
+            if k == n:
+                return True
+            x, y = int(num[i:j+1]), int(num[j+1:k+1])
+            if x > y:
+                return False
+            z = str(x+y)
+            if num[k+1:].startswith(z):
+                return helper(j+1, k+1, k+len(z))
+            return False
+        for i in range(n//2):
+            for j in range(i+1, n-1):
+                if helper(0, i, j):
+                    return True
+        return False
+
+=======
+
+def isAdditiveNumber(self, num: str) -> bool:
+        def dfs(num, index, num1, num2):
+            if index == len(num):
+                return True
+            num3 = num1 + num2
+            for i in range(1, len(num) - index + 1):
+                if num[index] == '0' and i > 1:
+                    return False
+                if int(num[index:index + i]) == num3:
+                    if dfs(num, index + i, num2, num3):
+                        return True
+            return False
+        for i in range(1, len(num) // 2 + 1):
+            for j in range(1, (len(num) - i) // 2 + 1):
+                if num[0] == '0' and i > 1:
+                    continue
+                if num[i] == '0' and j > 1:
+                    continue
+                num1 = int(num[0:i])
+                num2 = int(num[i:i + j])
+                if dfs(num, i + j, num1, num2):
+                    return True
+        return False

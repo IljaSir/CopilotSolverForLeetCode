@@ -1,0 +1,333 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1;
+            while (l < r) {
+                int m = (l + r) / 2;
+                if (sum[m] - sum[i] >= sum[i]) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            if (sum[l] - sum[i] < sum[i]) {
+                continue;
+            }
+            int ll = l, rr = n - 1;
+            while (ll < rr) {
+                int m = (ll + rr + 1) / 2;
+                if (sum[n - 1] - sum[m] >= sum[m] - sum[i]) {
+                    ll = m;
+                } else {
+                    rr = m - 1;
+                }
+            }
+            ans = (ans + ll - l + 1) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] prefixSum = new int[n];
+        prefixSum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i - 1] + nums[i];
+        }
+        int res = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int leftSum = prefixSum[i];
+            int leftIndex = binarySearch(prefixSum, i + 1, n - 2, 2 * leftSum);
+            if (leftIndex == -1) {
+                continue;
+            }
+            int rightIndex = binarySearch(prefixSum, leftIndex, n - 1, leftSum + prefixSum[n - 1]);
+            if (rightIndex == -1) {
+                continue;
+            }
+            res += rightIndex - leftIndex + 1;
+            res %= 1000000007;
+        }
+        return res;
+    }
+    private int binarySearch(int[] nums, int start, int end, int target) {
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+            if (nums[mid] < target) {
+                start = mid + 1;
+            } else {
+                end = mid - 1;
+            }
+        }
+        return start < nums.length ? start : -1;
+
+=======
+
+        int n = nums.length;
+        int[] pre = new int[n];
+        pre[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            pre[i] = pre[i - 1] + nums[i];
+        }
+        int ans = 0;
+        int mod = 1000000007;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1;
+            int r = n - 2;
+            int sum = pre[i];
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (pre[mid] - sum >= sum) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int left = l;
+            l = i + 1;
+            r = n - 2;
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (pre[n - 1] - pre[mid] >= pre[mid] - sum) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            int right = r;
+            if (left <= right) {
+                ans = (ans + right - left + 1) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        for (int i = 1; i <= n - 2; i++) {
+            int l = i + 1, r = n - 1;
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (preSum[mid] - preSum[i] >= preSum[i]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int left = l;
+            l = i + 1;
+            r = n - 1;
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (preSum[n] - preSum[mid] >= preSum[mid] - preSum[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            int right = r;
+            if (left <= right) {
+                res += right - left + 1;
+                res %= 1000000007;
+            }
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int n = nums.length;
+        int[] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1;
+            int s1 = sum[i];
+            while (l < r) {
+                int m = (l + r + 1) / 2;
+                int s2 = sum[m] - sum[i];
+                int s3 = sum[n - 1] - sum[m];
+                if (s2 < s1) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            int left = l;
+            l = i + 1;
+            r = n - 1;
+            while (l < r) {
+                int m = (l + r) / 2;
+                int s2 = sum[m] - sum[i];
+                int s3 = sum[n - 1] - sum[m];
+                if (s3 < s2) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            int right = r;
+            if (left < right) {
+                ans = (ans + right - left) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int len = nums.length;
+        int[] sum = new int[len + 1];
+        for (int i = 1; i <= len; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        int mod = 1000000007;
+        for (int i = 0; i < len - 2; i++) {
+            int l = i + 1;
+            int r = len - 1;
+            int leftSum = sum[i + 1];
+            while (l < r) {
+                int mid = (r - l) / 2 + l;
+                int midSum = sum[mid + 1] - sum[i + 1];
+                int rightSum = sum[len] - sum[mid + 1];
+                if (leftSum > midSum) {
+                    l = mid + 1;
+                } else if (midSum > rightSum) {
+                    r = mid;
+                } else {
+                    r = mid;
+                }
+            }
+            if (sum[l + 1] - sum[i + 1] >= leftSum) {
+                res = (res + l - i) % mod;
+            }
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int len = nums.length;
+        int[] sum = new int[len];
+        sum[0] = nums[0];
+        for (int i = 1; i < len; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < len - 2; i++) {
+            int left = sum[i];
+            int mid = left;
+            int right = sum[len - 1] - left;
+            int l = i + 1;
+            int r = len - 2;
+            while (l <= r) {
+                int m = l + (r - l) / 2;
+                int m1 = sum[m] - left;
+                int m2 = right - m1;
+                if (m1 <= m2) {
+                    l = m + 1;
+                    mid = Math.max(mid, m1);
+                } else {
+                    r = m - 1;
+                }
+            }
+            if (mid >= left) {
+                ans = (ans + l - i - 1) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int mod = (int)1e9 + 7;
+        int n = nums.length;
+        int[] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[mid] - sum[i] >= sum[i]) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            int right = l;
+            if (sum[right] - sum[i] < sum[i]) {
+                continue;
+            }
+            l = i + 1;
+            r = right;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] - sum[i] > sum[n - 1] - sum[mid]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int left = l;
+            if (sum[left] - sum[i] <= sum[n - 1] - sum[left]) {
+                ans = (ans + right - left + 1) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = nums.length;
+        int[] preSum = new int[n+1];
+        for(int i=1; i<=n; i++){
+            preSum[i] = preSum[i-1] + nums[i-1];
+        }
+        int ans = 0;
+        int j = 2;
+        int k = 2;
+        for(int i=1; i<n-1; i++){
+            // 0 - i-1
+            // i - j-1
+            // j - n-1
+            // i-1 < j-1 < n-1
+            // preSum[j] - preSum[i] >= preSum[i]
+            // preSum[n] - preSum[j] >= preSum[j] - preSum[i]
+            // preSum[n] - preSum[j] >= preSum[i]
+            // preSum[n] - preSum[j] + preSum[i] >= 2 * preSum[i]
+            // preSum[n] + preSum[i] >= 2 * preSum[i] + preSum[j]
+            // preSum[n] >= 2 * preSum[i] + preSum[j]
+            while(j<n && preSum[n] >= 2*preSum[i] + preSum[j]){
+                j++;
+            }
+            // j-1 is the largest index where sum(i, j-1) >= sum(0, i-1)
+            // k <= j-1
+            k = Math.max(k, i+1);
+            while(k<j && preSum[j] - preSum[k] >= preSum[k]){
+                k++;
+            }
+            // k is the smallest index where sum(k, j-1) >= sum(i, k-1)
+            // k-1 is the largest index where sum(k-1, j-1) < sum(i, k-1)
+            ans = (ans + j-k) % mod;
+        }
+        return ans;

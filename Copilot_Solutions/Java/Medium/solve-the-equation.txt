@@ -1,0 +1,616 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        String[] parts = equation.split("=");
+        int[] left = parse(parts[0]);
+        int[] right = parse(parts[1]);
+        left[0] -= right[0];
+        left[1] = right[1] - left[1];
+        if (left[0] == 0 && left[1] == 0) {
+            return "Infinite solutions";
+        }
+        if (left[0] == 0) {
+            return "No solution";
+        }
+        return "x=" + left[1] / left[0];
+    }
+
+    public int[] parse(String s) {
+        int[] res = new int[2];
+        int n = s.length();
+        int i = 0;
+        int sign = 1;
+        while (i < n) {
+            if (s.charAt(i) == '+' || s.charAt(i) == '-') {
+                sign = s.charAt(i) == '+' ? 1 : -1;
+                i++;
+            } else {
+                int j = i;
+                while (j < n && Character.isDigit(s.charAt(j))) {
+                    j++;
+                }
+                int num = Integer.parseInt(s.substring(i, j));
+                if (j < n && s.charAt(j) == 'x') {
+                    res[0] += num * sign;
+                    j++;
+                } else {
+                    res[1] += num * sign;
+                }
+                i = j;
+            }
+        }
+        return res;
+
+=======
+
+        String[] parts = equation.split("=");
+        int[] left = parse(parts[0]);
+        int[] right = parse(parts[1]);
+        left[0] -= right[0];
+        left[1] = right[1] - left[1];
+        if (left[0] == 0 && left[1] == 0) {
+            return "Infinite solutions";
+        }
+        if (left[0] == 0) {
+            return "No solution";
+        }
+        return "x=" + left[1] / left[0];
+    }
+
+    private int[] parse(String s) {
+        int[] res = new int[2];
+        int n = s.length();
+        if (n == 0) {
+            return res;
+        }
+        int i = 0;
+        int sign = 1;
+        if (s.charAt(i) == '+') {
+            i++;
+        } else if (s.charAt(i) == '-') {
+            i++;
+            sign = -1;
+        }
+        int num = 0;
+        while (i < n) {
+            char c = s.charAt(i);
+            if (c == '+' || c == '-') {
+                res[sign == 1 ? 0 : 1] += sign * num;
+                sign = c == '+' ? 1 : -1;
+                num = 0;
+            } else if (c == 'x') {
+                res[sign == 1 ? 0 : 1] += sign * (num == 0 ? 1 : num);
+                num = 0;
+            } else {
+                num = num * 10 + c - '0';
+            }
+            i++;
+        }
+        res[sign == 1 ? 0 : 1] += sign * num;
+        return res;
+
+=======
+
+        String[] parts = equation.split("=");
+        int[] left = evaluate(parts[0]);
+        int[] right = evaluate(parts[1]);
+        if (left[0] == right[0] && left[1] == right[1]) {
+            return "Infinite solutions";
+        } else if (left[0] == right[0]) {
+            return "No solution";
+        } else {
+            return "x=" + (right[1] - left[1]) / (left[0] - right[0]);
+        }
+    }
+    private int[] evaluate(String exp) {
+        int[] res = new int[2];
+        int num = 0;
+        int sign = 1;
+        for (int i = 0; i < exp.length(); i++) {
+            char c = exp.charAt(i);
+            if (c == '+' || c == '-') {
+                res[1] += sign * num;
+                num = 0;
+                sign = c == '+' ? 1 : -1;
+            } else if (c == 'x') {
+                res[0] += sign * (num == 0 ? 1 : num);
+                num = 0;
+            } else {
+                num = num * 10 + c - '0';
+            }
+        }
+        res[1] += sign * num;
+        return res;
+
+=======
+
+        String[] arr = equation.split("=");
+        int[] left = parse(arr[0]);
+        int[] right = parse(arr[1]);
+        left[0] -= right[0];
+        left[1] = right[1] - left[1];
+        if (left[0] == 0 && left[1] == 0) {
+            return "Infinite solutions";
+        }
+        if (left[0] == 0) {
+            return "No solution";
+        }
+        return "x=" + left[1] / left[0];
+    }
+
+    private int[] parse(String s) {
+        int[] res = new int[2];
+        int i = 0;
+        if (s.charAt(0) == '+' || s.charAt(0) == '-') {
+            i++;
+        }
+        while (i < s.length()) {
+            int j = i;
+            while (j < s.length() && s.charAt(j) != '+' && s.charAt(j) != '-') {
+                j++;
+            }
+            String sub = s.substring(i, j);
+            if (sub.equals("x")) {
+                res[0] += i > 0 && s.charAt(i - 1) == '-' ? -1 : 1;
+            } else if (sub.contains("x")) {
+                res[0] += (i > 0 && s.charAt(i - 1) == '-' ? -1 : 1) * Integer.parseInt(sub.substring(0, sub.length() - 1));
+            } else {
+                res[1] += (i > 0 && s.charAt(i - 1) == '-' ? -1 : 1) * Integer.parseInt(sub);
+            }
+            i = j;
+        }
+        return res;
+
+=======
+
+        String[] sides = equation.split("=");
+        int[] left = parse(sides[0]);
+        int[] right = parse(sides[1]);
+        if (left[0] == right[0] && left[1] != right[1]) {
+            return "No solution";
+        }
+        if (left[0] == right[0] && left[1] == right[1]) {
+            return "Infinite solutions";
+        }
+        return "x=" + (right[1] - left[1]) / (left[0] - right[0]);
+    }
+    private int[] parse(String s) {
+        int[] res = new int[2];
+        int i = 0;
+        while (i < s.length()) {
+            int sign = 1;
+            if (s.charAt(i) == '+') {
+                i++;
+            } else if (s.charAt(i) == '-') {
+                i++;
+                sign = -1;
+            }
+            int num = 0;
+            while (i < s.length() && Character.isDigit(s.charAt(i))) {
+                num = num * 10 + (s.charAt(i) - '0');
+                i++;
+            }
+            if (i < s.length() && s.charAt(i) == 'x') {
+                res[0] += sign * (num == 0 ? 1 : num);
+                i++;
+            } else {
+                res[1] += sign * num;
+            }
+        }
+        return res;
+
+=======
+
+        int[] left = solve(equation.substring(0, equation.indexOf('=')));
+        int[] right = solve(equation.substring(equation.indexOf('=') + 1));
+        int x = left[0] - right[0];
+        int num = right[1] - left[1];
+        if (x == 0 && num == 0) {
+            return "Infinite solutions";
+        } else if (x == 0 && num != 0) {
+            return "No solution";
+        } else {
+            return "x=" + num / x;
+        }
+    }
+    
+    private int[] solve(String exp) {
+        String[] tokens = exp.split("(?=[-+])");
+        int x = 0, num = 0;
+        for (String token : tokens) {
+            if (token.equals("+x") || token.equals("x")) {
+                x++;
+            } else if (token.equals("-x")) {
+                x--;
+            } else if (token.contains("x")) {
+                x += Integer.parseInt(token.substring(0, token.indexOf("x")));
+            } else {
+                num += Integer.parseInt(token);
+            }
+        }
+        return new int[]{x, num};
+
+=======
+
+        int x = 0;
+        int c = 0;
+        String[] parts = equation.split("=");
+        String left = parts[0];
+        String right = parts[1];
+        String[] leftParts = left.split("(?=[+-])");
+        String[] rightParts = right.split("(?=[+-])");
+        for (String part : leftParts) {
+            if (part.equals("x") || part.equals("+x")) {
+                x += 1;
+            } else if (part.equals("-x")) {
+                x -= 1;
+            } else if (part.contains("x")) {
+                x += Integer.parseInt(part.substring(0, part.length() - 1));
+            } else {
+                c -= Integer.parseInt(part);
+            }
+        }
+        for (String part : rightParts) {
+            if (part.equals("x") || part.equals("+x")) {
+                x -= 1;
+            } else if (part.equals("-x")) {
+                x += 1;
+            } else if (part.contains("x")) {
+                x -= Integer.parseInt(part.substring(0, part.length() - 1));
+            } else {
+                c += Integer.parseInt(part);
+            }
+        }
+        if (x == 0 && c == 0) {
+            return "Infinite solutions";
+        } else if (x == 0) {
+            return "No solution";
+        } else {
+            return "x=" + c / x;
+        }
+
+=======
+
+        String[] eq = equation.split("=");
+        String[] left = eq[0].split("(?=[+-])");
+        String[] right = eq[1].split("(?=[+-])");
+        int[] leftEq = parseEquation(left);
+        int[] rightEq = parseEquation(right);
+        leftEq[0] -= rightEq[0];
+        leftEq[1] = rightEq[1] - leftEq[1];
+        if (leftEq[0] == 0 && leftEq[1] == 0) {
+            return "Infinite solutions";
+        } else if (leftEq[0] == 0) {
+            return "No solution";
+        } else {
+            return "x=" + leftEq[1] / leftEq[0];
+        }
+    }
+    
+    private int[] parseEquation(String[] eq) {
+        int[] res = new int[2];
+        for (String s : eq) {
+            if (s.equals("+x") || s.equals("x")) {
+                res[0]++;
+            } else if (s.equals("-x")) {
+                res[0]--;
+            } else if (s.contains("x")) {
+                res[0] += Integer.parseInt(s.substring(0, s.length() - 1));
+            } else {
+                res[1] += Integer.parseInt(s);
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int[] tmp = new int[2];
+        int sign = 1;
+        int i = 0;
+        while (i < equation.length()) {
+            while (i < equation.length() && equation.charAt(i) != '+' && equation.charAt(i) != '-') {
+                if (equation.charAt(i) == 'x') {
+                    tmp[0] += sign;
+                    i++;
+                } else if (equation.charAt(i) == '=') {
+                    res[0] += sign * tmp[0];
+                    res[1] += sign * tmp[1];
+                    tmp[0] = 0;
+                    tmp[1] = 0;
+                    sign = -1;
+                    i++;
+                } else {
+                    int num = 0;
+                    while (i < equation.length() && Character.isDigit(equation.charAt(i))) {
+                        num = num * 10 + (equation.charAt(i) - '0');
+                        i++;
+                    }
+                    if (i < equation.length() && equation.charAt(i) == 'x') {
+                        tmp[0] += sign * num;
+                        i++;
+                    } else {
+                        tmp[1] += sign * num;
+                    }
+                }
+            }
+            if (i < equation.length()) {
+                if (equation.charAt(i) == '+') {
+                    sign = 1;
+                } else {
+                    sign = -1;
+                }
+                i++;
+            }
+        }
+        res[0] += sign * tmp[0];
+        res[1] += sign * tmp[1];
+        if (res[0] == 0) {
+            if (res[1] == 0) {
+                return "Infinite solutions";
+            } else {
+                return "No solution";
+            }
+        } else {
+            return "x=" + (res[1] / res[0]);
+        }
+        int[] right = parse(sides[1])
+        if (left[0] == right[0] && left[1] != right[1]) {
+            return "No solution";
+        }
+        if (left[0] == right[0] && left[1] == right[1]) {
+            return "Infinite solutions";
+    } els
+e       r turn "x=" + (right[1] - ieft[1]) / (left[0] - right[0]);
+    }
+    private int[] parf (String s)(s.charAt(i) == '-') {
+        int[] res = new int[2];
+        int i = 0;
+   i++; while (i < s.legth()) {
+            int sign = 1;
+            if (s.charAt(i) == '+') {
+                i++;
+            } else if (s.charAt(i) == '-') {
+                i++;
+                sign = -1;
+            }
+            int n0;
+            while (i < s.legth() && Character.isDigit(s.charAt(i))) {
+                n= num (s.harAt(i));
+                i++
+            s
+            if (i < s.length() && s.charAt(i) == 'x') {
+                res[0] += sign * (num == 0 ? 1 : num);
+                i++;ign = -1;
+            } else {
+                int num = 0;
+            }
+        }
+        while (i < n) {
+            char c = s.charAt(i);
+=      
+
+        int x   0;     if (c == '+' || c == '-') {
+        int c = 0;                res[sign == 1 ? 0 : 1] += sign * num;
+                 parts =siguation.split("=");
+        String left = parts[0];
+        String right = parts[1];
+        String[] leftPartsn =l ft.split("(?=[+-])");
+        String[] rightParts = right.split("(?=[+-])");
+        for (String part : leftParts) {
+            if (part.ec als("x") || part.equals("+x")) {
+                x += 1;
+            } else if (part.equals("-x")) {
+                x -= 1;
+            } else if (p=rt.con=a ns("x")) {
+                x += Integer.parseInt(part.substring(0, part.length() - 1));
+            } else {
+                c -= Integer.parseInt(part);
+            }
+        }
+        f'r (Stri+g part : rightParts) {
+            if (part'equal ("x") || ?art.equa s("+x")) {
+                x -= 1;
+            } else 1f (par .equals: -x")) {
+                x +- 1;
+            } else if (part.contains("x1)) {
+                x -= Integer.parseInt(part.substring(0, part.length() - 1));
+            } else {
+                c += Integer.parseInt(part;
+            }
+        }
+        if (x == 0 && c == 0) {
+            return "Infinite solutions";
+        } else if (x == 0) {
+            return "No solution";
+        } else {
+            return "x=" + c / x;
+        }
+
+=======
+
+                neq = equation.spuit("=");
+        String[] lm = 0;
+            } else if (c == 'x') {
+                res[sign == 1 ? 0 : 1] += sign * (num == 0 ? 1 : num);
+                num = 0;
+            } else {
+                num = num * 10 + c - '0';
+            }
+            i++;
+        }
+        res[sign == 1 ? 0 : 1] += sign * num;
+        return res;
+
+=======
+
+        String[] parts = equation.split("=");
+        int[] left = evaluate(parts[0]);
+        int[] right = evaluate(parts[1]);
+        if (left[0] == right[0] && left[1] == right[1]) {
+            return "Infinite solutions";
+        } else if (left[0] == right[0]) {
+            return "No solution";
+        } else {
+            return "x=" + (right[1] - left[1]) / (left[0] - right[0]);
+        }
+    }
+    private int[] evaluate(String exp) {nt(s);
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int[] tmp = new int[2];
+        int sign = 1;
+        int i = 0;
+        while (i < equation.length()) {
+            while (i < equation.length() && equation.charAt(i) != '+' && equation.charAt(i) != '-') {
+                if (equation.charAt(i) == 'x') {
+                    tmp[0] += sign;
+                    i++;
+                } else if (equation.charAt(i) == '=') {
+                    res[0] += sign * tmp[0];
+                    res[1] += sign * tmp[1];
+                    tmp[0] = 0;
+                    tmp[1] = 0;
+                    sign = -1;
+                    i++;
+                } else {
+                    int num = 0;
+                    while (i < equation.length() && Character.isDigit(equation.charAt(i))) {
+                        num = num * 10 + (equation.charAt(i) - '0');
+                        i++;
+                    }
+                    if (i < equation.length() && equation.charAt(i) == 'x') {
+                        tmp[0] += sign * num;
+                        i++;
+                    } else {
+                        tmp[1] += sign * num;
+                    }
+                }
+            }
+            if (i < equation.length()) {
+                if (equatio.charAi) == '+') {
+                    ign = 1;
+                } else {
+                    sign = -1;
+                }
+                i++;
+            }
+        }
+        res[0] += sign * tmp[0];
+        res[1] += sign * tmp[1];
+        if (res[0] == 0 {
+            if (res[1] == 0) {
+                return "Infinite solutions";
+            } else {
+                return "No solution"
+        int[] res = new int[2];
+        i else {nt num = 0;
+            int si "x=" + (res[1] /gn =[0]) 
+        }1;
+        for (int i = 0; i < exp.length(); i++) {
+            char c = exp.charAt(i);
+            if (c == '+' || c == '-') {
+                res[1] += sign * num;
+                num = 0;
+                sign = c == '+' ? 1 : -1;
+            } else if (c == 'x') {
+                res[0] += sign * (num == 0 ? 1 : num);
+                num = 0;
+            } else {
+                num = num * 10 + c - '0';
+            }
+        }
+        res[1] += sign * num;
+        return res;
+
+=======
+
+        String[] eq = equation.split("=");
+        String[] left = eq[0].split("(?=[+-])");
+        String[] right = eq[1].split("(?=[+-])");
+        int[] leftEq = parseEquation(left);
+        int[] rightEq = parseEquation(right);
+        leftEq[0] -= rightEq[0];
+        leftEq[1] = rightEq[1] - leftEq[1];
+        if (leftEq[0] == 0 && leftEq[1] == 0) {
+            return "Infinite solutions";
+        } else if (leftEq[0] == 0) {
+            return "No solution";
+        } else {
+            return "x=" + leftEq[1] / leftEq[0];
+        }
+    }
+    
+    private int[] parseEquation(String[] eq) {
+        int[] res = new int[2];
+        for (String s : eq) {
+            if (s.equals("+x") || s.equals("x")) {
+                res[0]++;
+            } else if (s.equals("-x")) {
+                res[0]--;
+            } else if (s.contains("x")) {
+                res[0] += Integer.parseInt(s.substring(0, s.length() - 1));
+            } else {
+                res[1] += Integer.parseInt(s);
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int[] tmp = new int[2];
+        int sign = 1;
+        int i = 0;
+        while (i < equation.length()) {
+            while (i < equation.length() && equation.charAt(i) != '+' && equation.charAt(i) != '-') {
+                if (equation.charAt(i) == 'x') {
+                    tmp[0] += sign;
+                    i++;
+                } else if (equation.charAt(i) == '=') {
+                    res[0] += sign * tmp[0];
+                    res[1] += sign * tmp[1];
+                    tmp[0] = 0;
+                    tmp[1] = 0;
+                    sign = -1;
+                    i++;
+                } else {
+                    int num = 0;
+                    while (i < equation.length() && Character.isDigit(equation.charAt(i))) {
+                        num = num * 10 + (equation.charAt(i) - '0');
+                        i++;
+                    }
+                    if (i < equation.length() && equation.charAt(i) == 'x') {
+                        tmp[0] += sign * num;
+                        i++;
+                    } else {
+                        tmp[1] += sign * num;
+                    }
+                }
+            }
+            if (i < equation.length()) {
+                if (equation.charAt(i) == '+') {
+                    sign = 1;
+                } else {
+                    sign = -1;
+                }
+                i++;
+            }
+        }
+        res[0] += sign * tmp[0];
+        res[1] += sign * tmp[1];
+        if (res[0] == 0) {
+            if (res[1] == 0) {
+                return "Infinite solutions";
+            } else {
+                return "No solution";
+            }
+        } else {
+            return "x=" + (res[1] / res[0]);
+        }

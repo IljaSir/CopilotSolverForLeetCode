@@ -1,0 +1,245 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int lcm = nums[i];
+            if (lcm == k) res++;
+            for (int j = i+1; j < n; ++j) {
+                lcm = lcm * nums[j] / __gcd(lcm, nums[j]);
+                if (lcm > k) break;
+                if (lcm == k) res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for(int i=0; i<n; i++) {
+            int lcm = 1;
+            for(int j=i; j<n; j++) {
+                lcm = lcm * nums[j] / __gcd(lcm, nums[j]);
+                if(lcm == k) ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n, 0);
+        dp[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            dp[i] = gcd(dp[i-1], nums[i]);
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (dp[i] == k) {
+                ++res;
+            }
+            for (int j = i+1; j < n; ++j) {
+                int lcm = dp[j] / gcd(dp[j], nums[i]);
+                if (lcm == k) {
+                    ++res;
+                }
+            }
+        }
+        return res;
+    }
+    int gcd(int a, int b) {
+        if (a < b) {
+            return gcd(b, a);
+        }
+        if (a % b == 0) {
+            return b;
+        }
+        return gcd(b, a%b);
+
+=======
+
+        int n = nums.size();
+        vector<int> f(n + 1);
+        f[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            f[i + 1] = f[i] * nums[i] / gcd(f[i], nums[i]);
+            if (f[i + 1] > k) {
+                return 0;
+            }
+        }
+        int ans = 0;
+        for (int i = 0, j = n - 1; i <= j; ++i, --j) {
+            if (f[i] == k) {
+                ++ans;
+            }
+            if (i < j && f[j] == k) {
+                ++ans;
+            }
+        }
+        return ans;
+    }
+    int numberOfSubarrays(vector<int>& nums, int k) {
+        vector<int> odd;
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] & 1) {
+                odd.push_back(i);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i + k - 1 < odd.size(); ++i) {
+            int l = i == 0 ? odd[i] + 1 : odd[i] - odd[i - 1];
+            int r = i + k - 1 == odd.size() - 1 ? n - odd[i + k - 1] : odd[i + k] - odd[i + k - 1];
+            ans += l * r;
+        }
+        return ans;
+    }
+    int numberOfSubarrays(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<int> odd;
+        odd.push_back(-1);
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] & 1) {
+                odd.push_back(i);
+            }
+        }
+        odd.push_back(n);
+        int ans = 0;
+        for (int i = 1; i + k < odd.size(); ++i) {
+            ans += (odd[i] - odd[i - 1]) * (odd[i + k] - odd[i + k - 1]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(k, 0);
+        int ans = 0;
+        int lcm = 1;
+        for (int i = 0; i < n; i++) {
+            lcm = lcm * nums[i] / gcd(lcm, nums[i]);
+            lcm %= k;
+            if (lcm == 0) ans++;
+            ans += dp[lcm];
+            dp[lcm]++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int lcm = 1;
+        for (int i = 0; i < n; ++i) {
+            lcm = lcm * nums[i] / gcd(lcm, nums[i]);
+            if (lcm == k) {
+                ++ans;
+                lcm = 1;
+            }
+        }
+        return ans;
+    }
+    int numberOfSubarrays(vector<int>& nums, int k) {
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] % 2 == 1) {
+                ans += subarrayLCM(vector<int>(nums.begin() + i, nums.end()), k);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        unordered_map<int, int> cnt;
+        cnt[1] = 1;
+        int ans = 0;
+        int prefix = 1;
+        for (int i = 0; i < n; ++i) {
+            prefix = prefix * nums[i] / gcd(prefix, nums[i]);
+            if (prefix % k == 0) {
+                ans += cnt[prefix / k];
+            }
+            cnt[prefix]++;
+        }
+        return ans;
+    }
+    int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(k + 1);
+        cnt[0] = 1;
+        int res = 0, cur = 0;
+        for (int i = 0; i < n; i++) {
+            cur = gcd(cur, nums[i]);
+            if (cur == 1) {
+                res += cnt[k];
+            } else {
+                for (int j = 2; j <= sqrt(cur); j++) {
+                    if (cur % j == 0) {
+                        res += cnt[j];
+                        if (j * j != cur) res += cnt[cur / j];
+                    }
+                }
+            }
+            cnt[cur]++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(k+1, 0);
+        dp[0] = 1;
+        int ans = 0;
+        int cur = 1;
+        for (int i = 0; i < n; ++i) {
+            cur = cur * nums[i] / gcd(cur, nums[i]);
+            if (cur > k) cur %= k;
+            ans += dp[cur];
+            dp[cur]++;
+        }
+        return ans;
+    }
+    int numberOfSubarrays(vector<int>& nums, int k) {
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] % k == 0) {
+                ans += subarrayLCM(nums, k);
+            }
+        }
+        return ans;
+    }
+    int gcd(int a, int b) {
+        if (a < b) swap(a, b);
+        int r = a % b;
+        while (r != 0) {
+            a = b;
+            b = r;
+            r = a % b;
+        }
+        return b;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n+1, 0);
+        for (int i = 1; i <= n; i++) {
+            dp[i] = nums[i-1] / __gcd(nums[i-1], dp[i-1]) * dp[i-1];
+        }
+        int ans = 0;
+        unordered_map<int, int> cnt;
+        for (int i = 0; i <= n; i++) {
+            if (dp[i] % k == 0) ans += cnt[0];
+            ans += cnt[dp[i] % k];
+            cnt[dp[i] % k]++;
+        }
+        return ans;

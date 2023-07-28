@@ -1,0 +1,280 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut t = 0;
+        let mut f = 0;
+        let mut l = 0;
+        let mut r = 0;
+        let mut res = 0;
+        let k = k as usize;
+        let answer_key = answer_key.into_bytes();
+        let n = answer_key.len();
+        while r < n {
+            if answer_key[r] == b'T' {
+                t += 1;
+            } else {
+                f += 1;
+            }
+            while t > k && f > k {
+                if answer_key[l] == b'T' {
+                    t -= 1;
+                } else {
+                    f -= 1;
+                }
+                l += 1;
+            }
+            res = res.max(r - l + 1);
+            r += 1;
+        }
+        res as i32
+
+=======
+
+        let mut ans = 0;
+        let mut l = 0;
+        let mut r = 0;
+        let mut t = 0;
+        let mut f = 0;
+        let mut k = k;
+        let mut n = answer_key.len();
+        let mut v: Vec<char> = answer_key.chars().collect();
+        while r < n {
+            if v[r] == 'T' {
+                t += 1;
+            } else {
+                f += 1;
+            }
+            while t > k && f > k {
+                if v[l] == 'T' {
+                    t -= 1;
+                } else {
+                    f -= 1;
+                }
+                l += 1;
+            }
+            ans = ans.max(t).max(f);
+            r += 1;
+        }
+        ans as i32
+
+=======
+
+        let k = k as usize;
+        let mut answer_key = answer_key.as_bytes().to_vec();
+        let mut f = vec![0; answer_key.len()];
+        let mut t = vec![0; answer_key.len()];
+        let mut max = 0;
+        for i in 0..answer_key.len() {
+            if answer_key[i] == b'F' {
+                f[i] = 1;
+            } else {
+                t[i] = 1;
+            }
+            if i > 0 {
+                f[i] += f[i - 1];
+                t[i] += t[i - 1];
+            }
+            if i >= k {
+                max = max.max(f[i] - f[i - k]);
+                max = max.max(t[i] - t[i - k]);
+            }
+        }
+        max.max(f[k - 1]).max(t[k - 1]) as i32
+
+=======
+
+        let k = k as usize;
+        let n = answer_key.len();
+        let (mut t, mut f) = (0, 0);
+        let mut (mut l, mut r) = (0, 0);
+        let mut res = 0;
+        while r < n {
+            if answer_key.as_bytes()[r] == b'T' {
+                t += 1;
+            } else {
+                f += 1;
+            }
+            while t > k && f > k {
+                if answer_key.as_bytes()[l] == b'T' {
+                    t -= 1;
+                } else {
+                    f -= 1;
+                }
+                l += 1;
+            }
+            res = res.max(t).max(f);
+            r += 1;
+        }
+        res as i32
+
+=======
+
+        let mut count = 0;
+        let mut max = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = k;
+        while j < answer_key.len() {
+            if answer_key.as_bytes()[j] == 'T' as u8 {
+                count += 1;
+            }
+            if j - i + 1 - count > k {
+                if answer_key.as_bytes()[i] == 'T' as u8 {
+                    count -= 1;
+                }
+                i += 1;
+            }
+            max = max.max(j - i + 1);
+            j += 1;
+        }
+        max as i32
+
+=======
+
+        let mut ans = 0;
+        let n = answer_key.len();
+        let mut l = 0;
+        let mut r = 0;
+        let mut tf = 0;
+        let mut ft = 0;
+        let mut max_tf = 0;
+        let mut max_ft = 0;
+        while r < n {
+            if answer_key.as_bytes()[r] == b'T' {
+                tf += 1;
+            } else {
+                ft += 1;
+            }
+            max_tf = max_tf.max(tf);
+            max_ft = max_ft.max(ft);
+            while tf - max_tf > k {
+                if answer_key.as_bytes()[l] == b'T' {
+                    tf -= 1;
+                }
+                l += 1;
+            }
+            while ft - max_ft > k {
+                if answer_key.as_bytes()[l] == b'F' {
+                    ft -= 1;
+                }
+                l += 1;
+            }
+            ans = ans.max(tf).max(ft);
+            r += 1;
+        }
+        ans as i32
+
+=======
+
+        let mut max = 0;
+        let mut window = 0;
+        let mut t_count = 0;
+        let mut f_count = 0;
+        let mut left = 0;
+        let mut right = 0;
+        let k = k as usize;
+        let mut answer_key = answer_key.as_bytes().to_vec();
+        while right < answer_key.len() {
+            let c = answer_key[right];
+            if c == b'T' {
+                t_count += 1;
+            } else {
+                f_count += 1;
+            }
+            window += 1;
+            while t_count > k && f_count > k {
+                let c = answer_key[left];
+                if c == b'T' {
+                    t_count -= 1;
+                } else {
+                    f_count -= 1;
+                }
+                window -= 1;
+                left += 1;
+            }
+            max = max.max(window);
+            right += 1;
+        }
+        max as i32
+
+=======
+
+        let mut q = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut max = 0;
+        let mut count = 0;
+        while i < answer_key.len() {
+            if answer_key.as_bytes()[i] == b'T' {
+                count += 1;
+            }
+            while count + k < i - j + 1 {
+                if answer_key.as_bytes()[j] == b'T' {
+                    count -= 1;
+                }
+                j += 1;
+            }
+            if i - j + 1 > max {
+                max = i - j + 1;
+            }
+            i += 1;
+        }
+        q.clear();
+        i = 0;
+        j = 0;
+        count = 0;
+        while i < answer_key.len() {
+            if answer_key.as_bytes()[i] == b'F' {
+                count += 1;
+            }
+            while count + k < i - j + 1 {
+                if answer_key.as_bytes()[j] == b'F' {
+                    count -= 1;
+                }
+                j += 1;
+            }
+            if i - j + 1 > max {
+                max = i - j + 1;
+            }
+            i += 1;
+        }
+        max as i32
+
+=======
+
+        let mut result = 0;
+        let mut count = 0;
+        let mut start = 0;
+        let mut end = 0;
+        let mut k = k;
+        let mut max = 0;
+        let mut min = 0;
+        for c in answer_key.chars() {
+            if c == 'T' {
+                count += 1;
+            }
+            if count > max {
+                max = count;
+            }
+            if count < min {
+                min = count;
+            }
+            if count - min > k {
+                if answer_key.chars().nth(start).unwrap() == 'T' {
+                    count -= 1;
+                }
+                start += 1;
+                k += 1;
+            }
+            if max - count > k {
+                if answer_key.chars().nth(start).unwrap() == 'F' {
+                    count += 1;
+                }
+                start += 1;
+                k += 1;
+            }
+            end += 1;
+            result = std::cmp::max(result, end - start);
+        }
+        result as i32

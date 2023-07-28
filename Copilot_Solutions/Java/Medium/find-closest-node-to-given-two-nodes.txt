@@ -1,0 +1,386 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] dist1 = new int[edges.length];
+        int[] dist2 = new int[edges.length];
+        Arrays.fill(dist1, -1);
+        Arrays.fill(dist2, -1);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        int node = node1;
+        while (edges[node] != -1) {
+            dist1[edges[node]] = dist1[node] + 1;
+            node = edges[node];
+        }
+        node = node2;
+        while (edges[node] != -1) {
+            dist2[edges[node]] = dist2[node] + 1;
+            node = edges[node];
+        }
+        int min = Integer.MAX_VALUE;
+        int res = -1;
+        for (int i = 0; i < edges.length; i++) {
+            if (dist1[i] != -1 && dist2[i] != -1) {
+                if (min > dist1[i] + dist2[i]) {
+                    min = dist1[i] + dist2[i];
+                    res = i;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = edges.length;
+        int[] dist1 = new int[n];
+        int[] dist2 = new int[n];
+        Arrays.fill(dist1, Integer.MAX_VALUE);
+        Arrays.fill(dist2, Integer.MAX_VALUE);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        for (int i = 0; i < n; i++) {
+            if (i != node1) {
+                int j = edges[i];
+                if (j != -1) {
+                    dist1[i] = dist1[j] + 1;
+                }
+            }
+            if (i != node2) {
+                int j = edges[i];
+                if (j != -1) {
+                    dist2[i] = dist2[j] + 1;
+                }
+            }
+        }
+        int ans = -1;
+        int max = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (dist1[i] != Integer.MAX_VALUE && dist2[i] != Integer.MAX_VALUE) {
+                int d = Math.max(dist1[i], dist2[i]);
+                if (d < max) {
+                    max = d;
+                    ans = i;
+                } else if (d == max) {
+                    ans = Math.min(ans, i);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.length;
+        int[] dist1 = new int[n];
+        int[] dist2 = new int[n];
+        Arrays.fill(dist1, Integer.MAX_VALUE);
+        Arrays.fill(dist2, Integer.MAX_VALUE);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        for (int i = 0; i < n; i++) {
+            if (i != node1) {
+                if (edges[i] != -1) {
+                    dist1[i] = Math.min(dist1[i], dist1[edges[i]] + 1);
+                }
+            }
+            if (i != node2) {
+                if (edges[i] != -1) {
+                    dist2[i] = Math.min(dist2[i], dist2[edges[i]] + 1);
+                }
+            }
+        }
+        int res = -1;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int d = Math.max(dist1[i], dist2[i]);
+            if (d < min) {
+                min = d;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int n = edges.length;
+        int[] distFromNode1 = new int[n];
+        int[] distFromNode2 = new int[n];
+        Arrays.fill(distFromNode1, -1);
+        Arrays.fill(distFromNode2, -1);
+        distFromNode1[node1] = 0;
+        distFromNode2[node2] = 0;
+        int maxDist = Integer.MAX_VALUE;
+        int minNode = -1;
+        for (int i = 0; i < n; i++) {
+            if (distFromNode1[i] != -1) {
+                int j = i;
+                while (edges[j] != -1 && distFromNode1[edges[j]] == -1) {
+                    j = edges[j];
+                    distFromNode1[j] = distFromNode1[i] + 1;
+                }
+            }
+            if (distFromNode2[i] != -1) {
+                int j = i;
+                while (edges[j] != -1 && distFromNode2[edges[j]] == -1) {
+                    j = edges[j];
+                    distFromNode2[j] = distFromNode2[i] + 1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (distFromNode1[i] != -1 && distFromNode2[i] != -1) {
+                int max = Math.max(distFromNode1[i], distFromNode2[i]);
+                if (max < maxDist) {
+                    maxDist = max;
+                    minNode = i;
+                }
+            }
+        }
+        return minNode;
+
+=======
+
+        int n = edges.length;
+        int[] parent = new int[n];
+        int[] depth = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            depth[i] = 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (edges[i] != -1) {
+                int p1 = find(parent, i);
+                int p2 = find(parent, edges[i]);
+                if (p1 != p2) {
+                    if (depth[p1] < depth[p2]) {
+                        parent[p1] = p2;
+                        depth[p2] += depth[p1];
+                    } else {
+                        parent[p2] = p1;
+                        depth[p1] += depth[p2];
+                    }
+                }
+            }
+        }
+        int p1 = find(parent, node1);
+        int p2 = find(parent, node2);
+        if (p1 != p2) {
+            return -1;
+        }
+        int d1 = 0, d2 = 0;
+        while (node1 != p1) {
+            node1 = edges[node1];
+            d1++;
+        }
+        while (node2 != p2) {
+            node2 = edges[node2];
+            d2++;
+        }
+        return d1 > d2 ? node1 : node2;
+    }
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = edges.length;
+        int[] dist1 = new int[n];
+        Arrays.fill(dist1, Integer.MAX_VALUE);
+        int[] dist2 = new int[n];
+        Arrays.fill(dist2, Integer.MAX_VALUE);
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(node1);
+        dist1[node1] = 0;
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (edges[u] == -1) continue;
+            if (dist1[edges[u]] == Integer.MAX_VALUE) {
+                dist1[edges[u]] = dist1[u] + 1;
+                q.offer(edges[u]);
+            }
+        }
+        q.offer(node2);
+        dist2[node2] = 0;
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (edges[u] == -1) continue;
+            if (dist2[edges[u]] == Integer.MAX_VALUE) {
+                dist2[edges[u]] = dist2[u] + 1;
+                q.offer(edges[u]);
+            }
+        }
+        int ans = -1;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; ++i) {
+            if (dist1[i] != Integer.MAX_VALUE && dist2[i] != Integer.MAX_VALUE) {
+                if (Math.max(dist1[i], dist2[i]) < min) {
+                    min = Math.max(dist1[i], dist2[i]);
+                    ans = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.length;
+        int[] p1 = new int[n];
+        int[] p2 = new int[n];
+        Arrays.fill(p1, -1);
+        Arrays.fill(p2, -1);
+        p1[0] = 0;
+        p2[0] = 0;
+        int i = 0;
+        while (i < n) {
+            if (p1[i] == -1 && edges[i] != -1) {
+                p1[i] = p1[edges[i]] + 1;
+            }
+            if (p2[i] == -1 && edges[i] != -1) {
+                p2[i] = p2[edges[i]] + 1;
+            }
+            i++;
+        }
+        int min = Integer.MAX_VALUE;
+        int res = -1;
+        for (int j = 0; j < n; j++) {
+            if (p1[j] != -1 && p2[j] != -1) {
+                int max = Math.max(p1[j], p2[j]);
+                if (max < min) {
+                    min = max;
+                    res = j;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = edges.length;
+        int[] dist1 = new int[n];
+        int[] dist2 = new int[n];
+        int[] visited = new int[n];
+        Arrays.fill(dist1, -1);
+        Arrays.fill(dist2, -1);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(node1);
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (edges[u] != -1) {
+                if (dist1[edges[u]] == -1) {
+                    dist1[edges[u]] = dist1[u] + 1;
+                    q.offer(edges[u]);
+                }
+            }
+        }
+        q.offer(node2);
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            if (edges[u] != -1) {
+                if (dist2[edges[u]] == -1) {
+                    dist2[edges[u]] = dist2[u] + 1;
+                    q.offer(edges[u]);
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        int res = -1;
+        for (int i = 0; i < n; i++) {
+            if (dist1[i] != -1 && dist2[i] != -1) {
+                int max = Math.max(dist1[i], dist2[i]);
+                if (max < min) {
+                    min = max;
+                    res = i;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] visited = new int[edges.length];
+        int[] distance = new int[edges.length];
+        int[] parent = new int[edges.length];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(node1);
+        visited[node1] = 1;
+        int minDistance = Integer.MAX_VALUE;
+        int minIndex = -1;
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int i = 0; i < edges.length; i++) {
+                if (edges[i] == node) {
+                    if (visited[i] == 0) {
+                        visited[i] = 1;
+                        distance[i] = distance[node] + 1;
+                        parent[i] = node;
+                        if (i == node2) {
+                            if (distance[i] < minDistance) {
+                                minDistance = distance[i];
+                                minIndex = i;
+                            }
+                        }
+                        queue.add(i);
+                    }
+                }
+            }
+        }
+        if (minIndex == -1) {
+            return -1;
+        }
+        int node = minIndex;
+        while (node != node1) {
+            node = parent[node];
+        }
+        return node;
+    }
+}
+
+=======
+
+        int n = edges.length;
+        int[] level = new int[n];
+        Arrays.fill(level, -1);
+        int[] parent = new int[n];
+        int[] child = new int[n];
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (edges[i] != -1) {
+                parent[i] = edges[i];
+                child[edges[i]] = i;
+                size[edges[i]]++;
+            }
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(node1);
+        level[node1] = 0;
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            if (node == node2) {
+                break;
+            }
+            if (parent[node] != -1 && level[parent[node]] == -1) {
+                level[parent[node]] = level[node] + 1;
+                queue.add(parent[node]);
+            }
+            if (child[node] != -1 && level[child[node]] == -1) {
+                level[child[node]] = level[node] + 1;
+                queue.add(child[node]);
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        int result = -1;
+        for (int i = 0; i < n; i++) {
+            if (level[i] != -1) {
+                int max = Math.max(level[i], level[node2]);
+                if (max < min) {
+                    min = max;
+                    result = i;
+                }
+            }
+        }
+        return result;

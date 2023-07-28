@@ -1,0 +1,307 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[][] dp = new int[k][n + 1];
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j <= n; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j <= n; j++) {
+                if (dp[i][j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                int leftToRight = time[i][0];
+                int pickOld = time[i][1];
+                int rightToLeft = time[i][2];
+                int putNew = time[i][3];
+                if (j < n) {
+                    dp[i][j + 1] = Math.min(dp[i][j + 1], dp[i][j] + leftToRight + pickOld + rightToLeft);
+                }
+                if (i < k - 1) {
+                    dp[i + 1][j] = Math.min(dp[i + 1][j], dp[i][j] + leftToRight + rightToLeft);
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            res = Math.min(res, dp[i][n] + time[i][3]);
+        }
+        return res;
+
+=======
+
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 1; i <= k; i++) {
+            dp[1][i] = time[i - 1][0] + time[i - 1][1] + time[i - 1][2] + time[i - 1][3];
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= k; j++) {
+                for (int l = 1; l <= k; l++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][l] + time[j - 1][0] + time[j - 1][1] + time[j - 1][2] + time[j - 1][3]);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 1; i <= k; i++) {
+            ans = Math.min(ans, dp[n][i]);
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int[] leftToRight = new int[k];
+        int[] rightToLeft = new int[k];
+        int[] pickOld = new int[k];
+        int[] putNew = new int[k];
+        for (int i = 0; i < k; i++) {
+            leftToRight[i] = time[i][0];
+            pickOld[i] = time[i][1];
+            rightToLeft[i] = time[i][2];
+            putNew[i] = time[i][3];
+        }
+        int[] leftToRightIndex = new int[k];
+        int[] rightToLeftIndex = new int[k];
+        for (int i = 0; i < k; i++) {
+            leftToRightIndex[i] = i;
+            rightToLeftIndex[i] = i;
+        }
+        for (int i = 0; i < k; i++) {
+            for (int j = i + 1; j < k; j++) {
+                if (leftToRight[i] + rightToLeft[i] > leftToRight[j] + rightToLeft[j]) {
+                    int tmp = leftToRight[i];
+                    leftToRight[i] = leftToRight[j];
+                    leftToRight[j] = tmp;
+                    tmp = leftToRightIndex[i];
+                    leftToRightIndex[i] = leftToRightIndex[j];
+                    leftToRightIndex[j] = tmp;
+                } else if (leftToRight[i] + rightToLeft[i] == leftToRight[j] + rightToLeft[j] && i > j) {
+                    int tmp = leftToRight[i];
+                    leftToRight[i] = leftToRight[j];
+                    leftToRight[j] = tmp;
+                    tmp = leftToRightIndex[i];
+                    leftToRightIndex[i] = leftToRightIndex[j];
+                    leftToRightIndex[j] = tmp;
+                }
+            }
+        }
+        for (int i = 0; i < k; i++) {
+            for (int j = i + 1; j < k; j++) {
+                if (rightToLeft[i] + leftToRight[i] > rightToLeft[j] + leftToRight[j]) {
+                    int tmp = rightToLeft[i];
+                    rightToLeft[i] = rightToLeft[j];
+                    rightToLeft[j] = tmp;
+                    tmp = rightToLeftIndex[i];
+                    rightToLeftIndex[i] = rightToLeftIndex[j];
+                    rightToLeftIndex[j] =
+
+=======
+
+        int[][] dp = new int[n + 1][k];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j < k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k; j++) {
+                for (int l = 0; l < k; l++) {
+                    if (dp[i][j] != Integer.MAX_VALUE) {
+                        dp[i + 1][l] = Math.min(dp[i + 1][l], dp[i][j] + time[j][0] + time[j][1] + time[l][2] + time[l][3]);
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            ans = Math.min(ans, dp[n][i]);
+        }
+        return ans;
+
+=======
+
+        int[][] dp = new int[n + 1][k];
+        for (int i = 0; i < k; i++) {
+            dp[1][i] = time[i][0] + time[i][2];
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int l = 0; l < k; l++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][l] + time[j][0] + time[j][2] + time[j][3]);
+                }
+                dp[i][j] += time[j][1];
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            res = Math.min(res, dp[n][i]);
+        }
+        return res;
+
+=======
+
+        int[][] dp = new int[k][n + 1];
+        int minTime = Integer.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < k; i++) {
+            dp[i][1] = time[i][0] + time[i][1] + time[i][2] + time[i][3];
+            for (int j = 2; j <= n; j++) {
+                for (int l = 0; l < k; l++) {
+                    if (dp[l][j - 1] != Integer.MAX_VALUE) {
+                        dp[i][j] = Math.min(dp[i][j], dp[l][j - 1] + time[i][0] + time[i][1] + time[i][2] + time[i][3]);
+                    }
+                }
+            }
+            minTime = Math.min(minTime, dp[i][n]);
+        }
+        return minTime;
+
+=======
+
+        int[][] dp = new int[k][n];
+        for(int i=0; i<k; i++) {
+            dp[i][0] = time[i][0] + time[i][2];
+        }
+        for(int j=1; j<n; j++) {
+            for(int i=0; i<k; i++) {
+                dp[i][j] = dp[i][j-1] + time[i][1] + time[i][2] + time[i][3];
+                for(int p=0; p<k; p++) {
+                    if(i != p) {
+                        dp[i][j] = Math.max(dp[i][j], dp[p][j-1] + time[p][1] + time[i][0] + time[i][2] + time[i][3]);
+                    }
+                }
+            }
+        }
+        int max = 0;
+        for(int i=0; i<k; i++) {
+            max = Math.max(max, dp[i][n-1]);
+        }
+        return max;
+
+=======
+
+        int[][] dp = new int[k][n + 1];
+        int[][] next = new int[k][n + 1];
+        int[][] prev = new int[k][n + 1];
+        for (int i = 0; i < k; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+            Arrays.fill(next[i], Integer.MAX_VALUE);
+            Arrays.fill(prev[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < k; i++) {
+            dp[i][0] = time[i][0] + time[i][2];
+            next[i][0] = time[i][2];
+            prev[i][0] = time[i][0];
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < k; j++) {
+                int min = Integer.MAX_VALUE;
+                int minIdx = -1;
+                for (int l = 0; l < k; l++) {
+                    if (prev[l][i - 1] + time[l][1] + time[l][2] < min) {
+                        min = prev[l][i - 1] + time[l][1] + time[l][2];
+                        minIdx = l;
+                    }
+                }
+                dp[j][i] = min + time[j][3];
+                next[j][i] = min + time[j][3];
+                prev[j][i] = min;
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            min = Math.min(min, dp[i][n]);
+        }
+        return min;
+
+=======
+
+        int[][] dp = new int[2][k];
+        int[] crossTime = new int[k];
+        int[] pickTime = new int[k];
+        for (int i = 0; i < k; i++) {
+            crossTime[i] = time[i][0] + time[i][2];
+            pickTime[i] = time[i][1] + time[i][3];
+        }
+        int[] sorted = IntStream.range(0, k).boxed().sorted((i, j) -> crossTime[i] != crossTime[j] ? crossTime[i] - crossTime[j] : i - j).mapToInt(i -> i).toArray();
+        int[] sorted2 = IntStream.range(0, k).boxed().sorted((i, j) -> pickTime[i] != pickTime[j] ? pickTime[i] - pickTime[j] : i - j).mapToInt(i -> i).toArray();
+        for (int i = 0; i < k; i++) {
+            dp[0][i] = time[sorted[i]][0] + (i > 0 ? dp[0][i - 1] : 0);
+            dp[1][i] = time[sorted2[i]][1] + (i > 0 ? dp[1][i - 1] : 0);
+        }
+        int[] cost = new int[k];
+        for (int i = 0; i < k; i++) {
+            cost[sorted[i]] = Math.max(dp[0][i], dp[1][i]);
+        }
+        int res = 0;
+        int[] dp2 = new int[k];
+        for (int i = 0; i < k; i++) {
+            dp2[i] = cost[i] + time[i][2] + time[i][3];
+            if (i > 0) {
+                dp2[i] = Math.max(dp2[i], dp2[i - 1]);
+            }
+            res = Math.max(res, dp2[i] + (n - 1) * (time[i][0] + time[i][1] + time[i][2] + time[i][3]));
+        }
+        return res;
+
+=======
+
+        int[] cur = new int[k];
+        int[] next = new int[k];
+        int[] total = new int[k];
+        int[] left = new int[k];
+        int[] right = new int[k];
+        int[] curTotal = new int[k];
+        int[] nextTotal = new int[k];
+        int[] curLeft = new int[k];
+        int[] nextLeft = new int[k];
+        int[] curRight = new int[k];
+        int[] nextRight = new int[k];
+        int[] curLeftToRight = new int[k];
+        int[] nextLeftToRight = new int[k];
+        int[] curRightToLeft = new int[k];
+        int[] nextRightToLeft = new int[k];
+        int[] curPickOld = new int[k];
+        int[] nextPickOld = new int[k];
+        int[] curPutNew = new int[k];
+        int[] nextPutNew = new int[k];
+        int[] curLeftToRightPickOld = new int[k];
+        int[] nextLeftToRightPickOld = new int[k];
+        int[] curRightToLeftPutNew = new int[k];
+        int[] nextRightToLeftPutNew = new int[k];
+        int[] curLeftToRightPickOldRightToLeftPutNew = new int[k];
+        int[] nextLeftToRightPickOldRightToLeftPutNew = new int[k];
+        int[] curLeftToRightPickOldRightToLeftPutNewTotal = new int[k];
+        int[] nextLeftToRightPickOldRightToLeftPutNewTotal = new int[k];
+        for (int i = 0; i < k; i++) {
+            cur[i] = i;
+            next[i] = -1;
+            total[i] = 0;
+            left[i] = 0;
+            right[i] = 0;
+            curTotal[i] = 0;
+            nextTotal[i] = 0;
+            curLeft[i] = 0;
+            nextLeft[i] = 0;
+            curRight[i] = 0;
+            nextRight[i] = 0;
+            curLeftToRight[i] = time[i][0];
+            nextLeftToRight[i] = time[i][0];
+            curRightToLeft[i] = time[i][2];
+            nextRightToLeft[i] = time[i][2];
+            curPickOld[i] = time[i][1];
+            nextPickOld[i

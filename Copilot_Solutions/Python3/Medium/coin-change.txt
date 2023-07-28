@@ -1,0 +1,127 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [amount + 1] * (amount + 1)
+        dp[0] = 0
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if i >= coin:
+                    dp[i] = min(dp[i], dp[i - coin] + 1)
+        return dp[amount] if dp[amount] != amount + 1 else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if coin <= i:
+                    dp[i] = min(dp[i], dp[i - coin] + 1)
+        return dp[amount] if dp[amount] != float('inf') else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [0] + [amount + 1] * amount
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if coin <= i:
+                    dp[i] = min(dp[i], dp[i - coin] + 1)
+        if dp[amount] > amount:
+            return -1
+        return dp[amount]
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [amount+1] * (amount+1)
+        dp[0] = 0
+        for i in range(1, amount+1):
+            for c in coins:
+                if i - c >= 0:
+                    dp[i] = min(dp[i], dp[i-c] + 1)
+        if dp[-1] == amount+1:
+            return -1
+        else:
+            return dp[-1]
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [0] + [float('inf')] * amount
+        for i in range(1, amount + 1):
+            for c in coins:
+                if i >= c:
+                    dp[i] = min(dp[i], dp[i - c] + 1)
+        return dp[amount] if dp[amount] != float('inf') else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [0] + [amount + 1] * amount
+        for i in range(1, amount + 1):
+            dp[i] = min(dp[i - c] if i - c >= 0 else amount + 1 for c in coins) + 1
+        return dp[amount] if dp[amount] != amount + 1 else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        if amount == 0:
+            return 0
+        dp = [float('inf')] * (amount+1)
+        dp[0] = 0
+        for i in range(1, amount+1):
+            for coin in coins:
+                if coin <= i:
+                    dp[i] = min(dp[i], dp[i-coin] + 1)
+        if dp[-1] == float('inf'):
+            return -1
+        return dp[-1]
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [amount+1 for _ in range(amount+1)]
+        dp[0] = 0
+        for i in range(1, amount+1):
+            for coin in coins:
+                if i-coin >= 0:
+                    dp[i] = min(dp[i], dp[i-coin]+1)
+        return dp[amount] if dp[amount] != amount+1 else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        coins.sort()
+        dp = [0] + [float('inf')] * amount
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if coin > i:
+                    break
+                dp[i] = min(dp[i], dp[i - coin] + 1)
+        return dp[amount] if dp[amount] != float('inf') else -1
+
+=======
+
+def coinChange(self, coins: List[int], amount: int) -> int:
+        if amount == 0:
+            return 0
+        if len(coins) == 0:
+            return -1
+        coins.sort(reverse=True)
+        self.ans = float('inf')
+        def dfs(coins, amount, count):
+            if amount == 0:
+                self.ans = min(self.ans, count)
+                return
+            if len(coins) == 0:
+                return
+            for i in range(amount // coins[0], -1, -1):
+                if count + i >= self.ans:
+                    break
+                dfs(coins[1:], amount - i * coins[0], count + i)
+        dfs(coins, amount, 0)
+        return self.ans if self.ans != float('inf') else -1

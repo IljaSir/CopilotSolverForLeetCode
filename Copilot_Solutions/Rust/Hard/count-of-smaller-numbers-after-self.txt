@@ -1,0 +1,120 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut res = vec![0; nums.len()];
+        let mut sorted = vec![];
+        for i in (0..nums.len()).rev() {
+            let idx = sorted.binary_search(&nums[i]).unwrap_or_else(|x| x);
+            sorted.insert(idx, nums[i]);
+            res[i] = idx as i32;
+        }
+        res
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut res = vec![0; nums.len()];
+        let mut sorted = vec![];
+        for (i, &n) in nums.iter().rev().enumerate() {
+            let pos = sorted.binary_search(&n).unwrap_or_else(|x| x);
+            res[nums.len() - 1 - i] = pos as i32;
+            sorted.insert(pos, n);
+        }
+        res
+
+=======
+
+        let mut counts = vec![0; nums.len()];
+        let mut sorted = vec![];
+        for (i, &n) in nums.iter().rev().enumerate() {
+            let pos = sorted.binary_search(&n).unwrap_or_else(|x| x);
+            counts[nums.len() - 1 - i] = pos as i32;
+            sorted.insert(pos, n);
+        }
+        counts
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let mut res = vec![0; nums.len()];
+        let mut sorted = Vec::new();
+        for i in (0..nums.len()).rev() {
+            let idx = match sorted.binary_search(&nums[i]) {
+                Ok(idx) => idx,
+                Err(idx) => idx,
+            };
+            res[i] = idx as i32;
+            sorted.insert(idx, nums[i]);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ret = vec![0; nums.len()];
+        let mut sorted = Vec::new();
+        for (i, &num) in nums.iter().rev().enumerate() {
+            let pos = sorted.binary_search(&num).unwrap_or_else(|x| x);
+            ret[nums.len() - 1 - i] = pos as i32;
+            sorted.insert(pos, num);
+        }
+        ret
+    }
+}
+
+=======
+
+        let mut vec: Vec<i32> = vec![];
+        let mut res: Vec<i32> = vec![];
+        for i in (0..nums.len()).rev() {
+            let idx = vec.binary_search(&nums[i]).unwrap_or_else(|e| e);
+            vec.insert(idx, nums[i]);
+            res.push(idx as i32);
+        }
+        res.reverse();
+        res
+    }
+}
+
+=======
+
+        let mut result = vec![0; nums.len()];
+        let mut tree = vec![0; nums.len() + 1];
+        let mut map = vec![(0, 0); nums.len()];
+        for i in 0..nums.len() {
+            map[i] = (nums[i], i);
+        }
+        map.sort();
+        for i in 0..nums.len() {
+            let index = map[i].1;
+            result[index] = Self::query(&tree, index);
+            Self::update(&mut tree, index + 1, 1);
+        }
+        result
+    }
+
+    fn update(tree: &mut Vec<i32>, mut index: usize, value: i32) {
+        while index < tree.len() {
+            tree[index] += value;
+            index += index & index.wrapping_neg();
+        }
+    }
+
+    fn query(tree: &Vec<i32>, mut index: usize) -> i32 {
+        let mut sum = 0;
+        while index > 0 {
+            sum += tree[index];
+            index -= index & index.wrapping_neg();
+        }
+        sum

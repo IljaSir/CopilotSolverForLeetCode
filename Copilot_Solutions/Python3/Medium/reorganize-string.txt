@@ -1,0 +1,219 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        pass
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        count = collections.Counter(s)
+        heap = [(-freq, char) for char, freq in count.items()]
+        heapq.heapify(heap)
+        if any(-freq > (len(s) + 1) // 2 for freq, char in count.items()):
+            return ""
+        result = []
+        while len(heap) >= 2:
+            freq1, char1 = heapq.heappop(heap)
+            freq2, char2 = heapq.heappop(heap)
+            result.extend([char1, char2])
+            if freq1 + 1: heapq.heappush(heap, (freq1 + 1, char1))
+            if freq2 + 1: heapq.heappush(heap, (freq2 + 1, char2))
+        return "".join(result) + (heap[0][1] if heap else '')
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        if len(s) == 1:
+            return s
+        d = {}
+        for c in s:
+            if c in d:
+                d[c] += 1
+            else:
+                d[c] = 1
+        d = sorted(d.items(), key=lambda x: x[1], reverse=True)
+        if d[0][1] > (len(s)+1)//2:
+            return ""
+        res = [None] * len(s)
+        i = 0
+        for c, cnt in d:
+            while cnt > 0:
+                res[i] = c
+                cnt -= 1
+                i += 2
+                if i >= len(s):
+                    i = 1
+        return "".join(res)
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        count = collections.Counter(s)
+        heap = [(-freq, char) for char, freq in count.items()]
+        heapq.heapify(heap)
+        res = []
+        while len(heap) > 1:
+            freq1, char1 = heapq.heappop(heap)
+            freq2, char2 = heapq.heappop(heap)
+            res.extend([char1, char2])
+            if freq1 + 1:
+                heapq.heappush(heap, (freq1 + 1, char1))
+            if freq2 + 1:
+                heapq.heappush(heap, (freq2 + 1, char2))
+        return ''.join(res) + (heap[0][1] if heap else '')
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        count = collections.Counter(s)
+        heap = [(-cnt, char) for char, cnt in count.items()]
+        heapq.heapify(heap)
+        result = []
+        while len(heap) >= 2:
+            cnt1, char1 = heapq.heappop(heap)
+            cnt2, char2 = heapq.heappop(heap)
+            result.extend([char1, char2])
+            if cnt1 + 1:
+                heapq.heappush(heap, (cnt1 + 1, char1))
+            if cnt2 + 1:
+                heapq.heappush(heap, (cnt2 + 1, char2))
+        if heap:
+            cnt1, char1 = heapq.heappop(heap)
+            if cnt1 + 1:
+                return ""
+            result.append(char1)
+        return "".join(result)
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        if len(s) == 1:
+            return s
+        s = list(s)
+        d = {}
+        for c in s:
+            if c not in d:
+                d[c] = 1
+            else:
+                d[c] += 1
+        d = sorted(d.items(), key=lambda x: x[1], reverse=True)
+        if d[0][1] > (len(s)+1)//2:
+            return ""
+        res = []
+        while d:
+            res.append(d[0][0])
+            d[0] = (d[0][0], d[0][1]-1)
+            if d[0][1] == 0:
+                d.pop(0)
+            d.sort(key=lambda x: x[1], reverse=True)
+        return "".join(res)
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        from collections import Counter
+        counter = Counter(s)
+        heap = [(-freq, char) for char, freq in counter.items()]
+        heapq.heapify(heap)
+        res = []
+        while heap:
+            freq, char = heapq.heappop(heap)
+            if not res or res[-1] != char:
+                res.append(char)
+                if freq < -1:
+                    heapq.heappush(heap, (freq+1, char))
+            else:
+                if not heap:
+                    return ""
+                freq2, char2 = heapq.heappop(heap)
+                res.append(char2)
+                if freq < -1:
+                    heapq.heappush(heap, (freq+1, char))
+                heapq.heappush(heap, (freq2, char))
+        return "".join(res)
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        c = collections.Counter(s)
+        res = ""
+        while c:
+            for k, v in c.most_common():
+                res += k
+                c[k] -= 1
+                if not c[k]:
+                    del c[k]
+                if len(res) > 1 and res[-1] == res[-2]:
+                    return ""
+        return res
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        n = len(s)
+        if n == 1:
+            return s
+        char_count = collections.Counter(s)
+        max_char = max(char_count.values())
+        if max_char > (n+1)//2:
+            return ""
+        char_list = []
+        for char, count in char_count.items():
+            char_list.extend([char] * count)
+        res = [None] * n
+        res[::2], res[1::2] = char_list[n//2:], char_list[:n//2]
+        return ''.join(res)
+
+=======
+
+def reorganizeString(self, s: str) -> str:
+        # use a heap to store the count of each character
+        # pop 2 characters at a time, and if the character is the same, then return ""
+        # otherwise, append the character to the result string
+        # if there is only 1 character left, append it to the result string
+        # if the length of the result string is not the same as the length of the input string, then return ""
+        
+        # create a dictionary to store the count of each character
+        count = {}
+        for c in s:
+            count[c] = count.get(c, 0) + 1
+        
+        # create a heap to store the count of each character
+        heap = []
+        for c in count:
+            heapq.heappush(heap, (-count[c], c))
+        
+        # create a result string
+        result = ""
+        
+        # pop 2 characters at a time
+        while len(heap) >= 2:
+            # pop 2 characters
+            count1, c1 = heapq.heappop(heap)
+            count2, c2 = heapq.heappop(heap)
+            
+            # if the character is the same, then return ""
+            if c1 == c2:
+                return ""
+            
+            # otherwise, append the character to the result string
+            result += c1
+            result += c2
+            
+            # if the count of the character is not 0, push it back to the heap
+            if count1 < -1:
+                heapq.heappush(heap, (count1 + 1, c1))
+            if count2 < -1:
+                heapq.heappush(heap, (count2 + 1, c2))
+        
+        # if there is only 1 character left, append it to the result string
+        if len(heap) > 0:
+            result += heapq.heappop(heap)[1]
+        
+        # if the length of the result string is not the same as the length of the input string, then return ""
+        if len(result) != len(s):
+            return ""
+        
+        return result

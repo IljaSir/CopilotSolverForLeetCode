@@ -1,0 +1,199 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = basket1.length;
+        long sum1 = 0, sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            sum1 += basket1[i];
+            sum2 += basket2[i];
+        }
+        if (sum1 == sum2) {
+            return 0;
+        }
+        if (sum1 > sum2) {
+            int[] temp = basket1;
+            basket1 = basket2;
+            basket2 = temp;
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            long cost = sum1 - basket1[i] + sum2 - basket2[i];
+            if (cost % 2 == 0) {
+                res = Math.min(res, Math.min(basket1[i], basket2[i]));
+            }
+        }
+        return res == Long.MAX_VALUE ? -1 : res;
+
+=======
+
+        long sum1 = 0;
+        long sum2 = 0;
+        int n = basket1.length;
+        for (int i = 0; i < n; i++) {
+            sum1 += basket1[i];
+            sum2 += basket2[i];
+        }
+        if (sum1 < sum2) {
+            int[] tmp = basket1;
+            basket1 = basket2;
+            basket2 = tmp;
+            long tmp2 = sum1;
+            sum1 = sum2;
+            sum2 = tmp2;
+        }
+        long ans = Long.MAX_VALUE;
+        int[] cnt = new int[100001];
+        for (int i = 0; i < n; i++) {
+            cnt[basket1[i]]++;
+            cnt[basket2[i]]++;
+        }
+        int[] a = new int[100001];
+        int[] b = new int[100001];
+        int[] c = new int[100001];
+        int[] d = new int[100001];
+        int[] e = new int[100001];
+        int[] f = new int[100001];
+        int[] g = new int[100001];
+        int[] h = new int[100001];
+        int[] i = new int[100001];
+        int[] j = new int[100001];
+        for (int k = 0; k < n; k++) {
+            a[basket1[k]]++;
+            b[basket2[k]]++;
+        }
+        for (int k = 0; k < n; k++) {
+            c[basket1[k]]++;
+            d[basket2[k]]++;
+            if (a[basket1[k]] + b[basket2[k]] == cnt[basket1[k]]) {
+                e[basket1[k]]++;
+                f[basket2[k]]++;
+            }
+        }
+        for (int k = 0; k < n; k++) {
+            g[basket1[k]]++;
+            h[basket2[k]]++;
+            if (c[basket1[k]] + d[basket2[k]] == cnt[basket1[k]]) {
+                i[basket1[k]]++;
+                j[basket2[k]]++;
+            }
+        }
+        for (int k = 1; k <= 100000; k++) {
+            if (cnt[k] % 2 == 0) {
+                ans = Math.min
+
+=======
+
+        int n = basket1.length;
+        int m = basket2.length;
+        long[][] dp = new long[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                dp[i][j] = Long.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j]);
+                }
+                if (j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - 1]);
+                }
+                if (i > 0 && j > 0) {
+                    if (basket1[i - 1] != basket2[j - 1]) {
+                        dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1] + basket1[i - 1] + basket2[j - 1]);
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1]);
+                    }
+                }
+            }
+        }
+        if (dp[n][m] == Long.MAX_VALUE) {
+            return -1;
+        }
+        return dp[n][m];
+
+=======
+
+        int n = basket1.length;
+        int m = basket2.length;
+        long[][] dp = new long[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (dp[i][j] == Long.MAX_VALUE) {
+                    continue;
+                }
+                if (i < n) {
+                    dp[i + 1][j] = Math.min(dp[i + 1][j], dp[i][j] + basket1[i]);
+                }
+                if (j < m) {
+                    dp[i][j + 1] = Math.min(dp[i][j + 1], dp[i][j] + basket2[j]);
+                }
+                if (i < n && j < m) {
+                    dp[i + 1][j + 1] = Math.min(dp[i + 1][j + 1], dp[i][j] + Math.min(basket1[i], basket2[j]));
+                }
+            }
+        }
+        return dp[n][m] == Long.MAX_VALUE ? -1 : dp[n][m];
+
+=======
+
+        int n = basket1.length;
+        long[][] dp = new long[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                int k = i + j;
+                if (i > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j] + basket1[k - 1]);
+                }
+                if (j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - 1] + basket2[k - 1]);
+                }
+                if (i > 0 && j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1] + Math.min(basket1[k - 1], basket2[k - 1]));
+                }
+            }
+        }
+        return dp[n][n] == Long.MAX_VALUE ? -1 : dp[n][n];
+
+=======
+
+        int n = basket1.length;
+        long cost = 0;
+        int[] count = new int[100001];
+        for (int i = 0; i < n; i++) {
+            count[basket1[i]]++;
+            count[basket2[i]]++;
+        }
+        for (int i = 0; i < 100001; i++) {
+            if (count[i] >= 3) {
+                cost += i;
+            }
+        }
+        return cost;
+
+=======
+
+        int n = basket1.length;
+        long[][] dp = new long[n+1][3];
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = Math.min(dp[i-1][0], Math.min(dp[i-1][1], dp[i-1][2]));
+            if (basket1[i-1] == basket2[i-1]) {
+                dp[i][1] = dp[i-1][1] + basket1[i-1];
+                dp[i][2] = dp[i-1][2] + basket1[i-1];
+            } else {
+                dp[i][1] = Math.min(dp[i-1][0], dp[i-1][2]) + basket1[i-1];
+                dp[i][2] = Math.min(dp[i-1][0], dp[i-1][1]) + basket2[i-1];
+            }
+        }
+        return Math.min(dp[n][0], Math.min(dp[n][1], dp[n][2]));

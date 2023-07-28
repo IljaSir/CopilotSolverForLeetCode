@@ -1,0 +1,99 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(k + 1, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= k; j += i) {
+                if (i == j) {
+                    ans += cnt[i] > 0;
+                } else {
+                    ans += cnt[i] > 0 && cnt[j] > 0;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(k);
+        for (int i = 0; i < n; ++i) {
+            cnt[nums[i] % k]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= k / 2; ++i) {
+            ans += max(cnt[i], cnt[k - i]);
+        }
+        if (cnt[0]) ans++;
+        if (k % 2 == 0 && cnt[k / 2]) ans++;
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int dp[n+1][k+1];
+        memset(dp, 0, sizeof(dp));
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= k; ++j) {
+                dp[i][j] = dp[i-1][j];
+                if (nums[i-1] % j == 0) {
+                    dp[i][j] += dp[i-1][__gcd(j, nums[i-1])] + 1;
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(k+1, 0);
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            if (num % k == 0) {
+                dp[0]++;
+            }
+            for (int j = k; j >= 1; j--) {
+                if (num % j == 0) {
+                    dp[j] += dp[j - num % k];
+                }
+            }
+        }
+        return dp[0];
+
+=======
+
+        if (k == 1) return nums.size();
+        int n = nums.size();
+        vector<int> cnt(k);
+        for (int x : nums) {
+            ++cnt[x % k];
+        }
+        int ans = 0;
+        for (int i = 1; i <= k / 2; ++i) {
+            if (k % i == 0) {
+                ans += max(cnt[i], cnt[k - i]);
+            }
+        }
+        ans += cnt[0] > 0;
+        return ans;
+
+=======
+
+        vector<int> dp(k, 0);
+        for (auto n : nums) {
+            vector<int> next(k, 0);
+            for (auto i = 1; i < k; i++) {
+                if (n % k == i) {
+                    next[i] = dp[i] + 1;
+                }
+                next[__gcd(i, n % k)] += dp[i];
+            }
+            dp = next;
+        }
+        return dp[0] + 1;

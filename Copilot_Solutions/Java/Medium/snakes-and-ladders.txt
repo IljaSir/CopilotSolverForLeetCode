@@ -1,0 +1,438 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = board.length;
+        int[] nums = new int[n * n];
+        int idx = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i % 2 == n % 2) {
+                for (int j = 0; j < n; j++) {
+                    nums[idx++] = board[i][j];
+                }
+            } else {
+                for (int j = n - 1; j >= 0; j--) {
+                    nums[idx++] = board[i][j];
+                }
+            }
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(1);
+        boolean[] visited = new boolean[n * n + 1];
+        visited[1] = true;
+        int move = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                if (curr == n * n) {
+                    return move;
+                }
+                for (int j = curr + 1; j <= Math.min(curr + 6, n * n); j++) {
+                    int next = nums[j - 1] == -1 ? j : nums[j - 1];
+                    if (!visited[next]) {
+                        queue.add(next);
+                        visited[next] = true;
+                    }
+                }
+            }
+            move++;
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] b = new int[n * n];
+        int index = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (index % 2 == 0) {
+                for (int j = 0; j < n; j++) {
+                    b[index++] = board[i][j];
+                }
+            } else {
+                for (int j = n - 1; j >= 0; j--) {
+                    b[index++] = board[i][j];
+                }
+            }
+        }
+        int[] steps = new int[n * n];
+        Arrays.fill(steps, -1);
+        steps[0] = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        while (!q.isEmpty()) {
+            int curr = q.remove();
+            for (int i = 1; i <= 6 && curr + i < n * n; i++) {
+                int next = curr + i;
+                if (b[next] != -1) {
+                    next = b[next] - 1;
+                }
+                if (steps[next] == -1) {
+                    steps[next] = steps[curr] + 1;
+                    q.add(next);
+                }
+            }
+        }
+        return steps[n * n - 1];
+
+=======
+
+        int n = board.length;
+        int[] arr = new int[n * n];
+        int idx = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if ((n - i) % 2 == 0) {
+                for (int j = 0; j < n; j++) {
+                    arr[idx++] = board[i][j];
+                }
+            } else {
+                for (int j = n - 1; j >= 0; j--) {
+                    arr[idx++] = board[i][j];
+                }
+            }
+        }
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+        int[] visited = new int[n * n];
+        visited[0] = 1;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int curr = q.poll();
+                if (curr == n * n - 1) {
+                    return visited[curr] - 1;
+                }
+                for (int j = 1; j <= 6; j++) {
+                    int next = curr + j;
+                    if (next >= n * n) {
+                        break;
+                    }
+                    if (arr[next] != -1) {
+                        next = arr[next] - 1;
+                    }
+                    if (visited[next] == 0) {
+                        visited[next] = visited[curr] + 1;
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] nums = new int[n * n];
+        int i = n - 1, j = 0, idx = 0, inc = 1;
+        while (idx < n * n) {
+            nums[idx++] = board[i][j];
+            j += inc;
+            if (j >= n || j < 0) {
+                i--;
+                inc = -inc;
+                j += inc;
+            }
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        boolean[] visited = new boolean[n * n];
+        visited[0] = true;
+        int moves = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int k = 0; k < size; k++) {
+                int cur = queue.poll();
+                if (cur == n * n - 1) return moves;
+                for (int d = 1; d <= 6; d++) {
+                    int next = cur + d;
+                    if (next >= n * n) break;
+                    if (nums[next] != -1) next = nums[next] - 1;
+                    if (!visited[next]) {
+                        queue.add(next);
+                        visited[next] = true;
+                    }
+                }
+            }
+            moves++;
+        }
+        return -1;
+
+=======
+
+        int N = board.length;
+        int[] nums = new int[N * N + 1];
+        int i = N - 1, j = 0, idx = 1, inc = 1;
+        while (idx <= N * N) {
+            nums[idx++] = board[i][j];
+            if (inc == 1 && j == N - 1) {
+                inc = -1;
+                i--;
+            } else if (inc == -1 && j == 0) {
+                inc = 1;
+                i--;
+            } else {
+                j += inc;
+            }
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(1);
+        int steps = 0;
+        boolean[] visited = new boolean[N * N + 1];
+        visited[1] = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int k = 0; k < size; k++) {
+                int cur = queue.poll();
+                if (cur == N * N) {
+                    return steps;
+                }
+                for (int m = 1; m <= 6; m++) {
+                    int next = cur + m;
+                    if (next > N * N) {
+                        break;
+                    }
+                    if (nums[next] != -1) {
+                        next = nums[next];
+                    }
+                    if (!visited[next]) {
+                        queue.add(next);
+                        visited[next] = true;
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] nums = new int[n * n];
+        int ind = 0;
+        boolean reverse = false;
+        for (int i = n - 1; i >= 0; i--) {
+            if (reverse) {
+                for (int j = n - 1; j >= 0; j--) {
+                    nums[ind++] = board[i][j];
+                }
+            } else {
+                for (int j = 0; j < n; j++) {
+                    nums[ind++] = board[i][j];
+                }
+            }
+            reverse = !reverse;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        boolean[] visited = new boolean[n * n];
+        visited[0] = true;
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (cur == n * n - 1) {
+                    return step;
+                }
+                for (int j = 1; j <= 6; j++) {
+                    int next = cur + j;
+                    if (next < n * n && !visited[next]) {
+                        if (nums[next] > 0) {
+                            next = nums[next] - 1;
+                        }
+                        if (!visited[next]) {
+                            queue.add(next);
+                            visited[next] = true;
+                        }
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        if (board == null || board.length == 0) {
+            return 0;
+        }
+        int n = board.length;
+        int[] arr = new int[n * n];
+        int index = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i % 2 == n % 2) {
+                for (int j = 0; j < n; j++) {
+                    arr[index++] = board[i][j];
+                }
+            } else {
+                for (int j = n - 1; j >= 0; j--) {
+                    arr[index++] = board[i][j];
+                }
+            }
+        }
+        boolean[] visited = new boolean[n * n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        visited[0] = true;
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                if (curr == n * n - 1) {
+                    return steps;
+                }
+                for (int j = 1; j <= 6; j++) {
+                    int next = curr + j;
+                    if (next >= n * n) {
+                        break;
+                    }
+                    if (arr[next] != -1) {
+                        next = arr[next] - 1;
+                    }
+                    if (visited[next]) {
+                        continue;
+                    }
+                    visited[next] = true;
+                    queue.offer(next);
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] arr = new int[n*n];
+        int index = 0;
+        boolean isLeft = true;
+        for(int i = n-1; i >= 0; i--) {
+            if(isLeft) {
+                for(int j = 0; j < n; j++) {
+                    arr[index] = board[i][j];
+                    index++;
+                }
+            } else {
+                for(int j = n-1; j >= 0; j--) {
+                    arr[index] = board[i][j];
+                    index++;
+                }
+            }
+            isLeft = !isLeft;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        int[] visited = new int[n*n];
+        visited[0] = 1;
+        while(!queue.isEmpty()) {
+            int curr = queue.poll();
+            for(int i = 1; i <= 6; i++) {
+                int next = curr + i;
+                if(next >= n*n) {
+                    break;
+                }
+                if(arr[next] != -1) {
+                    next = arr[next] - 1;
+                }
+                if(next == n*n - 1) {
+                    return visited[curr];
+                }
+                if(visited[next] == 0) {
+                    queue.add(next);
+                    visited[next] = visited[curr] + 1;
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] d = new int[n * n + 1];
+        int r = n - 1, c = 0, k = 1, dir = 1;
+        while (k <= n * n) {
+            d[k] = board[r][c];
+            if (dir == 1) {
+                c++;
+                if (c == n) {
+                    r--;
+                    dir = -1;
+                    c--;
+                }
+            } else {
+                c--;
+                if (c < 0) {
+                    r--;
+                    dir = 1;
+                    c++;
+                }
+            }
+            k++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        q.add(1);
+        int[] visited = new int[n * n + 1];
+        visited[1] = 1;
+        while (!q.isEmpty()) {
+            int curr = q.poll();
+            for (int i = curr + 1; i <= Math.min(curr + 6, n * n); i++) {
+                int next = d[i] == -1 ? i : d[i];
+                if (next == n * n) return visited[curr];
+                if (visited[next] == 0) {
+                    q.add(next);
+                    visited[next] = visited[curr] + 1;
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = board.length;
+        int[] flat = new int[n*n];
+        int index = 0;
+        boolean isReverse = false;
+        for(int i = n-1; i >= 0; i--) {
+            if(isReverse) {
+                for(int j = n-1; j >= 0; j--) {
+                    flat[index++] = board[i][j];
+                }
+            } else {
+                for(int j = 0; j < n; j++) {
+                    flat[index++] = board[i][j];
+                }
+            }
+            isReverse = !isReverse;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        int steps = 0;
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            for(int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                if(curr == n*n-1) {
+                    return steps;
+                }
+                for(int j = 1; j <= 6; j++) {
+                    int next = curr + j;
+                    if(next >= n*n) {
+                        break;
+                    }
+                    if(flat[next] != -1) {
+                        next = flat[next] - 1;
+                    }
+                    if(next == n*n-1) {
+                        return steps+1;
+                    }
+                    if(flat[next] != -2) {
+                        queue.add(next);
+                        flat[next] = -2;
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;

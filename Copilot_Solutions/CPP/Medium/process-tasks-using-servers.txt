@@ -1,0 +1,96 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> available;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> busy;
+        for (int i = 0; i < servers.size(); ++i) {
+            available.push({servers[i], i});
+        }
+        vector<int> ans;
+        int time = 0;
+        for (int i = 0; i < tasks.size(); ++i) {
+            while (!busy.empty() && busy.top().first <= time) {
+                available.push({busy.top().second, busy.top().first});
+                busy.pop();
+            }
+            if (available.empty()) {
+                time = busy.top().first;
+                while (!busy.empty() && busy.top().first <= time) {
+                    available.push({busy.top().second, busy.top().first});
+                    busy.pop();
+                }
+            }
+            auto server = available.top();
+            available.pop();
+            busy.push({time + tasks[i], server.second});
+            ans.push_back(server.second);
+            time = max(time, i + 1);
+        }
+        while (!busy.empty()) {
+            while (!busy.empty() && busy.top().first <= time) {
+                available.push({busy.top().second, busy.top().first});
+                busy.pop();
+            }
+            auto server = available.top();
+            available.pop();
+            busy.push({time + tasks.back(), server.second});
+            ans.push_back(server.second);
+            time = busy.top().first;
+        }
+        return ans;
+
+=======
+
+        int n = servers.size();
+        int m = tasks.size();
+        vector<int> ans(m);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> free;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> busy;
+        for (int i = 0; i < n; ++i) {
+            free.push({servers[i], i});
+        }
+        int t = 0;
+        for (int i = 0; i < m; ++i) {
+            while (!busy.empty() && busy.top().first <= t) {
+                free.push({busy.top().second, busy.top().first});
+                busy.pop();
+            }
+            if (free.empty()) {
+                t = busy.top().first;
+                while (!busy.empty() && busy.top().first <= t) {
+                    free.push({busy.top().second, busy.top().first});
+                    busy.pop();
+                }
+            }
+            ans[i] = free.top().second;
+            busy.push({t + tasks[i], free.top().first});
+            free.pop();
+            t = max(t, i + 1);
+        }
+        return ans;
+
+=======
+
+        int n = servers.size(), m = tasks.size();
+        vector<int> ans(m);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> free;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> busy;
+        for (int i = 0; i < n; i++) free.push({servers[i], i});
+        for (int i = 0; i < m; i++) {
+            while (!busy.empty() && busy.top().first <= i) {
+                free.push({busy.top().second.first, busy.top().second.second});
+                busy.pop();
+            }
+            if (free.empty()) {
+                int time = busy.top().first;
+                while (!busy.empty() && busy.top().first == time) {
+                    free.push({busy.top().second.first, busy.top().second.second});
+                    busy.pop();
+                }
+            }
+            ans[i] = free.top().second;
+            busy.push({i + tasks[i], {free.top().first, free.top().second}});
+            free.pop();
+        }
+        return ans;

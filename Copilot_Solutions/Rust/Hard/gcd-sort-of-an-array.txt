@@ -1,0 +1,250 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut nums = nums;
+        let n = nums.len();
+        let mut uf = UnionFind::new(100001);
+        for i in 0..n {
+            for j in (i + 1)..n {
+                if Self::gcd(nums[i], nums[j]) > 1 {
+                    uf.union(nums[i] as usize, nums[j] as usize);
+                }
+            }
+        }
+        nums.sort();
+        for i in 1..n {
+            if uf.find(nums[i] as usize) != uf.find(nums[i - 1] as usize) {
+                return false;
+            }
+        }
+        true
+    }
+    fn gcd(a: i32, b: i32) -> i32 {
+        if b == 0 {
+            a
+        } else {
+            Self::gcd(b, a % b)
+        }
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        for i in 0..nums.len() {
+            if nums[i] != nums[i] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut nums = nums;
+        let mut g = nums[0];
+        for i in 1..nums.len() {
+            g = gcd(g, nums[i]);
+        }
+        if g == 1 {
+            return false;
+        }
+        nums.sort();
+        for i in 1..nums.len() {
+            if gcd(nums[i-1], nums[i]) == 1 {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let n = nums.len();
+        let mut uf = UnionFind::new(n);
+        let mut indices = vec![0; 100_001];
+        for i in 0..n {
+            let x = nums[i];
+            if indices[x as usize] != 0 {
+                uf.union(i, indices[x as usize] - 1);
+            }
+            indices[x as usize] = i + 1;
+            for j in 2..=x / 2 {
+                if x % j == 0 {
+                    if indices[j as usize] != 0 {
+                        uf.union(i, indices[j as usize] - 1);
+                    }
+                    if indices[(x / j) as usize] != 0 {
+                        uf.union(i, indices[(x / j) as usize] - 1);
+                    }
+                }
+            }
+        }
+        nums.sort_unstable();
+        for i in 0..n {
+            if uf.find(i) != uf.find(nums[i] as usize - 1) {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut uf = UnionFind::new(nums.len());
+        let mut primes = vec![vec![]; 100001];
+        for i in 2..=100000 {
+            if primes[i].is_empty() {
+                let mut j = i;
+                while j <= 100000 {
+                    primes[j].push(i);
+                    j += i;
+                }
+            }
+        }
+        for i in 0..nums.len() {
+            for p in &primes[nums[i] as usize] {
+                if let Some(j) = nums.binary_search(&(nums[i] / p)).ok() {
+                    uf.union(i, j);
+                }
+            }
+        }
+        for i in 0..nums.len() {
+            if nums[i] != nums[uf.find(i)] {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let n = nums.len();
+        let mut parent = vec![-1; 100001];
+        let mut size = vec![1; 100001];
+        for i in 2..100001 {
+            if parent[i] == -1 {
+                for j in (i..100001).step_by(i) {
+                    parent[j] = i as i32;
+                }
+            }
+        }
+        for i in 0..n {
+            for j in i + 1..n {
+                if Solution::gcd(nums[i], nums[j]) > 1 {
+                    let p1 = Solution::find(&mut parent, nums[i]);
+                    let p2 = Solution::find(&mut parent, nums[j]);
+                    if p1 != p2 {
+                        if size[p1 as usize] < size[p2 as usize] {
+                            parent[p1 as usize] = p2;
+                            size[p2 as usize] += size[p1 as usize];
+                        } else {
+                            parent[p2 as usize] = p1;
+                            size[p1 as usize] += size[p2 as usize];
+                        }
+                    }
+                }
+            }
+        }
+        nums.sort();
+        for i in 0..n {
+            if Solution::find(&mut parent, nums[i]) != Solution::find(&mut parent, nums[0]) {
+                return false;
+            }
+        }
+        true
+    }
+    fn gcd(a: i32, b: i32) -> i32 {
+        if b == 0 {
+            a
+        } else {
+            Solution::gcd(b, a % b)
+        }
+    }
+    fn find(parent: &mut Vec<i32>, x: i32) -> i32 {
+        if parent[x as usize] == x {
+            x
+        } else {
+            let root = Solution::find(parent, parent[x as usize]);
+            parent[x as usize] = root;
+            root
+        }
+
+=======
+
+        let mut nums = nums;
+        let n = nums.len();
+        let mut uf = UnionFind::new(n);
+        let mut a = vec![0; 100001];
+        for i in 0..n {
+            for j in 2..=nums[i].sqrt() as usize {
+                if nums[i] % j as i32 == 0 {
+                    if a[j] != 0 {
+                        uf.union(i, a[j] as usize);
+                    }
+                    a[j] = i as i32 + 1;
+                    if a[nums[i] as usize / j] != 0 {
+                        uf.union(i, a[nums[i] as usize / j] as usize);
+                    }
+                    a[nums[i] as usize / j] = i as i32 + 1;
+                }
+            }
+        }
+        nums.sort();
+        for i in 0..n {
+            if uf.find(i) != uf.find(nums[i] as usize - 1) {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let mut uf = UnionFind::new(n);
+        let mut uf2 = UnionFind::new(n);
+        let mut nums2 = nums.clone();
+        let mut idx = vec![0; n];
+        for i in 0..n {
+            idx[i] = i;
+        }
+        nums2.sort();
+        for i in 0..n {
+            for j in i+1..n {
+                if Self::gcd(nums2[i], nums2[j]) > 1 {
+                    uf.union(i, j);
+                }
+            }
+        }
+        for i in 0..n {
+            for j in i+1..n {
+                if Self::gcd(nums[i], nums[j]) > 1 {
+                    uf2.union(i, j);
+                }
+            }
+        }
+        for i in 0..n {
+            if uf.find(i) != uf2.find(i) {
+                return false;
+            }
+        }
+        true
+    }
+    fn gcd(a: i32, b: i32) -> i32 {
+        if b == 0 {
+            a
+        } else {
+            Self::gcd(b, a % b)
+        }
+    }
+}

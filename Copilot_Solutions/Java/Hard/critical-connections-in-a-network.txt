@@ -1,0 +1,370 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (List<Integer> connection : connections) {
+            graph.get(connection.get(0)).add(connection.get(1));
+            graph.get(connection.get(1)).add(connection.get(0));
+        }
+        List<List<Integer>> result = new ArrayList<>();
+        int[] ids = new int[n];
+        int[] low = new int[n];
+        boolean[] visited = new boolean[n];
+        dfs(graph, 0, 0, ids, low, visited, result);
+        return result;
+    }
+    private int dfs(List<List<Integer>> graph, int at, int id, int[] ids, int[] low, boolean[] visited, List<List<Integer>> result) {
+        visited[at] = true;
+        ids[at] = id;
+        low[at] = id;
+        id++;
+        for (int next : graph.get(at)) {
+            if (!visited[next]) {
+                id = dfs(graph, next, id, ids, low, visited, result);
+                low[at] = Math.min(low[at], low[next]);
+                if (ids[at] < low[next]) {
+                    result.add(Arrays.asList(at, next));
+                }
+            } else {
+                low[at] = Math.min(low[at], ids[next]);
+            }
+        }
+        return id;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (List<Integer> edge : connections) {
+            graph.get(edge.get(0)).add(edge.get(1));
+            graph.get(edge.get(1)).add(edge.get(0));
+        }
+        int[] rank = new int[n];
+        Arrays.fill(rank, -2);
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(0, 0, graph, rank, res);
+        return res;
+    }
+    
+    private int dfs(int node, int depth, List<List<Integer>> graph, int[] rank, List<List<Integer>> res) {
+        if (rank[node] >= 0) {
+            return rank[node];
+        }
+        rank[node] = depth;
+        int minDepth = depth;
+        for (int next : graph.get(node)) {
+            if (rank[next] == depth - 1) {
+                continue;
+            }
+            int nextDepth = dfs(next, depth + 1, graph, rank, res);
+            if (nextDepth <= depth) {
+                res.add(Arrays.asList(node, next));
+            }
+            minDepth = Math.min(minDepth, nextDepth);
+        }
+        return minDepth;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (List<Integer> c : connections) {
+            graph.get(c.get(0)).add(c.get(1));
+            graph.get(c.get(1)).add(c.get(0));
+        }
+        int[] ids = new int[n];
+        Arrays.fill(ids, -1);
+        int[] lows = new int[n];
+        Arrays.fill(lows, -1);
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        int id = 0;
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (ids[i] == -1) {
+                dfs(i, id, ids, lows, parent, graph, res);
+            }
+        }
+        return res;
+    }
+
+    private void dfs(int at, int id, int[] ids, int[] lows, int[] parent, List<List<Integer>> graph, List<List<Integer>> res) {
+        ids[at] = id;
+        lows[at] = id;
+        id++;
+        for (int to : graph.get(at)) {
+            if (ids[to] == -1) {
+                parent[to] = at;
+                dfs(to, id, ids, lows, parent, graph, res);
+                lows[at] = Math.min(lows[at], lows[to]);
+                if (lows[to] > ids[at]) {
+                    res.add(Arrays.asList(at, to));
+                }
+            } else if (to != parent[at]) {
+                lows[at] = Math.min(lows[at], ids[to]);
+            }
+        }
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (List<Integer> conn : connections) {
+            int u = conn.get(0);
+            int v = conn.get(1);
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        int[] rank = new int[n];
+        Arrays.fill(rank, -2);
+        dfs(graph, rank, 0, 0, result);
+        return result;
+    }
+    private int dfs(List<Integer>[] graph, int[] rank, int node, int depth, List<List<Integer>> result) {
+        if (rank[node] >= 0) {
+            return rank[node];
+        }
+        rank[node] = depth;
+        int min = depth;
+        for (int neighbor : graph[node]) {
+            if (rank[neighbor] == depth - 1) {
+                continue;
+            }
+            int neighborMin = dfs(graph, rank, neighbor, depth + 1, result);
+            if (neighborMin <= depth) {
+                result.add(Arrays.asList(node, neighbor));
+            }
+            min = Math.min(min, neighborMin);
+        }
+        return min;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (List<Integer> connection : connections) {
+            int u = connection.get(0);
+            int v = connection.get(1);
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        int[] rank = new int[n];
+        Arrays.fill(rank, -2);
+        List<List<Integer>> result = new ArrayList<>();
+        dfs(graph, 0, 0, rank, result);
+        return result;
+    }
+    private int dfs(List<List<Integer>> graph, int u, int depth, int[] rank, List<List<Integer>> result) {
+        if (rank[u] >= 0) {
+            return rank[u];
+        }
+        rank[u] = depth;
+        int minDepth = depth;
+        for (int v : graph.get(u)) {
+            if (rank[v] == depth - 1) {
+                continue;
+            }
+            int vDepth = dfs(graph, v, depth + 1, rank, result);
+            if (vDepth <= depth) {
+                result.add(Arrays.asList(u, v));
+            }
+            minDepth = Math.min(minDepth, vDepth);
+        }
+        return minDepth;
+
+=======
+
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (List<Integer> edge : connections) {
+            graph[edge.get(0)].add(edge.get(1));
+            graph[edge.get(1)].add(edge.get(0));
+        }
+        int[] rank = new int[n];
+        Arrays.fill(rank, -2);
+        dfs(graph, 0, 0, rank, ans);
+        return ans;
+    }
+    
+    private int dfs(List<Integer>[] graph, int node, int depth, int[] rank, List<List<Integer>> ans) {
+        if (rank[node] >= 0) {
+            return rank[node];
+        }
+        rank[node] = depth;
+        int minDepth = depth;
+        for (int neighbor : graph[node]) {
+            if (rank[neighbor] == depth - 1) {
+                continue;
+            }
+            int neighborDepth = dfs(graph, neighbor, depth + 1, rank, ans);
+            if (neighborDepth <= depth) {
+                ans.add(Arrays.asList(node, neighbor));
+            }
+            minDepth = Math.min(minDepth, neighborDepth);
+        }
+        return minDepth;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (List<Integer> connection: connections) {
+            int a = connection.get(0), b = connection.get(1);
+            graph.get(a).add(b);
+            graph.get(b).add(a);
+        }
+        int[] rank = new int[n];
+        Arrays.fill(rank, -2);
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(graph, 0, 0, rank, res);
+        return res;
+    }
+    private int dfs(List<List<Integer>> graph, int node, int depth, int[] rank, List<List<Integer>> res) {
+        if (rank[node] >= 0) {
+            return rank[node];
+        }
+        rank[node] = depth;
+        int minDepth = depth;
+        for (int neighbor: graph.get(node)) {
+            if (rank[neighbor] == depth - 1) {
+                continue;
+            }
+            int neighborDepth = dfs(graph, neighbor, depth + 1, rank, res);
+            if (neighborDepth <= depth) {
+                res.add(Arrays.asList(node, neighbor));
+            }
+            minDepth = Math.min(minDepth, neighborDepth);
+        }
+        return minDepth;
+
+=======
+
+        List<List<Integer>> res = new ArrayList<>();
+        int[] rank = new int[n];
+        int[] low = new int[n];
+        Arrays.fill(rank, -1);
+        Arrays.fill(low, -1);
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (List<Integer> edge : connections) {
+            int a = edge.get(0);
+            int b = edge.get(1);
+            graph.putIfAbsent(a, new ArrayList<>());
+            graph.putIfAbsent(b, new ArrayList<>());
+            graph.get(a).add(b);
+            graph.get(b).add(a);
+        }
+        dfs(graph, 0, 0, rank, low, res);
+        return res;
+    }
+    private int dfs(Map<Integer, List<Integer>> graph, int prev, int cur, int[] rank, int[] low, List<List<Integer>> res) {
+        if (rank[cur] != -1) {
+            return rank[cur];
+        }
+        rank[cur] = low[cur] = prev + 1;
+        for (int next : graph.getOrDefault(cur, new ArrayList<>())) {
+            if (next == prev) {
+                continue;
+            }
+            rank[cur] = Math.min(rank[cur], dfs(graph, cur, next, rank, low, res));
+        }
+        if (rank[cur] > low[cur]) {
+            res.add(Arrays.asList(prev, cur));
+        }
+        return rank[cur];
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        if (n <= 1) {
+            return result;
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (List<Integer> conn : connections) {
+            int from = conn.get(0);
+            int to = conn.get(1);
+            graph.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+            graph.computeIfAbsent(to, k -> new ArrayList<>()).add(from);
+        }
+
+        int[] visited = new int[n];
+        int[] low = new int[n];
+        int[] id = new int[n];
+        int[] parent = new int[n];
+        Arrays.fill(id, -1);
+        Arrays.fill(parent, -1);
+
+        for (int i = 0; i < n; i++) {
+            if (id[i] == -1) {
+                dfs(graph, i, visited, low, id, parent, result);
+            }
+        }
+        return result;
+    }
+
+    private void dfs(Map<Integer, List<Integer>> graph, int node, int[] visited, int[] low, int[] id, int[] parent, List<List<Integer>> result) {
+        visited[node] = 1;
+        id[node] = low[node] = time++;
+        for (int nei : graph.get(node)) {
+            if (nei == parent[node]) {
+                continue;
+            }
+            if (visited[nei] == 1) {
+                low[node] = Math.min(low[node], id[nei]);
+            } else {
+                parent[nei] = node;
+                dfs(graph, nei, visited, low, id, parent, result);
+                low[node] = Math.min(low[node], low[nei]);
+                if (low[nei] > id[node]) {
+                    result.add(Arrays.asList(node, nei));
+                }
+            }
+        }
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        int[] rank = new int[n];
+        int[] low = new int[n];
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (List<Integer> list : connections) {
+            map.computeIfAbsent(list.get(0), k -> new ArrayList<>()).add(list.get(1));
+            map.computeIfAbsent(list.get(1), k -> new ArrayList<>()).add(list.get(0));
+        }
+        dfs(0, 0, rank, low, parent, map, result);
+        return result;
+    }
+    private void dfs(int node, int level, int[] rank, int[] low, int[] parent, Map<Integer, List<Integer>> map, List<List<Integer>> result) {
+        rank[node] = level;
+        low[node] = level;
+        for (int child : map.getOrDefault(node, Collections.emptyList())) {
+            if (rank[child] == 0) {
+                parent[child] = node;
+                dfs(child, level + 1, rank, low, parent, map, result);
+                low[node] = Math.min(low[node], low[child]);
+                if (low[child] > rank[node]) {
+                    result.add(Arrays.asList(node, child));
+                }
+            } else if (child != parent[node]) {
+                low[node] = Math.min(low[node], rank[child]);
+            }
+        }

@@ -1,0 +1,390 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut res = 0;
+        let mut l = start_pos as usize;
+        let mut r = start_pos as usize;
+        let mut cnt = vec![0; 2 * 10i32.pow(5) as usize + 1];
+        let mut total = 0;
+        let mut types = 0;
+        while r < fruits.len() && r - l < k as usize {
+            if cnt[fruits[r][0] as usize] == 0 {
+                types += 1;
+            }
+            cnt[fruits[r][0] as usize] += fruits[r][1];
+            total += fruits[r][1];
+            r += 1;
+            while types > 2 {
+                cnt[fruits[l][0] as usize] -= fruits[l][1];
+                total -= fruits[l][1];
+                if cnt[fruits[l][0] as usize] == 0 {
+                    types -= 1;
+                }
+                l += 1;
+            }
+            res = res.max(total);
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut i = start_pos as usize;
+        let mut j = start_pos as usize;
+        let mut k = k as usize;
+        let mut sum = 0;
+        let mut map = std::collections::HashMap::new();
+        map.insert(fruits[i][0], fruits[i][1]);
+        sum += fruits[i][1];
+        while k > 0 && (i > 0 || j + 1 < fruits.len()) {
+            if i == 0 {
+                j += 1;
+                *map.entry(fruits[j][0]).or_insert(0) += fruits[j][1];
+                sum += fruits[j][1];
+                k -= 1;
+            } else if j + 1 == fruits.len() {
+                i -= 1;
+                *map.entry(fruits[i][0]).or_insert(0) += fruits[i][1];
+                sum += fruits[i][1];
+                k -= 1;
+            } else {
+                let d1 = (fruits[i][0] - fruits[i - 1][0]) as usize;
+                let d2 = (fruits[j + 1][0] - fruits[j][0]) as usize;
+                if d1 <= d2 && d1 <= k {
+                    i -= 1;
+                    *map.entry(fruits[i][0]).or_insert(0) += fruits[i][1];
+                    sum += fruits[i][1];
+                    k -= d1;
+                } else if d2 <= d1 && d2 <= k {
+                    j += 1;
+                    *map.entry(fruits[j][0]).or_insert(0) += fruits[j][1];
+                    sum += fruits[j][1];
+                    k -= d2;
+                } else {
+                    break;
+                }
+            }
+            if map.len() <= 2 {
+                res = res.max(sum);
+            } else {
+                let mut min = std::i32::MAX;
+                let mut min_pos = 0;
+                for (pos, &amount) in &map {
+                    if amount < min {
+                        min = amount;
+                        min_pos = pos;
+                    }
+                }
+                sum -= min;
+                map.remove(&min_pos);
+            }
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut l = start_pos;
+        let mut r = start_pos;
+        let mut sum = fruits[start_pos as usize][1];
+        let mut basket = vec![fruits[start_pos as usize][0]];
+        while l > 0 || r < fruits.len() as i32 - 1 {
+            if l > 0 && (r == fruits.len() as i32 - 1 || fruits[(l - 1) as usize][0] > fruits[(r + 1) as usize][0]) {
+                l -= 1;
+                if basket.len() == 2 && basket[0] != fruits[l as usize][0] {
+                    sum -= fruits[l as usize][1];
+                    basket.remove(0);
+                }
+            } else {
+                r += 1;
+                if basket.len() == 2 && basket[1] != fruits[r as usize][0] {
+                    sum -= fruits[r as usize][1];
+                    basket.remove(1);
+                }
+            }
+            if basket.len() < 2 || basket[0] == fruits[l as usize][0] || basket[1] == fruits[l as usize][0] {
+                sum += fruits[l as usize][1];
+                basket.push(fruits[l as usize][0]);
+            }
+            if basket.len() < 2 || basket[0] == fruits[r as usize][0] || basket[1] == fruits[r as usize][0] {
+                sum += fruits[r as usize][1];
+                basket.push(fruits[r as usize][0]);
+            }
+            if basket.len() > 2 {
+                sum -= fruits[l as usize][1];
+                basket.remove(0);
+            }
+            if basket.len() > 2 {
+                sum -= fruits[r as usize][1];
+                basket.remove(1);
+            }
+            if basket.len() == 2 && r - l <= k {
+                res = res.max(sum);
+            }
+        }
+        res
+
+=======
+
+        let mut result = 0;
+        let mut left = 0;
+        let mut right = 0;
+        let mut count = 0;
+        let mut map = std::collections::HashMap::new();
+        let n = fruits.len();
+        while right < n && left <= right {
+            while right < n && (right - left) as i32 <= k {
+                let pos = fruits[right][0];
+                let amount = fruits[right][1];
+                let c = map.entry(pos).or_insert(0);
+                *c += amount;
+                if *c == amount {
+                    count += 1;
+                }
+                right += 1;
+            }
+            if count <= 2 {
+                result = result.max(fruits[left..right].iter().map(|x| x[1]).sum());
+            }
+            while left < right && count > 2 {
+                let pos = fruits[left][0];
+                let amount = fruits[left][1];
+                let c = map.entry(pos).or_insert(0);
+                *c -= amount;
+                if *c == 0 {
+                    count -= 1;
+                }
+                left += 1;
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut fruits = fruits;
+        let mut start_pos = start_pos as usize;
+        let mut k = k as usize;
+        let mut res = 0;
+        let mut sum = 0;
+        let mut l = 0;
+        let mut r = 0;
+        let mut n = fruits.len();
+        let mut map = vec![0; 2 * 100_000 + 1];
+        while r < n && k > 0 {
+            let pos = fruits[r][0];
+            let amount = fruits[r][1];
+            if map[pos as usize] == 0 {
+                k -= 1;
+            }
+            map[pos as usize] += amount;
+            sum += amount;
+            r += 1;
+            while k == 0 {
+                let pos = fruits[l][0];
+                let amount = fruits[l][1];
+                if map[pos as usize] == amount {
+                    k += 1;
+                }
+                map[pos as usize] -= amount;
+                sum -= amount;
+                l += 1;
+            }
+            if start_pos >= l && start_pos < r {
+                res = res.max(sum);
+            }
+        }
+        res
+
+=======
+
+        let mut cur = 0;
+        let mut max = 0;
+        let mut left = start_pos;
+        let mut right = start_pos;
+        let mut left_fruit = fruits[start_pos as usize][1];
+        let mut right_fruit = fruits[start_pos as usize][1];
+        let mut left_fruit_count = 1;
+        let mut right_fruit_count = 1;
+        while left >= 0 || right < fruits.len() as i32 {
+            if left >= 0 && (right >= fruits.len() as i32 || left_fruit_count <= right_fruit_count) {
+                left -= 1;
+                if left >= 0 {
+                    if left_fruit == fruits[left as usize][1] {
+                        left_fruit_count += 1;
+                    } else {
+                        left_fruit_count = 1;
+                        left_fruit = fruits[left as usize][1];
+                    }
+                    cur += left_fruit;
+                }
+            } else {
+                right += 1;
+                if right < fruits.len() as i32 {
+                    if right_fruit == fruits[right as usize][1] {
+                        right_fruit_count += 1;
+                    } else {
+                        right_fruit_count = 1;
+                        right_fruit = fruits[right as usize][1];
+                    }
+                    cur += right_fruit;
+                }
+            }
+            if left + k + 1 >= right {
+                max = max.max(cur);
+            } else {
+                cur -= fruits[left as usize + 1][1];
+                left_fruit_count -= 1;
+                if left_fruit_count == 0 {
+                    left_fruit = fruits[left as usize + 2][1];
+                    left_fruit_count = 1;
+                }
+            }
+        }
+        max
+
+=======
+
+        let mut ans = 0;
+        let mut i = start_pos as usize;
+        let mut j = start_pos as usize;
+        let mut k = k as usize;
+        let mut fruits = fruits;
+        let mut basket = vec![0; 200001];
+        let mut cnt = 0;
+        while k > 0 && i < fruits.len() || j < fruits.len() {
+            if basket[fruits[i][0] as usize] == 0 {
+                cnt += 1;
+            }
+            basket[fruits[i][0] as usize] += 1;
+            ans = ans.max(cnt);
+            if i < fruits.len() {
+                i += 1;
+            }
+            k -= 1;
+            while cnt > 2 {
+                basket[fruits[j][0] as usize] -= 1;
+                if basket[fruits[j][0] as usize] == 0 {
+                    cnt -= 1;
+                }
+                j += 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut f = fruits;
+        let mut s = start_pos;
+        let mut k = k;
+        let mut res = 0;
+        let mut cur = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut n = f.len();
+        while i < n {
+            let mut t = 0;
+            while j < n && (t + f[j][0] - f[i][0]) <= k {
+                t += f[j][0] - f[i][0];
+                if f[i][0] <= s && s <= f[j][0] {
+                    cur += f[j][1];
+                }
+                j += 1;
+            }
+            res = res.max(cur);
+            if j == n {
+                break;
+            }
+            while i < j && (t + f[j][0] - f[i][0]) > k {
+                t += f[j][0] - f[i][0];
+                if f[i][0] <= s && s <= f[j][0] {
+                    cur -= f[i][1];
+                }
+                i += 1;
+            }
+        }
+        res
+
+=======
+
+        let mut ans = 0;
+        let mut pos = start_pos;
+        let mut k = k;
+        let mut i = 0;
+        let mut j = fruits.len() - 1;
+        let mut basket = vec![];
+        while i <= j {
+            let (left, right) = (fruits[i][0], fruits[j][0]);
+            if left <= pos && right >= pos {
+                if left == right {
+                    let mut temp = 0;
+                    for i in i..=j {
+                        temp += fruits[i][1];
+                    }
+                    ans = ans.max(temp);
+                    break;
+                }
+                let mut temp = 0;
+                let mut flag = false;
+                for i in i..=j {
+                    if fruits[i][0] == left {
+                        temp += fruits[i][1];
+                    } else if fruits[i][0] == right {
+                        if !flag {
+                            temp += fruits[i][1];
+                            flag = true;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                ans = ans.max(temp);
+                if left < pos {
+                    i += 1;
+                }
+                if right > pos {
+                    j -= 1;
+                }
+            } else if left > pos {
+                if k > 0 {
+                    let mut temp = 0;
+                    let mut flag = false;
+                    for i in i..=j {
+                        if fruits[i][0] == left {
+                            temp += fruits[i][1];
+                        } else if fruits[i][0] == right {
+                            if !flag {
+                                temp += fruits[i][1];
+                                flag = true;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    ans = ans.max(temp);
+                    if left < pos {
+                        i += 1;
+                    }
+                    if right > pos {
+                        j -= 1;
+                    }
+                    k -= 1;
+                } else {
+                    break;
+                }
+            } else if right < pos {
+                if k > 0 {
+                    let mut temp = 0;
+                    let mut flag = false;
+                    for i in i..=j {
+                        if fruits[i][0] == left {
+                            temp += fruits[i][1];
+                        } else if fruits[i][0] == right {
+                            if !flag {
+                                temp += fruits[i][1];
+                                flag = true;
+                            } else {
+                                break;
+                            }

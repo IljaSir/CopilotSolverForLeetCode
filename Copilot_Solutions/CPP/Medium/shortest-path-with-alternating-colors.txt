@@ -1,0 +1,313 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> red(n), blue(n);
+        for (auto& e: redEdges) red[e[0]].push_back(e[1]);
+        for (auto& e: blueEdges) blue[e[0]].push_back(e[1]);
+        vector<int> ans(n, INT_MAX);
+        queue<pair<int, int>> q;
+        q.push({0, 0}); q.push({0, 1});
+        ans[0] = 0;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            ++step;
+            while (size--) {
+                auto [i, color] = q.front(); q.pop();
+                if (color == 0) {
+                    for (auto j: red[i]) {
+                        if (step < ans[j]) {
+                            q.push({j, 1});
+                            ans[j] = step;
+                        }
+                    }
+                } else {
+                    for (auto j: blue[i]) {
+                        if (step < ans[j]) {
+                            q.push({j, 0});
+                            ans[j] = step;
+                        }
+                    }
+                }
+            }
+        }
+        for (auto& a: ans) {
+            if (a == INT_MAX) a = -1;
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<int>>> graph(n, vector<vector<int>>(2, vector<int>()));
+        for (auto& edge : redEdges) {
+            graph[edge[0]][0].push_back(edge[1]);
+        }
+        for (auto& edge : blueEdges) {
+            graph[edge[0]][1].push_back(edge[1]);
+        }
+        vector<vector<int>> dist(n, vector<int>(2, INT_MAX));
+        dist[0][0] = dist[0][1] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        while (!q.empty()) {
+            int node = q.front().first;
+            int color = q.front().second;
+            q.pop();
+            for (int nei : graph[node][color]) {
+                if (dist[nei][color ^ 1] == INT_MAX) {
+                    dist[nei][color ^ 1] = dist[node][color] + 1;
+                    q.push({nei, color ^ 1});
+                }
+            }
+        }
+        vector<int> ans(n, -1);
+        for (int i = 0; i < n; i++) {
+            if (dist[i][0] != INT_MAX || dist[i][1] != INT_MAX) {
+                ans[i] = min(dist[i][0], dist[i][1]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<int>>> edges(n, vector<vector<int>>(2));
+        for (auto& edge : redEdges) {
+            edges[edge[0]][0].push_back(edge[1]);
+        }
+        for (auto& edge : blueEdges) {
+            edges[edge[0]][1].push_back(edge[1]);
+        }
+        vector<vector<int>> dist(n, vector<int>(2, -1));
+        dist[0][0] = dist[0][1] = 0;
+        queue<array<int, 2>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        while (!q.empty()) {
+            auto [node, color] = q.front();
+            q.pop();
+            for (auto& nei : edges[node][color ^ 1]) {
+                if (dist[nei][color ^ 1] == -1) {
+                    dist[nei][color ^ 1] = dist[node][color] + 1;
+                    q.push({nei, color ^ 1});
+                }
+            }
+        }
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            ans[i] = max(dist[i][0], dist[i][1]);
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto e : redEdges) graph[e[0]].push_back({e[1], 0});
+        for (auto e : blueEdges) graph[e[0]].push_back({e[1], 1});
+        vector<vector<int>> dist(n, vector<int>(2, INT_MAX));
+        dist[0][0] = 0;
+        dist[0][1] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        while (!q.empty()) {
+            auto [u, c] = q.front();
+            q.pop();
+            for (auto [v, nc] : graph[u]) {
+                if (nc == c) continue;
+                if (dist[v][nc] > dist[u][c] + 1) {
+                    dist[v][nc] = dist[u][c] + 1;
+                    q.push({v, nc});
+                }
+            }
+        }
+        vector<int> ans(n, INT_MAX);
+        for (int i = 0; i < n; i++) {
+            ans[i] = min(dist[i][0], dist[i][1]);
+            if (ans[i] == INT_MAX) ans[i] = -1;
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<int>>> graph(n, vector<vector<int>>(2, vector<int>()));
+        for (auto e : redEdges) graph[e[0]][0].push_back(e[1]);
+        for (auto e : blueEdges) graph[e[0]][1].push_back(e[1]);
+        vector<vector<int>> dist(n, vector<int>(2, INT_MAX));
+        queue<vector<int>> q;
+        q.push({0, 0}); q.push({0, 1});
+        dist[0][0] = 0; dist[0][1] = 0;
+        while (!q.empty()) {
+            auto cur = q.front(); q.pop();
+            int node = cur[0], color = cur[1];
+            for (auto next : graph[node][1 - color]) {
+                if (dist[next][1 - color] > dist[node][color] + 1) {
+                    dist[next][1 - color] = dist[node][color] + 1;
+                    q.push({next, 1 - color});
+                }
+            }
+        }
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            int d = min(dist[i][0], dist[i][1]);
+            ans[i] = (d == INT_MAX) ? -1 : d;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> red(n, vector<int>());
+        vector<vector<int>> blue(n, vector<int>());
+        for (auto& e : redEdges) red[e[0]].push_back(e[1]);
+        for (auto& e : blueEdges) blue[e[0]].push_back(e[1]);
+        vector<vector<int>> dist(n, vector<int>(2, -1));
+        queue<pair<int, int>> q;
+        dist[0][0] = dist[0][1] = 0;
+        q.push({0,0});
+        q.push({0,1});
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            step++;
+            while (size--) {
+                auto [node, color] = q.front(); q.pop();
+                auto& edges = color == 0 ? red : blue;
+                for (auto e : edges[node]) {
+                    if (dist[e][1-color] == -1) {
+                        dist[e][1-color] = step;
+                        q.push({e, 1-color});
+                    }
+                }
+            }
+        }
+        vector<int> ans(n, -1);
+        for (int i = 0; i < n; ++i) {
+            ans[i] = dist[i][0] == -1 ? dist[i][1] : dist[i][1] == -1 ? dist[i][0] : min(dist[i][0], dist[i][1]);
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<int>>> graph(n, vector<vector<int>>(2, vector<int>()));
+        for (auto& edge : redEdges)
+            graph[edge[0]][0].push_back(edge[1]);
+        for (auto& edge : blueEdges)
+            graph[edge[0]][1].push_back(edge[1]);
+        vector<vector<int>> dist(n, vector<int>(2, INT_MAX));
+        dist[0][0] = 0;
+        dist[0][1] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        while (!q.empty()) {
+            auto [node, color] = q.front();
+            q.pop();
+            for (auto& nei : graph[node][1 - color]) {
+                if (dist[nei][1 - color] > dist[node][color] + 1) {
+                    dist[nei][1 - color] = dist[node][color] + 1;
+                    q.push({nei, 1 - color});
+                }
+            }
+        }
+        vector<int> ans(n, INT_MAX);
+        for (int i = 0; i < n; ++i) {
+            ans[i] = min(dist[i][0], dist[i][1]);
+            if (ans[i] == INT_MAX)
+                ans[i] = -1;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> red(n, vector<int>());
+        vector<vector<int>> blue(n, vector<int>());
+        for (auto& edge: redEdges) {
+            red[edge[0]].push_back(edge[1]);
+        }
+        for (auto& edge: blueEdges) {
+            blue[edge[0]].push_back(edge[1]);
+        }
+        vector<vector<int>> dist(n, vector<int>(2, INT_MAX));
+        dist[0][0] = dist[0][1] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        while (!q.empty()) {
+            auto [u, c] = q.front();
+            q.pop();
+            if (c == 0) {
+                for (int v: blue[u]) {
+                    if (dist[v][1] == INT_MAX) {
+                        dist[v][1] = dist[u][0] + 1;
+                        q.push({v, 1});
+                    }
+                }
+            } else {
+                for (int v: red[u]) {
+                    if (dist[v][0] == INT_MAX) {
+                        dist[v][0] = dist[u][1] + 1;
+                        q.push({v, 0});
+                    }
+                }
+            }
+        }
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            int d = min(dist[i][0], dist[i][1]);
+            ans[i] = d == INT_MAX ? -1 : d;
+        }
+        return ans;
+
+=======
+
+        vector<int> ans(n, INT_MAX);
+        ans[0] = 0;
+        vector<vector<vector<int>>> graph(n, vector<vector<int>>(2, vector<int>()));
+        for (auto& e : redEdges) {
+            graph[e[0]][0].push_back(e[1]);
+        }
+        for (auto& e : blueEdges) {
+            graph[e[0]][1].push_back(e[1]);
+        }
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        q.push({0, 1});
+        int step = 0;
+        while (!q.empty()) {
+            step++;
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto [cur, color] = q.front();
+                q.pop();
+                for (auto& next : graph[cur][color]) {
+                    if (ans[next] == INT_MAX) {
+                        ans[next] = step;
+                        q.push({next, 1 - color});
+                    }
+                }
+            }
+        }
+        for (auto& v : ans) {
+            if (v == INT_MAX) {
+                v = -1;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res(n, -1);
+        vector<vector<vector<int>>> graph(n, vector<vector<int>>(2, vector<int>()));
+        for (auto& r: redEdges) graph[r[0]][0].push_back(r[1]);
+        for (auto& b: blueEdges) graph[b[0]][1].push_back(b[1]);
+        queue<vector<int>> q; // {node, color, dist}
+        q.push({0, 0, 0});
+        q.push({0, 1, 0});
+        while (!q.empty()) {
+            auto [node, color, dist] = q.front(); q.pop();
+            if (res[node] != -1) continue;
+            res[node] = dist;
+            for (auto nei: graph[node][color ^ 1]) q.push({nei, color ^ 1, dist + 1});
+        }
+        return res;

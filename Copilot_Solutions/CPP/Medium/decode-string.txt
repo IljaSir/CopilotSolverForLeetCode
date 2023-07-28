@@ -1,0 +1,278 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        string res;
+        stack<char> st;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] != ']') {
+                st.push(s[i]);
+            } else {
+                string temp;
+                while (st.top() != '[') {
+                    temp = st.top() + temp;
+                    st.pop();
+                }
+                st.pop();
+                int k = 0;
+                int base = 1;
+                while (!st.empty() && isdigit(st.top())) {
+                    k += (st.top() - '0') * base;
+                    base *= 10;
+                    st.pop();
+                }
+                while (k-- > 0) {
+                    for (int j = 0; j < temp.size(); ++j) {
+                        st.push(temp[j]);
+                    }
+                }
+            }
+        }
+        while (!st.empty()) {
+            res = st.top() + res;
+            st.pop();
+        }
+        return res;
+
+=======
+
+        stack<string> stk;
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] == ']') {
+                string str = "";
+                while (!stk.empty() && stk.top() != "[") {
+                    str = stk.top() + str;
+                    stk.pop();
+                }
+                stk.pop();
+                int k = 0;
+                int base = 1;
+                while (!stk.empty() && isdigit(stk.top()[0])) {
+                    k += (stk.top()[0] - '0') * base;
+                    base *= 10;
+                    stk.pop();
+                }
+                string t = "";
+                while (k > 0) {
+                    t += str;
+                    k--;
+                }
+                stk.push(t);
+            } else {
+                string t(1, s[i]);
+                stk.push(t);
+            }
+        }
+        string ans = "";
+        while (!stk.empty()) {
+            ans = stk.top() + ans;
+            stk.pop();
+        }
+        return ans;
+
+=======
+
+        stack<int> numStack;
+        stack<string> strStack;
+        string str;
+        int num = 0;
+        for (char c : s) {
+            if (isdigit(c)) {
+                num = num * 10 + (c - '0');
+            } else if (c == '[') {
+                numStack.push(num);
+                strStack.push(str);
+                num = 0;
+                str = "";
+            } else if (c == ']') {
+                int times = numStack.top();
+                numStack.pop();
+                string tmp = strStack.top();
+                strStack.pop();
+                for (int i = 0; i < times; i++) {
+                    tmp += str;
+                }
+                str = tmp;
+            } else {
+                str += c;
+            }
+        }
+        return str;
+
+=======
+
+        int n = s.size();
+        string res;
+        int i = 0;
+        while (i < n) {
+            if (s[i] >= '0' && s[i] <= '9') {
+                int k = 0;
+                while (s[i] >= '0' && s[i] <= '9') {
+                    k = k * 10 + s[i++] - '0';
+                }
+                int j = i;
+                int cnt = 0;
+                while (j < n) {
+                    if (s[j] == '[') cnt++;
+                    if (s[j] == ']') cnt--;
+                    if (cnt == 0) break;
+                    j++;
+                }
+                string t = decodeString(s.substr(i + 1, j - i - 1));
+                while (k--) res += t;
+                i = j + 1;
+            } else {
+                res += s[i++];
+            }
+        }
+        return res;
+
+=======
+
+        stack<int> nums;
+        stack<string> strs;
+        int num = 0;
+        string str;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] >= '0' && s[i] <= '9') {
+                num = num * 10 + (s[i] - '0');
+            } else if (s[i] == '[') {
+                nums.push(num);
+                strs.push(str);
+                num = 0;
+                str = "";
+            } else if (s[i] == ']') {
+                int n = nums.top();
+                nums.pop();
+                string tmp = strs.top();
+                strs.pop();
+                for (int j = 0; j < n; ++j) {
+                    tmp += str;
+                }
+                str = tmp;
+            } else {
+                str += s[i];
+            }
+        }
+        return str;
+
+=======
+
+        stack<string> st;
+        string res;
+        for (auto c : s) {
+            if (c == ']') {
+                string str;
+                while (st.top() != "[") {
+                    str = st.top() + str;
+                    st.pop();
+                }
+                st.pop();
+                int k = stoi(st.top());
+                st.pop();
+                while (k--) {
+                    st.push(str);
+                }
+            } else {
+                st.push(string(1, c));
+            }
+        }
+        while (!st.empty()) {
+            res = st.top() + res;
+            st.pop();
+        }
+        return res;
+
+=======
+
+        string res;
+        stack<string> stk;
+        int n = s.size();
+        for (int i = 0; i < n; i++) {
+            if (s[i] == ']') {
+                string str;
+                while (stk.top() != "[") {
+                    str = stk.top() + str;
+                    stk.pop();
+                }
+                stk.pop();
+                string num;
+                while (!stk.empty() && stk.top() >= "0" && stk.top() <= "9") {
+                    num = stk.top() + num;
+                    stk.pop();
+                }
+                int k = stoi(num);
+                string t;
+                while (k--) {
+                    t += str;
+                }
+                stk.push(t);
+            } else {
+                string t(1, s[i]);
+                stk.push(t);
+            }
+        }
+        while (!stk.empty()) {
+            res = stk.top() + res;
+            stk.pop();
+        }
+        return res;
+
+=======
+
+        string res;
+        stack<string> stk;
+        stack<int> cnt;
+        int i = 0;
+        while (i < s.size()) {
+            if (isdigit(s[i])) {
+                int n = 0;
+                while (isdigit(s[i])) {
+                    n = n * 10 + s[i] - '0';
+                    i++;
+                }
+                cnt.push(n);
+            } else if (s[i] == '[') {
+                stk.push(res);
+                res = "";
+                i++;
+            } else if (s[i] == ']') {
+                string temp = stk.top();
+                stk.pop();
+                for (int j = 0; j < cnt.top(); j++) {
+                    temp += res;
+                }
+                cnt.pop();
+                res = temp;
+                i++;
+            } else {
+                res += s[i++];
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        int i = 0;
+        string result;
+        while(i < n) {
+            if (isdigit(s[i])) {
+                int num = 0;
+                while (i < n && isdigit(s[i])) {
+                    num = num * 10 + s[i] - '0';
+                    i++;
+                }
+                i++; // skip '['
+                string sub = decodeString(s);
+                while (num > 0) {
+                    result += sub;
+                    num--;
+                }
+                i++; // skip ']'
+            } else if (isalpha(s[i])) {
+                result += s[i];
+                i++;
+            }
+        }
+        return result;

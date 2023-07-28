@@ -1,0 +1,249 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = customers.length;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0) {
+                ans += customers[i];
+                customers[i] = 0;
+            }
+        }
+        int cur = 0;
+        for (int i = 0; i < minutes; i++) {
+            cur += customers[i];
+        }
+        int max = cur;
+        for (int i = minutes; i < n; i++) {
+            cur = cur - customers[i - minutes] + customers[i];
+            max = Math.max(max, cur);
+        }
+        return ans + max;
+
+=======
+
+        int n = customers.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + (grumpy[i] == 0 ? customers[i] : 0);
+        }
+        int max = 0;
+        for (int i = minutes; i <= n; i++) {
+            max = Math.max(max, prefix[i] - prefix[i - minutes]);
+        }
+        return prefix[n] + max;
+
+=======
+
+        int sum = 0;
+        int max = 0;
+        int temp = 0;
+        for (int i = 0; i < customers.length; i++) {
+            if (grumpy[i] == 0) {
+                sum += customers[i];
+            }
+        }
+        for (int i = 0; i < minutes; i++) {
+            if (grumpy[i] == 1) {
+                temp += customers[i];
+            }
+        }
+        max = temp;
+        for (int i = minutes; i < customers.length; i++) {
+            if (grumpy[i] == 1) {
+                temp += customers[i];
+            }
+            if (grumpy[i - minutes] == 1) {
+                temp -= customers[i - minutes];
+            }
+            max = Math.max(max, temp);
+        }
+        return sum + max;
+
+=======
+
+        int max = 0, sum = 0, n = customers.length;
+        for (int i = 0; i < minutes; i++) {
+            if (grumpy[i] == 0) {
+                sum += customers[i];
+            }
+        }
+        max = sum;
+        for (int i = minutes; i < n; i++) {
+            if (grumpy[i] == 0) {
+                sum += customers[i];
+            }
+            if (grumpy[i - minutes] == 0) {
+                sum -= customers[i - minutes];
+            }
+            max = Math.max(max, sum);
+        }
+        return max;
+
+=======
+
+        int max = 0;
+        int sum = 0;
+        int n = customers.length;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0)
+                sum += customers[i];
+        }
+        int count = 0;
+        for (int i = 0; i < minutes; i++) {
+            if (grumpy[i] == 1)
+                count += customers[i];
+        }
+        max = count;
+        for (int i = minutes; i < n; i++) {
+            if (grumpy[i] == 1)
+                count += customers[i];
+            if (grumpy[i - minutes] == 1)
+                count -= customers[i - minutes];
+            max = Math.max(max, count);
+        }
+        return sum + max;
+
+=======
+
+        int n = customers.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int s = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0) {
+                s += customers[i];
+                customers[i] = 0;
+            }
+            if (i == 0) {
+                left[i] = customers[i];
+            } else {
+                left[i] = left[i-1] + customers[i];
+            }
+        }
+        for (int i = n-1; i >= 0; i--) {
+            if (i == n-1) {
+                right[i] = customers[i];
+            } else {
+                right[i] = right[i+1] + customers[i];
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int l = i - minutes >= 0 ? left[i-minutes] : 0;
+            int r = i + minutes < n ? right[i+minutes] : 0;
+            max = Math.max(max, l + r);
+        }
+        return s + max;
+
+=======
+
+        int n = customers.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        int total = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0) {
+                total += customers[i];
+                customers[i] = 0;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                prefix[i] = customers[i];
+            } else {
+                prefix[i] = prefix[i - 1] + customers[i];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == n - 1) {
+                suffix[i] = customers[i];
+            } else {
+                suffix[i] = suffix[i + 1] + customers[i];
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int left = i - minutes < 0 ? 0 : prefix[i - minutes];
+            int right = i + minutes >= n ? 0 : suffix[i + minutes];
+            max = Math.max(max, left + right);
+        }
+        return max + total;
+
+=======
+
+        int n = customers.length;
+        int max = 0;
+        int sum = 0;
+        int sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0) {
+                sum += customers[i];
+            }
+            if (i < minutes) {
+                if (grumpy[i] == 1) {
+                    sum2 += customers[i];
+                }
+            }
+        }
+        max = sum2;
+        for (int i = minutes; i < n; i++) {
+            if (grumpy[i] == 1) {
+                sum2 += customers[i];
+            }
+            if (grumpy[i - minutes] == 1) {
+                sum2 -= customers[i - minutes];
+            }
+            max = Math.max(max, sum2);
+        }
+        return max + sum;
+
+=======
+
+        int n = customers.length;
+        int[] grumpyCount = new int[n];
+        int maxGrumpy = 0;
+        int grumpySum = 0;
+        for (int i = 0; i < n; i++) {
+            grumpySum += grumpy[i] * customers[i];
+            grumpyCount[i] = grumpySum;
+            if (i >= minutes) {
+                grumpySum -= grumpy[i - minutes] * customers[i - minutes];
+            }
+            maxGrumpy = Math.max(maxGrumpy, grumpyCount[i]);
+        }
+        int total = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 0) {
+                total += customers[i];
+            }
+        }
+        return total + maxGrumpy;
+
+=======
+
+        int n = customers.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        int[] grumpyCustomers = new int[n];
+        int grumpyCustomersSum = 0;
+        for (int i = 0; i < n; i++) {
+            if (grumpy[i] == 1) {
+                grumpyCustomers[i] = customers[i];
+                grumpyCustomersSum += customers[i];
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + grumpyCustomers[i - 1];
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            suffix[i] = suffix[i + 1] + grumpyCustomers[i + 1];
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int left = i - minutes >= 0 ? prefix[i - minutes] : 0;
+            int right = i + minutes < n ? suffix[i + minutes] : 0;
+            max = Math.max(max, grumpyCustomersSum - left - right);
+        }
+        return max;

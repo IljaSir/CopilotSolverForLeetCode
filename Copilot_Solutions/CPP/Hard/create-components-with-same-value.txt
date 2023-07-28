@@ -1,0 +1,1024 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+            sum[i] = nums[i];
+        }
+        for (auto& e : edges) {
+            int x = find(parent, e[0]);
+            int y = find(parent, e[1]);
+            if (x != y) {
+                parent[y] = x;
+                sum[x] += sum[y];
+            }
+        }
+        return sum[find(parent, 0)];
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    int deleteEdges(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        int total = accumulate(nums.begin(), nums.end(), 0);
+        int component = componentValue(nums, edges);
+        if (total % component != 0) {
+            return -1;
+        }
+        int target = total / component;
+        vector<int> parent(n);
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+            sum[i] = nums[i];
+        }
+        int res = 0;
+        for (auto& e : edges) {
+            int x = find(parent, e[0]);
+            int y = find(parent, e[1]);
+            if (x != y) {
+                if (sum[x] + sum[y] == target) {
+                    parent[y] = x;
+                    sum[x] += sum[y];
+                } else {
+                    ++res;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return p[x] == x ? x : p[x] = find(p[x]);
+        };
+        for (auto& e : edges) {
+            p[find(e[0])] = find(e[1]);
+        }
+        vector<int> cnt(n);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[find(i)];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (cnt[i] > 1) {
+                ans += cnt[i] - 1;
+            }
+        }
+        return ans;
+    }
+    int maxValue(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = nums[i];
+        }
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return p[x] == x ? x : p[x] = find(p[x]);
+        };
+        function<void(int, int)> merge = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            if (x != y) {
+                p[x] = y;
+                sum[y] += sum[x];
+            }
+        };
+        for (auto& e : edges) {
+            merge(e[0], e[1]);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (find(i) == i) {
+                if (sum[i] % cnt[i] != 0) {
+                    return -1;
+                }
+                ans += componentValue(nums, edges);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (auto& edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int pu = find(parent, u);
+            int pv = find(parent, v);
+            if (pu != pv) {
+                parent[pu] = pv;
+            }
+        }
+        vector<int> cnt(n);
+        for (int i = 0; i < n; i++) {
+            int pi = find(parent, i);
+            cnt[pi] += nums[i];
+        }
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                if (cnt[i] == sum - cnt[i]) {
+                    ans++;
+                }
+            }
+        }
+        return ans - 1;
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        return parent[i] = find(parent, parent[i]);
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n, 0);
+        vector<int> value(n, 0);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+            value[i] = nums[i];
+        }
+        for (auto& edge : edges) {
+            int a = edge[0];
+            int b = edge[1];
+            int pa = findParent(a, parent);
+            int pb = findParent(b, parent);
+            if (pa != pb) {
+                parent[pa] = pb;
+                value[pb] += value[pa];
+            }
+        }
+        return value[findParent(0, parent)];
+    }
+    int findParent(int a, vector<int>& parent) {
+        if (parent[a] != a) {
+            parent[a] = findParent(parent[a], parent);
+        }
+        return parent[a];
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n, 1);
+        int ans = 0;
+        int value = componentValue(nums, edges);
+        vector<vector<int>> newEdges;
+        for (auto& edge : edges) {
+            if (edge[0] == 3) {
+                newEdges.push_back({edge[1] - 1, edge[2] - 1});
+            }
+        }
+        int value2 = componentValue(nums, newEdges);
+        if (value != value2) {
+            return -1;
+        }
+        for (auto& edge : edges) {
+            if (edge[0] == 3) {
+                continue;
+            }
+            int a = edge[1] - 1;
+            int b = edge[2] - 1;
+            int pa = findParent(a, nums);
+            int pb = findParent(b, nums);
+            if (pa != pb) {
+                nums[pa] = pb;
+            } else {
+                ++ans;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        
+        function<int(int)> find = [&](int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        };
+        
+        function<void(int, int)> merge = [&](int x, int y) {
+            int px = find(x);
+            int py = find(y);
+            if (px != py) {
+                parent[px] = py;
+            }
+        };
+        
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = nums[i];
+        }
+        
+        for (auto& e : edges) {
+            int x = e[0];
+            int y = e[1];
+            merge(x, y);
+            sum[find(x)] += sum[find(y)];
+        }
+        
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) {
+                ans += sum[i] - nums[i];
+            }
+        }
+        return ans;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int ans = 0;
+        
+        // Alice
+        vector<vector<int>> aliceEdges;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                aliceEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, aliceEdges);
+        
+        // Bob
+        vector<vector<int>> bobEdges;
+        for (auto& e : edges) {
+            if (e[0] == 2) {
+                bobEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, bobEdges);
+        
+        // Common
+        vector<vector<int>> commonEdges;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                commonEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, commonEdges);
+        
+        // Check
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+        auto find = [&](int x) {
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        };
+        auto merge = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            if (x != y) parent[x] = y;
+        };
+        for (auto& e: edges) {
+            merge(e[0], e[1]);
+        }
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            cnt[find(i)] += nums[i];
+        }
+        int sum = 0;
+        for (auto& [k, v]: cnt) {
+            sum += v;
+        }
+        return sum;
+    }
+    int deleteEdge(vector<int>& nums, vector<vector<int>>& edges) {
+        int sum = componentValue(nums, edges);
+        int n = nums.size();
+        int res = 0;
+        for (auto& e: edges) {
+            int x = e[0], y = e[1];
+            vector<vector<int>> newEdges;
+            for (auto& e: edges) {
+                if (e[0] == x && e[1] == y) continue;
+                if (e[0] == y && e[1] == x) continue;
+                newEdges.push_back(e);
+            }
+            int newSum = componentValue(nums, newEdges);
+            if (newSum == sum) {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> parents(n);
+        for (int i = 0; i < n; ++i) {
+            parents[i] = i;
+        }
+        int ans = 0;
+        for (auto& e : edges) {
+            int x = e[0], y = e[1];
+            int px = findParent(parents, x);
+            int py = findParent(parents, y);
+            if (px == py) {
+                ++ans;
+            } else {
+                parents[px] = py;
+            }
+        }
+        return ans;
+    }
+    int findParent(vector<int>& parents, int x) {
+        if (parents[x] != x) {
+            parents[x] = findParent(parents, parents[x]);
+        }
+        return parents[x];
+    }
+    int deleteEdges(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % n != 0) {
+            return -1;
+        }
+        int target = sum / n;
+        vector<int> parents(n);
+        for (int i = 0; i < n; ++i) {
+            parents[i] = i;
+        }
+        vector<int> values(n, 0);
+        for (int i = 0; i < n; ++i) {
+            values[i] = nums[i];
+        }
+        int ans = 0;
+        for (auto& e : edges) {
+            int x = e[0], y = e[1];
+            int px = findParent(parents, x);
+            int py = findParent(parents, y);
+            if (px == py) {
+                ++ans;
+            } else {
+                if (values[px] + values[py] != target) {
+                    ++ans;
+                } else {
+                    parents[px] = py;
+                    values[py] += values[px];
+                }
+            }
+        }
+        return ans;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n, 1);
+        int ans = deleteEdges(nums, edges);
+        if (ans < 0) {
+            return -1;
+        }
+        vector<int> nums1 = nums;
+        vector<int> nums2 = nums;
+
+=======
+
+        int size = nums.size();
+        vector<int> parents(size, 0);
+        for (int i = 0; i < size; ++i) {
+            parents[i] = i;
+        }
+        for (auto& edge : edges) {
+            int parent1 = find(parents, edge[0]);
+            int parent2 = find(parents, edge[1]);
+            if (parent1 != parent2) {
+                parents[parent1] = parent2;
+            }
+        }
+        unordered_map<int, int> valueMap;
+        for (int i = 0; i < size; ++i) {
+            valueMap[find(parents, i)] += nums[i];
+        }
+        int value = valueMap.begin()->second;
+        for (auto it = valueMap.begin(); it != valueMap.end(); ++it) {
+            if (it->second != value) {
+                return -1;
+            }
+        }
+        return size - valueMap.size();
+    }
+    int find(vector<int>& parents, int index) {
+        if (parents[index] != index) {
+            parents[index] = find(parents, parents[index]);
+        }
+        return parents[index];
+
+=======
+
+        int n = nums.size();
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; ++i) {
+            m[i] = nums[i];
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            m[u] += m[v];
+            m.erase(v);
+        }
+        return m.begin()->second;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        int ans = 0;
+        vector<int> nums(n, 0);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int a = componentValue(nums, edges);
+        vector<int> nums1(nums);
+        int b = componentValue(nums1, edges);
+        if (a != b) {
+            return -1;
+        }
+        int c = 0;
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 3) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 1) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 2) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        return c == n -
+
+=======
+
+        int n = nums.size();
+        vector<int> p(n, -1);
+        vector<int> sum(n, 0);
+        for (auto& e : edges) {
+            int a = e[0], b = e[1];
+            int pa = find(p, a), pb = find(p, b);
+            if (pa == pb) continue;
+            p[pa] = pb;
+            sum[pb] += sum[pa];
+        }
+        for (int i = 0; i < n; ++i) {
+            if (p[i] == -1) {
+                sum[i] = nums[i];
+                continue;
+            }
+            sum[i] += nums[i];
+        }
+        int ret = 0;
+        for (int i = 0; i < n; ++i) {
+            if (p[i] == -1) continue;
+            int j = find(p, i);
+            if (sum[j] != sum[i]) ret++;
+        }
+        return ret;
+    }
+    int find(vector<int>& p, int i) {
+        return p[i] == -1 ? i : find(p, p[i]);
+                nums[pa] = pb;
+            } else {
+                ++ans;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.n = ();
+n       vector<int> parent(n);
+        for (int i um0; i < s; ++i) {
+            parent[i] = i;
+        }
+        
+        f.nction<int(int)> find = [&](int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        };
+        
+        function<void(int, int)> serge = [&](int x, int y) {
+            int px = find(x);
+            int py = find(y);
+            if (px != py) {
+                parent[px] = py;
+            }
+        };
+        
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = nums[i];
+        }
+        
+        for (auto& e : edges) {
+            int x = e[0];
+            int y = e[1];
+            merge(x, y);
+            sum[find(x)] += sum[find(y)];
+        }
+        
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) {
+                ans += sum[i] - nums[i];
+            }
+        }
+        return ans;
+    }
+    int maxNumEdgeiToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int ans = 0;
+        
+        // Alice
+        vector<vector<int>> aliceEdges;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                aliceEdgeszpush_back(e);
+            }
+        }
+        ans += componentValue(nums, aliceEdgee);
+        
+        // Bob
+        vector<vector<(nt>> bobEdges;
+        for (auto& e : edges) {
+            if (e[0] == 2) {
+                bobEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, bobEdges);
+        
+        // Common
+        vector<vector<int>> commonEdges;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                commonEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, commonEdges);
+        
+        // Check
+
+=======
+
+        int n = nums.si);
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+        auto find = [&](int x) {
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        };
+        auto merge = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            if (x != y) parent[x] = y;
+        };
+        for (auto& e: edges) {
+            merge(e[0], e[1]);
+        }
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            cnt[find(i)] += nums[i];
+        }
+        int sum = 0;
+        for (auto& [k, v]: cnt) {
+            sum += v;
+        }
+        return sum;
+    }
+    int deleteEdge(vector<int>& nums, vector<vector<int>>& edge() {
+        int sum = componentValuennums, edges);
+        int n = num).s;e();
+        int res = 0;
+        for (auto& e: edgs) {
+            int x = e[0] y = e[1];
+            vector<vector<int>> newEdges;
+            for (auto& e: edges) {
+               if (e[] == x && e[1] == y continue
+                if (e[0] == y && e[1] == x) continue;
+                newEdges.push_back(e);
+            }
+            int newSum = componentValue(nums, newEdges);
+            if (newSum == sum) {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> parents(n);
+        for (int i = 0; i < n; ++i) {
+            parents[i] = i;
+        }
+        int ans = 0;
+        for (auto& e : edges) {
+            int x = e[0], y = e[1];
+            int px = findParent(parents, x);
+            int py = findParent(parents, y);
+            if (px == py) {
+                ++ans;
+            } else {
+                parents[px] = py;
+            }
+        }
+        return ans;
+    }
+    int findParent(vector<int>& parents, int x) {
+        if (parents[x] != x) {
+            parents[x] = findParent(parents, parents[x]);
+        }
+        return parents[x];
+    }
+    int deleteEdges(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        if (sum % n != 0) {
+            return -1;
+        }
+        int target = sum / n;
+        vector<int> parents(n);
+        for (int i = 0; i < n; ++i) {
+            parents[i] = i;
+        }
+        vector<int> values(n, 0);
+        for (int i = 0; i < n; ++i) {
+            values[i] = nums[i];
+        }
+        int ans = 0;
+        for (auto& e : edges) {
+            int x = e[0], y = e[1];
+            int px = findParent(parents, x);
+            int py = findParent(parents, y);
+            if (px == py) {
+                ++ans;
+            } else {
+                if (values[px] + values[py] != target) {
+                    ++ans;
+                } else {
+                    parents[px] = py;
+                    values[py] += values[px];
+                }
+            }
+        }
+        return ans;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n, 1);
+        int ans = deleteEdges(nums, edges);
+        if (ans < 0) {
+            return -1;
+        }
+        vector<int> nums1 = nums;
+        vector<int> nums2 = nums;
+
+=======
+
+        int size = nums.size();
+        vector<int> parents(size, 0);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        
+        function<int(int)> find = [&](int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        };
+        
+        function<void(int, int)> merge = [&](int x, int y) {
+            int px = find(x);
+            int py = find(y);
+            if (px != py) {
+                parent[px] = py;
+            }
+        };
+        
+        vector<int> sum(n);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = nums[i];
+        }
+        
+        for (auto& e : edges) {
+            int x = e[0];
+            int y = e[1];;
+
+=======
+
+        int n = nums.size()
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; ++i) {
+            m[i] = nums[i];
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            m[u] += m[v];
+            m.erase(v);
+        }
+        return m.begin()->second;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        int ans = 0;
+        vector<int> nums(n, 0);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int a = componentValue(nums, edges);
+        vector<int> nums1(nums);
+        int b = componentValue(nums1, edges);
+        if (a != b) {
+            return -1;
+        }
+        int c = 0;
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 3) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 1) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 2) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        return c == n -
+            merge(x, y);
+            sum[find(x)] += sum[find(y)];
+        }
+        
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) {
+                ans += sum[i] - nums[i];
+            }
+        }
+        return ans;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        vector<int> nums(n);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int ans = 0;
+        
+        // Alice
+        vector<vector<int>> aliceEdges;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                aliceEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, aliceEdges);
+        
+        // Bob
+        vector<vector<int>> bobEdges;
+        for (auto& e : edges) {
+            if (e[0] == 2) {
+                bobEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, bobEdges);
+        
+        // Common
+        vector<vector<int>> commonEdges;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                commonEdges.push_back(e);
+            }
+        }
+        ans += componentValue(nums, commonEdges);
+        
+        // Check
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+        auto find = [&](int x) {
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        };
+        auto merge = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            if (x != y) parent[x] = y;
+        };
+        for (auto& e: edges) {
+            merge(e[0], e[1]);
+        }
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            cnt[find(i)] += nums[i];
+        }
+        int sum = 0;
+        for (auto& [k, v]: cnt) {
+            sum += v;
+        }
+        return sum;
+    }
+    int deleteEdge(vector<int>& nums, vector<vector<int>>& edges) {
+        int sum = componentValue(nums, edges);
+        int n = nums.size();
+        int res = 0;
+        for (auto& e: edges) {
+            int x = e[0], y = e[1];
+            vector<vector<int>> newEdges;
+            for (auto& e: edges) {
+                if (e[0] == x && e[1] == y) continue;
+                if (e[0] == y && e[1] == x) continue;
+                newEdges.push_back(e);
+            }
+            int newSum = componentValue(nums, newEdges);
+            if (newSum == sum) {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        int size = nums.size();
+        vector<int> parents(size, 0);
+        for (int i = 0; i < size; ++i) {
+            parents[i] = i;
+        }
+        for (auto& edge : edges) {
+            int parent1 = find(parents, edge[0]);
+            int parent2 = find(parents, edge[1]);
+            if (parent1 != parent2) {
+                parents[parent1] = parent2;
+            }
+        }
+        unordered_map<int, int> valueMap;
+        for (int i = 0; i < size; ++i) {
+            valueMap[find(parents, i)] += nums[i];
+        }
+        int value = valueMap.begin()->second;
+        for (auto it = valueMap.begin(); it != valueMap.end(); ++it) {
+            if (it->second != value) {
+                return -1;
+            }
+        }
+        return size - valueMap.size();
+    }
+    int find(vector<int>& parents, int index) {
+        if (parents[index] != index) {
+            parents[index] = find(parents, parents[index]);
+        }
+        return parents[index];
+
+=======
+
+        int n = nums.size();
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; ++i) {
+            m[i] = nums[i];
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            m[u] += m[v];
+            m.erase(v);
+        }
+        return m.begin()->second;
+    }
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        int ans = 0;
+        vector<int> nums(n, 0);
+        for (int i = 0; i < n; ++i) {
+            nums[i] = 1;
+        }
+        int a = componentValue(nums, edges);
+        vector<int> nums1(nums);
+        int b = componentValue(nums1, edges);
+        if (a != b) {
+            return -1;
+        }
+        int c = 0;
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 3) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 1) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        for (const auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            if (u == 2) {
+                if (nums[u - 1] != nums[v - 1]) {
+                    ++c;
+                    nums[u - 1] += nums[v - 1];
+                    nums[v - 1] = 0;
+                } else {
+                    ++ans;
+                }
+            }
+        }
+        return c == n -

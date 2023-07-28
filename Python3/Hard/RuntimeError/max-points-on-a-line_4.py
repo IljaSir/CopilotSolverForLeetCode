@@ -1,0 +1,23 @@
+class Solution:
+    def maxPoints(self, points: List[List[int]]) -> int:
+        
+        if len(points) < 3:
+            return len(points)
+        res = 0
+        for i in range(len(points)):
+            d = {}
+            same = 1
+            for j in range(i+1, len(points)):
+                if points[i] == points[j]:
+                    same += 1
+                else:
+                    x = points[j][0] - points[i][0]
+                    y = points[j][1] - points[i][1]
+                    g = self.gcd(x, y)
+                    x //= g
+                    y //= g
+                    d[(x, y)] = d.get((x, y), 0) + 1
+            res = max(res, same)
+            if d:
+                res = max(res, max(d.values()) + same)
+        return res

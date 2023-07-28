@@ -1,0 +1,202 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut map2 = std::collections::HashMap::new();
+        let s: Vec<char> = s.chars().collect();
+        let t: Vec<char> = t.chars().collect();
+        for i in 0..s.len() {
+            if !map.contains_key(&s[i]) {
+                map.insert(s[i], t[i]);
+            } else {
+                if map.get(&s[i]) != Some(&t[i]) {
+                    return false;
+                }
+            }
+            if !map2.contains_key(&t[i]) {
+                map2.insert(t[i], s[i]);
+            } else {
+                if map2.get(&t[i]) != Some(&s[i]) {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut s2t = vec![0; 256];
+        let mut t2s = vec![0; 256];
+        let s = s.as_bytes();
+        let t = t.as_bytes();
+        for i in 0..s.len() {
+            if s2t[s[i] as usize] == 0 && t2s[t[i] as usize] == 0 {
+                s2t[s[i] as usize] = t[i];
+                t2s[t[i] as usize] = s[i];
+            }
+            if s2t[s[i] as usize] != t[i] || t2s[t[i] as usize] != s[i] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut map2 = std::collections::HashMap::new();
+        for (c1, c2) in s.chars().zip(t.chars()) {
+            if let Some(&c) = map.get(&c1) {
+                if c != c2 {
+                    return false;
+                }
+            } else {
+                map.insert(c1, c2);
+            }
+            if let Some(&c) = map2.get(&c2) {
+                if c != c1 {
+                    return false;
+                }
+            } else {
+                map2.insert(c2, c1);
+            }
+        }
+        true
+
+=======
+
+        let mut m1 = vec![0; 256];
+        let mut m2 = vec![0; 256];
+        let mut i = 0;
+        while i < s.len() {
+            if m1[s.as_bytes()[i] as usize] != m2[t.as_bytes()[i] as usize] {
+                return false;
+            }
+            m1[s.as_bytes()[i] as usize] = i + 1;
+            m2[t.as_bytes()[i] as usize] = i + 1;
+            i += 1;
+        }
+        true
+
+=======
+
+        let mut s2t = [0; 128];
+        let mut t2s = [0; 128];
+        let s = s.into_bytes();
+        let t = t.into_bytes();
+        for i in 0..s.len() {
+            if s2t[s[i] as usize] == 0 && t2s[t[i] as usize] == 0 {
+                s2t[s[i] as usize] = t[i];
+                t2s[t[i] as usize] = s[i];
+            } else if s2t[s[i] as usize] != t[i] || t2s[t[i] as usize] != s[i] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut used = std::collections::HashSet::new();
+        for (c1, c2) in s.chars().zip(t.chars()) {
+            match map.get(&c1) {
+                Some(&c2_) => {
+                    if c2 != c2_ {
+                        return false;
+                    }
+                }
+                None => {
+                    if used.contains(&c2) {
+                        return false;
+                    }
+                    map.insert(c1, c2);
+                    used.insert(c2);
+                }
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut map2 = std::collections::HashMap::new();
+        for (a, b) in s.chars().zip(t.chars()) {
+            if let Some(v) = map.get(&a) {
+                if *v != b {
+                    return false;
+                }
+            } else {
+                map.insert(a, b);
+            }
+            if let Some(v) = map2.get(&b) {
+                if *v != a {
+                    return false;
+                }
+            } else {
+                map2.insert(b, a);
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut mapping = [0; 256];
+        let mut visited = [false; 256];
+        let s = s.as_bytes();
+        let t = t.as_bytes();
+        for i in 0..s.len() {
+            if mapping[s[i] as usize] == 0 {
+                if visited[t[i] as usize] {
+                    return false;
+                }
+                mapping[s[i] as usize] = t[i] as usize;
+                visited[t[i] as usize] = true;
+            } else if mapping[s[i] as usize] != t[i] as usize {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut map1 = [0; 128];
+        let mut map2 = [0; 128];
+        for (i, c) in s.chars().enumerate() {
+            if map1[c as usize] == 0 {
+                map1[c as usize] = t.chars().nth(i).unwrap() as usize;
+            }
+            if map2[t.chars().nth(i).unwrap() as usize] == 0 {
+                map2[t.chars().nth(i).unwrap() as usize] = c as usize;
+            }
+            if map1[c as usize] != t.chars().nth(i).unwrap() as usize || map2[t.chars().nth(i).unwrap() as usize] != c as usize {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        if s.len() != t.len() {
+            return false;
+        }
+        let (mut s, mut t) = (s.into_bytes(), t.into_bytes());
+        let mut map = vec![0; 256];
+        let mut set = vec![false; 256];
+        for i in 0..s.len() {
+            if map[s[i] as usize] == 0 {
+                if set[t[i] as usize] {
+                    return false;
+                }
+                map[s[i] as usize] = t[i] as usize;
+                set[t[i] as usize] = true;
+            } else {
+                if map[s[i] as usize] != t[i] as usize {
+                    return false;
+                }
+            }
+        }
+        true

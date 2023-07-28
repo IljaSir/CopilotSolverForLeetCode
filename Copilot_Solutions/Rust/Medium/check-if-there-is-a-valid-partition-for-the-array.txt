@@ -1,0 +1,346 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut i = 0;
+        while i < nums.len() {
+            let mut j = i + 1;
+            while j < nums.len() && nums[j] == nums[i] {
+                j += 1;
+            }
+            let n = j - i;
+            if n >= 2 {
+                if n >= 4 {
+                    return true;
+                }
+                if j < nums.len() && nums[j] == nums[i] + 1 {
+                    i = j + 1;
+                    while i < nums.len() && nums[i] == nums[i - 1] + 1 {
+                        i += 1;
+                    }
+                    if i - j == 2 {
+                        return true;
+                    }
+                } else {
+                    i = j;
+                }
+            } else {
+                i = j;
+            }
+        }
+        false
+
+=======
+
+        let mut count = vec![0; 1000001];
+        let mut max = 0;
+        for i in 0..nums.len() {
+            count[nums[i] as usize] += 1;
+            if count[nums[i] as usize] > max {
+                max = count[nums[i] as usize];
+            }
+        }
+        if max >= 3 {
+            return true;
+        }
+        let mut i = 0;
+        while i < nums.len() - 1 {
+            let mut j = i + 1;
+            while j < nums.len() && nums[j] == nums[i] {
+                j += 1;
+            }
+            if j - i >= 3 {
+                return true;
+            }
+            if j < nums.len() - 1 && nums[j] == nums[i] + 1 && nums[j + 1] == nums[j] + 1 {
+                return true;
+            }
+            i = j;
+        }
+        false
+
+=======
+
+        let mut v = Vec::new();
+        let mut c = 1;
+        for i in 1..nums.len() {
+            if nums[i] == nums[i - 1] {
+                c += 1;
+            } else {
+                v.push(c);
+                c = 1;
+            }
+        }
+        v.push(c);
+        let mut c2 = 0;
+        for i in 0..v.len() {
+            if v[i] >= 2 {
+                c2 += 1;
+            }
+        }
+        if c2 >= 2 {
+            return true;
+        }
+        for i in 1..v.len() {
+            if v[i - 1] == 1 && v[i] >= 3 {
+                return true;
+            }
+        }
+        false
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for i in nums {
+            *map.entry(i).or_insert(0) += 1;
+        }
+        let mut v = map.values().collect::<Vec<_>>();
+        v.sort();
+        let mut max = *v.last().unwrap();
+        let mut min = *v.first().unwrap();
+        if max >= 3 {
+            return true;
+        }
+        if max == 2 {
+            if min == 1 {
+                return true;
+            }
+            if min == 2 {
+                return v.len() == 2;
+            }
+        }
+        if max == 1 {
+            if min == 1 {
+                return v.len() == 1;
+            }
+            if min == 2 {
+                return v.len() == 2;
+            }
+        }
+        false
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut max = 0;
+        for i in nums.iter() {
+            *map.entry(i).or_insert(0) += 1;
+            if *i > max {
+                max = *i;
+            }
+        }
+        let mut last = 0;
+        let mut count = 0;
+        let mut last_count = 0;
+        for (k, v) in map.iter() {
+            if *k == last + 1 {
+                count += v;
+                last_count = *v;
+            } else if *k == last {
+                count += v;
+                last_count = *v;
+            } else {
+                last_count = *v;
+                count = *v;
+            }
+            if count >= max {
+                return true;
+            }
+            last = *k;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut count = vec![0; 1000000];
+        for n in &nums {
+            count[*n as usize - 1] += 1;
+        }
+        let mut max = 0;
+        let mut max_count = 0;
+        for n in &count {
+            if *n > 0 {
+                if *n > max_count {
+                    max_count = *n;
+                    max = n;
+                } else if *n == max_count {
+                    max = 0;
+                }
+            }
+        }
+        if max_count >= 3 {
+            return true;
+        }
+        if max_count == 2 {
+            let mut first = -1;
+            let mut second = -1;
+            for i in 0..nums.len() {
+                if nums[i] == max {
+                    first = i as i32;
+                    break;
+                }
+            }
+            for i in (0..nums.len()).rev() {
+                if nums[i] == max {
+                    second = i as i32;
+                    break;
+                }
+            }
+            if second - first >= 2 {
+                return true;
+            }
+        }
+        let mut first = -1;
+        let mut second = -1;
+        let mut third = -1;
+        for i in 0..nums.len() {
+            if nums[i] == max + 1 {
+                if first == -1 {
+                    first = i as i32;
+                } else if second == -1 {
+                    second = i as i32;
+                } else if third == -1 {
+                    third = i as i32;
+                } else {
+                    return true;
+                }
+            }
+        }
+        false
+
+=======
+
+        let mut count = vec![0; 1000001];
+        for &n in nums.iter() {
+            count[n as usize] += 1;
+        }
+        let mut same = 0;
+        let mut inc = 0;
+        let mut last = -1;
+        for i in 0..1000001 {
+            if count[i] == 0 {
+                continue;
+            }
+            if count[i] == 2 {
+                same += 1;
+                inc = 0;
+                last = -1;
+            } else if count[i] == 3 {
+                if last == i - 1 {
+                    inc += 1;
+                    if inc == 2 {
+                        return true;
+                    }
+                } else {
+                    inc = 1;
+                }
+                last = i;
+            } else {
+                return false;
+            }
+        }
+        same >= 2
+
+=======
+
+        let mut freq = vec![0; 1_000_001];
+        for &n in nums.iter() {
+            freq[n as usize] += 1;
+        }
+        let (mut two, mut three, mut inc) = (0, 0, 0);
+        for i in 0..1_000_001 {
+            if freq[i] == 0 {
+                continue;
+            }
+            if freq[i] == 2 {
+                two += 1;
+            } else if freq[i] == 3 {
+                three += 1;
+            } else if freq[i] > 3 {
+                return false;
+            }
+            if i > 0 && freq[i - 1] > 0 {
+                inc += 1;
+            }
+        }
+        two == 0 && three == 0 || two == 0 && three == 1 || two == 1 && three == 0 || inc == two + three
+
+=======
+
+        let mut counts = vec![0; 1_000_001];
+        for &num in &nums {
+            counts[num as usize] += 1;
+        }
+        let mut cur = 0;
+        let mut prev = 0;
+        let mut prev_count = 0;
+        for (i, &count) in counts.iter().enumerate() {
+            if count == 0 {
+                continue;
+            }
+            if cur == 0 {
+                cur = count;
+                prev = i;
+                prev_count = count;
+                continue;
+            }
+            if count == cur {
+                if prev_count >= 2 {
+                    return true;
+                }
+                prev = i;
+                prev_count = count;
+                continue;
+            }
+            if count == cur - 1 {
+                if prev == i - 1 {
+                    if prev_count >= 2 {
+                        return true;
+                    }
+                    prev = i;
+                    prev_count = count;
+                    cur = count;
+                    continue;
+                }
+            }
+            return false;
+        }
+        prev_count >= 2
+
+=======
+
+        let mut count = vec![0; 1000010];
+        for n in nums.iter() {
+            count[*n as usize] += 1;
+        }
+        let mut flag = false;
+        let mut i = 0;
+        while i < count.len() {
+            if count[i] >= 2 {
+                flag = true;
+                break;
+            }
+            i += 1;
+        }
+        if !flag {
+            return false;
+        }
+        let mut i = 0;
+        while i < count.len() {
+            if count[i] >= 3 {
+                return true;
+            }
+            i += 1;
+        }
+        let mut i = 0;
+        while i < count.len() - 2 {
+            if count[i] >= 1 && count[i + 1] >= 1 && count[i + 2] >= 1 {
+                return true;
+            }
+            i += 1;
+        }
+        false

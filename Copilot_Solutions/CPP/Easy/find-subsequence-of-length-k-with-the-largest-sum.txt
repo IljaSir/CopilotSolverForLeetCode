@@ -1,0 +1,321 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> res(k, 0);
+        for (int i = 0, j = 0; i < n; ++i) {
+            while (n - i + j > k && j > 0 && res[j - 1] < nums[i]) --j;
+            if (j < k) res[j++] = nums[i];
+        }
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size(), m = nums2.size();
+        vector<int> res(k, 0);
+        for (int i = max(0, k - m); i <= min(k, n); ++i) {
+            vector<int> res1 = maxSubsequence(nums1, i);
+            vector<int> res2 = maxSubsequence(nums2, k - i);
+            vector<int> tmp(k, 0);
+            int p1 = 0, p2 = 0, p = 0;
+            while (p1 < res1.size() || p2 < res2.size()) {
+                tmp[p++] = res1 > res2 ? res1[p1++] : res2[p2++];
+            }
+            res = max(res, tmp);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> res;
+        for (int i = 0; i < n; ++i) {
+            while (!res.empty() && n - i + res.size() > k && res.back() < nums[i]) {
+                res.pop_back();
+            }
+            if (res.size() < k) {
+                res.push_back(nums[i]);
+            }
+        }
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int m = nums1.size(), n = nums2.size();
+        vector<int> res(k, 0);
+        for (int i = max(0, k - n); i <= min(k, m); ++i) {
+            vector<int> res1 = maxSubsequence(nums1, i);
+            vector<int> res2 = maxSubsequence(nums2, k - i);
+            vector<int> cur(k, 0);
+            int p1 = 0, p2 = 0, p = 0;
+            while (p1 < res1.size() || p2 < res2.size()) {
+                cur[p++] = greater(res1, p1, res2, p2) ? res1[p1++] : res2[p2++];
+            }
+            if (greater(cur, 0, res, 0)) {
+                res.swap(cur);
+            }
+        }
+        return res;
+    }
+    bool greater(vector<int>& nums1, int i, vector<int>& nums2, int j) {
+        while (i < nums1.size() && j < nums2.size() && nums1[i] == nums2[j]) {
+            ++i;
+            ++j;
+        }
+        return j == nums2.size() || (i < nums1.size() && nums1[i] > nums2[j]);
+
+=======
+
+        int n = nums.size();
+        vector<int> ans;
+        for (int i = 0; i < n; i++) {
+            while (ans.size() > 0 && ans.back() < nums[i] && ans.size() + n - i > k) {
+                ans.pop_back();
+            }
+            if (ans.size() < k) {
+                ans.push_back(nums[i]);
+            }
+        }
+        return ans;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        vector<int> ans(k, 0);
+        for (int i = max(0, k - n2); i <= min(n1, k); i++) {
+            vector<int> candidate(k, 0);
+            auto t1 = maxSubsequence(nums1, i);
+            auto t2 = maxSubsequence(nums2, k - i);
+            int ptr1 = 0, ptr2 = 0;
+            for (int j = 0; j < k; j++) {
+                candidate[j] = t1[ptr1] > t2[ptr2] ? t1[ptr1++] : t2[ptr2++];
+            }
+            ans = max(ans, candidate);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(k);
+        int j = 0;
+        for (int i = 0; i < n; ++i) {
+            while (n - i + j > k && j > 0 && res[j - 1] < nums[i]) --j;
+            if (j < k) res[j++] = nums[i];
+        }
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size(), m = nums2.size();
+        vector<int> res(k);
+        for (int i = max(0, k - m); i <= k && i <= n; ++i) {
+            auto v1 = maxSubsequence(nums1, i);
+            auto v2 = maxSubsequence(nums2, k - i);
+            vector<int> cur(k);
+            int p1 = 0, p2 = 0;
+            for (int j = 0; j < k; ++j) {
+                cur[j] = greater(v1, p1, v2, p2) ? v1[p1++] : v2[p2++];
+            }
+            if (greater(cur, 0, res, 0)) res = cur;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(k);
+        int top = -1;
+        for (int i = 0; i < n; ++i) {
+            while (top >= 0 && n - i + top >= k && res[top] < nums[i]) {
+                --top;
+            }
+            if (top < k - 1) {
+                res[++top] = nums[i];
+            }
+        }
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size(), m = nums2.size();
+        vector<int> res(k);
+        for (int i = max(0, k - m); i <= min(k, n); ++i) {
+            auto v1 = maxSubsequence(nums1, i);
+            auto v2 = maxSubsequence(nums2, k - i);
+            vector<int> cur(k);
+            auto p1 = v1.begin(), p2 = v2.begin();
+            auto p = cur.begin();
+            while (p1 != v1.end() || p2 != v2.end()) {
+                *p++ = lexicographical_compare(p1, v1.end(), p2, v2.end()) ? *p2++ : *p1++;
+            }
+            res = max(res, cur);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(k);
+        int top = -1;
+        for (int i = 0; i < n; ++i) {
+            while (top >= 0 && top + n - i >= k && nums[i] > res[top]) {
+                --top;
+            }
+            if (top + 1 < k) {
+                res[++top] = nums[i];
+            }
+        }
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size();
+        int m = nums2.size();
+        vector<int> res(k);
+        for (int i = max(0, k - m); i <= k && i <= n; ++i) {
+            auto candidate = merge(maxSubsequence(nums1, i), maxSubsequence(nums2, k - i), k);
+            if (compare(candidate, 0, res, 0) > 0) {
+                res = candidate;
+            }
+        }
+        return res;
+    }
+    vector<int> merge(const vector<int>& nums1, const vector<int>& nums2, int k) {
+        vector<int> res(k);
+        int index1 = 0, index2 = 0;
+        for (int i = 0; i < k; ++i) {
+            if (compare(nums1, index1, nums2, index2) > 0) {
+                res[i] = nums1[index1++];
+            }
+            else {
+                res[i] = nums2[index2++];
+            }
+        }
+        return res;
+    }
+    int compare(const vector<int>& nums1, int index1, const vector<int>& nums2, int index2) {
+        int x = nums1.size(), y = nums2.size();
+        while (index1 < x && index2 < y) {
+            int difference = nums1[index1] - nums2[index2];
+            if (difference != 0) {
+                return difference;
+            }
+            ++index1;
+            ++index2;
+        }
+        return (x - index1) - (y - index2);
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        int m = n - k;
+        for (int i = 0; i < n; ++i) {
+            while (!res.empty() && res.back() < nums[i] && m > 0) {
+                res.pop_back();
+                --m;
+            }
+            res.push_back(nums[i]);
+        }
+        res.resize(k);
+        return res;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size();
+        int m = nums2.size();
+        vector<int> res(k, 0);
+        for (int i = max(0, k - m); i <= min(k, n); ++i) {
+            vector<int> temp(k, 0);
+            auto v1 = maxSubsequence(nums1, i);
+            auto v2 = maxSubsequence(nums2, k - i);
+            int pos = 0, pos1 = 0, pos2 = 0;
+            while (pos1 < v1.size() || pos2 < v2.size()) {
+                temp[pos++] = greater(v1, pos1, v2, pos2) ? v1[pos1++] : v2[pos2++];
+            }
+            res = greater(temp, 0, res, 0) ? temp : res;
+        }
+        return res;
+    }
+    bool greater(vector<int>& v1, int start1, vector<int>& v2, int start2) {
+        while (start1 < v1.size() && start2 < v2.size() && v1[start1] == v2[start2]) {
+            ++start1;
+            ++start2;
+        }
+        return start2 == v2.size() || (start1 < v1.size() && v1[start1] > v2[start2]);
+
+=======
+
+        int n = nums.size();
+        vector<int> ans;
+        for (int i = 0; i < n; ++i) {
+            while (!ans.empty() && nums[i] > ans.back() && (n - i + ans.size() > k)) {
+                ans.pop_back();
+            }
+            if (ans.size() < k) {
+                ans.push_back(nums[i]);
+            }
+        }
+        return ans;
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size();
+        int m = nums2.size();
+        vector<int> ans;
+        for (int i = max(0, k - m); i <= min(n, k); ++i) {
+            vector<int> ans1 = maxSubsequence(nums1, i);
+            vector<int> ans2 = maxSubsequence(nums2, k - i);
+            vector<int> temp;
+            int x = 0, y = 0;
+            while (x < ans1.size() || y < ans2.size()) {
+                temp.push_back(lexicographical_compare(ans1.begin() + x, ans1.end(), ans2.begin() + y, ans2.end()) ? ans2[y++] : ans1[x++]);
+            }
+            ans = max(ans, temp);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(k);
+        if (n == k) {
+            return nums;
+        }
+        int top = -1;
+        for (int i = 0; i < n; ++i) {
+            while (top >= 0 && res[top] < nums[i] && n - i > k - top - 1) {
+                --top;
+            }
+            if (top < k - 1) {
+                res[++top] = nums[i];
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> res;
+        int left = n - k;
+        for (int i = 0; i < n; i++) {
+            while (!res.empty() && left > 0 && res.back() < nums[i]) {
+                res.pop_back();
+                left--;
+            }
+            res.push_back(nums[i]);
+        }
+        return vector<int>(res.begin(), res.begin() + k);
+    }
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        vector<int> res(k, 0);
+        for (int i = max(0, k - n2); i <= k && i <= n1; i++) {
+            vector<int> v1 = maxSubsequence(nums1, i);
+            vector<int> v2 = maxSubsequence(nums2, k - i);
+            vector<int> cur(k, 0);
+            int p1 = 0, p2 = 0;
+            for (int j = 0; j < k; j++) {
+                cur[j] = greater(v1, p1, v2, p2) ? v1[p1++] : v2[p2++];
+            }
+            if (greater(cur, 0, res, 0)) {
+                res.swap(cur);
+            }
+        }
+        return res;

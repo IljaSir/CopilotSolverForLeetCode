@@ -1,0 +1,208 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let (mut l, mut r) = (0, *arr.iter().max().unwrap());
+        while l < r {
+            let m = l + (r - l) / 2;
+            let sum = arr.iter().map(|&x| x.min(m)).sum();
+            if sum < target {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        let (mut sum1, mut sum2) = (0, 0);
+        for &x in &arr {
+            let y = x.min(l);
+            sum1 += y;
+            sum2 += y.min(l - 1);
+        }
+        if (sum1 - target).abs() <= (sum2 - target).abs() {
+            l
+        } else {
+            l - 1
+        }
+
+=======
+
+        let (mut l, mut r) = (0, *arr.iter().max().unwrap());
+        while l < r {
+            let m = (l + r + 1) / 2;
+            let sum = arr.iter().map(|&x| if x > m { m } else { x }).sum::<i32>();
+            if sum > target {
+                r = m - 1;
+            } else {
+                l = m;
+            }
+        }
+        l
+
+=======
+
+        let mut arr = arr;
+        arr.sort();
+        let mut sum = 0;
+        let mut i = 0;
+        while i < arr.len() && sum + arr[i] * (arr.len() - i) as i32 <= target {
+            sum += arr[i];
+            i += 1;
+        }
+        if i == arr.len() {
+            return arr[arr.len() - 1];
+        }
+        let mut res = (target - sum) / (arr.len() - i) as i32;
+        if (res + 1) * (arr.len() - i) as i32 + sum - target < target - sum - res * (arr.len() - i) as i32 {
+            res += 1;
+        }
+        res
+
+=======
+
+        let mut sum = 0;
+        let mut max = 0;
+        for &val in arr.iter() {
+            sum += val;
+            if val > max {
+                max = val;
+            }
+        }
+        if sum <= target {
+            return max;
+        }
+        let mut left = 0;
+        let mut right = max;
+        let mut ans = 0;
+        while left <= right {
+            let mid = (left + right) / 2;
+            let mut cur = 0;
+            for &val in arr.iter() {
+                if val > mid {
+                    cur += mid;
+                } else {
+                    cur += val;
+                }
+            }
+            if cur <= target {
+                ans = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        let mut sum1 = 0;
+        let mut sum2 = 0;
+        for &val in arr.iter() {
+            if val > ans {
+                sum1 += ans;
+            } else {
+                sum1 += val;
+            }
+            if val > ans + 1 {
+                sum2 += ans + 1;
+            } else {
+                sum2 += val;
+            }
+        }
+        if (target - sum1).abs() <= (target - sum2).abs() {
+            return ans;
+        } else {
+            return ans + 1;
+        }
+
+=======
+
+        let mut arr = arr;
+        arr.sort();
+        let mut sum = 0;
+        let mut ans = 0;
+        let mut diff = target;
+        for (i, &a) in arr.iter().enumerate() {
+            let t = (arr.len() - i) as i32 * a;
+            if sum + t > target {
+                let d = (target - sum) / (arr.len() - i) as i32;
+                let cur_diff = (target - sum - d * (arr.len() - i) as i32).abs();
+                if cur_diff < diff {
+                    ans = d;
+                    diff = cur_diff;
+                } else if cur_diff == diff && ans > d {
+                    ans = d;
+                }
+                break;
+            }
+            sum += a;
+            let cur_diff = (target - sum).abs();
+            if cur_diff < diff {
+                ans = a;
+                diff = cur_diff;
+            }
+        }
+        ans
+
+=======
+
+        let (mut l, mut r) = (0, 100000);
+        while l + 1 < r {
+            let mid = (l + r) / 2;
+            if Self::sum(arr.iter().map(|&x| if x > mid { mid } else { x }).collect(), target) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        if Self::sum(arr.iter().map(|&x| if x > l { l } else { x }).collect(), target) {
+            l
+        } else {
+            r
+        }
+    }
+    
+    fn sum(arr: Vec<i32>, target: i32) -> bool {
+        let mut sum = 0;
+        for &x in arr.iter() {
+            sum += x;
+        }
+        sum <= target
+
+=======
+
+        let mut arr = arr;
+        arr.sort();
+        let mut sum = 0;
+        let mut ans = 0;
+        let mut diff = target;
+        for (i, &v) in arr.iter().enumerate() {
+            let n = arr.len() - i;
+            let t = target - sum - v * n as i32;
+            if t > 0 {
+                sum += v;
+            } else {
+                let t = target - sum;
+                if t % n as i32 == 0 {
+                    return t / n as i32;
+                }
+                return t / n as i32 + 1;
+            }
+        }
+        arr[arr.len() - 1]
+
+=======
+
+        let mut arr2 = arr.clone();
+        arr2.sort();
+        let mut sum = 0;
+        let mut i = 0;
+        let mut n = arr2.len();
+        while i < n && sum + arr2[i] * (n - i) <= target {
+            sum += arr2[i];
+            i += 1;
+        }
+        if i == n {
+            return arr2[n - 1];
+        }
+        let mut res = (target - sum) / (n - i) as i32;
+        let mut diff = (target - sum) % (n - i) as i32;
+        if diff * 2 > n - i {
+            res += 1;
+        }
+        res

@@ -1,0 +1,263 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> visited(n);
+        long long res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                int cnt = 0;
+                dfs(graph, visited, i, cnt);
+                res += (long long)cnt * (cnt - 1) / 2;
+            }
+        }
+        return res;
+    }
+    
+    void dfs(vector<vector<int>>& graph, vector<int>& visited, int i, int& cnt) {
+        visited[i] = 1;
+        ++cnt;
+        for (int j : graph[i]) {
+            if (!visited[j]) {
+                dfs(graph, visited, j, cnt);
+            }
+        }
+
+=======
+
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return x == p[x] ? x : p[x] = find(p[x]);
+        };
+        for (auto& e : edges) {
+            p[find(e[0])] = find(e[1]);
+        }
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            ++cnt[find(i)];
+        }
+        long long ans = 0;
+        for (auto [x, y] : cnt) {
+            ans += (long long)y * (y - 1) / 2;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> visited(n);
+        int cc = 0;
+        for (int i = 0; i < n; ++i) {
+            if (visited[i]) continue;
+            cc++;
+            dfs(i, adj, visited);
+        }
+        long long result = 0;
+        for (int i = 0; i < cc; ++i) {
+            result += (n - i - 1);
+        }
+        return result;
+
+=======
+
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> color(n);
+        int c = 0;
+        for (int i = 0; i < n; ++i) {
+            if (color[i] == 0) {
+                c++;
+                dfs(g, color, i, c);
+            }
+        }
+        long long res = 0;
+        vector<int> cnt(c);
+        for (int i = 0; i < n; ++i) {
+            cnt[color[i] - 1]++;
+        }
+        for (int i = 0; i < c; ++i) {
+            res += (long long)cnt[i] * (n - cnt[i]);
+        }
+        return res / 2;
+
+=======
+
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (auto &edge: edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int pu = find(u, parent);
+            int pv = find(v, parent);
+            if (pu != pv) {
+                parent[pu] = pv;
+            }
+        }
+        vector<int> size(n);
+        for (int i = 0; i < n; i++) {
+            int p = find(i, parent);
+            size[p]++;
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (size[i] > 1) {
+                ans += (long long)size[i] * (size[i] - 1) / 2;
+            }
+        }
+        return (long long)n * (n - 1) / 2 - ans;
+
+=======
+
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        function<int(int)> find = [&](int x){
+            if (x == parent[x]) return x;
+            return parent[x] = find(parent[x]);
+        };
+        function<void(int, int)> uni = [&](int x, int y){
+            parent[find(x)] = find(y);
+        };
+        for (auto& e : edges){
+            uni(e[0], e[1]);
+        }
+        vector<int> size(n);
+        for (int i = 0; i < n; ++i){
+            ++size[find(i)];
+        }
+        long long res = 0;
+        for (auto& e : edges){
+            int x = find(e[0]), y = find(e[1]);
+            if (x != y){
+                res += size[x] * size[y];
+                uni(x, y);
+                size[find(x)] = size[x] + size[y];
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> rank(n);
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < edges.size(); i++) {
+            int x = find(parent, edges[i][0]);
+            int y = find(parent, edges[i][1]);
+            if (x != y) {
+                if (rank[x] > rank[y]) {
+                    parent[y] = x;
+                } else if (rank[x] < rank[y]) {
+                    parent[x] = y;
+                } else {
+                    parent[x] = y;
+                    rank[y]++;
+                }
+            }
+        }
+        long long ans = 0;
+        vector<int> cnt(n);
+        for (int i = 0; i < n; i++) {
+            cnt[find(parent, i)]++;
+        }
+        for (int i = 0; i < n; i++) {
+            ans += 1LL * cnt[i] * (cnt[i] - 1) / 2;
+        }
+        return ans;
+    }
+    int find(vector<int>& parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        vector<int> parent(n, -1);
+        int count = n;
+        for (auto& e : edges) {
+            int x = find(parent, e[0]);
+            int y = find(parent, e[1]);
+            if (x != y) {
+                parent[x] = y;
+                --count;
+            }
+        }
+        return (long long)count * (count - 1) / 2;
+    }
+    int find(vector<int>& parent, int x) {
+        int root = x;
+        while (parent[root] != -1) {
+            root = parent[root];
+        }
+        while (parent[x] != -1) {
+            int tmp = parent[x];
+            parent[x] = root;
+            x = tmp;
+        }
+        return root;
+
+=======
+
+        vector<int> v(n, 0);
+        for (auto& e : edges) {
+            v[e[0]]++;
+            v[e[1]]++;
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans += (n - 1 - v[i]) * v[i];
+        }
+        return ans / 2;
+
+=======
+
+        std::vector<int> parent(n);
+        std::iota(parent.begin(), parent.end(), 0);
+        std::vector<int> size(n, 1);
+        std::function<int(int)> find = [&](int x) {
+            return parent[x] == x ? x : parent[x] = find(parent[x]);
+        };
+        std::function<void(int, int)> merge = [&](int x, int y) {
+            int px = find(x);
+            int py = find(y);
+            if (px == py) return;
+            if (size[px] < size[py]) {
+                parent[px] = py;
+                size[py] += size[px];
+            } else {
+                parent[py] = px;
+                size[px] += size[py];
+            }
+        };
+        for (auto& edge : edges) {
+            merge(edge[0], edge[1]);
+        }
+        long long ans = 0;
+        std::vector<int> cnt(n);
+        for (int i = 0; i < n; ++i) {
+            int p = find(i);
+            cnt[p]++;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (cnt[i] > 1) {
+                ans += (long long)cnt[i] * (cnt[i] - 1) / 2;
+            }
+        }
+        return (long long)n * (n - 1) / 2 - ans;

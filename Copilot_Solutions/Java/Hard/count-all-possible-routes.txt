@@ -1,0 +1,248 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[fuel + 1][locations.length];
+        dp[0][start] = 1;
+        for (int i = 1; i <= fuel; i++) {
+            for (int j = 0; j < locations.length; j++) {
+                for (int k = 0; k < locations.length; k++) {
+                    if (j == k) continue;
+                    dp[i][j] = (dp[i][j] + dp[i - Math.abs(locations[j] - locations[k])][k]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= fuel; i++) {
+            ans = (ans + dp[i][finish]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = locations.length;
+        int[][] dp = new int[fuel + 1][n];
+        dp[0][start] = 1;
+        for (int i = 0; i <= fuel; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j != k) {
+                        int diff = Math.abs(locations[j] - locations[k]);
+                        if (i >= diff) {
+                            dp[i][j] = (dp[i][j] + dp[i - diff][k]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= fuel; i++) {
+            ans = (ans + dp[i][finish]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = locations.length;
+        long[][] dp = new long[fuel + 1][n];
+        dp[0][start] = 1;
+        for (int i = 1; i <= fuel; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    int cost = Math.abs(locations[j] - locations[k]);
+                    if (cost > i) {
+                        continue;
+                    }
+                    dp[i][j] = (dp[i][j] + dp[i - cost][k]) % mod;
+                }
+            }
+        }
+        long ans = 0;
+        for (int i = 0; i <= fuel; i++) {
+            ans = (ans + dp[i][finish]) % mod;
+        }
+        return (int) ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = locations.length;
+        long[][] dp = new long[fuel + 1][n];
+        dp[0][start] = 1;
+        for (int i = 1; i <= fuel; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (k != j) {
+                        dp[i][j] += dp[i - 1][k];
+                        dp[i][j] %= mod;
+                    }
+                }
+            }
+            for (int j = 0; j < n; j++) {
+                long temp = 0;
+                for (int k = 0; k < n; k++) {
+                    if (k != j) {
+                        int dis = Math.abs(locations[j] - locations[k]);
+                        if (dis <= i) {
+                            temp += dp[i - dis][k];
+                            temp %= mod;
+                        }
+                    }
+                }
+                dp[i][j] += temp;
+                dp[i][j] %= mod;
+            }
+        }
+        return (int) dp[fuel][finish];
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[locations.length][fuel + 1];
+        for (int i = 0; i < locations.length; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(locations, start, finish, fuel, dp, mod);
+    }
+
+    private int dfs(int[] locations, int start, int finish, int fuel, int[][] dp, int mod) {
+        if (fuel < 0) {
+            return 0;
+        }
+        if (dp[start][fuel] != -1) {
+            return dp[start][fuel];
+        }
+        if (start == finish) {
+            dp[start][fuel] = 1;
+        } else {
+            dp[start][fuel] = 0;
+        }
+        for (int i = 0; i < locations.length; i++) {
+            if (i == start) {
+                continue;
+            }
+            dp[start][fuel] = (dp[start][fuel] + dfs(locations, i, finish, fuel - Math.abs(locations[i] - locations[start]), dp, mod)) % mod;
+        }
+        return dp[start][fuel];
+
+=======
+
+        int MOD = 1000000007;
+        int n = locations.length;
+        int[][] dp = new int[n][fuel + 1];
+        dp[start][fuel] = 1;
+        for (int f = fuel; f >= 0; --f) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (i != j) {
+                        int d = Math.abs(locations[i] - locations[j]);
+                        if (f - d >= 0) {
+                            dp[i][f - d] = (dp[i][f - d] + dp[j][f]) % MOD;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int f = 0; f <= fuel; ++f) {
+            ans = (ans + dp[finish][f]) % MOD;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = locations.length;
+        int[][] dp = new int[n][fuel + 1];
+        dp[start][0] = 1;
+        for (int i = 1; i <= fuel; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    dp[j][i] = (dp[j][i] + dp[k][i - 1]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= fuel; i++) {
+            ans = (ans + dp[finish][i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = (int)1e9 + 7;
+        int n = locations.length;
+        int[][] dp = new int[n][fuel + 1];
+        dp[start][fuel] = 1;
+        for (int i = fuel; i > 0; i--) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j != k) {
+                        int cost = Math.abs(locations[j] - locations[k]);
+                        if (i >= cost) {
+                            dp[j][i - cost] = (dp[j][i - cost] + dp[k][i]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= fuel; i++) {
+            ans = (ans + dp[finish][i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = locations.length;
+        long[][] dp = new long[n][fuel + 1];
+        dp[start][0] = 1;
+        for (int i = 1; i <= fuel; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (j != k) {
+                        dp[j][i] = (dp[j][i] + dp[k][i - Math.abs(locations[j] - locations[k])]) % mod;
+                    }
+                }
+            }
+        }
+        long res = 0;
+        for (int i = 0; i <= fuel; i++) {
+            res = (res + dp[finish][i]) % mod;
+        }
+        return (int) res;
+
+=======
+
+        int n = locations.length;
+        int mod = 1000000007;
+        int[][] dp = new int[n][fuel + 1];
+        dp[start][0] = 1;
+        for (int k = 1; k <= fuel; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == j) {
+                        continue;
+                    }
+                    int dist = Math.abs(locations[i] - locations[j]);
+                    if (dist <= k) {
+                        dp[i][k] = (dp[i][k] + dp[j][k - dist]) % mod;
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int k = 0; k <= fuel; k++) {
+            ans = (ans + dp[finish][k]) % mod;
+        }
+        return ans;

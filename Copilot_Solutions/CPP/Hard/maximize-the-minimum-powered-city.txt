@@ -1,0 +1,376 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = stations.size();
+        vector<int> gaps;
+        for (int i = 1; i < n; i++) {
+            gaps.push_back(stations[i] - stations[i - 1] - 1);
+        }
+        long long ans = 0;
+        int l = 0, r = 2e5;
+        while (l <= r) {
+            int m = (l + r) / 2;
+            if (check(gaps, m, r, k)) {
+                ans = m;
+                l = m + 1;
+            } else {
+                r = m - 1;
+            }
+        }
+        return ans;
+    }
+    
+    bool check(vector<int>& gaps, long long m, int r, int k) {
+        int cnt = 0;
+        for (int gap : gaps) {
+            cnt += (gap + r) / (2 * r + 1);
+        }
+        return cnt <= k;
+
+=======
+
+        int n = stations.size();
+        vector<long long> a(n + 1);
+        for (int i = 0; i < n; ++i) {
+            a[i + 1] = a[i] + stations[i];
+        }
+        auto sum = [&](int l, int r) {
+            return a[r + 1] - a[l];
+        };
+        auto check = [&](long long x) {
+            long long need = 0;
+            for (int i = 0, j = 0; i < n; i = j) {
+                while (j < n && stations[j] <= x) {
+                    ++j;
+                }
+                long long len = j - i;
+                need += (len - 1) / (r * 2 + 1);
+            }
+            return need <= k;
+        };
+        long long l = 0, r = 1e10;
+        while (l < r) {
+            long long m = (l + r + 1) >> 1;
+            if (check(m)) {
+                l = m;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = stations.size();
+        vector<long long> a(n + 1);
+        for (int i = 0; i < n; ++i) {
+            a[i + 1] = a[i] + stations[i];
+        }
+        auto sum = [&](int l, int r) {
+            return a[r + 1] - a[l];
+        };
+        auto check = [&](long long x) {
+            long long need = 0;
+            for (int i = 0, j = 0; i < n; i = j) {
+                while (j < n && stations[j] <= x) {
+                    ++j;
+                }
+                long long len = j - i;
+                need += (len - 1) / (r * 2 + 1);
+            }
+            return need <= k;
+        };
+        long long l = 0, r = 1e10;
+        while (l < r) {
+            long long m = (l + r + 1) >> 1;
+            if (check(m)) {
+                l = m;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;
+
+=======
+
+        long long l = 0, r = 1e16;
+        while (l < r) {
+            long long m = (l + r + 1) / 2;
+            if (check(stations, m, r, k))
+                l = m;
+            else
+                r = m - 1;
+        }
+        return l;
+    }
+    bool check(vector<int>& stations, long long m, int r, int k) {
+        int cnt = 0;
+        for (int i = 0; i < stations.size(); ++i) {
+            int j = i;
+            while (j < stations.size() && stations[j] <= stations[i] + 2 * r) ++j;
+            cnt += (j - i - 1) / (r * 2 + 1);
+            i = j - 1;
+        }
+        return cnt <= k;
+
+=======
+
+        int n = stations.size();
+        int l = 0, r = 1e9;
+        while (l < r) {
+            int m = (l + r + 1) / 2;
+            if (check(stations, m, r, k)) l = m;
+            else r = m - 1;
+        }
+        return l;
+    }
+    
+    bool check(vector<int>& stations, int m, int r, int k) {
+        int cnt = 0;
+        for (int i = 1; i < stations.size(); ++i) {
+            int d = stations[i] - stations[i - 1];
+            if (d > 2 * r) {
+                cnt += (d - 2 * r + 2 * r - 1) / (2 * r);
+            }
+        }
+        return cnt <= k;
+
+=======
+
+        sort(stations.begin(), stations.end());
+        long long ans = 0;
+        for (int i = 0; i < stations.size(); i++) {
+            long long l = i > 0 ? stations[i - 1] : -1;
+            long long r = i < stations.size() - 1 ? stations[i + 1] : 1e9;
+            long long d = min(stations[i] - l, r - stations[i]);
+            if (d > r) continue;
+            long long c = (d + 1) * (d + 2) / 2;
+            long long need = (r - d) * (r - d + 1) / 2 - c;
+            if (need > k) {
+                long long low = d + 1, high = r;
+                while (low < high) {
+                    long long mid = (low + high) / 2;
+                    long long c = (mid + 1) * (mid + 2) / 2;
+                    long long need = (mid - d) * (mid - d + 1) / 2 - c;
+                    if (need <= k) {
+                        high = mid;
+                    } else {
+                        low = mid + 1;
+                    }
+                }
+                ans = max(ans, d + low + 1);
+                k -= (low - d) * (low - d + 1) / 2 - c;
+            } else {
+                ans = max(ans, r + 1);
+                k -= need;
+            }
+        }
+        return ans;
+
+=======
+
+        long long n = stations.size();
+        vector<long long> v(n);
+        for (int i = 0; i < n; i++) {
+            v[i] = stations[i];
+        }
+        long long l = k;
+
+=======
+
+        int n = stations.size();
+        int s = 0;
+        for (int i = 0; i < n - 1; ++i) {
+            int d = stations[i + 1] - stations[i];
+            if (d > 2 * r) {
+                s += (d - 1) / (2 * r);
+            }
+        }
+        long long l = 0, r = 1e18;
+        while (l < r) {
+            long long mid = l + (r - l + 1) / 2;
+            long long cnt = 0;
+            for (int i = 0; i < n - 1; ++i) {
+                int d = stations[i + 1] - stations[i];
+                if (d > 2 * r) {
+                    cnt += (d - 1) / (2 * r) - 1;
+                }
+            }
+            if (cnt <= 0) {
+                l = mid,
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = stations.size();
+        int m = n + k;
+        vector<int> v(m);
+        for (int i = 0; i < n; i++) {
+            v[i] = stations[i];
+        }
+        for (int i = n; i < m; i++) {
+            v[i] = 0;
+        }
+        sort(v.begin(), v.end());
+        long long ans = 0;
+        for (int i = 0; i < m; i++) {
+            long long l = v[i] - r;
+            long long r = v[i] + r;
+            int j = i;
+            while (j < m && v[j] <= r) {
+                j++;
+            }
+            ans = max(ans, j - i);
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        int n = stations.size();
+        if (n == 0) return 0;
+        if (n == 1) return stations[0] + k;
+        int nStations = 0;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                nStations += stations[i] / (r + 1);
+                if (stations[i] % (r + 1) != 0) nStations++;
+            } else {
+                int d = stations[i] - stations[i - 1];
+                nStations += (d - 2 * r - 1) / (r + 1);
+                if ((d - 2 * r - 1) % (r + 1) != 0) nStations++;
+            }
+        }
+        int left = 0, right = 1e9;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int nStations2 = nStations + mid;
+            int nCities = 0;
+            for (int i = 0; i < n; i++) {
+                int l = stations[i] - r;
+                int r = stations[i] + r;
+                if (i == 0) {
+                    nCities += (r - l) / (r + 1);
+                    if ((r - l) % (r + 1) != 0) nCities++;
+                } else {
+                    int l2 = stations[i - 1] - r;
+                    int r2 = stations[i - 1] + r;
+                    if (l2 > r) {
+                        nCities += (r - l) / (r + 1);
+                        if ((r - l) % (r + 1) != 0) nCities++;
+                    } else {
+                        int d = min(r, r2) - max(l, l2);
+                        if (d < 0) d = 0;
+                        nCities += (r - l - d) / (r + 1);
+                        if ((r - l - d) % (r + 1) != 0) nCities++;
+                    }
+                }
+            }
+            if (nCities >= nStations2) right = mid;
+            else left = mid +
+
+=======
+
+        int n = stations.size();
+        if (n == 0) return 0;
+        if (n == 1) return stations[0] + k;
+        int nStations = 0;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                nStations += stations[i] / (r + 1);
+                if (stations[i] % (r + 1) != 0) nStations++;
+            } else {
+                int d = stations[i] - stations[i - 1];
+                nStations += (d - 2 * r - 1) / (r + 1);
+                if ((d - 2 * r - 1) % (r + 1) != 0) nStations++;
+            }
+        }
+        int left = 0, right = 1e9;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int nStations2 = nStations + mid;
+            int nCities = 0;
+            for (int i = 0; i < n; i++) {
+                int l = stations[i] - r;
+                int r = stations[i] + r;
+                if (i == 0) {
+                    nCities += (r - l) / (r + 1);
+                    if ((r - l) % (r + 1) != 0) nCities++;
+                } else {
+                    int l2 = stations[i - 1] - r;
+                    int r2 = stations[i - 1] + r;
+                    if (l2 > r) {
+                        nCities += (r - l) / (r + 1);
+                        if ((r - l) % (r + 1) != 0) nCities++;
+                    } else {
+                        int d = min(r, r2) - max(l, l2);
+                        if (d < 0) d = 0;
+                        nCities += (r - l - d) / (r + 1);
+                        if ((r - l - d) % (r + 1) != 0) nCities++;
+                    }
+                }
+            }
+            if (nCities >= nStations2) right = mid;
+            else left = mid + r = 1000000000;
+        while (l < r) {
+            long long m = l + (r - l + 1) / 2;
+            if (check(v, m, r, k)) {
+                l = m;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;
+    }
+    bool check(vector<long long>& stations, long long m, long long r, long long k) {
+        long long n = stations.size();
+        long long cnt = 0;
+        for (int i = 0; i < n; i++) {
+            long long l = stations[i] - r;
+            long long r = stations[i] + r;
+            if (l > m) {
+                continue;
+            }
+            long long c = (m - l) / (2 * r + 1);
+            if (m - l >= 2 * r + 1) {
+                c++;
+            }
+            if (m - l >= 2 * r + 1) {
+                c++;
+            }
+            cnt += c;
+            if (cnt > k) {
+                return false;
+            }
+        }
+        return cnt <= k;
+
+=======
+
+        int n = stations.size();
+        int m = n + k;
+        vector<int> v(m);
+        for (int i = 0; i < n; i++) {
+            v[i] = stations[i];
+        }
+        for (int i = n; i < m; i++) {
+            v[i] = 0;
+        }
+        sort(v.begin(), v.end());
+        long long ans = 0;
+        for (int i = 0; i < m; i++) {
+            long long l = v[i] - r;
+            long long r = v[i] + r;
+            int j = i;
+            while (j < m && v[j] <= r) {
+                j++;
+            }
+            ans = max(ans, j - i);
+            i = j - 1;
+        }
+        return ans;

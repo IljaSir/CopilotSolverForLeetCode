@@ -1,0 +1,161 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let n = n as usize;
+        let mut dp = vec![0; n];
+        dp[0] = 1;
+        let mut p = vec![0; primes.len()];
+        for i in 1..n {
+            dp[i] = i32::MAX;
+            for j in 0..primes.len() {
+                dp[i] = dp[i].min(dp[p[j]] * primes[j]);
+            }
+            for j in 0..primes.len() {
+                if dp[i] == dp[p[j]] * primes[j] {
+                    p[j] += 1;
+                }
+            }
+        }
+        dp[n - 1]
+
+=======
+Suggestion 2
+
+        let mut dp = vec![0; n as usize];
+        let mut idx = vec![0; primes.len()];
+        dp[0] = 1;
+        for i in 1..n as usize {
+            let mut min = std::i32::MAX;
+            for j in 0..primes.len() {
+                min = min.min(primes[j] * dp[idx[j] as usize]);
+            }
+            dp[i] = min;
+            for j in 0..primes.len() {
+                if min == primes[j] * dp[idx[j] as usize] {
+                    idx[j] += 1;
+                }
+            }
+        }
+        dp[n as usize - 1]
+
+=======
+Suggestion 3
+
+        let n = n as usize;
+        let mut ugly = vec![1; n];
+        let mut idx = vec![0; primes.len()];
+        for i in 1..n {
+            ugly[i] = primes.iter().zip(idx.iter()).map(|(p, &j)| ugly[j] * p).min().unwrap();
+            for (j, p) in primes.iter().enumerate() {
+                if ugly[i] == ugly[idx[j]] * p {
+                    idx[j] += 1;
+                }
+            }
+        }
+        ugly[n - 1]
+
+=======
+Suggestion 4
+
+        
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut ugly = vec![1];
+        let mut idx = vec![0; primes.len()];
+        let mut next = vec![1; primes.len()];
+        let mut i = 1;
+        while i < n {
+            let mut min = next[0];
+            for j in 1..primes.len() {
+                if next[j] < min {
+                    min = next[j];
+                }
+            }
+            ugly.push(min);
+            for j in 0..primes.len() {
+                if next[j] == min {
+                    idx[j] += 1;
+                    next[j] = ugly[idx[j]] * primes[j];
+                }
+            }
+            i += 1;
+        }
+        ugly[n as usize - 1]
+
+=======
+Suggestion 6
+
+        if n == 1 {
+            return 1;
+        }
+        let mut ugly = vec![1];
+        let mut pointers = vec![0; primes.len()];
+        let mut next = vec![0; primes.len()];
+        for _ in 1..n {
+            for i in 0..primes.len() {
+                next[i] = ugly[pointers[i]] * primes[i];
+            }
+            let mut min = next[0];
+            for i in 1..next.len() {
+                if next[i] < min {
+                    min = next[i];
+                }
+            }
+            ugly.push(min);
+            for i in 0..primes.len() {
+                if next[i] == min {
+                    pointers[i] += 1;
+                }
+            }
+        }
+        ugly[n as usize - 1]
+
+=======
+Suggestion 7
+
+        let n = n as usize;
+        let mut ugly = vec![0; n];
+        ugly[0] = 1;
+
+        let mut idx = vec![0; primes.len()];
+        let mut factors = primes.clone();
+        for i in 1..n {
+            ugly[i] = factors.iter().min().unwrap();
+            for (j, f) in factors.iter_mut().enumerate() {
+                if *f == ugly[i] {
+                    idx[j] += 1;
+                    *f = primes[j] * ugly[idx[j]];
+                }
+            }
+        }
+        ugly[n-1]
+    }
+}
+
+=======
+Suggestion 8
+
+        let mut ugly = vec![1];
+        let mut idx = vec![0; primes.len()];
+        let mut vals = vec![0; primes.len()];
+        let mut i = 1;
+        while i < n as usize {
+            for j in 0..primes.len() {
+                vals[j] = ugly[idx[j]] * primes[j];
+            }
+            let min = vals.iter().min().unwrap();
+            ugly.push(*min);
+            for j in 0..primes.len() {
+                if vals[j] == *min {
+                    idx[j] += 1;
+                }
+            }
+            i += 1;
+        }
+        ugly[n as usize - 1]

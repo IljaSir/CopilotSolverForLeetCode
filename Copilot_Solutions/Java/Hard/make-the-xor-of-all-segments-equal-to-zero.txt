@@ -1,0 +1,267 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; i++) {
+            int cnt = 0, size = 0;
+            int[] g = f.clone();
+            int[] cnts = new int[1 << 10];
+            for (int j = i; j < n; j += k) {
+                cnts[nums[j]]++;
+                size++;
+            }
+            int maxCnt = Arrays.stream(cnts).max().getAsInt();
+            for (int mask = 0; mask < 1 << 10; mask++) {
+                f[mask] = Math.min(f[mask], size - maxCnt + g[mask]);
+                for (int j = 0; j < 10; j++) {
+                    f[mask ^ (1 << j)] = Math.min(f[mask ^ (1 << j)], size - cnts[mask ^ (1 << j)] + g[mask]);
+                }
+            }
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; i++) {
+            int cnt = 0, size = 0, min = n;
+            int[] g = new int[1 << 10];
+            int[] cnts = new int[1 << 10];
+            Arrays.fill(g, n);
+            for (int j = i; j < n; j += k) {
+                cnts[nums[j]]++;
+                size++;
+            }
+            for (int mask = 0; mask < (1 << 10); mask++) {
+                g[mask] = Math.min(g[mask], f[mask] + size);
+                for (int j = 0; j < 10; j++) {
+                    g[mask ^ (1 << j)] = Math.min(g[mask ^ (1 << j)], f[mask] + size - cnts[mask]);
+                }
+            }
+            f = g;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; i++) {
+            int cnt = 0;
+            int[] g = new int[1 << 10];
+            Arrays.fill(g, n);
+            Map<Integer, Integer> cnts = new HashMap<>();
+            for (int j = i; j < n; j += k) {
+                cnts.put(nums[j], cnts.getOrDefault(nums[j], 0) + 1);
+                cnt++;
+            }
+            int t2min = Math.min(f[0], cnt);
+            for (int mask = 0; mask < (1 << 10); mask++) {
+                g[mask] = Math.min(g[mask], t2min);
+                for (Map.Entry<Integer, Integer> entry : cnts.entrySet()) {
+                    int x = entry.getKey();
+                    int c = entry.getValue();
+                    g[mask] = Math.min(g[mask], f[mask ^ x] - c);
+                }
+            }
+            f = g;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; i++) {
+            int cnt = 0, max = 0, sum = 0;
+            int[] g = new int[1 << 10];
+            Arrays.fill(g, n);
+            int[] cnts = new int[1 << 10];
+            for (int j = i; j < n; j += k) {
+                cnt++;
+                cnts[nums[j]]++;
+                max = Math.max(max, cnts[nums[j]]);
+            }
+            for (int mask = 0; mask < (1 << 10); mask++) {
+                g[mask] = Math.min(g[mask], f[mask] + cnt - max);
+                for (int j = i; j < n; j += k) {
+                    g[mask ^ nums[j]] = Math.min(g[mask ^ nums[j]], f[mask] + cnt - cnts[nums[j]]);
+                }
+            }
+            f = g;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; ++i) {
+            int cnt = 0;
+            int size = 0;
+            int maxFreq = 0;
+            int mask = 0;
+            int[] g = new int[1 << 10];
+            Arrays.fill(g, n);
+            for (int j = i; j < n; j += k) {
+                ++cnt;
+                size += nums[j];
+                mask ^= nums[j];
+                maxFreq = Math.max(maxFreq, ++g[nums[j]]);
+            }
+            int t2 = Math.min(cnt - maxFreq, f[mask] + cnt - size);
+            for (int j = 0; j < (1 << 10); ++j) {
+                f[j] = Math.min(f[j], g[j ^ mask] + cnt - maxFreq);
+            }
+            f[mask] = t2;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        int[] g = new int[1 << 10];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; i++) {
+            int size = 0;
+            int mask = 0;
+            Map<Integer, Integer> cnt = new HashMap<>();
+            for (int j = i; j < n; j += k) {
+                cnt.put(nums[j], cnt.getOrDefault(nums[j], 0) + 1);
+                size++;
+            }
+            int t2min = Arrays.stream(f).min().getAsInt();
+            Arrays.fill(g, t2min);
+            for (int mask2 = 0; mask2 < 1 << 10; mask2++) {
+                for (Map.Entry<Integer, Integer> entry : cnt.entrySet()) {
+                    int x = entry.getKey(), countX = entry.getValue();
+                    g[mask2] = Math.min(g[mask2], f[mask2 ^ x] - countX);
+                }
+            }
+            int t1min = Arrays.stream(g).min().getAsInt();
+            for (int mask2 = 0; mask2 < 1 << 10; mask2++) {
+                g[mask2] += size;
+            }
+            int[] temp = f;
+            f = g;
+            g = temp;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1024];
+        int[] g = new int[1024];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; ++i) {
+            int size = 0;
+            int cnt = 0;
+            Map<Integer, Integer> count = new HashMap<Integer, Integer>();
+            for (int j = i; j < n; j += k) {
+                count.put(nums[j], count.getOrDefault(nums[j], 0) + 1);
+                size++;
+            }
+            int t2min = Arrays.stream(f).min().getAsInt();
+            Arrays.fill(g, t2min);
+            for (int mask = 0; mask < 1024; ++mask) {
+                if (f[mask] == t2min) {
+                    continue;
+                }
+                for (int x: count.keySet()) {
+                    int y = mask ^ x;
+                    g[y] = Math.min(g[y], f[mask] + size - count.get(x));
+                }
+            }
+            int[] t = f;
+            f = g;
+            g = t;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.length;
+        int[] f = new int[1 << 10];
+        int INF = n + 1;
+        Arrays.fill(f, INF);
+        // 边界条件 f(-1,0)=0
+        f[0] = 0;
+
+        for (int i = 0; i < k; ++i) {
+            // 第 i 个组的哈希映射
+            Map<Integer, Integer> cnt = new HashMap<Integer, Integer>();
+            int size = 0;
+            for (int j = i; j < n; j += k) {
+                cnt.put(nums[j], cnt.getOrDefault(nums[j], 0) + 1);
+                ++size;
+            }
+
+            // 求出 t2
+            int t2min = Arrays.stream(f).min().getAsInt();
+
+            int[] g = new int[1 << 10];
+            Arrays.fill(g, t2min);
+            for (int mask = 0; mask < (1 << 10); ++mask) {
+                // t1 则需要枚举 x 才能求出
+                for (Map.Entry<Integer, Integer> entry : cnt.entrySet()) {
+                    int x = entry.getKey(), cntx = entry.getValue();
+                    g[mask] = Math.min(g[mask], f[mask ^ x] - cntx);
+                }
+            }
+
+            // 别忘了加上 size
+            for (int j = 0; j < (1 << 10); ++j) {
+                g[j] += size;
+            }
+
+            // 别忘了更新 f
+            f = g;
+        }
+
+        return f[0];
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        int n = nums.length;
+        int[] f = new int[1024];
+        Arrays.fill(f, n);
+        f[0] = 0;
+        for (int i = 0; i < k; ++i) {
+            int size = 0;
+            int mask = 0;
+            map.clear();
+            for (int j = i; j < n; j += k) {
+                map.put(nums[j], map.getOrDefault(nums[j], 0) + 1);
+                ++size;
+            }
+            int t2min = Math.min(f[i], size);
+            int[] g = new int[1024];
+            Arrays.fill(g, t2min);
+            for (int mask2 = 0; mask2 < 1024; ++mask2) {
+                for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                    int x = entry.getKey();
+                    int cnt = entry.getValue();
+                    g[mask2] = Math.min(g[mask2], f[i] - cnt + g[mask2 ^ x]);
+                }
+            }
+            f = g;
+        }
+        return f[0];

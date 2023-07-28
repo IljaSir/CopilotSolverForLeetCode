@@ -1,0 +1,134 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for e in edges {
+            graph[e[0] as usize].push(e[1] as usize);
+            graph[e[1] as usize].push(e[0] as usize);
+        }
+        let mut visited = vec![false; n as usize];
+        Self::dfs(0, &mut visited, &mut graph, &has_apple) * 2
+    }
+    fn dfs(u: usize, visited: &mut Vec<bool>, graph: &mut Vec<Vec<usize>>, has_apple: &Vec<bool>) -> i32 {
+        visited[u] = true;
+        let mut ans = 0;
+        for &v in graph[u].iter() {
+            if !visited[v] {
+                ans += Self::dfs(v, visited, graph, has_apple);
+            }
+        }
+        if ans > 0 || has_apple[u] {
+            ans += 1;
+        }
+        ans
+
+=======
+
+        let mut adj = vec![vec![]; n as usize];
+        for e in edges {
+            adj[e[0] as usize].push(e[1]);
+            adj[e[1] as usize].push(e[0]);
+        }
+        let mut visited = vec![false; n as usize];
+        visited[0] = true;
+        let mut ans = 0;
+        for i in 1..n as usize {
+            if has_apple[i] && !visited[i] {
+                ans += 2;
+                let mut cur = i;
+                while cur != 0 {
+                    visited[cur] = true;
+                    for next in adj[cur].iter() {
+                        if !visited[*next as usize] {
+                            cur = *next as usize;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut graph = vec![Vec::new(); n as usize];
+        for e in edges {
+            graph[e[0] as usize].push(e[1] as usize);
+            graph[e[1] as usize].push(e[0] as usize);
+        }
+        let mut visited = vec![false; n as usize];
+        Self::dfs(0, &graph, &mut visited, &has_apple) as i32 * 2
+    }
+    
+    fn dfs(node: usize, graph: &Vec<Vec<usize>>, visited: &mut Vec<bool>, has_apple: &Vec<bool>) -> bool {
+        visited[node] = true;
+        let mut found = false;
+        for &n in &graph[node] {
+            if visited[n] {
+                continue;
+            }
+            if Self::dfs(n, graph, visited, has_apple) {
+                found = true;
+            }
+        }
+        found || has_apple[node]
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![Vec::new(); n];
+        for edge in edges {
+            let u = edge[0] as usize;
+            let v = edge[1] as usize;
+            graph[u].push(v);
+            graph[v].push(u);
+        }
+        let mut visited = vec![false; n];
+        Self::dfs(0, &mut visited, &graph, &has_apple) * 2
+    }
+    
+    fn dfs(u: usize, visited: &mut Vec<bool>, graph: &Vec<Vec<usize>>, has_apple: &Vec<bool>) -> i32 {
+        visited[u] = true;
+        let mut res = 0;
+        for &v in &graph[u] {
+            if visited[v] {
+                continue;
+            }
+            let tmp = Self::dfs(v, visited, graph, has_apple);
+            if tmp == 0 && !has_apple[v] {
+                continue;
+            }
+            res += tmp + 1;
+        }
+        res
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for e in edges {
+            map.entry(e[0]).or_insert(vec![]).push(e[1]);
+            map.entry(e[1]).or_insert(vec![]).push(e[0]);
+        }
+        let mut visited = vec![false; n as usize];
+        Self::dfs(0, &mut map, &mut visited, &has_apple) * 2
+    }
+    fn dfs(node: i32, map: &mut std::collections::HashMap<i32, Vec<i32>>, visited: &mut Vec<bool>, has_apple: &Vec<bool>) -> i32 {
+        if visited[node as usize] {
+            return 0;
+        }
+        visited[node as usize] = true;
+        let mut ret = 0;
+        for &n in map.get(&node).unwrap() {
+            ret += Self::dfs(n, map, visited, has_apple);
+        }
+        if ret > 0 || has_apple[node as usize] {
+            ret += 1;
+        }
+        ret
+
+=======
+
+        
+    }
+}

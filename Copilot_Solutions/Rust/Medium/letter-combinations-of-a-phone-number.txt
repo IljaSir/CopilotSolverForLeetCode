@@ -1,0 +1,401 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut ret: Vec<String> = Vec::new();
+        if digits.len() == 0 {
+            return ret;
+        }
+        let mut map: HashMap<char, Vec<char>> = HashMap::new();
+        map.insert('2', vec!['a', 'b', 'c']);
+        map.insert('3', vec!['d', 'e', 'f']);
+        map.insert('4', vec!['g', 'h', 'i']);
+        map.insert('5', vec!['j', 'k', 'l']);
+        map.insert('6', vec!['m', 'n', 'o']);
+        map.insert('7', vec!['p', 'q', 'r', 's']);
+        map.insert('8', vec!['t', 'u', 'v']);
+        map.insert('9', vec!['w', 'x', 'y', 'z']);
+        let mut stack: Vec<String> = Vec::new();
+        stack.push(String::new());
+        for c in digits.chars() {
+            let mut tmp: Vec<String> = Vec::new();
+            for s in stack {
+                for &x in map.get(&c).unwrap() {
+                    tmp.push(format!("{}{}", s, x));
+                }
+            }
+            stack = tmp;
+        }
+        ret = stack;
+        ret
+
+=======
+Suggestion 2
+
+        let mut ans = vec![];
+        if digits.len() == 0 {
+            return ans;
+        }
+        let mut map = HashMap::new();
+        map.insert('2', "abc");
+        map.insert('3', "def");
+        map.insert('4', "ghi");
+        map.insert('5', "jkl");
+        map.insert('6', "mno");
+        map.insert('7', "pqrs");
+        map.insert('8', "tuv");
+        map.insert('9', "wxyz");
+        let mut queue = vec!["".to_string()];
+        for c in digits.chars() {
+            let mut next_queue = vec![];
+            for s in queue {
+                for c in map[&c].chars() {
+                    next_queue.push(s.clone() + &c.to_string());
+                }
+            }
+            queue = next_queue;
+        }
+        ans = queue;
+        ans
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut ret = Vec::new();
+        let mut tmp = String::new();
+        let mut map = HashMap::new();
+        map.insert('2', vec!['a', 'b', 'c']);
+        map.insert('3', vec!['d', 'e', 'f']);
+        map.insert('4', vec!['g', 'h', 'i']);
+        map.insert('5', vec!['j', 'k', 'l']);
+        map.insert('6', vec!['m', 'n', 'o']);
+        map.insert('7', vec!['p', 'q', 'r', 's']);
+        map.insert('8', vec!['t', 'u', 'v']);
+        map.insert('9', vec!['w', 'x', 'y', 'z']);
+        if digits.is_empty() {
+            return ret;
+        }
+        Solution::dfs(&digits, 0, &mut tmp, &mut ret, &mut map);
+        ret
+    }
+    fn dfs(digits: &String, idx: usize, tmp: &mut String, ret: &mut Vec<String>, map: &mut HashMap<char, Vec<char>>) {
+        if idx == digits.len() {
+            ret.push(tmp.clone());
+            return;
+        }
+        for c in map.get(&digits.chars().nth(idx).unwrap()).unwrap() {
+            tmp.push(*c);
+            Solution::dfs(digits, idx + 1, tmp, ret, map);
+            tmp.pop();
+        }
+
+=======
+Suggestion 4
+
+        if digits.len() == 0 {
+            return vec![];
+        }
+        let mut res = Vec::new();
+        let mut cur = String::new();
+        Self::backtrack(&digits, 0, &mut cur, &mut res);
+        res
+    }
+    fn backtrack(digits: &String, idx: usize, cur: &mut String, res: &mut Vec<String>) {
+        if idx == digits.len() {
+            res.push(cur.clone());
+            return;
+        }
+        let ch = digits.chars().nth(idx).unwrap();
+        let mut letters = match ch {
+            '2' => "abc",
+            '3' => "def",
+            '4' => "ghi",
+            '5' => "jkl",
+            '6' => "mno",
+            '7' => "pqrs",
+            '8' => "tuv",
+            '9' => "wxyz",
+            _ => "",
+        };
+        for i in 0..letters.len() {
+            cur.push(letters.chars().nth(i).unwrap());
+            Self::backtrack(digits, idx + 1, cur, res);
+            cur.pop();
+        }
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut ret = vec![];
+        let mut queue = vec![];
+        let map = vec!["abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"];
+        for c in digits.chars() {
+            let i = c as usize - '2' as usize;
+            if i < map.len() {
+                if queue.is_empty() {
+                    for c in map[i].chars() {
+                        queue.push(c.to_string());
+                    }
+                } else {
+                    let mut new_queue = vec![];
+                    for s in &queue {
+                        for c in map[i].chars() {
+                            let mut new_s = s.clone();
+                            new_s.push(c);
+                            new_queue.push(new_s);
+                        }
+                    }
+                    queue = new_queue;
+                }
+            }
+        }
+        ret.append(&mut queue);
+        ret
+    }
+}
+
+=======
+Suggestion 6
+
+        let mut result = Vec::new();
+        let mut tmp = Vec::new();
+        for c in digits.chars() {
+            let v = match c {
+                '2' => vec!['a', 'b', 'c'],
+                '3' => vec!['d', 'e', 'f'],
+                '4' => vec!['g', 'h', 'i'],
+                '5' => vec!['j', 'k', 'l'],
+                '6' => vec!['m', 'n', 'o'],
+                '7' => vec!['p', 'q', 'r', 's'],
+                '8' => vec!['t', 'u', 'v'],
+                '9' => vec!['w', 'x', 'y', 'z'],
+                _ => Vec::new(),
+            };
+            if v.is_empty() {
+                continue;
+            }
+            if tmp.is_empty() {
+                tmp = v;
+            } else {
+                let mut new_tmp = Vec::new();
+                for c1 in tmp {
+                    for c2 in &v {
+                        new_tmp.push(format!("{}{}", c1, c2));
+                    }
+                }
+                tmp = new_tmp;
+            }
+        }
+        if !tmp.is_empty() {
+            result = tmp;
+        }
+        result
+
+=======
+Suggestion 7
+
+        let mut res = vec![];
+        let mut v = vec![];
+        let mut d = vec![];
+        for c in digits.chars() {
+            d.push(c.to_digit(10).unwrap() as usize);
+        }
+        let digits = d;
+        let mut map = vec![
+            vec![], vec![],
+            vec!['a', 'b', 'c'],
+            vec!['d', 'e', 'f'],
+            vec!['g', 'h', 'i'],
+            vec!['j', 'k', 'l'],
+            vec!['m', 'n', 'o'],
+            vec!['p', 'q', 'r', 's'],
+            vec!['t', 'u', 'v'],
+            vec!['w', 'x', 'y', 'z'],
+        ];
+        if digits.len() == 0 {
+            return res;
+        }
+        for i in 0..digits.len() {
+            v.push(0);
+        }
+        let mut i = 0;
+        loop {
+            let mut s = String::new();
+            for j in 0..v.len() {
+                let c = map[digits[j]][v[j]];
+                s.push(c);
+            }
+            res.push(s);
+            i = v.len() - 1;
+            loop {
+                if i < 0 {
+                    return res;
+                }
+                v[i] += 1;
+                if v[i] < map[digits[i]].len() {
+                    break;
+                }
+                v[i] = 0;
+                i -= 1;
+            }
+        }
+        res
+
+=======
+Suggestion 8
+
+        let mut res: Vec<String> = Vec::new();
+        let mut s: Vec<char> = Vec::new();
+        let mut d = digits.chars().collect::<Vec<char>>();
+        d.reverse();
+        Self::backtrack(&mut res, &mut s, &mut d);
+        res
+    }
+    fn backtrack(res: &mut Vec<String>, s: &mut Vec<char>, d: &mut Vec<char>) {
+        if d.is_empty() {
+            if !s.is_empty() {
+                res.push(s.iter().rev().collect());
+            }
+        } else {
+            let c = d.pop().unwrap();
+            let cs = Self::get_chars(c);
+            for c in cs {
+                s.push(c);
+                Self::backtrack(res, s, d);
+                s.pop();
+            }
+            d.push(c);
+        }
+    }
+    fn get_chars(c: char) -> Vec<char> {
+        match c {
+            '2' => vec!['a', 'b', 'c'],
+            '3' => vec!['d', 'e', 'f'],
+            '4' => vec!['g', 'h', 'i'],
+            '5' => vec!['j', 'k', 'l'],
+            '6' => vec!['m', 'n', 'o'],
+            '7' => vec!['p', 'q', 'r', 's'],
+            '8' => vec!['t', 'u', 'v'],
+            '9' => vec!['w', 'x', 'y', 'z'],
+            _ => vec![]
+        }
+
+=======
+Suggestion 9
+
+        let mut result = vec![];
+        let mut chars = vec![];
+        for c in digits.chars() {
+            chars.push(c);
+        }
+        let mut letters = vec![];
+        for c in chars {
+            let mut v = vec![];
+            match c {
+                '2' => {
+                    v.push('a');
+                    v.push('b');
+                    v.push('c');
+                }
+                '3' => {
+                    v.push('d');
+                    v.push('e');
+                    v.push('f');
+                }
+                '4' => {
+                    v.push('g');
+                    v.push('h');
+                    v.push('i');
+                }
+                '5' => {
+                    v.push('j');
+                    v.push('k');
+                    v.push('l');
+                }
+                '6' => {
+                    v.push('m');
+                    v.push('n');
+                    v.push('o');
+                }
+                '7' => {
+                    v.push('p');
+                    v.push('q');
+                    v.push('r');
+                    v.push('s');
+                }
+                '8' => {
+                    v.push('t');
+                    v.push('u');
+                    v.push('v');
+                }
+                '9' => {
+                    v.push('w');
+                    v.push('x');
+                    v.push('y');
+                    v.push('z');
+                }
+                _ => {}
+            }
+            letters.push(v);
+        }
+        if letters.len() == 0 {
+            return result;
+        }
+        let mut i = 0;
+        let mut j = 0;
+        loop {
+            let mut s = String::new();
+            for k in 0..letters.len() {
+                s.push(letters[k][j]);
+            }
+            result.push(s);
+            j += 1;
+            if j == letters[i].len() {
+                i += 1;
+                j = 0;
+                if i == letters.len() {
+                    break;
+                }
+            }
+        }
+        result
+
+=======
+Suggestion 10
+
+        let mut ans = Vec::new();
+        let mut stack = Vec::new();
+        let mut cur = String::new();
+        let mut idx = 0;
+        let mut map = HashMap::new();
+        map.insert('2', String::from("abc"));
+        map.insert('3', String::from("def"));
+        map.insert('4', String::from("ghi"));
+        map.insert('5', String::from("jkl"));
+        map.insert('6', String::from("mno"));
+        map.insert('7', String::from("pqrs"));
+        map.insert('8', String::from("tuv"));
+        map.insert('9', String::from("wxyz"));
+        if digits.len() == 0 {
+            return ans;
+        }
+        stack.push((idx, cur));
+        while stack.len() > 0 {
+            let (i, s) = stack.pop().unwrap();
+            if i == digits.len() {
+                ans.push(s);
+                continue;
+            }
+            let letters = map.get(&digits.chars().nth(i).unwrap()).unwrap();
+            for c in letters.chars() {
+                stack.push((i + 1, s.clone() + &c.to_string()));
+            }
+        }
+        ans
+    }
+}

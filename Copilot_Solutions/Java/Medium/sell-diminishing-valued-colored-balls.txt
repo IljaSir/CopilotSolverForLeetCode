@@ -1,0 +1,254 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        for (int i : inventory) {
+            pq.offer(i);
+        }
+        long res = 0;
+        while (orders > 0) {
+            int cur = pq.poll();
+            res += cur;
+            cur--;
+            orders--;
+            if (cur > 0) {
+                pq.offer(cur);
+            }
+        }
+        return (int) (res % 1000000007);
+
+=======
+
+        Arrays.sort(inventory);
+        int n = inventory.length;
+        int mod = 1000000007;
+        long sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == n - 1) {
+                sum += inventory[i];
+                orders--;
+            } else {
+                int diff = inventory[i] - inventory[i + 1];
+                if (orders > diff * (n - i - 1)) {
+                    sum += (long) diff * (n - i - 1) * (inventory[i] + inventory[i + 1] + 1) / 2;
+                    orders -= diff * (n - i - 1);
+                } else {
+                    sum += (long) orders * (inventory[i] + 1);
+                    sum += (long) (orders - 1) * orders / 2;
+                    break;
+                }
+            }
+        }
+        return (int) (sum % mod);
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> (b - a));
+        for (int i : inventory) {
+            pq.add(i);
+        }
+        long res = 0;
+        while (orders > 0) {
+            int cur = pq.poll();
+            orders--;
+            res += cur;
+            pq.add(cur - 1);
+        }
+        return (int) (res % 1000000007);
+
+=======
+
+        int mod = 1000000007;
+        int n = inventory.length;
+        Arrays.sort(inventory);
+        long profit = 0;
+        int i = n - 1;
+        while (orders > 0) {
+            int j = i;
+            while (j > 0 && inventory[j] == inventory[j - 1]) {
+                j--;
+            }
+            long count = i - j + 1;
+            long diff = inventory[i] - (j > 0 ? inventory[j - 1] : 0);
+            if (diff * count > orders) {
+                profit += (long) orders * (inventory[i] + inventory[i] - orders / count + 1) / 2 % mod;
+                profit %= mod;
+                orders = 0;
+            } else {
+                profit += (long) diff * (inventory[i] + inventory[i] - diff + 1) / 2 % mod * count % mod;
+                profit %= mod;
+                orders -= diff * count;
+            }
+            i = j - 1;
+        }
+        return (int) profit;
+
+=======
+
+        int n = inventory.length;
+        Arrays.sort(inventory);
+        long ans = 0;
+        long mod = 1000000007;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == n - 1) {
+                if (orders > inventory[i]) {
+                    ans += (inventory[i] + 1) * (long)inventory[i] / 2;
+                    orders -= inventory[i];
+                } else {
+                    ans += (inventory[i] + 1 + inventory[i] - orders) * (long)orders / 2;
+                    break;
+                }
+            } else {
+                if (orders > (inventory[i] - inventory[i + 1]) * (n - i)) {
+                    ans += (inventory[i] + 1 + inventory[i]) * (long)(inventory[i] - inventory[i + 1]) / 2 * (n - i);
+                    orders -= (inventory[i] - inventory[i + 1]) * (n - i);
+                } else {
+                    ans += (inventory[i] + 1 + inventory[i] - orders / (n - i)) * (long)orders / 2;
+                    break;
+                }
+            }
+            ans %= mod;
+        }
+        return (int)ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = inventory.length;
+        Arrays.sort(inventory);
+        long profit = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i > 0 && inventory[i] == inventory[i - 1]) {
+                continue;
+            }
+            int count = i == n - 1 ? 1 : inventory[i + 1] - inventory[i];
+            if (count * (n - i) <= orders) {
+                profit += (long) (inventory[i] + inventory[i + 1] + 1) * (inventory[i] - inventory[i + 1]) / 2 * (n - i);
+                profit %= mod;
+                orders -= count * (n - i);
+            } else {
+                int a = orders / (n - i);
+                int b = orders % (n - i);
+                profit += (long) (inventory[i] + inventory[i] - a + 1) * a / 2 * (n - i);
+                profit %= mod;
+                profit += (long) (inventory[i] - a) * b;
+                profit %= mod;
+                break;
+            }
+        }
+        return (int) profit;
+
+=======
+
+        long mod = 1000000007;
+        Arrays.sort(inventory);
+        int n = inventory.length;
+        long ans = 0;
+        int i = n - 1;
+        while (orders > 0) {
+            while (i > 0 && inventory[i] == inventory[i - 1]) i--;
+            long cnt = n - i;
+            long diff = inventory[i] - (i > 0 ? inventory[i - 1] : 0);
+            if (diff * cnt <= orders) {
+                ans += (inventory[i] + inventory[i] - diff + 1) * diff * cnt / 2;
+                orders -= diff * cnt;
+            } else {
+                long q = orders / cnt;
+                long r = orders % cnt;
+                ans += (inventory[i] + inventory[i] - q + 1) * q * cnt / 2;
+                ans += r * (inventory[i] - q);
+                orders = 0;
+            }
+            i--;
+            ans %= mod;
+        }
+        return (int)ans;
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for (int i: inventory) {
+            pq.offer(i);
+        }
+        long ans = 0;
+        int mod = 1000000007;
+        while (orders > 0) {
+            int cur = pq.poll();
+            int next = pq.peek();
+            if (cur == next || orders <= pq.size()) {
+                ans += (long)cur * orders;
+                ans %= mod;
+                break;
+            } else {
+                int count = cur - next;
+                if (count * pq.size() <= orders) {
+                    ans += (long)(cur + next + 1) * count / 2 * pq.size();
+                    ans %= mod;
+                    orders -= count * pq.size();
+                } else {
+                    int div = orders / pq.size();
+                    int modu = orders % pq.size();
+                    ans += (long)(cur + cur - div + 1) * div / 2 * pq.size();
+                    ans %= mod;
+                    ans += (long)(cur - div) * modu;
+                    ans %= mod;
+                    break;
+                }
+            }
+        }
+        return (int)ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = inventory.length;
+        Arrays.sort(inventory);
+        long ans = 0;
+        int i = n-1;
+        while(orders > 0){
+            if(i > 0 && inventory[i] > inventory[i-1]){
+                int diff = inventory[i] - inventory[i-1];
+                int count = (n-i) * diff;
+                if(count <= orders){
+                    ans += (long) diff * (inventory[i] + inventory[i-1] + 1) * (inventory[i] - inventory[i-1]) / 2;
+                    orders -= count;
+                    i--;
+                }else{
+                    int q = orders / (n-i);
+                    int r = orders % (n-i);
+                    ans += (long) q * (inventory[i] + inventory[i] - q + 1) * (q) / 2;
+                    ans += (long) r * (inventory[i] - q);
+                    orders = 0;
+                }
+            }else{
+                ans += (long) orders * inventory[i];
+                orders = 0;
+            }
+            ans %= mod;
+        }
+        return (int) ans;
+
+=======
+
+        Arrays.sort(inventory);
+        int n = inventory.length;
+        int i = n - 1;
+        long sum = 0;
+        while (orders > 0) {
+            int j = i;
+            while (j > 0 && inventory[j] == inventory[j - 1]) j--;
+            int count = i - j + 1;
+            int diff = inventory[i] - (j > 0 ? inventory[j - 1] : 0);
+            if (orders >= count * diff) {
+                sum += count * (long) (inventory[i] + inventory[i] - diff + 1) / 2 * diff;
+                orders -= count * diff;
+            } else {
+                int k = orders / count;
+                int m = orders % count;
+                sum += count * (long) (inventory[i] + inventory[i] - k + 1) / 2 * k + m * (inventory[i] - k);
+                orders = 0;
+            }
+            i = j - 1;
+        }
+        return (int) (sum % 1000000007);

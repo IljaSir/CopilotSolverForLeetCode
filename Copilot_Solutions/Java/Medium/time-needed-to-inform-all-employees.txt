@@ -1,0 +1,218 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < manager.length; i++) {
+            if (!map.containsKey(manager[i])) {
+                map.put(manager[i], new ArrayList<>());
+            }
+            map.get(manager[i]).add(i);
+        }
+        return dfs(map, headID, informTime);
+    }
+    
+    private int dfs(Map<Integer, List<Integer>> map, int id, int[] informTime) {
+        if (!map.containsKey(id)) {
+            return 0;
+        }
+        int max = 0;
+        for (int sub : map.get(id)) {
+            max = Math.max(max, dfs(map, sub, informTime));
+        }
+        return max + informTime[id];
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(manager[i], new ArrayList<>());
+            map.get(manager[i]).add(i);
+        }
+        return dfs(map, informTime, headID);
+    }
+    
+    private int dfs(Map<Integer, List<Integer>> map, int[] informTime, int headID) {
+        int max = 0;
+        for (int id : map.getOrDefault(headID, new ArrayList<>())) {
+            max = Math.max(max, dfs(map, informTime, id));
+        }
+        return max + informTime[headID];
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < manager.length; i++) {
+            if (manager[i] == -1) continue;
+            List<Integer> list = map.getOrDefault(manager[i], new ArrayList<>());
+            list.add(i);
+            map.put(manager[i], list);
+        }
+        return dfs(map, headID, informTime);
+    }
+    
+    private int dfs(Map<Integer, List<Integer>> map, int cur, int[] informTime) {
+        if (!map.containsKey(cur)) return 0;
+        int max = 0;
+        for (int next : map.get(cur)) {
+            max = Math.max(max, dfs(map, next, informTime));
+        }
+        return max + informTime[cur];
+
+=======
+
+        int[] subordinates = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (manager[i] != -1) {
+                subordinates[manager[i]]++;
+            }
+        }
+        int[] time = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(headID);
+        while (!queue.isEmpty()) {
+            int id = queue.poll();
+            if (subordinates[id] == 0) {
+                continue;
+            }
+            int t = time[id] + informTime[id];
+            for (int i = 0; i < n; i++) {
+                if (manager[i] == id) {
+                    time[i] = t;
+                    queue.add(i);
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (subordinates[i] == 0) {
+                max = Math.max(max, time[i]);
+            }
+        }
+        return max;
+
+=======
+
+        int[] time = new int[n];
+        for (int i = 0; i < n; i++) {
+            time[i] = -1;
+        }
+        time[headID] = 0;
+        for (int i = 0; i < n; i++) {
+            if (time[i] != -1) {
+                int t = time[i] + informTime[i];
+                for (int j = 0; j < n; j++) {
+                    if (manager[j] == i) {
+                        time[j] = Math.max(t, time[j]);
+                    }
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(time[i], max);
+        }
+        return max;
+
+=======
+
+        int[] time = new int[n];
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (manager[j] != -1) {
+                time[i] += informTime[manager[j]];
+                j = manager[j];
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, time[i]);
+        }
+        return max;
+
+=======
+
+        int max = 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < manager.length; i++) {
+            if (i == headID) {
+                continue;
+            }
+            if (!map.containsKey(manager[i])) {
+                map.put(manager[i], new ArrayList<>());
+            }
+            map.get(manager[i]).add(i);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(headID);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                if (map.containsKey(cur)) {
+                    for (int next : map.get(cur)) {
+                        queue.add(next);
+                        informTime[next] += informTime[cur];
+                    }
+                }
+            }
+        }
+        for (int time : informTime) {
+            max = Math.max(max, time);
+        }
+        return max;
+
+=======
+
+        int[] dp = new int[n];
+        int res = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == headID) {
+                continue;
+            }
+            dp[manager[i]] = Math.max(dp[manager[i]], informTime[manager[i]] + dp[i]);
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int[] time = new int[n];
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (manager[j] != -1 && time[i] == 0) {
+                time[i] += informTime[manager[j]];
+                j = manager[j];
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, time[i]);
+        }
+        return max;
+
+=======
+
+        int[] time = new int[n];
+        int[] subordinates = new int[n];
+        for(int i = 0; i < n; i++) {
+            if(manager[i] == -1) continue;
+            subordinates[manager[i]]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(headID);
+        while(!queue.isEmpty()) {
+            int cur = queue.poll();
+            if(subordinates[cur] == 0) continue;
+            for(int i = 0; i < n; i++) {
+                if(manager[i] == cur) {
+                    time[i] = time[cur] + informTime[cur];
+                    queue.offer(i);
+                }
+            }
+        }
+        int max = 0;
+        for(int i = 0; i < n; i++) {
+            max = Math.max(max, time[i]);
+        }
+        return max;

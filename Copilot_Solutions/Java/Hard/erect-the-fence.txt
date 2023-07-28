@@ -1,0 +1,344 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = trees.length;
+        if (n <= 1) return trees;
+        Arrays.sort(trees, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int[] p1 = trees[0], p2 = trees[n - 1];
+        List<int[]> up = new ArrayList<>(), down = new ArrayList<>();
+        up.add(p1);
+        down.add(p1);
+        for (int i = 1; i < n; i++) {
+            if (i == n - 1 || cross(p1, trees[i], p2) > 0) {
+                while (up.size() >= 2 && cross(up.get(up.size() - 2), up.get(up.size() - 1), trees[i]) <= 0) {
+                    up.remove(up.size() - 1);
+                }
+                up.add(trees[i]);
+            }
+            if (i == n - 1 || cross(p1, trees[i], p2) < 0) {
+                while (down.size() >= 2 && cross(down.get(down.size() - 2), down.get(down.size() - 1), trees[i]) >= 0) {
+                    down.remove(down.size() - 1);
+                }
+                down.add(trees[i]);
+            }
+        }
+        Set<int[]> set = new HashSet<>(up);
+        set.addAll(down);
+        int[][] res = new int[set.size()][2];
+        int idx = 0;
+        for (int[] p : set) {
+            res[idx++] = p;
+        }
+        return res;
+
+=======
+
+        int n = trees.length;
+        if (n <= 3) return trees;
+        Arrays.sort(trees, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int[] p1 = trees[0], p2 = trees[n - 1];
+        Set<int[]> set = new HashSet<>();
+        set.add(p1);
+        set.add(p2);
+        int[][] s1 = new int[n][2];
+        int[][] s2 = new int[n][2];
+        int i1 = 0, i2 = 0;
+        for (int[] p : trees) {
+            if (p == p1 || p == p2) continue;
+            while (i1 > 0 && ccw(p1, p, s1[i1 - 1]) > 0) i1--;
+            s1[i1++] = p;
+            while (i2 > 0 && ccw(p2, p, s2[i2 - 1]) < 0) i2--;
+            s2[i2++] = p;
+        }
+        for (int i = 0; i < i1; i++) set.add(s1[i]);
+        for (int i = 0; i < i2; i++) set.add(s2[i]);
+        return set.toArray(new int[set.size()][]);
+
+=======
+
+        int n = trees.length;
+        if (n <= 1) {
+            return trees;
+        }
+        Arrays.sort(trees, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] != o2[0] ? o1[0] - o2[0] : o1[1] - o2[1];
+            }
+        });
+        int[][] hull = new int[n][2];
+        int m = 0;
+        for (int i = 0; i < n; i++) {
+            while (m > 1 && cross(hull[m - 2], hull[m - 1], trees[i]) < 0) {
+                m--;
+            }
+            hull[m++] = trees[i];
+        }
+        for (int i = n - 2, t = m; i >= 0; i--) {
+            while (m > t && cross(hull[m - 2], hull[m - 1], trees[i]) < 0) {
+                m--;
+            }
+            hull[m++] = trees[i];
+        }
+        if (m > 1) {
+            m--;
+        }
+        int[][] ans = new int[m][2];
+        for (int i = 0; i < m; i++) {
+            ans[i] = hull[i];
+        }
+        return ans;
+
+=======
+
+        int n = trees.length;
+        if(n <= 1) return trees;
+        Arrays.sort(trees, (a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int mid = n / 2;
+        int[] midPoint = trees[mid];
+        Arrays.sort(trees, (a, b) -> {
+            int cross = crossProduct(a, b, midPoint);
+            if(cross == 0) return distance(a, midPoint) - distance(b, midPoint);
+            return cross;
+        });
+        int[] hull = new int[n];
+        int hullSize = 0;
+        for(int i = 0; i < n; i++) {
+            while(hullSize >= 2 && crossProduct(trees[hull[hullSize - 2]], trees[hull[hullSize - 1]], trees[i]) < 0) hullSize--;
+            hull[hullSize++] = i;
+        }
+        int[] hull2 = new int[n];
+        int hullSize2 = 0;
+        for(int i = n - 1; i >= 0; i--) {
+            while(hullSize2 >= 2 && crossProduct(trees[hull2[hullSize2 - 2]], trees[hull2[hullSize2 - 1]], trees[i]) < 0) hullSize2--;
+            hull2[hullSize2++] = i;
+        }
+        Set<String> hullSet = new HashSet<>();
+        for(int i = 0; i < hullSize - 1; i++) hullSet.add(Arrays.toString(trees[hull[i]]));
+        for(int i = 0; i < hullSize2 - 1; i++) hullSet.add(Arrays.toString(trees[hull2[i]]));
+        int[][] res = new int[hullSet.size()][2];
+        int index = 0;
+        for(String s : hullSet) {
+            res[index++] = parse(s);
+        }
+        return res;
+    }
+    private int[] parse(String s) {
+        int[] res = new int[2];
+        int i = 1;
+        int j = 0;
+        while(s.charAt(i) != ',') {
+            res[j] = res[j] * 10 + s.charAt(i) - '0';
+            i++;
+        }
+
+=======
+
+        int n = trees.length;
+        if (n <= 1) return trees;
+        // find the leftmost point
+        int leftmost = 0;
+        for (int i = 1; i < n; i++) {
+            if (trees[i][0] < trees[leftmost][0]) {
+                leftmost = i;
+            }
+        }
+        // sort the points by polar angle
+        int[] p = trees[leftmost];
+        Arrays.sort(trees, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return (int) (getPolarAngle(p, a) - getPolarAngle(p, b));
+            }
+        });
+        // find the convex hull
+        List<int[]> hull = new ArrayList<>();
+        hull.add(trees[0]);
+        hull.add(trees[1]);
+        for (int i = 2; i < n; i++) {
+            int[] top = hull.get(hull.size() - 1);
+            int[] nextTop = hull.get(hull.size() - 2);
+            while (getPolarAngle(nextTop, top) > getPolarAngle(top, trees[i])) {
+                hull.remove(top);
+                top = hull.get(hull.size() - 1);
+                nextTop = hull.get(hull.size() - 2);
+            }
+            hull.add(trees[i]);
+        }
+        // convert to array
+        int[][] res = new int[hull.size()][2];
+        for (int i = 0; i < hull.size(); i++) {
+            res[i] = hull.get(i);
+        }
+        return res;
+    }
+    private double getPolarAngle(int[] p, int[] q) {
+        double dx = q[0] - p[0];
+        double dy = q[1] - p[1];
+        if (dx == 0) {
+            return dy > 0 ? Double.MAX_VALUE : Double.MIN_VALUE;
+        } else {
+            return dy / dx;
+        }
+
+=======
+
+        int n = trees.length;
+        if (n <= 3) return trees;
+        Arrays.sort(trees, (a, b) -> Integer.compare(a[0], b[0]));
+        int[][] hull = new int[2 * n][2];
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            while (k >= 2 && cross(hull[k - 2], hull[k - 1], trees[i]) < 0) {
+                k--;
+            }
+            hull[k++] = trees[i];
+        }
+        for (int i = n - 2, t = k + 1; i >= 0; i--) {
+            while (k >= t && cross(hull[k - 2], hull[k - 1], trees[i]) < 0) {
+                k--;
+            }
+            hull[k++] = trees[i];
+        }
+        return Arrays.copyOf(hull, k - 1);
+
+=======
+
+        int n = trees.length;
+        if (n <= 1) {
+            return trees;
+        }
+        // Find the leftmost bottom point
+        int leftBottom = 0;
+        for (int i = 1; i < n; i++) {
+            if (trees[i][0] < trees[leftBottom][0] || (trees[i][0] == trees[leftBottom][0] && trees[i][1] < trees[leftBottom][1])) {
+                leftBottom = i;
+            }
+        }
+
+        // Sort the points by polar angle
+        Arrays.sort(trees, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                int angleA = getAngle(a, trees[leftBottom]);
+                int angleB = getAngle(b, trees[leftBottom]);
+                if (angleA == angleB) {
+                    return getDist(a, trees[leftBottom]) - getDist(b, trees[leftBottom]);
+                }
+                return angleA - angleB;
+            }
+        });
+
+        // Find the convex hull
+        Stack<Integer> stack = new Stack<>();
+        stack.push(leftBottom);
+        for (int i = 1; i < n; i++) {
+            while (stack.size() >= 2 && crossProduct(trees[stack.get(stack.size() - 2)], trees[stack.peek()], trees[i]) < 0) {
+                stack.pop();
+            }
+            stack.push(i);
+        }
+
+        // Remove the duplicate points
+        Set<Integer> set = new HashSet<>();
+        for (int i : stack) {
+            set.add(i);
+        }
+
+        // Construct the result
+        int[][] res = new int[set.size()][2];
+        int idx = 0;
+        for (int i : set) {
+            res[idx++] = trees[i];
+        }
+        return res;
+    }
+
+    private int getAngle(int[] a, int[] b) {
+        int x = a[0] - b[0];
+        int y = a[1] - b[1];
+        if (x == 0) {
+            return y >= 0 ? 90 : 270;
+        }
+        if (y == 0) {
+            return x >= 0 ? 0 : 180;
+        }
+        int angle = (int) (Math.atan((double) y / x) * 180 / Math.PI);
+        if (x >
+
+=======
+
+        if (trees.length <= 1) {
+            return trees;
+        }
+        int n = trees.length;
+        int[][] result = new int[n][2];
+        int min = 0;
+        for (int i = 1; i < n; i++) {
+            if (trees[i][0] < trees[min][0]) {
+                min = i;
+            }
+        }
+        int p = min;
+        int q = 0;
+        do {
+            result[q++] = trees[p];
+            int next = (p + 1) % n;
+            for (int i = 0; i < n; i++) {
+                if (orientation(trees[p], trees[i], trees[next]) == -1) {
+                    next = i;
+                }
+            }
+            p = next;
+        } while (p != min);
+        return Arrays.copyOf(result, q);
+
+=======
+
+        // 1. 找到最左下角的点
+        int[] bottomLeft = trees[0];
+        for (int i = 1; i < trees.length; i++) {
+            if (trees[i][0] < bottomLeft[0]) {
+                bottomLeft = trees[i];
+            } else if (trees[i][0] == bottomLeft[0]) {
+                if (trees[i][1] < bottomLeft[1]) {
+                    bottomLeft = trees[i];
+                }
+            }
+        }
+        // 2. 以最左下角的点为基准，计算其他点与其的极角
+        // 3. 以极角排序
+        // 4. 以最左下角的点为起点，依次取点
+        Arrays.sort(trees, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                int angleA = getAngle(bottomLeft, a);
+                int angleB = getAngle(bottomLeft, b);
+                if (angleA == angleB) {
+                    return getDistance(bottomLeft, a) - getDistance(bottomLeft, b);
+                }
+                return angleA - angleB;
+            }
+        });
+        // 5. 去除极角相同的点
+        int index = 1;
+        for (int i = 2; i < trees.length; i++) {
+            if (getAngle(bottomLeft, trees[i]) == getAngle(bottomLeft, trees[i - 1])) {
+                continue;
+            }
+            trees[index++] = trees[i];
+        }
+        // 6. 依次取点，如果不构成凸包，删除
+        int[] stack = new int[index];
+        int top = 0;
+        for (int i = 0; i < index; i++) {
+            while (top >= 2 && !isConvex(stack[top - 2], stack[top - 1], trees[i])) {
+                top--;
+            }
+            stack[top++] = i;
+        }
+        // 7. 输出结果
+        int[][] result = new int[top][2];
+        for (int i = 0; i < top; i++) {
+            result[i] = trees[stack[i]];
+        }
+        return result;

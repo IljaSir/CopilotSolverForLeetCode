@@ -1,0 +1,21 @@
+class Solution {
+    public int findShortestSubArray(int[] nums) {
+        
+        int max = 0;
+        Map<Integer, Integer> left = new HashMap(), right = new HashMap(), count = new HashMap();
+        for (int i = 0; i < nums.length; i++) {
+            int x = nums[i];
+            if (left.get(x) == null) left.put(x, i);
+            right.put(x, i);
+            count.put(x, count.getOrDefault(x, 0) + 1);
+            max = Math.max(max, count.get(x));
+        }
+        int ans = nums.length;
+        for (int x: count.keySet()) {
+            if (count.get(x) == max) {
+                ans = Math.min(ans, right.get(x) - left.get(x) + 1);
+            }
+        }
+        return ans;
+    }
+}

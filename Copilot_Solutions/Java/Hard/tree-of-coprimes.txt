@@ -1,0 +1,402 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n];
+        Arrays.fill(res, -1);
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            graph[e[0]].add(e[1]);
+            graph[e[1]].add(e[0]);
+        }
+        dfs(graph, nums, res, 0, new int[51], new int[51]);
+        return res;
+    }
+
+    private void dfs(List<Integer>[] graph, int[] nums, int[] res, int cur, int[] depth, int[] pre) {
+        int d = depth[nums[cur]];
+        depth[nums[cur]] = cur + 1;
+        for (int i = 1; i <= 50; i++) {
+            if (depth[i] > 0 && gcd(i, nums[cur]) == 1) {
+                if (res[cur] == -1 || depth[i] > depth[nums[res[cur]]]) {
+                    res[cur] = pre[i] - 1;
+                }
+            }
+        }
+        for (int next : graph[cur]) {
+            if (depth[nums[next]] == 0) {
+                pre[nums[next]] = cur + 1;
+                dfs(graph, nums, res, next, depth, pre);
+            }
+        }
+        depth[nums[cur]] = d;
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n];
+        Arrays.fill(res, -1);
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(nums[i], new ArrayList<>());
+            map.get(nums[i]).add(i);
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            graph.putIfAbsent(u, new ArrayList<>());
+            graph.putIfAbsent(v, new ArrayList<>());
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        boolean[] visited = new boolean[n];
+        dfs(nums, graph, 0, -1, map, res, visited);
+        return res;
+    }
+
+    private void dfs(int[] nums, Map<Integer, List<Integer>> graph, int cur, int parent, Map<Integer, List<Integer>> map, int[] res, boolean[] visited) {
+        visited[cur] = true;
+        for (int i = 1; i <= 50; i++) {
+            if (nums[cur] % i == 0 && map.containsKey(i)) {
+                for (int j : map.get(i)) {
+                    if (j == cur) continue;
+                    if (visited[j]) {
+                        if (parent == -1 || nums[j] > nums[parent]) {
+                            parent = j;
+                        }
+                    }
+                }
+            }
+        }
+        if (parent != -1) {
+            res[cur] = parent;
+        }
+        for (int next : graph.getOrDefault(cur, new ArrayList<>())) {
+            if (visited[next]) continue;
+            dfs(nums, graph, next, parent, map, res, visited);
+        }
+
+=======
+
+        int n = nums.length;
+        int[][] graph = new int[n][];
+        int[] deg = new int[n];
+        for (int[] e : edges) {
+            deg[e[0]]++;
+            deg[e[1]]++;
+        }
+        for (int i = 0; i < n; i++) {
+            graph[i] = new int[deg[i]];
+        }
+        for (int[] e : edges) {
+            graph[e[0]][--deg[e[0]]] = e[1];
+            graph[e[1]][--deg[e[1]]] = e[0];
+        }
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        dfs(nums, graph, 0, -1, new int[51], ans);
+        return ans;
+    }
+
+    private void dfs(int[] nums, int[][] graph, int u, int p, int[] depth, int[] ans) {
+        int d = depth[nums[u]];
+        depth[nums[u]] = u;
+        for (int v : graph[u]) {
+            if (v != p) {
+                dfs(nums, graph, v, u, depth, ans);
+            }
+        }
+        int best = -1;
+        for (int i = 1; i <= 50; i++) {
+            if (i != nums[u] && depth[i] != 0 && (best == -1 || depth[i] > depth[best])) {
+                best = i;
+            }
+        }
+        ans[u] = best == -1 ? -1 : depth[best];
+        depth[nums[u]] = d;
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        List<Integer>[] g = new List[n];
+        for (int i = 0; i < n; i++) g[i] = new ArrayList<>();
+        for (int[] e : edges) {
+            g[e[0]].add(e[1]);
+            g[e[1]].add(e[0]);
+        }
+        dfs(0, -1, nums, g, ans, new int[51], new int[51]);
+        return ans;
+    }
+    
+    void dfs(int u, int p, int[] nums, List<Integer>[] g, int[] ans, int[] depth, int[] parent) {
+        int d = depth[nums[u]];
+        int par = parent[nums[u]];
+        depth[nums[u]] = 0;
+        parent[nums[u]] = u;
+        for (int v : g[u]) {
+            if (v != p) {
+                dfs(v, u, nums, g, ans, depth, parent);
+            }
+        }
+        ans[u] = depth[nums[u]] == 0 ? -1 : parent[nums[u]];
+        depth[nums[u]] = d;
+        parent[nums[u]] = par;
+        for (int i = 1; i <= 50; i++) {
+            if (gcd(nums[u], i) == 1) {
+                if (depth[i] > depth[nums[u]]) {
+                    depth[nums[u]] = depth[i];
+                    parent[nums[u]] = parent[i];
+                }
+            }
+        }
+        depth[nums[u]]++;
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        List<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            adj[edge[0]].add(edge[1]);
+            adj[edge[1]].add(edge[0]);
+        }
+        int[] depth = new int[n];
+        int[] parent = new int[n];
+        int[][] ancestor = new int[n][51];
+        dfs(0, -1, 0, nums, adj, depth, parent, ancestor);
+        for (int i = 0; i < n; i++) {
+            int u = i;
+            for (int d = 50; d >= 2; d--) {
+                if (ancestor[u][d] != 0) {
+                    if (gcd(nums[i], d) == 1) {
+                        ans[i] = ancestor[u][d];
+                        break;
+                    }
+                    u = ancestor[u][d];
+                }
+            }
+        }
+        return ans;
+    }
+    private void dfs(int u, int p, int d, int[] nums, List<Integer>[] adj, int[] depth, int[] parent, int[][] ancestor) {
+        depth[u] = d;
+        parent[u] = p;
+        ancestor[u][nums[u]] = p;
+        for (int v : adj[u]) {
+            if (v != p) {
+                dfs(v, u, d + 1, nums, adj, depth, parent, ancestor);
+            }
+        }
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        List<Integer>[] tree = new List[n];
+        for (int i = 0; i < n; i++) {
+            tree[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            tree[edge[0]].add(edge[1]);
+            tree[edge[1]].add(edge[0]);
+        }
+        int[][] dp = new int[51][n];
+        for (int i = 0; i < 51; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dfs(tree, nums, 0, 0, dp);
+        return ans;
+    }
+    
+    private void dfs(List<Integer>[] tree, int[] nums, int u, int p, int[][] dp) {
+        int maxLevel = 0;
+        int ancestor = -1;
+        for (int v = 1; v <= 50; v++) {
+            if (gcd(v, nums[u]) == 1) {
+                if (dp[v][p] > maxLevel) {
+                    maxLevel = dp[v][p];
+                    ancestor = dp[v][p];
+                }
+            }
+        }
+        dp[nums[u]][u] = Math.max(dp[nums[u]][u], maxLevel + 1);
+        for (int v : tree[u]) {
+            if (v != p) {
+                dfs(tree, nums, v, u, dp);
+            }
+        }
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            map.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
+            map.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
+        }
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        dfs(0, nums, map, visited, ans);
+        return ans;
+    }
+    
+    private void dfs(int root, int[] nums, Map<Integer, List<Integer>> map, boolean[] visited, int[] ans) {
+        int max = 0;
+        for (int i = 1; i <= 50; i++) {
+            if (gcd(i, nums[root]) == 1) {
+                max = Math.max(max, i);
+            }
+        }
+        for (int i = 1; i <= max; i++) {
+            if (gcd(i, nums[root]) == 1) {
+                int ancestor = findAncestor(root, i, nums, map, visited);
+                if (ancestor != -1) {
+                    ans[root] = ancestor;
+                    break;
+                }
+            }
+        }
+        for (int i : map.get(root)) {
+            if (!visited[i]) {
+                visited[i] = true;
+                dfs(i, nums, map, visited, ans);
+            }
+        }
+    }
+    
+    private int findAncestor(int root, int val, int[] nums, Map<Integer, List<Integer>> map, boolean[] visited) {
+        if (gcd(val, nums[root]) == 1) {
+            return root;
+        }
+        for (int i : map.get(root)) {
+            if (!visited[i]) {
+                int ancestor = findAncestor(i, val, nums, map, visited);
+                if (ancestor != -1) {
+                    return ancestor;
+                }
+            }
+        }
+        return -1;
+    }
+    
+    private int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        Map<Integer, List<Integer>> g = new HashMap<>();
+        for (int[] e : edges) {
+            g.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);
+            g.computeIfAbsent(e[1], k -> new ArrayList<>()).add(e[0]);
+        }
+        int[][] dp = new int[51][n];
+        for (int i = 0; i < 51; ++i) Arrays.fill(dp[i], -1);
+        dfs(nums, g, dp, 0, -1);
+        return ans;
+    }
+    int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+    void dfs(int[] nums, Map<Integer, List<Integer>> g, int[][] dp, int u, int p) {
+        int d = -1, v = -1;
+        for (int i = 1; i <= 50; ++i) {
+            if (nums[u] % i == 0) {
+                int j = nums[u] / i;
+                if (dp[i][u] != -1 && gcd(i, j) == 1) {
+                    if (d == -1 || d > dp[i][u]) {
+                        d = dp[i][u];
+                        v = i;
+                    }
+                }
+            }
+        }
+        for (int i = 1; i <= 50; ++i) {
+            if (nums[u] % i == 0) {
+                dp[i][u] = d == -1 ? u : d;
+            }
+        }
+        for (int v : g.getOrDefault(u, new ArrayList<>())) {
+            if (v != p) dfs(nums, g, dp, v, u);
+        }
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n];
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], x -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], x -> new ArrayList<>()).add(edge[0]);
+        }
+        int[] depth = new int[n];
+        int[][] parent = new int[n][51];
+        dfs(graph, 0, -1, 0, nums, depth, parent);
+        for (int i = 0; i < n; i++) {
+            int cur = nums[i];
+            int d = depth[i];
+            for (int j = 1; j <= 50; j++) {
+                if (cur % j == 0) {
+                    while (parent[i][j] != -1 && depth[parent[i][j]] >= d) {
+                        i = parent[i][j];
+                    }
+                }
+            }
+            ans[i] = parent[i][cur];
+        }
+        return ans;
+    }
+
+    private void dfs(Map<Integer, List<Integer>> graph, int node, int par, int d, int[] nums, int[] depth, int[][] parent) {
+        parent[node][nums[node]] = par;
+        depth[node] = d;
+        for (int nei : graph.getOrDefault(node, new ArrayList<>())) {
+            if (nei != par) {
+                dfs(graph, nei, node, d + 1, nums, depth, parent);
+            }
+        }
+
+=======
+
+        int n = nums.length;
+        int[] p = new int[n];
+        Arrays.fill(p, -1);
+        for (int[] e : edges) {
+            if (p[e[1]] == -1) p[e[1]] = e[0];
+            else p[e[0]] = e[1];
+        }
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            int x = i;
+            int y = nums[i];
+            int d = 0;
+            while (x != -1) {
+                if (gcd(y, nums[x]) == 1) {
+                    ans[i] = x;
+                    break;
+                }
+                x = p[x];
+                d++;
+            }
+            if (x == -1) ans[i] = -1;
+        }
+        return ans;

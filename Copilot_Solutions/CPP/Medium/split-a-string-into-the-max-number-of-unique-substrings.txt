@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_set<string> seen;
+        return dfs(s, 0, seen);
+    }
+    
+    int dfs(string& s, int i, unordered_set<string>& seen) {
+        if (i == s.size()) return 0;
+        int ans = 0;
+        string cur;
+        for (int j = i; j < s.size(); ++j) {
+            cur.push_back(s[j]);
+            if (seen.count(cur)) continue;
+            seen.insert(cur);
+            ans = max(ans, 1 + dfs(s, j + 1, seen));
+            seen.erase(cur);
+        }
+        return ans;
+
+=======
+
+        unordered_set<string> set;
+        return dfs(s, 0, set);
+    }
+    
+    int dfs(string& s, int start, unordered_set<string>& set) {
+        if (start == s.size()) {
+            return 0;
+        }
+        int ans = 0;
+        for (int i = start; i < s.size(); i++) {
+            string sub = s.substr(start, i - start + 1);
+            if (set.find(sub) == set.end()) {
+                set.insert(sub);
+                ans = max(ans, 1 + dfs(s, i + 1, set));
+                set.erase(sub);
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_set<string> set;
+        return dfs(s, 0, set);
+    }
+    int dfs(string& s, int start, unordered_set<string>& set) {
+        if (start == s.size()) return set.size();
+        int res = 0;
+        for (int i = start; i < s.size(); i++) {
+            string t = s.substr(start, i - start + 1);
+            if (set.count(t)) continue;
+            set.insert(t);
+            res = max(res, dfs(s, i + 1, set));
+            set.erase(t);
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        unordered_set<string> us;
+        function<void(int)> dfs = [&](int i) {
+            if (i == s.size()) {
+                ans = max(ans, (int)us.size());
+                return;
+            }
+            string tmp;
+            for (int j = i; j < s.size(); ++j) {
+                tmp += s[j];
+                if (us.count(tmp) == 0) {
+                    us.insert(tmp);
+                    dfs(j + 1);
+                    us.erase(tmp);
+                }
+            }
+        };
+        dfs(0);
+        return ans;
+
+=======
+
+        unordered_set<string> dict;
+        return dfs(s, 0, dict);
+    }
+    
+    int dfs(string& s, int start, unordered_set<string>& dict) {
+        if (start == s.length()) return 0;
+        int res = 0;
+        for (int i = start; i < s.length(); ++i) {
+            string str = s.substr(start, i - start + 1);
+            if (dict.count(str)) continue;
+            dict.insert(str);
+            res = max(res, 1 + dfs(s, i + 1, dict));
+            dict.erase(str);
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        unordered_set<string> us;
+        dfs(s, 0, us, ans);
+        return ans;
+    }
+    
+    void dfs(string& s, int idx, unordered_set<string>& us, int& ans) {
+        if (idx == s.size()) {
+            ans = max(ans, (int)us.size());
+            return;
+        }
+        
+        string str;
+        for (int i = idx; i < s.size(); ++i) {
+            str.push_back(s[i]);
+            if (us.count(str)) continue;
+            us.insert(str);
+            dfs(s, i + 1, us, ans);
+            us.erase(str);
+        }
+
+=======
+
+        unordered_set<string> st;
+        return dfs(s, 0, st);
+    }
+    int dfs(string s, int start, unordered_set<string> st) {
+        int res = 0;
+        for (int i = start; i < s.size(); ++i) {
+            string t = s.substr(start, i - start + 1);
+            if (st.find(t) == st.end()) {
+                st.insert(t);
+                res = max(res, 1 + dfs(s, i + 1, st));
+                st.erase(t);
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        vector<int> dp(n, 0);
+        unordered_set<string> st;
+        for (int i = 0; i < n; ++i) {
+            string sub = s.substr(0, i + 1);
+            if (st.find(sub) == st.end()) {
+                st.insert(sub);
+                dp[i] = 1;
+            }
+            for (int j = 0; j < i; ++j) {
+                if (dp[j] == 0) {
+                    continue;
+                }
+                sub = s.substr(j + 1, i - j);
+                if (st.find(sub) == st.end()) {
+                    st.insert(sub);
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            st.clear();
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = s.size();
+        int ans = 0;
+        vector<int> dp(n + 1, 0);
+        unordered_set<string> st;
+        function<void(int)> dfs = [&](int i) {
+            if (i >= n) {
+                ans = max(ans, dp[i]);
+                return;
+            }
+            for (int j = i; j < n; j++) {
+                string ss = s.substr(i, j - i + 1);
+                if (st.count(ss)) continue;
+                st.insert(ss);
+                dp[j + 1] = max(dp[j + 1], dp[i] + 1);
+                dfs(j + 1);
+                st.erase(ss);
+            }
+        };
+        dfs(0);
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<int> dp(n+1, 0);
+        for (int i = 1; i <= n; ++i) {
+            unordered_set<string> st;
+            bool flag = true;
+            for (int j = i; j >= 1; --j) {
+                string sub = s.substr(j-1, i-j+1);
+                if (st.count(sub)) {
+                    flag = false;
+                    break;
+                }
+                st.insert(sub);
+            }
+            if (flag) dp[i] = st.size();
+            else dp[i] = 0;
+            for (int j = 1; j < i; ++j) {
+                dp[i] = max(dp[i], dp[j] + dp[i-j]);
+            }
+        }
+        return dp[n];

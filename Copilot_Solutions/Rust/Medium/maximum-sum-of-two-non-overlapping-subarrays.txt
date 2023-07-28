@@ -1,0 +1,275 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut sum = vec![0; n + 1];
+        for i in 0..n {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        let mut res = 0;
+        let (first_len, second_len) = (first_len as usize, second_len as usize);
+        for i in 0..=n - first_len {
+            let first = sum[i + first_len] - sum[i];
+            let mut second = 0;
+            second = second.max(sum[i] + sum[n] - sum[i + first_len] - sum[i]);
+            second = second.max(sum[i + first_len] + sum[n] - sum[i + first_len + second_len] - sum[i + first_len]);
+            res = res.max(first + second);
+        }
+        res
+
+=======
+
+        let first_len = first_len as usize;
+        let second_len = second_len as usize;
+        let mut sum = vec![0; nums.len() + 1];
+        for i in 0..nums.len() {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        let mut max = 0;
+        for i in first_len..=nums.len() {
+            let first_sum = sum[i] - sum[i - first_len];
+            let mut max_second_sum = 0;
+            if i > first_len {
+                max_second_sum = sum[i - first_len] - sum[0];
+            }
+            if i + second_len <= nums.len() {
+                max_second_sum = max_second_sum.max(sum[i + second_len] - sum[i]);
+            }
+            max = max.max(first_sum + max_second_sum);
+        }
+        for i in second_len..=nums.len() {
+            let second_sum = sum[i] - sum[i - second_len];
+            let mut max_first_sum = 0;
+            if i > second_len {
+                max_first_sum = sum[i - second_len] - sum[0];
+            }
+            if i + first_len <= nums.len() {
+                max_first_sum = max_first_sum.max(sum[i + first_len] - sum[i]);
+            }
+            max = max.max(second_sum + max_first_sum);
+        }
+        max
+
+=======
+
+        let n = nums.len();
+        let first_len = first_len as usize;
+        let second_len = second_len as usize;
+        let mut sum = vec![0; n + 1];
+        for i in 0..n {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        let mut ans = 0;
+        for i in first_len..=n {
+            ans = ans.max(sum[i] - sum[i - first_len] + sum[i - first_len - second_len..i - first_len].iter().max().unwrap_or(&0));
+            ans = ans.max(sum[i] - sum[i - first_len] + sum[i - first_len..i].iter().max().unwrap_or(&0));
+        }
+        for i in first_len + second_len..=n {
+            ans = ans.max(sum[i] - sum[i - second_len] + sum[i - second_len - first_len..i - second_len].iter().max().unwrap_or(&0));
+            ans = ans.max(sum[i] - sum[i - second_len] + sum[i - second_len..i].iter().max().unwrap_or(&0));
+        }
+        ans
+
+=======
+
+        let first_len = first_len as usize;
+        let second_len = second_len as usize;
+        let mut first = vec![0; nums.len()];
+        let mut second = vec![0; nums.len()];
+        let mut sum = 0;
+        for (i, &num) in nums.iter().enumerate() {
+            if i < first_len {
+                sum += num;
+                first[i] = sum;
+            } else {
+                sum += num;
+                sum -= nums[i - first_len];
+                first[i] = first[i - 1].max(sum);
+            }
+        }
+        sum = 0;
+        for (i, &num) in nums.iter().enumerate().rev() {
+            if i >= nums.len() - second_len {
+                sum += num;
+                second[i] = sum;
+            } else {
+                sum += num;
+                sum -= nums[i + second_len];
+                second[i] = second[i + 1].max(sum);
+            }
+        }
+        second
+            .iter()
+            .enumerate()
+            .skip(first_len - 1)
+            .take(nums.len() - first_len - second_len + 1)
+            .map(|(i, &second)| first[i - first_len] + second)
+            .max()
+            .unwrap()
+    }
+}
+
+=======
+
+        let (first_len, second_len) = (first_len as usize, second_len as usize);
+        let (mut first_sum, mut second_sum) = (0, 0);
+        let (mut first_max, mut second_max) = (0, 0);
+        let mut ans = 0;
+        for i in 0..nums.len() {
+            first_sum += nums[i];
+            if i >= first_len {
+                first_sum -= nums[i - first_len];
+            }
+            if i >= first_len - 1 {
+                first_max = first_max.max(first_sum);
+                ans = ans.max(first_max + second_sum);
+            }
+            second_sum += nums[i];
+            if i >= second_len {
+                second_sum -= nums[i - second_len];
+            }
+            if i >= second_len - 1 {
+                second_max = second_max.max(second_sum);
+                ans = ans.max(second_max + first_sum);
+            }
+        }
+        ans
+
+=======
+
+        let mut first = vec![0; nums.len()];
+        let mut second = vec![0; nums.len()];
+        let mut sum = 0;
+        for i in 0..nums.len() {
+            sum += nums[i];
+            if i as i32 < first_len {
+                first[i] = sum;
+            } else {
+                first[i] = std::cmp::max(first[i-1], sum);
+                sum -= nums[i - first_len as usize];
+            }
+        }
+        sum = 0;
+        for i in (0..nums.len()).rev() {
+            sum += nums[i];
+            if nums.len() as i32 - i as i32 <= second_len {
+                second[i] = sum;
+            } else {
+                second[i] = std::cmp::max(second[i+1], sum);
+                sum -= nums[i + second_len as usize];
+            }
+        }
+        let mut ans = 0;
+        for i in 0..nums.len() {
+            if i as i32 >= first_len && nums.len() as i32 - i as i32 > second_len {
+                ans = std::cmp::max(ans, first[i - first_len as usize] + second[i]);
+            }
+            if i as i32 >= second_len && nums.len() as i32 - i as i32 > first_len {
+                ans = std::cmp::max(ans, second[i - second_len as usize] + first[i]);
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let (first_len, second_len) = (first_len as usize, second_len as usize);
+        let mut sum = vec![0; nums.len() + 1];
+        for (i, n) in nums.iter().enumerate() {
+            sum[i + 1] = sum[i] + n;
+        }
+        let mut res = 0;
+        for i in 0..nums.len() - first_len + 1 {
+            let first = sum[i + first_len] - sum[i];
+            for j in 0..nums.len() - second_len + 1 {
+                if j >= i + first_len || j + second_len <= i {
+                    res = res.max(first + sum[j + second_len] - sum[j]);
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut sum = vec![0; nums.len()+1];
+        let mut max = 0;
+        for i in 0..nums.len() {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        for i in first_len as usize..nums.len()+1 {
+            let s1 = sum[i] - sum[i - first_len as usize];
+            for j in second_len as usize..i - first_len as usize + 1 {
+                let s2 = sum[j] - sum[j - second_len as usize];
+                let s3 = sum[i] - sum[i - first_len as usize] - s2;
+                max = max.max(s1 + s2).max(s1 + s3);
+            }
+            for j in i + second_len as usize..nums.len()+1 {
+                let s2 = sum[j] - sum[j - second_len as usize];
+                let s3 = sum[i] - sum[i - first_len as usize] - s2;
+                max = max.max(s1 + s2).max(s1 + s3);
+            }
+        }
+        max
+
+=======
+
+        let mut max = 0;
+        let mut maxs = vec![0; nums.len() + 1];
+        let mut sum = 0;
+        for i in 0..nums.len() {
+            sum += nums[i];
+            maxs[i + 1] = std::cmp::max(maxs[i], sum);
+            if i as i32 >= first_len {
+                sum -= nums[i - first_len as usize];
+            }
+        }
+        sum = 0;
+        for i in 0..nums.len() {
+            sum += nums[i];
+            if i as i32 >= second_len {
+                sum -= nums[i - second_len as usize];
+            }
+            max = std::cmp::max(max, sum + maxs[i + 1 - second_len as usize]);
+        }
+        max
+    }
+}
+
+=======
+
+        let mut max = 0;
+        let first_len = first_len as usize;
+        let second_len = second_len as usize;
+        let mut sum = 0;
+        let mut first = vec![];
+        for i in 0..nums.len() {
+            sum += nums[i];
+            if i >= first_len {
+                sum -= nums[i - first_len];
+            }
+            first.push(sum);
+        }
+        sum = 0;
+        let mut second = vec![];
+        for i in 0..nums.len() {
+            sum += nums[i];
+            if i >= second_len {
+                sum -= nums[i - second_len];
+            }
+            second.push(sum);
+        }
+        for i in 0..nums.len() {
+            if i >= first_len {
+                max = std::cmp::max(max, first[i - first_len] + second[i]);
+            }
+            if i >= second_len {
+                max = std::cmp::max(max, second[i - second_len] + first[i]);
+            }
+        }
+        max
+    }
+}

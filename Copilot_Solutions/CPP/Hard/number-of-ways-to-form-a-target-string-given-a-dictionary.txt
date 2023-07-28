@@ -1,0 +1,260 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26, 0));
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                cnt[j][words[i][j] - 'a']++;
+        vector<vector<int>> dp(t, vector<int>(m, 0));
+        for (int i = 0; i < m; i++)
+            dp[0][i] = cnt[i][target[0] - 'a'];
+        for (int i = 1; i < t; i++) {
+            for (int j = i; j < m; j++) {
+                for (int k = i - 1; k < j; k++)
+                    dp[i][j] = (dp[i][j] + (long long)dp[i - 1][k] * cnt[j][target[i] - 'a']) % 1000000007;
+            }
+        }
+        int res = 0;
+        for (int i = t - 1; i < m; i++)
+            res = (res + dp[t - 1][i]) % 1000000007;
+        return res;
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                ++cnt[j][words[i][j] - 'a'];
+            }
+        }
+        vector<vector<int>> dp(t + 1, vector<int>(m));
+        for (int i = 0; i < m; ++i) {
+            dp[0][i] = 1;
+        }
+        for (int i = 0; i < t; ++i) {
+            for (int j = i; j < m; ++j) {
+                if (j > i) {
+                    dp[i + 1][j] = dp[i + 1][j - 1];
+                }
+                dp[i + 1][j] = (dp[i + 1][j] + 1ll * dp[i][j] * cnt[j][target[i] - 'a']) % 1000000007;
+            }
+        }
+        return dp[t][m - 1];
+
+=======
+
+        int n = words.size();
+        int m = words[0].size();
+        int t = target.size();
+        vector<vector<int>> count(m, vector<int>(26, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                count[j][words[i][j] - 'a']++;
+            }
+        }
+        int mod = 1e9 + 7;
+        vector<vector<long long>> dp(t, vector<long long>(m, 0));
+        for (int j = 0; j < m; ++j) {
+            if (count[j][target[0] - 'a'] > 0) {
+                dp[0][j] = count[j][target[0] - 'a'];
+            }
+        }
+        for (int i = 1; i < t; ++i) {
+            for (int j = i; j < m; ++j) {
+                dp[i][j] = dp[i][j - 1];
+                if (count[j][target[i] - 'a'] > 0) {
+                    for (int k = 0; k < j; ++k) {
+                        dp[i][j] += dp[i - 1][k] * count[j][target[i] - 'a'];
+                        dp[i][j] %= mod;
+                    }
+                }
+            }
+        }
+        long long ans = 0;
+        for (int j = t - 1; j < m; ++j) {
+            ans += dp[t - 1][j];
+            ans %= mod;
+        }
+        return ans;
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> count(m, vector<int>(26, 0));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                count[i][words[j][i] - 'a']++;
+            }
+        }
+        vector<vector<long>> dp(t + 1, vector<long>(m + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < t; ++i) {
+            for (int j = i; j < m; ++j) {
+                dp[i + 1][j + 1] = (dp[i + 1][j] + dp[i][j] * count[j][target[i] - 'a']) % 1000000007;
+            }
+        }
+        return dp[t][m];
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26));
+        for (auto &w : words) {
+            for (int i = 0; i < m; ++i) {
+                ++cnt[i][w[i] - 'a'];
+            }
+        }
+        vector<vector<int>> dp(t + 1, vector<int>(m));
+        for (int i = 0; i < m; ++i) {
+            dp[0][i] = 1;
+        }
+        for (int i = 0; i < t; ++i) {
+            for (int j = i; j < m; ++j) {
+                int c = target[i] - 'a';
+                dp[i + 1][j + 1] = dp[i + 1][j] + dp[i][j] * cnt[j][c];
+                dp[i + 1][j + 1] %= 1000000007;
+            }
+        }
+        return dp[t][m];
+
+=======
+
+        int n = words[0].size(), m = target.size();
+        vector<vector<int>> cnt(n, vector<int>(26, 0));
+        for (auto& s : words) {
+            for (int i = 0; i < n; i++) {
+                cnt[i][s[i] - 'a']++;
+            }
+        }
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = cnt[i][target[0] - 'a'];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = i; j < n; j++) {
+                for (int k = i - 1; k < j; k++) {
+                    dp[i][j] += dp[i - 1][k] * cnt[j][target[i] - 'a'];
+                    dp[i][j] %= 1000000007;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = m - 1; i < n; i++) {
+            ans += dp[m - 1][i];
+            ans %= 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26));
+        for (string &w : words) {
+            for (int i = 0; i < m; ++i) {
+                ++cnt[i][w[i] - 'a'];
+            }
+        }
+        vector<vector<int>> dp(t + 1, vector<int>(m + 1));
+        dp[0][0] = 1;
+        for (int i = 1; i <= t; ++i) {
+            for (int j = i; j <= m; ++j) {
+                dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1] * cnt[j - 1][target[i - 1] - 'a'];
+                dp[i][j] %= 1000000007;
+            }
+        }
+        return dp[t][m];
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26));
+        for (auto &w : words) {
+            for (int i = 0; i < m; ++i) {
+                ++cnt[i][w[i] - 'a'];
+            }
+        }
+        vector<vector<int>> dp(t + 1, vector<int>(m));
+        for (int i = 0; i < m; ++i) {
+            dp[0][i] = 1;
+        }
+        for (int i = 0; i < t; ++i) {
+            for (int j = i; j < m; ++j) {
+                int c = target[i] - 'a';
+                dp[i + 1][j + 1] = dp[i + 1][j] + dp[i][j] * cnt[j][c];
+                dp[i + 1][j + 1] %= 1000000007;
+            }
+        }
+        return dp[t][m];
+
+=======
+
+        int n = words[0].size(), m = target.size();
+        vector<vector<int>> cnt(n, vector<int>(26, 0));
+        for (auto& s : words) {
+            for (int i = 0; i < n; i++) {
+                cnt[i][s[i] - 'a']++;
+            }
+        }
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = cnt[i][target[0] - 'a'];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = i; j < n; j++) {
+                for (int k = i - 1; k < j; k++) {
+                    dp[i][j] += dp[i - 1][k] * cnt[j][target[i] - 'a'];
+                    dp[i][j] %= 1000000007;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = m - 1; i < n; i++) {
+            ans += dp[m - 1][i];
+            ans %= 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = words.size(), m = words[0].size(), t = target.size();
+        vector<vector<int>> cnt(m, vector<int>(26));
+        for (string &w : words) {
+            for (int i = 0; i < m; ++i) {
+                ++cnt[i][w[i] - 'a'];
+            }
+        }
+        vector<vector<int>> dp(t + 1, vector<int>(m + 1));
+        dp[0][0] = 1;
+        for (int i = 1; i <= t; ++i) {
+            for (int j = i; j <= m; ++j) {
+                dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1] * cnt[j - 1][target[i - 1] - 'a'];
+                dp[i][j] %= 1000000007;
+            }
+        }
+        return dp[t][m];
+
+=======
+
+        int n = words[0].size();
+        int m = target.size();
+        int mod = 1e9+7;
+        vector<vector<long long>> dp(m, vector<long long>(n, 0));
+        for (int j = 0; j < n; ++j) {
+            if (words[0][j] == target[0]) dp[0][j] = 1;
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (words[0][j] == target[i]) dp[i][j] = dp[i-1][j];
+                for (int k = 0; k < j; ++k) {
+                    if (words[0][k] == target[i-1]) dp[i][j] = (dp[i][j] + dp[i-1][k]) % mod;
+                }
+            }
+        }
+        long long ans = 0;
+        for (int j = 0; j < n; ++j) {
+            ans = (ans + dp[m-1][j]) % mod;
+        }
+        return ans;

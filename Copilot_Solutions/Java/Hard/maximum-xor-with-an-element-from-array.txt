@@ -1,0 +1,266 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(nums);
+        int n = queries.length;
+        int[][] q = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            q[i][0] = queries[i][0];
+            q[i][1] = queries[i][1];
+            q[i][2] = i;
+        }
+        Arrays.sort(q, (a, b) -> a[1] - b[1]);
+        int[] ans = new int[n];
+        int idx = 0;
+        Trie trie = new Trie();
+        for (int[] query : q) {
+            int x = query[0], m = query[1], qid = query[2];
+            while (idx < nums.length && nums[idx] <= m) {
+                trie.insert(nums[idx++]);
+            }
+            if (idx == 0) {
+                ans[qid] = -1;
+            } else {
+                ans[qid] = trie.getMaxXor(x);
+            }
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] ans = new int[m];
+        for (int i = 0; i < m; i++) {
+            ans[i] = -1;
+        }
+        Trie root = new Trie();
+        for (int i = 0; i < n; i++) {
+            root.insert(nums[i]);
+        }
+        for (int i = 0; i < m; i++) {
+            ans[i] = root.maxXor(queries[i][0], queries[i][1]);
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] ans = new int[m];
+        Arrays.sort(nums);
+        int[][] q = new int[m][3];
+        for (int i = 0; i < m; i++) {
+            q[i][0] = queries[i][0];
+            q[i][1] = queries[i][1];
+            q[i][2] = i;
+        }
+        Arrays.sort(q, (a, b) -> a[1] - b[1]);
+        int idx = 0;
+        Trie trie = new Trie();
+        for (int i = 0; i < m; i++) {
+            while (idx < n && nums[idx] <= q[i][1]) {
+                trie.insert(nums[idx]);
+                idx++;
+            }
+            if (idx == 0) {
+                ans[q[i][2]] = -1;
+            } else {
+                ans[q[i][2]] = trie.query(q[i][0]);
+            }
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        int q = queries.length;
+        int[] ans = new int[q];
+        Arrays.sort(nums);
+        for (int i = 0; i < q; i++) {
+            ans[i] = -1;
+            int x = queries[i][0];
+            int m = queries[i][1];
+            if (m < nums[0]) {
+                continue;
+            }
+            int max = 0;
+            for (int j = 0; j < n; j++) {
+                if (nums[j] > m) {
+                    break;
+                }
+                max = Math.max(max, x ^ nums[j]);
+            }
+            ans[i] = max;
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        int m = queries.length;
+        int[] ans = new int[m];
+        int[][] q = new int[m][3];
+        for (int i = 0; i < m; i++) {
+            q[i][0] = queries[i][0];
+            q[i][1] = queries[i][1];
+            q[i][2] = i;
+        }
+        Arrays.sort(q, (a, b) -> a[1] - b[1]);
+        int idx = 0;
+        Trie trie = new Trie();
+        for (int i = 0; i < m; i++) {
+            while (idx < n && nums[idx] <= q[i][1]) {
+                trie.insert(nums[idx++]);
+            }
+            if (idx == 0) {
+                ans[q[i][2]] = -1;
+            } else {
+                ans[q[i][2]] = trie.query(q[i][0]);
+            }
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(nums);
+        for (int i = 0; i < queries.length; i++) {
+            ans[i] = find(nums, queries[i][0], queries[i][1]);
+        }
+        return ans;
+    }
+    
+    private int find(int[] nums, int x, int m) {
+        int ans = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > m) {
+                break;
+            }
+            ans = Math.max(ans, nums[i] ^ x);
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(nums);
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int x = q[0];
+            int m = q[1];
+            ans[i] = -1;
+            for (int j = 0; j < nums.length; j++) {
+                if (nums[j] > m) break;
+                ans[i] = Math.max(ans[i], x ^ nums[j]);
+            }
+        }
+        return ans;
+
+=======
+
+        int m = queries.length;
+        int n = nums.length;
+        int[] ans = new int[m];
+        int[][] q = new int[m][3];
+        for (int i = 0; i < m; i++) {
+            q[i][0] = queries[i][0];
+            q[i][1] = queries[i][1];
+            q[i][2] = i;
+        }
+        Arrays.sort(nums);
+        Arrays.sort(q, (a, b) -> a[1] - b[1]);
+        int idx = 0;
+        Trie trie = new Trie();
+        for (int i = 0; i < m; i++) {
+            int x = q[i][0];
+            int mVal = q[i][1];
+            while (idx < n && nums[idx] <= mVal) {
+                trie.insert(nums[idx]);
+                idx++;
+            }
+            if (idx == 0) {
+                ans[q[i][2]] = -1;
+            } else {
+                ans[q[i][2]] = trie.maxXor(x);
+            }
+        }
+        return ans;
+    }
+    class TrieNode {
+        TrieNode[] children;
+        public TrieNode() {
+            children = new TrieNode[2];
+        }
+    }
+    class Trie {
+        TrieNode root;
+        public Trie() {
+            root = new TrieNode();
+        }
+        public void insert(int num) {
+            TrieNode node = root;
+            for (int i = 30; i >= 0; i--) {
+                int bit = (num >> i) & 1;
+                if (node.children[bit] == null) {
+                    node.children[bit] = new TrieNode();
+                }
+                node = node.children[bit];
+            }
+        }
+        public int maxXor(int num) {
+            TrieNode node = root;
+            int ans = 0;
+            for (int i = 30; i >= 0; i--) {
+                int bit = (num >> i) & 1;
+                if (node.children[bit ^ 1] != null) {
+                    ans |= (1 << i);
+                    bit ^= 1;
+                }
+                node = node.children[bit];
+            }
+            return ans;
+        }
+
+=======
+
+        int[] ans = new int[queries.length];
+        for(int i=0;i<queries.length;i++) {
+            int x = queries[i][0];
+            int m = queries[i][1];
+            int max = -1;
+            for(int j=0;j<nums.length;j++) {
+                if(nums[j]<=m) {
+                    max = Math.max(max, nums[j]^x);
+                }
+            }
+            ans[i] = max;
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(nums);
+        for (int i = 0; i < queries.length; i++)
+            ans[i] = findMaxXOR(nums, queries[i][0], queries[i][1]);
+        return ans;
+    }
+    
+    private int findMaxXOR(int[] nums, int x, int m) {
+        int max = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > m) break;
+            max = Math.max(max, x ^ nums[i]);
+        }
+        return max;

@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < s.size(); ++i) {
+            pos[s[i] - 'a'].push_back(i);
+        }
+        int ans = 0;
+        for (string& word : words) {
+            int pre = -1;
+            bool flag = true;
+            for (char c : word) {
+                auto& v = pos[c - 'a'];
+                auto it = upper_bound(v.begin(), v.end(), pre);
+                if (it == v.end()) {
+                    flag = false;
+                    break;
+                }
+                pre = *it;
+            }
+            if (flag) ++ans;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < s.size(); ++i) {
+            pos[s[i] - 'a'].push_back(i);
+        }
+        int ans = 0;
+        for (auto& word : words) {
+            int prev = -1;
+            int j = 0;
+            for (; j < word.size(); ++j) {
+                auto& p = pos[word[j] - 'a'];
+                auto it = upper_bound(p.begin(), p.end(), prev);
+                if (it == p.end()) break;
+                prev = *it;
+            }
+            if (j == word.size()) ++ans;
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < s.size(); i++) {
+            pos[s[i] - 'a'].push_back(i);
+        }
+        for (auto& word: words) {
+            int i = 0;
+            for (auto c: word) {
+                auto& p = pos[c - 'a'];
+                auto it = lower_bound(p.begin(), p.end(), i);
+                if (it == p.end()) {
+                    i = -1;
+                    break;
+                }
+                i = *it + 1;
+            }
+            ans += i >= 0;
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < s.size(); i++) {
+            pos[s[i] - 'a'].push_back(i);
+        }
+        for (auto& word: words) {
+            int cur = -1;
+            bool ok = true;
+            for (auto& c: word) {
+                auto& vec = pos[c - 'a'];
+                auto it = lower_bound(vec.begin(), vec.end(), cur + 1);
+                if (it == vec.end()) {
+                    ok = false;
+                    break;
+                }
+                cur = *it;
+            }
+            if (ok) ans++;
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        vector<vector<int>> pos(26);
+        for(int i = 0; i < s.size(); i++){
+            pos[s[i] - 'a'].push_back(i);
+        }
+        for(auto &word : words){
+            int pre = -1;
+            bool flag = true;
+            for(auto &c : word){
+                auto it = upper_bound(pos[c - 'a'].begin(), pos[c - 'a'].end(), pre);
+                if(it == pos[c - 'a'].end()){
+                    flag = false;
+                    break;
+                }
+                pre = *it;
+            }
+            if(flag) res++;
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        int m = words.size();
+        int ans = 0;
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < n; i++) {
+            pos[s[i] - 'a'].push_back(i);
+        }
+        for (int i = 0; i < m; i++) {
+            int len = words[i].size();
+            int idx = -1;
+            bool flag = true;
+            for (int j = 0; j < len; j++) {
+                char c = words[i][j];
+                auto it = upper_bound(pos[c - 'a'].begin(), pos[c - 'a'].end(), idx);
+                if (it == pos[c - 'a'].end()) {
+                    flag = false;
+                    break;
+                }
+                idx = *it;
+            }
+            if (flag) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        vector<int> pos[26];
+        for (int i = 0; i < s.size(); i++) {
+            pos[s[i]-'a'].push_back(i);
+        }
+        for (string& word: words) {
+            int prev = -1;
+            bool ok = true;
+            for (char c: word) {
+                auto it = upper_bound(pos[c-'a'].begin(), pos[c-'a'].end(), prev);
+                if (it == pos[c-'a'].end()) {
+                    ok = false;
+                    break;
+                }
+                prev = *it;
+            }
+            ans += ok;
+        }
+        return ans;
+
+=======
+
+        unordered_map<char, vector<string>> m;
+        for (auto& w: words) {
+            m[w[0]].push_back(w);
+        }
+        int res = 0;
+        for (auto c: s) {
+            vector<string> tmp = m[c];
+            m[c].clear();
+            for (auto& w: tmp) {
+                if (w.size() == 1) {
+                    res++;
+                } else {
+                    m[w[1]].push_back(w.substr(1));
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int res = 0;
+        for (string w : words) {
+            int i = 0;
+            for (char c : s) {
+                if (i < w.size() && c == w[i]) {
+                    i++;
+                }
+            }
+            if (i == w.size()) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int count = 0;
+        vector<vector<int>> charPos(26, vector<int>());
+        for (int i = 0; i < s.length(); i++) {
+            charPos[s[i] - 'a'].push_back(i);
+        }
+        for (auto word : words) {
+            int pos = -1;
+            bool isSub = true;
+            for (auto c : word) {
+                auto it = upper_bound(charPos[c - 'a'].begin(), charPos[c - 'a'].end(), pos);
+                if (it == charPos[c - 'a'].end()) {
+                    isSub = false;
+                    break;
+                }
+                pos = *it;
+            }
+            if (isSub) {
+                count++;
+            }
+        }
+        return count;

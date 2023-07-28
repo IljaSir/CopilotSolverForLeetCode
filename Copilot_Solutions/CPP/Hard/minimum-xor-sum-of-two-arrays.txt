@@ -1,0 +1,126 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(1 << n, vector<int>(n, INT_MAX));
+        for (int i = 0; i < n; ++i) {
+            dp[1 << i][i] = nums1[0] ^ nums2[i];
+        }
+        for (int mask = 1; mask < (1 << n); ++mask) {
+            int i = __builtin_popcount(mask) - 1;
+            for (int j = 0; j < n; ++j) {
+                if (!(mask & (1 << j))) {
+                    dp[mask | (1 << j)][j] = min(dp[mask | (1 << j)][j], dp[mask][i] + (nums1[i + 1] ^ nums2[j]));
+                }
+            }
+        }
+        return *min_element(dp[(1 << n) - 1].begin(), dp[(1 << n) - 1].end());
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(n, vector<int>(1 << n, -1));
+        return helper(nums1, nums2, 0, 0, dp);
+    }
+    
+    int helper(vector<int>& nums1, vector<int>& nums2, int i, int mask, vector<vector<int>>& dp) {
+        if (i == nums1.size()) {
+            return 0;
+        }
+        if (dp[i][mask] != -1) {
+            return dp[i][mask];
+        }
+        int res = INT_MAX;
+        for (int j = 0; j < nums2.size(); ++j) {
+            if (mask & (1 << j)) {
+                continue;
+            }
+            res = min(res, (nums1[i] ^ nums2[j]) + helper(nums1, nums2, i + 1, mask | (1 << j), dp));
+        }
+        return dp[i][mask] = res;
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(1 << n, vector<int>(n, INT_MAX));
+        return dfs(nums1, nums2, 0, 0, dp);
+    }
+    
+    int dfs(vector<int>& nums1, vector<int>& nums2, int s, int i, vector<vector<int>>& dp) {
+        if (i == nums1.size()) return 0;
+        if (dp[s][i] != INT_MAX) return dp[s][i];
+        for (int j = 0; j < nums2.size(); ++j) {
+            if ((s & (1 << j)) == 0) {
+                dp[s][i] = min(dp[s][i], dfs(nums1, nums2, s | (1 << j), i + 1, dp) + (nums1[i] ^ nums2[j]));
+            }
+        }
+        return dp[s][i];
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(1<<n, vector<int>(n, INT_MAX));
+        return dfs(nums1, nums2, 0, 0, dp);
+    }
+    
+    int dfs(vector<int>& nums1, vector<int>& nums2, int mask, int idx, vector<vector<int>>& dp) {
+        if (idx == nums1.size()) return 0;
+        if (dp[mask][idx] != INT_MAX) return dp[mask][idx];
+        for (int i = 0; i < nums1.size(); i++) {
+            if ((mask & (1<<i)) == 0) {
+                dp[mask][idx] = min(dp[mask][idx], dfs(nums1, nums2, mask|(1<<i), idx+1, dp) + (nums1[idx] ^ nums2[i]));
+            }
+        }
+        return dp[mask][idx];
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(n, vector<int>(1<<n, -1));
+        return helper(nums1, nums2, dp, 0, 0);
+    }
+    
+    int helper(vector<int>& nums1, vector<int>& nums2, vector<vector<int>> &dp, int i, int mask) {
+        int n = nums1.size();
+        if (i == n) return 0;
+        if (dp[i][mask] != -1) return dp[i][mask];
+        int ans = INT_MAX;
+        for (int j = 0; j < n; ++j) {
+            if ((mask & (1 << j)) == 0) {
+                ans = min(ans, (nums1[i] ^ nums2[j]) + helper(nums1, nums2, dp, i + 1, mask | (1 << j)));
+            }
+        }
+        return dp[i][mask] = ans;
+
+=======
+
+        int n = nums1.size();
+        vector<vector<int>> dp(n, vector<int>(1<<n, 1e9));
+        return dfs(nums1, nums2, 0, 0, dp);
+    }
+    int dfs(vector<int>& nums1, vector<int>& nums2, int i, int mask, vector<vector<int>>& dp) {
+        if (i == nums1.size()) return 0;
+        if (dp[i][mask] != 1e9) return dp[i][mask];
+        for (int j = 0; j < nums2.size(); ++j) {
+            if (!(mask & (1 << j))) {
+                dp[i][mask] = min(dp[i][mask], (nums1[i] ^ nums2[j]) + dfs(nums1, nums2, i + 1, mask | (1 << j), dp));
+            }
+        }
+        return dp[i][mask];
+
+=======
+
+        int n = nums1.size();
+        int m = nums2.size();
+        int dp[1 << n];
+        memset(dp, 0, sizeof(dp));
+        for (int i = 0; i < (1 << n); i++) {
+            int x = __builtin_popcount(i);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] = max(dp[i | (1 << j)], dp[i] + (nums1[x] ^ nums2[j]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];

@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        for (char c : t.toCharArray()) {
+            count[c - 'a']--;
+        }
+        int result = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 26; i++) {
+            if (count[i] < 0) {
+                result += Math.abs(count[i]);
+                min = Math.min(min, Math.abs(count[i]));
+            }
+        }
+        return result - min;
+
+=======
+
+        int[] sCount = new int[26];
+        int[] tCount = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            sCount[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < t.length(); i++) {
+            tCount[t.charAt(i) - 'a']++;
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            ans += Math.max(0, sCount[i] - tCount[i]);
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int m = t.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        int max = dp[n][m];
+        int ans = 0;
+        int i = 0, j = 0;
+        while (i < n && j < m) {
+            if (s.charAt(i) == t.charAt(j)) {
+                ans++;
+                i++;
+                j++;
+            } else if (dp[i + 1][j] > dp[i][j + 1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return m - max + max - ans;
+
+=======
+
+        int[] freq = new int[26];
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+        for (char c : t.toCharArray()) {
+            freq[c - 'a']--;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] < 0) {
+                min = Math.min(min, -freq[i]);
+            }
+        }
+        return min;
+
+=======
+
+        int[] arr = new int[26];
+        for (char c : s.toCharArray()) {
+            arr[c - 'a']++;
+        }
+        for (char c : t.toCharArray()) {
+            arr[c - 'a']--;
+        }
+        int left = 0;
+        int right = 0;
+        int result = 0;
+        for (int i = 0; i < 26; i++) {
+            while (arr[i] < 0) {
+                result += right - left + 1;
+                arr[i]++;
+                left++;
+                right++;
+            }
+            right++;
+        }
+        return result;
+
+=======
+
+        int n = s.length();
+        int m = t.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; ++i) {
+            for (int j = 0; j <= m; ++j) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                } else {
+                    if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                        dp[i][j] = dp[i - 1][j - 1] + 1;
+                    } else {
+                        dp[i][j] = dp[i - 1][j];
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    res = Math.max(res, dp[i - 1][j - 1] + 1);
+                }
+            }
+        }
+        return m - res;
+
+=======
+
+        int[][] dp = new int[s.length()+1][t.length()+1];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                if (s.charAt(i) == t.charAt(j)) {
+                    dp[i+1][j+1] = dp[i][j] + 1;
+                } else {
+                    dp[i+1][j+1] = Math.max(dp[i][j+1], dp[i+1][j]);
+                }
+            }
+        }
+        int lcs = dp[s.length()][t.length()];
+        return t.length() - lcs;
+
+=======
+
+        int n = s.length(), m = t.length();
+        int[] a = new int[n], b = new int[m];
+        for (int i = 0; i < n; i++) {
+            a[i] = s.charAt(i) - 'a';
+        }
+        for (int i = 0; i < m; i++) {
+            b[i] = t.charAt(i) - 'a';
+        }
+        int[][][] dp = new int[26][n + 1][m + 1];
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j <= n; j++) {
+                for (int k = 0; k <= m; k++) {
+                    dp[i][j][k] = Integer.MIN_VALUE;
+                }
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            dp[i][0][0] = 0;
+        }
+        for (int i = 0; i < 26; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = 1; k <= m; k++) {
+                    if (a[j - 1] == i && b[k - 1] == i) {
+                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i][j - 1][k - 1] + 1);
+                    }
+                    if (a[j - 1] == i) {
+                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i][j - 1][k]);
+                    }
+                    if (b[k - 1] == i) {
+                        dp[i][j][k] = Math.max(dp[i][j][k], dp[i][j][k - 1]);
+                    }
+                    dp[i][j][k] = Math.max(dp[i][j][k], dp[i][j - 1][k - 1]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            if (dp[i][n][m] != Integer.MIN_VALUE) {
+                ans = Math.max(ans, dp[i][n][m]);
+            }
+        }
+
+=======
+
+        int[] count = new int[26];
+        int n = s.length();
+        int m = t.length();
+        for(int i = 0; i < n; i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        for(int i = 0; i < m; i++) {
+            count[t.charAt(i) - 'a']--;
+        }
+        int left = 0;
+        int right = n - 1;
+        int res = 0;
+        for(int i = 0; i < 26; i++) {
+            if(count[i] > 0) {
+                res += count[i];
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length(), m = t.length();
+        int[] pos = new int[26];
+        Arrays.fill(pos, -1);
+        int[] dp = new int[m + 1];
+        for (int i = 0; i < m; ++i) {
+            int c = t.charAt(i) - 'a';
+            pos[c] = i;
+            for (int j = 0; j < 26; ++j) {
+                if (pos[j] == -1) {
+                    continue;
+                }
+                dp[i + 1] = Math.max(dp[i + 1], dp[pos[j]] + 1);
+            }
+        }
+        return n - dp[m];

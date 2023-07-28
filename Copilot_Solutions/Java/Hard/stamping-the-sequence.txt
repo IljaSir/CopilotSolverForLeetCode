@@ -1,0 +1,432 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = target.length();
+        int m = stamp.length();
+        char[] s = stamp.toCharArray();
+        char[] t = target.toCharArray();
+        boolean[] visited = new boolean[n];
+        List<Integer> ans = new ArrayList<>();
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i <= n - m; i++) {
+                if (!visited[i] && canChange(s, t, i)) {
+                    changed = true;
+                    visited[i] = true;
+                    ans.add(i);
+                    for (int j = i; j < i + m; j++) {
+                        t[j] = '?';
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (t[i] != '?') {
+                return new int[0];
+            }
+        }
+        int[] ret = new int[ans.size()];
+        for (int i = 0; i < ans.size(); i++) {
+            ret[i] = ans.get(ans.size() - 1 - i);
+        }
+        return ret;
+    }
+
+    private boolean canChange(char[] s, char[] t, int i) {
+        int m = s.length;
+        for (int j = 0; j < m; j++) {
+            if (t[i + j] != '?' && t[i + j] != s[j]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        List<Integer> list = new ArrayList<>();
+        char[] s = stamp.toCharArray();
+        char[] t = target.toCharArray();
+        boolean[] visited = new boolean[t.length];
+        int count = 0;
+        while (count < t.length) {
+            boolean done = false;
+            for (int i = 0; i <= t.length - s.length; i++) {
+                if (!visited[i] && canReplace(s, t, i)) {
+                    list.add(i);
+                    count = replace(s, t, i, count);
+                    visited[i] = true;
+                    done = true;
+                    if (count == t.length) {
+                        break;
+                    }
+                }
+            }
+            if (!done) {
+                return new int[0];
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = list.get(res.length - i - 1);
+        }
+        return res;
+    }
+    
+    private boolean canReplace(char[] s, char[] t, int start) {
+        for (int i = 0; i < s.length; i++) {
+            if (t[start + i] != '?' && t[start + i] != s[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private int replace(char[] s, char[] t, int start, int count) {
+        for (int i = 0; i < s.length; i++) {
+            if (t[start + i] != '?') {
+                t[start + i] = '?';
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        List<Integer> list = new ArrayList<>();
+        char[] s = stamp.toCharArray();
+        char[] t = target.toCharArray();
+        boolean[] done = new boolean[t.length];
+        int count = 0;
+        while (count < t.length) {
+            boolean found = false;
+            for (int i = 0; i <= t.length - s.length; i++) {
+                if (!done[i] && canReplace(s, t, i)) {
+                    found = true;
+                    done[i] = true;
+                    count += replace(t, i, s.length);
+                    list.add(i);
+                }
+            }
+            if (!found) {
+                return new int[0];
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = list.get(res.length - 1 - i);
+        }
+        return res;
+    }
+
+    private boolean canReplace(char[] s, char[] t, int start) {
+        for (int i = 0; i < s.length; i++) {
+            if (t[start + i] != '?' && t[start + i] != s[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int replace(char[] t, int start, int len) {
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            if (t[start + i] != '?') {
+                t[start + i] = '?';
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        int n = target.length();
+        char[] t = target.toCharArray();
+        List<Integer> ans = new ArrayList<>();
+        boolean[] done = new boolean[n];
+        int doneCount = 0;
+        while (doneCount < n) {
+            boolean stamped = false;
+            for (int i = 0; i <= n - stamp.length(); ++i) {
+                if (!done[i] && canStamp(stamp, t, i)) {
+                    stamp(stamp, t, i, done);
+                    doneCount += stamp.length();
+                    stamped = true;
+                    ans.add(i);
+                }
+            }
+            if (!stamped) return new int[0];
+        }
+        Collections.reverse(ans);
+        return ans.stream().mapToInt(i->i).toArray();
+    }
+    public boolean canStamp(String stamp, char[] t, int i) {
+        for (int j = 0; j < stamp.length(); ++j) {
+            if (t[i + j] != '?' && t[i + j] != stamp.charAt(j)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public void stamp(String stamp, char[] t, int i, boolean[] done) {
+        for (int j = 0; j < stamp.length(); ++j) {
+            t[i + j] = '?';
+            done[i + j] = true;
+        }
+
+=======
+
+        int n = target.length();
+        char[] t = target.toCharArray();
+        boolean[] visited = new boolean[n];
+        List<Integer> ans = new ArrayList<>();
+        int count = 0;
+        while (count < n) {
+            boolean done = false;
+            for (int i = 0; i <= n - stamp.length(); i++) {
+                if (!visited[i] && canConvert(stamp, t, i)) {
+                    ans.add(i);
+                    count += convert(stamp, t, i);
+                    visited[i] = true;
+                    done = true;
+                }
+            }
+            if (!done) {
+                return new int[0];
+            }
+        }
+        Collections.reverse(ans);
+        int[] ret = new int[ans.size()];
+        for (int i = 0; i < ans.size(); i++) {
+            ret[i] = ans.get(i);
+        }
+        return ret;
+    }
+    
+    public boolean canConvert(String stamp, char[] t, int start) {
+        for (int i = 0; i < stamp.length(); i++) {
+            if (t[start + i] != '?' && t[start + i] != stamp.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int convert(String stamp, char[] t, int start) {
+        int count = 0;
+        for (int i = 0; i < stamp.length(); i++) {
+            if (t[start + i] != '?') {
+                t[start + i] = '?';
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        int n = target.length();
+        char[] s = target.toCharArray();
+        char[] t = stamp.toCharArray();
+        boolean[] done = new boolean[n];
+        List<Integer> ans = new ArrayList<>();
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < n; i++) {
+                if (!done[i] && match(s, t, i)) {
+                    ans.add(i);
+                    changed = true;
+                    for (int j = i; j < i + t.length; j++) {
+                        s[j] = '?';
+                        done[j] = true;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (!done[i]) {
+                return new int[0];
+            }
+        }
+        Collections.reverse(ans);
+        return ans.stream().mapToInt(i -> i).toArray();
+    }
+    private boolean match(char[] s, char[] t, int i) {
+        for (int j = 0; j < t.length; j++) {
+            if (s[i + j] != '?' && s[i + j] != t[j]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        char[] t = target.toCharArray();
+        char[] s = stamp.toCharArray();
+        int n = t.length;
+        boolean[] done = new boolean[n];
+        int count = 0;
+        while (count < n) {
+            boolean found = false;
+            for (int i = 0; i <= n - s.length; i++) {
+                if (!done[i] && canReplace(t, s, i)) {
+                    found = true;
+                    done[i] = true;
+                    count += replace(t, i, i + s.length);
+                    result.add(i);
+                }
+            }
+            if (!found) {
+                return new int[0];
+            }
+        }
+        Collections.reverse(result);
+        return result.stream().mapToInt(i -> i).toArray();
+    }
+
+    private boolean canReplace(char[] t, char[] s, int start) {
+        for (int i = 0; i < s.length; i++) {
+            if (t[i + start] != '?' && t[i + start] != s[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int replace(char[] t, int start, int end) {
+        int count = 0;
+        for (int i = start; i < end; i++) {
+            if (t[i] != '?') {
+                t[i] = '?';
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        int[] ans = new int[1000];
+        int t = 0;
+        char[] cs = stamp.toCharArray();
+        char[] ct = target.toCharArray();
+        boolean[] done = new boolean[ct.length];
+        int count = 0;
+        while (count < ct.length) {
+            boolean found = false;
+            for (int i = 0; i <= ct.length - cs.length; i++) {
+                if (done[i]) {
+                    continue;
+                }
+                int stars = 0;
+                int changed = 0;
+                for (int j = 0; j < cs.length; j++) {
+                    if (ct[i + j] == '*') {
+                        stars++;
+                    } else if (ct[i + j] == cs[j]) {
+                        changed++;
+                    }
+                }
+                if (stars + changed == cs.length) {
+                    for (int j = 0; j < cs.length; j++) {
+                        if (ct[i + j] != '*') {
+                            ct[i + j] = '*';
+                            count++;
+                        }
+                    }
+                    ans[t++] = i;
+                    found = true;
+                }
+            }
+            if (!found) {
+                return new int[0];
+            }
+        }
+        int[] ret = new int[t];
+        for (int i = 0; i < t; i++) {
+            ret[i] = ans[t - i - 1];
+        }
+        return ret;
+
+=======
+
+        int m = stamp.length(), n = target.length();
+        boolean[] done = new boolean[n];
+        List<Integer> ans = new ArrayList();
+        char[] s = stamp.toCharArray(), t = target.toCharArray();
+        int changed = 0;
+
+        while (changed < n) {
+            boolean found = false;
+            for (int i = 0; i <= n - m; ++i) {
+                if (!done[i] && canTransform(s, t, i)) {
+                    found = true;
+                    done[i] = true;
+                    changed += replace(t, i, m, '?');
+                    ans.add(i);
+                }
+            }
+            if (!found) return new int[0];
+        }
+
+        Collections.reverse(ans);
+        return ans.stream().mapToInt(i->i).toArray();
+    }
+
+    public boolean canTransform(char[] s, char[] t, int i) {
+        for (int j = 0; j < s.length; ++j)
+            if (t[i+j] != '?' && t[i+j] != s[j])
+                return false;
+        return true;
+    }
+
+    public int replace(char[] t, int i, int m, char c) {
+        int ans = 0;
+        for (int j = 0; j < m; ++j)
+            if (t[i+j] != '?') {
+                t[i+j] = '?';
+                ans++;
+            }
+        return ans;
+
+=======
+
+        int n = target.length();
+        boolean[] done = new boolean[n];
+        char[] t = target.toCharArray();
+        char[] s = stamp.toCharArray();
+        List<Integer> ans = new ArrayList<>();
+        while(true){
+            boolean found = false;
+            for(int i=0; i<=n-s.length; i++){
+                if(!done[i] && canTransform(t, s, i)){
+                    found = true;
+                    done[i] = true;
+                    ans.add(i);
+                    for(int j=i; j<i+s.length; j++){
+                        t[j] = '?';
+                    }
+                }
+            }
+            if(!found){
+                break;
+            }
+        }
+        for(int i=0; i<n; i++){
+            if(t[i]!='?'){
+                return new int[0];
+            }
+        }
+        Collections.reverse(ans);
+        return ans.stream().mapToInt(i->i).toArray();
+    }
+    
+    private boolean canTransform(char[] t, char[] s, int i){
+        int n = s.length;
+        for(int j=0; j<n; j++){
+            if(t[i+j]!='?' && t[i+j]!=s[j]){
+                return false;
+            }
+        }
+        return true;

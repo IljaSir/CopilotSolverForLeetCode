@@ -1,0 +1,413 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut result = Vec::new();
+        let mut board = [[false; 8]; 8];
+        for queen in queens {
+            board[queen[0] as usize][queen[1] as usize] = true;
+        }
+        for i in 0..8 {
+            let mut x = king[0] + i;
+            let mut y = king[1] + i;
+            if x < 8 && y < 8 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0] - i;
+            y = king[1] - i;
+            if x >= 0 && y >= 0 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0] + i;
+            y = king[1] - i;
+            if x < 8 && y >= 0 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0] - i;
+            y = king[1] + i;
+            if x >= 0 && y < 8 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+        }
+        for i in 0..8 {
+            let mut x = king[0] + i;
+            let mut y = king[1];
+            if x < 8 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0] - i;
+            y = king[1];
+            if x >= 0 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0];
+            y = king[1] + i;
+            if y < 8 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+            x = king[0];
+            y = king[1] - i;
+            if y >= 0 && board[x as usize][y as usize] {
+                result.push(vec![x, y]);
+                break;
+            }
+        }
+        result
+
+=======
+
+        let mut result = Vec::new();
+        let mut board = [[0; 8]; 8];
+        for queen in queens {
+            board[queen[0] as usize][queen[1] as usize] = 1;
+        }
+        let king = (king[0] as usize, king[1] as usize);
+        let (mut x, mut y) = king;
+        while x > 0 && y > 0 {
+            x -= 1;
+            y -= 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while x < 7 && y < 7 {
+            x += 1;
+            y += 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while x < 7 && y > 0 {
+            x += 1;
+            y -= 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while x > 0 && y < 7 {
+            x -= 1;
+            y += 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while x > 0 {
+            x -= 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while x < 7 {
+            x += 1;
+            if board[x][y] == 1 {
+                result.push(vec![x as i32, y as i32]);
+                break;
+            }
+        }
+        let (mut x, mut y) = king;
+        while y > 0 {
+            y -= 1;
+            if board[x][y] == 1 {
+
+=======
+
+        let mut queen_positions = vec![vec![false; 8]; 8];
+        for queen in queens {
+            queen_positions[queen[0] as usize][queen[1] as usize] = true;
+        }
+        let mut result = vec![];
+        for x in 0..8 {
+            for y in 0..8 {
+                if queen_positions[x][y] {
+                    if x == king[0] as usize {
+                        if y < king[1] as usize {
+                            let mut is_blocked = false;
+                            for i in (y+1)..king[1] as usize {
+                                if queen_positions[x][i] {
+                                    is_blocked = true;
+                                    break;
+                                }
+                            }
+                            if !is_blocked {
+                                result.push(vec![x as i32, y as i32]);
+                            }
+                        } else {
+                            let mut is_blocked = false;
+                            for i in (king[1] as usize+1)..y {
+                                if queen_positions[x][i] {
+                                    is_blocked = true;
+                                    break;
+                                }
+                            }
+                            if !is_blocked {
+                                result.push(vec![x as i32, y as i32]);
+                            }
+                        }
+                    } else if y == king[1] as usize {
+                        if x < king[0] as usize {
+                            let mut is_blocked = false;
+                            for i in (x+1)..king[0] as usize {
+                                if queen_positions[i][y] {
+                                    is_blocked = true;
+                                    break;
+                                }
+                            }
+                            if !is_blocked {
+                                result.push(vec![x as i32, y as i32]);
+                            }
+                        } else {
+                            let mut is_blocked = false;
+                            for i in (king[0] as usize+1)..x {
+                                if queen_positions[i][y] {
+                                    is_blocked = true;
+                                    break;
+                                }
+                            }
+                            if !is_blocked {
+                                result.push(vec![x as i32, y as i32]);
+                            }
+                        }
+                    } else if (x as i32 - king[0]).abs() == (y as i32 - king[1]).abs() {
+                        if x < king[0] as usize {
+                            if y < king[1] as usize {
+                                let mut is_blocked = false;
+                                let mut i = x + 1;
+                                let mut j = y + 1;
+                                while i
+
+=======
+
+        let mut res = Vec::new();
+        let mut dir = vec![vec![0; 8]; 8];
+        for queen in queens {
+            dir[queen[0] as usize][queen[1] as usize] = 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 && y >= 0 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+            y -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 && y < 8 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+            y += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 && y >= 0 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+            y -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 && y < 8 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+            y += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 {
+            if dir[x as usize][y as usize] == 1 {
+                res.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while y >= 0 {
+            if dir
+
+=======
+
+        let mut result = Vec::new();
+        let mut queen_set = std::collections::HashSet::new();
+        for queen in queens {
+            queen_set.insert((queen[0], queen[1]));
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 && y >= 0 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+            y -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 && y < 8 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+            y += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 && y >= 0 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+            y -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 && y < 8 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+            y += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x >= 0 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x -= 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while x < 8 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            x += 1;
+        }
+        let mut x = king[0];
+        let mut y = king[1];
+        while y >= 0 {
+            if queen_set.contains(&(x, y)) {
+                result.push(vec![x, y]);
+                break;
+            }
+            y -= 1;
+        }
+        let mut x =
+
+=======
+
+        let mut queens = queens;
+        let mut king = king;
+        let mut result: Vec<Vec<i32>> = Vec::new();
+        let mut directions: Vec<Vec<i32>> = vec![vec![1, 0], vec![-1, 0], vec![0, 1], vec![0, -1], vec![1, 1], vec![1, -1], vec![-1, 1], vec![-1, -1]];
+        for dir in directions {
+            let mut x = king[0] + dir[0];
+            let mut y = king[1] + dir[1];
+            while x >= 0 && x < 8 && y >= 0 && y < 8 {
+                let queen = vec![x, y];
+                if queens.contains(&queen) {
+                    result.push(queen);
+                    break;
+                }
+                x += dir[0];
+                y += dir[1];
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut queens = queens;
+        let mut king = king;
+        let mut res: Vec<Vec<i32>> = Vec::new();
+        let mut q: Vec<Vec<i32>> = Vec::new();
+        for i in 0..queens.len() {
+            if queens[i][0] == king[0] || queens[i][1] == king[1] || (queens[i][0] - queens[i][1]) == (king[0] - king[1]) || (queens[i][0] + queens[i][1]) == (king[0] + king[1]) {
+                q.push(queens[i].clone());
+            }
+        }
+        for i in 0..q.len() {
+            let mut flag = true;
+            for j in 0..q.len() {
+                if i != j && q[i][0] == q[j][0] && q[i][1] == q[j][1] {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag {
+                res.push(q[i].clone());
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut queens = queens;
+        let mut king = king;
+        let mut result = Vec::new();
+        let mut queens_set = HashSet::new();
+        for queen in queens.iter() {
+            queens_set.insert((queen[0], queen[1]));
+        }
+        let directions = vec![(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)];
+        for (dx, dy) in directions.iter() {
+            let mut x = king[0] + dx;
+            let mut y = king[1] + dy;
+            while x >= 0 && x < 8 && y >= 0 && y < 8 {
+                if queens_set.contains(&(x, y)) {
+                    result.push(vec![x, y]);
+                    break;
+                }
+                x += dx;
+                y += dy;
+            }
+        }
+        result

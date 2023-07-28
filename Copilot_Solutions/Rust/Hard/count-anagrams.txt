@@ -1,0 +1,110 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut ans = 0;
+        let mut cnt = 0;
+        let mut last = ' ';
+        for c in s.chars() {
+            if c == ' ' {
+                ans += cnt * (cnt + 1) / 2;
+                cnt = 0;
+            } else {
+                if c == last {
+                    cnt += 1;
+                } else {
+                    ans += cnt * (cnt + 1) / 2;
+                    cnt = 1;
+                    last = c;
+                }
+            }
+        }
+        ans += cnt * (cnt + 1) / 2;
+        ans as i32
+
+=======
+
+        let mut ans = 1;
+        let mut last = ' ';
+        let mut last_count = 0;
+        for c in s.chars() {
+            if c == ' ' {
+                ans = ans * (last_count + 1) % 1_000_000_007;
+                last_count = 0;
+            } else {
+                if c == last {
+                    last_count += 1;
+                } else {
+                    last = c;
+                    last_count = 1;
+                }
+            }
+        }
+        ans = ans * (last_count + 1) % 1_000_000_007;
+        ans
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut ret = 1;
+        let mut modu = 1_000_000_007;
+        for c in s.chars() {
+            if c == ' ' {
+                let mut tmp = 0;
+                for v in map.values() {
+                    tmp += v * (v - 1) / 2;
+                    tmp %= modu;
+                }
+                ret *= tmp + 1;
+                ret %= modu;
+                map.clear();
+            } else {
+                *map.entry(c).or_insert(0) += 1;
+            }
+        }
+        let mut tmp = 0;
+        for v in map.values() {
+            tmp += v * (v - 1) / 2;
+            tmp %= modu;
+        }
+        ret *= tmp + 1;
+        ret %= modu;
+        ret
+
+=======
+
+        let mut v = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut res = 0;
+        let mut count = 0;
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            if c == ' ' {
+                v.push(&s[i..j]);
+                i = j + 1;
+            }
+            j += 1;
+        }
+        v.push(&s[i..j]);
+        for i in 0..v.len() {
+            let mut v = v[i].chars().collect::<Vec<char>>();
+            v.sort();
+            let s = v.into_iter().collect::<String>();
+            if let Some(x) = map.get(&s) {
+                count += *x;
+                *map.get_mut(&s).unwrap() += 1;
+            } else {
+                map.insert(s, 1);
+            }
+        }
+        res = (count * 2 + v.len()) as i32 % 1000000007;
+        res
+    }
+}

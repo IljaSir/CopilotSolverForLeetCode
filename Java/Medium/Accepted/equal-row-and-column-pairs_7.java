@@ -1,0 +1,23 @@
+class Solution {
+    public int equalPairs(int[][] grid) {
+        
+        int res = 0;
+        int n = grid.length;
+        int[][] row = new int[n][n];
+        int[][] col = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                row[i][j] = grid[i][j];
+                col[i][j] = grid[j][i];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (Arrays.equals(row[i], col[j])) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+}

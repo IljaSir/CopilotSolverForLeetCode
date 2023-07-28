@@ -1,0 +1,145 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        int minLen = Integer.MAX_VALUE;
+        for (int[] path : paths) {
+            minLen = Math.min(minLen, path.length);
+        }
+        int lo = 0, hi = minLen;
+        while (lo < hi) {
+            int mid = (lo + hi + 1) / 2;
+            if (check(mid, n, paths)) {
+                lo = mid;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return lo;
+    }
+
+    private boolean check(int len, int n, int[][] paths) {
+        int p = 1000000007;
+        int pInv = 1000000006;
+        long h = 1;
+        for (int i = 0; i < len; i++) {
+            h = h * p % pInv;
+        }
+        long[] vals = new long[paths.length];
+        for (int i = 0; i < paths.length; i++) {
+            long val = 0;
+            for (int j = 0; j < len; j++) {
+                val = (val * p + paths[i][j]) % pInv;
+            }
+            vals[i] = val;
+        }
+        Set<Long> set = new HashSet<>();
+        for (int i = 0; i < paths.length; i++) {
+            set.clear();
+            long val = 0;
+            for (int j = 0; j < paths[i].length; j++) {
+                val = (val * p + paths[i][j]) % pInv;
+                if (j >= len) {
+                    val = (val - paths[i][j - len] * h % pInv + pInv) % pInv;
+                }
+                if (j >= len - 1) {
+                    set.add(val);
+                }
+            }
+            if (i == 0 || set.containsAll(vals)) {
+                vals = set.stream().mapToLong(Long::longValue).toArray();
+            } else {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int lo = 1, hi = 100000;
+        while (lo <= hi) {
+            int mid = (lo + hi) / 2;
+            if (check(n, paths, mid)) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return hi;
+    }
+
+    private boolean check(int n, int[][] paths, int l) {
+        int p = 1000000007;
+        int x = 113;
+        int[][] h = new int[paths.length][paths[0].length - l + 1];
+        int[] xL = new int[l];
+        xL[0] = 1;
+        for (int i = 1; i < l; i++) {
+            xL[i] = (int)((long)xL[i - 1] * x % p);
+        }
+        for (int i = 0; i < paths.length; i++) {
+            for (int j = 0; j < l; j++) {
+                h[i][0] = (int)((long)h[i][0] * x + paths[i][j]) % p;
+            }
+            for (int j = 1; j <= paths[0].length - l; j++) {
+                h[i][j] = (int)((long)(h[i][j - 1] + p - (long)paths[i][j - 1] * xL[l - 1] % p) * x + paths[i][j + l - 1]) % p;
+            }
+        }
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i <= paths[0].length - l; i++) {
+            seen.clear();
+            for (int j = 0; j < paths.length; j++) {
+                seen.add(h[j][i]);
+            }
+            if (seen.size() == 1) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int low = 0;
+        int high = n;
+        while (low < high) {
+            int mid = (high + low + 1) / 2;
+            if (check(paths, mid)) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return low;
+    }
+    private boolean check(int[][] paths, int len) {
+        int mod = (int) 1e9 + 7;
+        int base = 113;
+        long baseL = 1;
+        for (int i = 0; i < len; i++) {
+            baseL = baseL * base % mod;
+        }
+        HashSet<Long> set = new HashSet<>();
+        for (int i = 0; i < paths[0].length - len + 1; i++) {
+            long hash = 0;
+            for (int j = 0; j < len; j++) {
+                hash = (hash * base + paths[0][i + j]) % mod;
+            }
+            set.add(hash);
+        }
+        for (int i = 1; i < paths.length; i++) {
+            HashSet<Long> set2 = new HashSet<>();
+            for (int j = 0; j < paths[i].length - len + 1; j++) {
+                long hash = 0;
+                for (int k = 0; k < len; k++) {
+                    hash = (hash * base + paths[i][j + k]) % mod;
+                }
+                if (set.contains(hash)) {
+                    set2.add(hash);
+                }
+            }
+            if (set2.size() == 0) {
+                return false;
+            }
+            set = set2;
+        }
+        return true;

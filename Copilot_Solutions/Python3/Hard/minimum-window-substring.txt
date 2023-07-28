@@ -1,0 +1,239 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        if not t or not s:
+            return ""
+        dict_t = Counter(t)
+        required = len(dict_t)
+        l, r = 0, 0
+        formed = 0
+        window_counts = {}
+        ans = float("inf"), None, None
+        while r < len(s):
+            character = s[r]
+            window_counts[character] = window_counts.get(character, 0) + 1
+            if character in dict_t and window_counts[character] == dict_t[character]:
+                formed += 1
+            while l <= r and formed == required:
+                character = s[l]
+                if r - l + 1 < ans[0]:
+                    ans = (r - l + 1, l, r)
+                window_counts[character] -= 1
+                if character in dict_t and window_counts[character] < dict_t[character]:
+                    formed -= 1
+                l += 1
+            r += 1
+        return "" if ans[0] == float("inf") else s[ans[1]: ans[2] + 1]
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t):
+            return ""
+        if len(t) == 0:
+            return ""
+        if len(t) == 1:
+            if t in s:
+                return t
+            else:
+                return ""
+        if len(s) == 1:
+            return ""
+
+        #s = "ADOBECODEBANC"
+        #t = "ABC"
+        #s = "a"
+        #t = "aa"
+        #s = "a"
+        #t = "a"
+        #s = "aa"
+        #t = "aa"
+        #
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t):
+            return ""
+        from collections import Counter
+        counter = Counter(t)
+        left = 0
+        right = 0
+        min_len = float('inf')
+        min_left = 0
+        min_right = 0
+        while right < len(s):
+            if s[right] in counter:
+                counter[s[right]] -= 1
+            while all([v <= 0 for v in counter.values()]):
+                if right - left + 1 < min_len:
+                    min_len = right - left + 1
+                    min_left = left
+                    min_right = right
+                if s[left] in counter:
+                    counter[s[left]] += 1
+                left += 1
+            right += 1
+        if min_len == float('inf'):
+            return ""
+        return s[min_left:min_right+1]
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        from collections import Counter
+        t = Counter(t)
+        n = len(s)
+        i = 0
+        j = 0
+        min_len = float('inf')
+        min_i = 0
+        min_j = 0
+        while j < n:
+            if s[j] in t:
+                t[s[j]] -= 1
+                if t[s[j]] == 0:
+                    del t[s[j]]
+            if not t:
+                while i <= j:
+                    if s[i] in t or t[s[i]] < 0:
+                        t[s[i]] += 1
+                    if s[i] in t:
+                        break
+                    i += 1
+                if j - i + 1 < min_len:
+                    min_len = j - i + 1
+                    min_i = i
+                    min_j = j
+            j += 1
+        return s[min_i: min_j + 1] if min_len != float('inf') else ""
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        t = collections.Counter(t)
+        ans = (0, float('inf'))
+        l = 0
+        for r, c in enumerate(s):
+            if t[c] > 0:
+                t[c] -= 1
+                if sum(t.values()) == 0:
+                    while l < r and t[s[l]] < 0:
+                        t[s[l]] += 1
+                        l += 1
+                    if r - l < ans[1] - ans[0]:
+                        ans = (l, r)
+                    t[s[l]] += 1
+                    l += 1
+        if ans[1] > len(s):
+            return ''
+        else:
+            return s[ans[0]:ans[1]+1]
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t): return ""
+        if len(s) == len(t): return s if s == t else ""
+        if len(t) == 1: return t if t in s else ""
+        cnt = dict()
+        for c in t:
+            if c in cnt: cnt[c] += 1
+            else: cnt[c] = 1
+        n = len(cnt)
+        i = j = 0
+        res = (0, float('inf'))
+        while j < len(s):
+            if s[j] in cnt:
+                cnt[s[j]] -= 1
+                if cnt[s[j]] == 0: n -= 1
+            while n == 0:
+                if j - i < res[1] - res[0]: res = (i, j)
+                if s[i] in cnt:
+                    cnt[s[i]] += 1
+                    if cnt[s[i]] > 0: n += 1
+                i += 1
+            j += 1
+        return s[res[0]:res[1]+1] if res[1] < float('inf') else ""
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        if len(s) < len(t):
+            return ""
+        if len(s) == len(t):
+            return s if s == t else ""
+
+        from collections import Counter
+        t = Counter(t)
+        t_count = len(t)
+        s_count = 0
+        s = Counter(s)
+        for c in t:
+            if c not in s:
+                return ""
+            s_count += 1 if s[c] >= t[c] else 0
+
+        if s_count == t_count:
+            return s.most_common()[-1][0] * len(t)
+        
+        l, r = 0, 0
+        ans = ""
+        while r < len(s):
+            if s_count == t_count:
+                if not ans or len(ans) > r - l:
+                    ans = s.most_common()[-1][0] * (r - l)
+                if s[s[r]] == t[s[r]]:
+                    s_count -= 1
+                s[s[r]] -= 1
+                l += 1
+            else:
+                r += 1
+                if r < len(s):
+                    if s[s[r]] == t[s[r]]:
+                        s_count += 1
+                    s[s[r]] += 1
+        return ans
+
+=======
+
+def minWindow(self, s: str, t: str) -> str:
+        # 1st solution: brute force
+        # O(m*n) time | O(1) space
+        if not s or not t:
+            return ""
+        if len(s) < len(t):
+            return ""
+        if len(t) == 1:
+            if t in s:
+                return t
+            else:
+                return ""
+        if len(t) == len(s):
+            if t == s:
+                return t
+            else:
+                return ""
+        t_dict = {}
+        for c in t:
+            if c in t_dict:
+                t_dict[c] += 1
+            else:
+                t_dict[c] = 1
+        min_len = len(s) + 1
+        min_str = ""
+        for i in range(len(s)):
+            for j in range(i, len(s)):
+                s_dict = {}
+                for c in s[i:j+1]:
+                    if c in s_dict:
+                        s_dict[c] += 1
+                    else:
+                        s_dict[c] = 1
+                if self.is_substring(s_dict, t_dict):
+                    if j - i + 1 < min_len:
+                        min_len = j - i + 1
+                        min_str = s[i:j+1]
+        return min_str

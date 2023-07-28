@@ -1,0 +1,203 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        int sum = 0, count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum - target)) {
+                int pos = map.get(sum - target);
+                if (pos == -1 || pos < i - count) {
+                    count++;
+                    map.put(sum, i);
+                }
+            } else {
+                map.put(sum, i);
+            }
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        int res = 0;
+        int sum = 0;
+        Set<Integer> set = new HashSet<>();
+        set.add(0);
+        for (int i = 0; i < n; ++i) {
+            sum += nums[i];
+            if (set.contains(sum - target)) {
+                res++;
+                set.clear();
+                set.add(0);
+                sum = 0;
+            } else {
+                set.add(sum);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        int sum = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            dp[i] = i > 0 ? dp[i - 1] : 0;
+            if (map.containsKey(sum - target)) {
+                int pre = map.get(sum - target);
+                dp[i] = Math.max(dp[i], pre >= 0 ? dp[pre] + 1 : 1);
+            }
+            map.put(sum, i);
+        }
+        return dp[n - 1];
+
+=======
+
+        int res = 0;
+        int sum = 0;
+        int n = nums.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum - target)) {
+                res++;
+                map.clear();
+                map.put(0, i);
+                sum = 0;
+            } else {
+                map.put(sum, i);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n+1];
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 0);
+        int sum = 0;
+        for (int i = 1; i <= n; i++) {
+            sum += nums[i-1];
+            dp[i] = dp[i-1];
+            if (map.containsKey(sum-target)) {
+                dp[i] = Math.max(dp[i], dp[map.get(sum - target)] + 1);
+            }
+            map.put(sum, i);
+        }
+        return dp[n];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n + 1];
+        int sum = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 0);
+        for (int i = 1; i <= n; i++) {
+            sum += nums[i - 1];
+            dp[i] = dp[i - 1];
+            if (map.containsKey(sum - target)) {
+                dp[i] = Math.max(dp[i], dp[map.get(sum - target)] + 1);
+            }
+            map.put(sum, i);
+        }
+        return dp[n];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        Map<Integer, Integer> map = new HashMap<>();
+        int sum = 0;
+        int ans = 0;
+        map.put(0, -1);
+        for (int i = 0; i < n; ++i) {
+            sum += nums[i];
+            dp[i] = ans;
+            if (map.containsKey(sum - target)) {
+                int j = map.get(sum - target);
+                dp[i] = Math.max(dp[i], j >= 0 ? dp[j] + 1 : 1);
+            }
+            ans = Math.max(ans, dp[i]);
+            map.put(sum, i);
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Integer> index = new HashMap<>();
+        index.put(0, -1);
+        int sum = 0;
+        int res = 0;
+        int last = -1;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (index.containsKey(sum - target)) {
+                int prev = index.get(sum - target);
+                if (prev >= last) {
+                    res++;
+                    last = i;
+                }
+            }
+            index.put(sum, i);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        int[] sum = new int[n];
+        int ans = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i] + (i > 0 ? sum[i - 1] : 0);
+            dp[i] = (i > 0 ? dp[i - 1] : 0);
+            if (map.containsKey(sum[i] - target)) {
+                dp[i] = Math.max(dp[i], (map.get(sum[i] - target) >= 0 ? dp[map.get(sum[i] - target)] : 0) + 1);
+            }
+            ans = Math.max(ans, dp[i]);
+            map.put(sum[i], i);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        int[] sum = new int[n];
+
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        int s = 0;
+        for (int i = 0; i < n; i++) {
+            s += nums[i];
+            sum[i] = s;
+            map.put(s, i);
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int t = sum[i] - target;
+            if (map.containsKey(t)) {
+                int idx = map.get(t);
+                if (idx >= 0) {
+                    dp[i] = dp[idx] + 1;
+                } else {
+                    dp[i] = 1;
+                }
+            }
+            if (i > 0) {
+                dp[i] = Math.max(dp[i], dp[i - 1]);
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;

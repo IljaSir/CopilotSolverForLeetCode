@@ -1,0 +1,253 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (int j = 0; j < s.length(); j++) {
+            if (i < indices.length && j == indices[i]) {
+                if (s.substring(j, j + sources[i].length()).equals(sources[i])) {
+                    sb.append(targets[i]);
+                    j += sources[i].length() - 1;
+                } else {
+                    sb.append(s.charAt(j));
+                }
+                i++;
+            } else {
+                sb.append(s.charAt(j));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        int j = 0;
+        while (i < s.length()) {
+            if (j < indices.length && i == indices[j]) {
+                if (s.startsWith(sources[j], i)) {
+                    sb.append(targets[j]);
+                    i += sources[j].length();
+                    j++;
+                } else {
+                    sb.append(s.charAt(i));
+                    i++;
+                }
+            } else {
+                sb.append(s.charAt(i));
+                i++;
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int k = indices.length;
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        for (int i = 0; i < k; i++) {
+            int start = indices[i];
+            int end = start + sources[i].length();
+            if (end <= n && s.substring(start, end).equals(sources[i])) {
+                match[start] = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i < n) {
+            if (match[i] != -1) {
+                sb.append(targets[match[i]]);
+                i += sources[match[i]].length();
+            } else {
+                sb.append(s.charAt(i));
+                i++;
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int k = indices.length;
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        for (int i = 0; i < k; i++) {
+            int j = 0;
+            while (j < sources[i].length() && indices[i] + j < n && s.charAt(indices[i] + j) == sources[i].charAt(j)) {
+                j++;
+            }
+            if (j == sources[i].length()) {
+                match[indices[i]] = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            if (match[i] != -1) {
+                sb.append(targets[match[i]]);
+                i += sources[match[i]].length() - 1;
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[][] intervals = new int[indices.length][2];
+        for (int i = 0; i < indices.length; i++) {
+            intervals[i][0] = indices[i];
+            intervals[i][1] = indices[i] + sources[i].length();
+        }
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        for (int[] interval : intervals) {
+            int start = interval[0], end = interval[1];
+            sb.append(s.substring(i, start));
+            if (s.substring(start, end).equals(sources[i])) {
+                sb.append(targets[i]);
+            } else {
+                sb.append(s.substring(start, end));
+            }
+            i++;
+        }
+        sb.append(s.substring(intervals[intervals.length - 1][1]));
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int m = indices.length;
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        for (int i = 0; i < m; i++) {
+            int index = indices[i];
+            String source = sources[i];
+            if (s.substring(index, index + source.length()).equals(source)) {
+                match[index] = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            if (match[i] != -1) {
+                sb.append(targets[match[i]]);
+                i += sources[match[i]].length() - 1;
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int[] match = new int[s.length()];
+        Arrays.fill(match, -1);
+        for (int i = 0; i < indices.length; i++) {
+            int start = indices[i];
+            if (s.substring(start, start + sources[i].length()).equals(sources[i])) {
+                match[start] = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i < s.length()) {
+            if (match[i] >= 0) {
+                sb.append(targets[match[i]]);
+                i += sources[match[i]].length();
+            } else {
+                sb.append(s.charAt(i++));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        for (int i = 0; i < indices.length; ++i) {
+            int j = 0;
+            for (; j < sources[i].length(); ++j) {
+                if (s.charAt(indices[i] + j) != sources[i].charAt(j)) {
+                    break;
+                }
+            }
+            if (j == sources[i].length()) {
+                match[indices[i]] = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; ++i) {
+            if (match[i] >= 0) {
+                sb.append(targets[match[i]]);
+                i += sources[match[i]].length() - 1;
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int m = indices.length;
+        int[] f = new int[n];
+        for (int i = 0; i < n; i++) {
+            f[i] = i;
+        }
+        for (int i = 0; i < m; i++) {
+            int j = indices[i];
+            if (s.substring(j, j + sources[i].length()).equals(sources[i])) {
+                f[j] = i + n;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            if (f[i] >= n) {
+                sb.append(targets[f[i] - n]);
+                i += sources[f[i] - n].length() - 1;
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int l = s.length();
+        int k = indices.length;
+        int[] mask = new int[l];
+        for (int i = 0; i < k; i++) {
+            int index = indices[i];
+            String source = sources[i];
+            String target = targets[i];
+            if (index + source.length() <= l && s.substring(index, index + source.length()).equals(source)) {
+                for (int j = index; j < index + source.length(); j++) {
+                    mask[j] = 1;
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < l; i++) {
+            if (mask[i] == 1) {
+                sb.append(targets[getIndex(indices, i)]);
+                while (i < l - 1 && mask[i + 1] == 1) {
+                    i++;
+                }
+            } else {
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+    }
+    
+    public int getIndex(int[] indices, int index) {
+        for (int i = 0; i < indices.length; i++) {
+            if (indices[i] == index) {
+                return i;
+            }
+        }
+        return -1;

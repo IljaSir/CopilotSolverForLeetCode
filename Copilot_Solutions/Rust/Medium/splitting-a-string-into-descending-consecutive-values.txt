@@ -1,0 +1,208 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        fn dfs(s: &str, prev: i64) -> bool {
+            if s.is_empty() {
+                return true;
+            }
+            for i in 1..=s.len() {
+                let curr = s[..i].parse::<i64>().unwrap();
+                if curr == prev - 1 && dfs(&s[i..], curr) {
+                    return true;
+                }
+            }
+            false
+        }
+        dfs(&s, 10_000_000_000)
+    }
+}
+
+=======
+
+        let mut s = s.chars().map(|c| c.to_digit(10).unwrap() as i32).collect::<Vec<i32>>();
+        let mut i = 0;
+        while i < s.len() - 1 {
+            let mut j = i + 1;
+            let mut n = s[i];
+            while j < s.len() {
+                n = n * 10 + s[j];
+                if n == s[i] - 1 {
+                    s[i] = n;
+                    s.remove(j);
+                    j -= 1;
+                    if i > 0 {
+                        i -= 1;
+                    }
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        s.len() == 1
+
+=======
+
+        let s = s.as_bytes();
+        let mut stack = Vec::new();
+        stack.push((0, 0));
+        while let Some((i, last)) = stack.pop() {
+            if i == s.len() {
+                return true;
+            }
+            for j in i + 1..=s.len() {
+                if let Ok(num) = std::str::from_utf8(&s[i..j]).unwrap().parse::<i32>() {
+                    if last == 0 || last == num + 1 {
+                        stack.push((j, num));
+                    }
+                }
+            }
+        }
+        false
+
+=======
+
+        let mut s = s.into_bytes();
+        let mut stack = Vec::new();
+        Self::dfs(&mut s, &mut stack, 0)
+    }
+    
+    fn dfs(s: &mut [u8], stack: &mut Vec<u8>, start: usize) -> bool {
+        if start == s.len() {
+            return stack.len() > 1;
+        }
+        
+        let mut num = 0;
+        for i in start..s.len() {
+            num = num * 10 + (s[i] - b'0');
+            if stack.is_empty() || num == stack[stack.len() - 1] - 1 {
+                stack.push(num);
+                if Self::dfs(s, stack, i + 1) {
+                    return true;
+                }
+                stack.pop();
+            }
+        }
+        false
+
+=======
+
+        let n = s.len();
+        let s = s.as_bytes();
+        let mut dp = vec![false; n];
+        for i in 1..n {
+            dp[i] = (s[i] == b'0') || (i > 1 && dp[i - 2]);
+        }
+        for i in 1..n {
+            if s[i] == b'0' {
+                continue;
+            }
+            let mut num = 0;
+            for j in (0..i).rev() {
+                num += (s[j] - b'0') as i32;
+                if j > 0 && dp[j - 1] {
+                    continue;
+                }
+                if i - j + 1 < 10 || num == (s[i] - b'0') as i32 + 1 {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let mut stack = vec![0];
+        let mut i = 0;
+        while i < s.len() {
+            let mut j = i;
+            let mut num = 0;
+            while j < s.len() {
+                num = num * 10 + s[j] as i32 - b'0' as i32;
+                if stack.len() > 1 && num == stack[stack.len() - 1] - 1 {
+                    stack.pop();
+                    if stack.is_empty() {
+                        return true;
+                    }
+                } else if stack.len() == 1 && num < stack[0] {
+                    stack.push(num);
+                }
+                j += 1;
+            }
+            i += 1;
+            stack.clear();
+            stack.push(0);
+        }
+        false
+
+=======
+
+        let mut s: Vec<u8> = s.bytes().collect();
+        s.reverse();
+        Self::dfs(&s, 0, 0)
+    }
+    fn dfs(s: &[u8], i: usize, n: u32) -> bool {
+        if i == s.len() { return n > 0; }
+        let mut x: u32 = 0;
+        for j in i..s.len() {
+            x = x * 10 + (s[j] - b'0') as u32;
+            if n == 0 { if Self::dfs(s, j + 1, x) { return true; } }
+            else if x == n - 1 { if Self::dfs(s, j + 1, x) { return true; } }
+        }
+        false
+
+=======
+
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut n = s.len();
+        let mut res = false;
+        let mut dfs = |i: usize, last: i32| {
+            if res {
+                return;
+            }
+            if i == n {
+                res = true;
+                return;
+            }
+            let mut x = 0;
+            for j in i..n {
+                x = x * 10 + (s[j] as i32 - '0' as i32);
+                if x == last - 1 {
+                    dfs(j + 1, x);
+                }
+            }
+        };
+        dfs(0, std::i32::MAX);
+        res
+
+=======
+
+        
+    }
+}
+
+=======
+
+        use std::str::FromStr;
+        let mut s: Vec<u8> = s.bytes().collect();
+        let mut n = s.len();
+        let mut res = false;
+        let mut dfs = |i: usize, prev: i32| {
+            if i == n {
+                res = true;
+                return;
+            }
+            let mut cur = 0;
+            for j in i..n {
+                cur = cur * 10 + (s[j] - b'0') as i32;
+                if cur == prev - 1 {
+                    dfs(j + 1, cur);
+                }
+            }
+        };
+        dfs(0, i32::MAX);
+        res
+    }
+}

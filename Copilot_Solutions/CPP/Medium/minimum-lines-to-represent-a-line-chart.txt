@@ -1,0 +1,151 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = stockPrices.size();
+        vector<int> dp(n, 1);
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (stockPrices[i][1] >= stockPrices[j][1]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return *max_element(dp.begin(), dp.end());
+
+=======
+
+        int n = stockPrices.size();
+        vector<int> dp(n, 1);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (stockPrices[j][1] <= stockPrices[i][1]) {
+                    dp[i] = std::max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return *std::max_element(dp.begin(), dp.end());
+
+=======
+
+        vector<int> dp;
+        for (auto& p : stockPrices) {
+            int price = p[1];
+            auto it = lower_bound(dp.begin(), dp.end(), price);
+            if (it == dp.end()) dp.push_back(price);
+            else *it = price;
+        }
+        return dp.size();
+
+=======
+
+        int n = stockPrices.size(), res = 0;
+        vector<int> dp(n, 1);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (stockPrices[j][1] <= stockPrices[i][1]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int n = stockPrices.size();
+        vector<int> dp(n, 1);
+        int res = 1;
+        for(int i = 1; i < n; ++i){
+            for(int j = 0; j < i; ++j){
+                if(stockPrices[i][1] >= stockPrices[j][1]){
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int n = stockPrices.size();
+        vector<int> dp(n);
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int l = 0, r = res;
+            while (l < r) {
+                int m = l + (r - l) / 2;
+                if (dp[m] > stockPrices[i][1]) l = m + 1;
+                else r = m;
+            }
+            dp[l] = stockPrices[i][1];
+            if (l == res) ++res;
+        }
+        return res;
+
+=======
+
+        int n = stockPrices.size();
+        if (n <= 2) return n;
+        int ans = 2;
+        vector<int> dp(n, 1);
+        for (int i = 1; i < n; ++i) {
+            int l = 0, r = i - 1;
+            while (l < r) {
+                int m = l + (r - l) / 2;
+                long long x1 = stockPrices[m][0], y1 = stockPrices[m][1];
+                long long x2 = stockPrices[i][0], y2 = stockPrices[i][1];
+                if (x1 * y2 == x2 * y1) {
+                    l = m;
+                    break;
+                } else if (x1 * y2 > x2 * y1) {
+                    r = m - 1;
+                } else {
+                    l = m + 1;
+                }
+            }
+            if (l == r) {
+                dp[i] = dp[r] + 1;
+            } else {
+                dp[i] = dp[l] + 1;
+            }
+            ans = max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = stockPrices.size(), ans = 1;
+        vector<int> m(n, 0);
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (stockPrices[i][0] > stockPrices[j][0] && stockPrices[i][1] > stockPrices[j][1]) {
+                    m[i] = max(m[i], m[j] + 1);
+                }
+            }
+            ans = max(ans, m[i] + 1);
+        }
+        return ans;
+
+=======
+
+        int n = stockPrices.size();
+        if(n==1)
+            return 1;
+        int count = 1;
+        int i = 0;
+        while(i<n-1){
+            if(stockPrices[i][1] > stockPrices[i+1][1]){
+                count++;
+                i++;
+            }
+            else{
+                int j = i+1;
+                while(j<n-1 && stockPrices[j][1] <= stockPrices[j+1][1]){
+                    j++;
+                }
+                count++;
+                i = j+1;
+            }
+        }
+        return count;

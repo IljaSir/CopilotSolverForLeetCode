@@ -1,0 +1,207 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut nums = nums;
+        nums.sort_by(|a, b| {
+            let mut a = *a;
+            let mut b = *b;
+            let mut a_mapped = 0;
+            let mut b_mapped = 0;
+            loop {
+                if a == 0 && b == 0 {
+                    break;
+                }
+                let a_digit = a % 10;
+                let b_digit = b % 10;
+                a_mapped = a_mapped * 10 + mapping[a_digit as usize];
+                b_mapped = b_mapped * 10 + mapping[b_digit as usize];
+                a /= 10;
+                b /= 10;
+            }
+            a_mapped.cmp(&b_mapped)
+        });
+        nums
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort_by_key(|&x| {
+            let mut res = 0;
+            let mut base = 1;
+            let mut x = x;
+            while x > 0 {
+                res += base * mapping[(x % 10) as usize];
+                base *= 10;
+                x /= 10;
+            }
+            res
+        });
+        nums
+
+=======
+
+        let mut nums: Vec<i32> = nums;
+        nums.sort_by(|a, b| {
+            let a = a.to_string();
+            let b = b.to_string();
+            let mut a = a.chars();
+            let mut b = b.chars();
+            loop {
+                let a = match a.next() {
+                    Some(c) => c,
+                    None => return Ordering::Less,
+                };
+                let b = match b.next() {
+                    Some(c) => c,
+                    None => return Ordering::Greater,
+                };
+                let a = a.to_digit(10).unwrap() as usize;
+                let b = b.to_digit(10).unwrap() as usize;
+                let a = mapping[a];
+                let b = mapping[b];
+                if a < b {
+                    return Ordering::Less;
+                } else if a > b {
+                    return Ordering::Greater;
+                }
+            }
+        });
+        nums
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort_by_key(|&x| {
+            let mut res = 0;
+            let mut p = 1;
+            let mut x = x;
+            while x > 0 {
+                res += p * mapping[(x % 10) as usize];
+                p *= 10;
+                x /= 10;
+            }
+            res
+        });
+        nums
+    }
+}
+
+=======
+
+        let mut result: Vec<i32> = Vec::new();
+        for num in nums {
+            let mut n = 0;
+            let mut base = 1;
+            let mut i = num;
+            while i > 0 {
+                let digit = i % 10;
+                n += mapping[digit as usize] * base;
+                base *= 10;
+                i /= 10;
+            }
+            result.push(n);
+        }
+        result.sort();
+        result
+
+=======
+
+        let mut result = Vec::new();
+        for n in nums {
+            let mut num = 0;
+            let mut d = 1;
+            let mut m = n;
+            while m > 0 {
+                let r = m % 10;
+                m /= 10;
+                num += d * mapping[r as usize];
+                d *= 10;
+            }
+            result.push(num);
+        }
+        result.sort();
+        result
+    }
+}
+
+=======
+
+        let mut result = vec![];
+        let mut map = vec![];
+        for i in 0..mapping.len() {
+            map.push((mapping[i], i));
+        }
+        map.sort();
+        for n in nums {
+            let mut str = n.to_string();
+            for i in 0..str.len() {
+                let c = str.chars().nth(i).unwrap();
+                let idx = c.to_digit(10).unwrap() as usize;
+                str.replace_range(i..i+1, &map[idx].1.to_string());
+            }
+            result.push(str.parse::<i32>().unwrap());
+        }
+        result.sort();
+        result
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let mut mapping = mapping;
+        for i in 0..10 {
+            mapping[i] += 48;
+        }
+        nums.sort_by(|x, y| {
+            let mut x = x.to_string();
+            let mut y = y.to_string();
+            let mut x = x.as_bytes_mut();
+            let mut y = y.as_bytes_mut();
+            for i in 0..x.len() {
+                x[i] = mapping[(x[i] - 48) as usize] as u8;
+            }
+            for i in 0..y.len() {
+                y[i] = mapping[(y[i] - 48) as usize] as u8;
+            }
+            let x = String::from_utf8(x.to_vec()).unwrap();
+            let y = String::from_utf8(y.to_vec()).unwrap();
+            x.cmp(&y)
+        });
+        nums
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        let mut mapping = mapping;
+        let mut res = vec![];
+        for i in 0..=9 {
+            let mut tmp = vec![];
+            for j in 0..nums.len() {
+                if nums[j] == i {
+                    tmp.push(nums[j]);
+                } else {
+                    let mut num = nums[j];
+                    let mut new_num = 0;
+                    while num > 0 {
+                        let r = num % 10;
+                        new_num = new_num * 10 + mapping[r as usize];
+                        num /= 10;
+                    }
+                    if new_num == i {
+                        tmp.push(nums[j]);
+                    }
+                }
+            }
+            res.append(&mut tmp);
+        }
+        res
+    }
+}

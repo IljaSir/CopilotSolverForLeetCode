@@ -1,0 +1,223 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        use std::collections::HashSet;
+        let mut set = HashSet::new();
+        for word in words {
+            let mut even = Vec::new();
+            let mut odd = Vec::new();
+            for (i, c) in word.chars().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            let mut key = String::new();
+            for c in even {
+                key.push(c);
+            }
+            for c in odd {
+                key.push(c);
+            }
+            set.insert(key);
+        }
+        set.len() as i32
+
+=======
+
+        let mut set = std::collections::HashSet::new();
+        for word in words {
+            let mut odd = vec![];
+            let mut even = vec![];
+            for (i, c) in word.chars().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            set.insert((even, odd));
+        }
+        set.len() as i32
+
+=======
+
+        let mut groups = Vec::new();
+        for word in words {
+            let mut odd = Vec::new();
+            let mut even = Vec::new();
+            for (i, c) in word.chars().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            let mut group = even;
+            group.append(&mut odd);
+            if !groups.contains(&group) {
+                groups.push(group);
+            }
+        }
+        groups.len() as i32
+
+=======
+
+        let mut groups = vec![];
+        for word in words {
+            let mut odd = vec![];
+            let mut even = vec![];
+            for (i, c) in word.chars().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            let group = (even, odd);
+            if groups.contains(&group) {
+                continue;
+            } else {
+                groups.push(group);
+            }
+        }
+        groups.len() as i32
+
+=======
+
+        let mut s = std::collections::HashSet::new();
+        for w in words {
+            let mut a = [0; 52];
+            for (i, c) in w.as_bytes().iter().enumerate() {
+                a[*c as usize - 97 + 26 * (i % 2)] += 1;
+            }
+            s.insert(a);
+        }
+        s.len() as i32
+
+=======
+
+        let mut ans = 0;
+        let mut set = std::collections::HashSet::new();
+        for word in words {
+            let mut odd = Vec::new();
+            let mut even = Vec::new();
+            for (i, c) in word.bytes().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            let mut key = String::new();
+            key.push_str(&String::from_utf8(odd).unwrap());
+            key.push_str(&String::from_utf8(even).unwrap());
+            if !set.contains(&key) {
+                ans += 1;
+                set.insert(key);
+            }
+        }
+        ans
+
+=======
+
+        let mut count = 0;
+        let mut set = std::collections::HashSet::new();
+        for word in words {
+            let mut odd = Vec::new();
+            let mut even = Vec::new();
+            for (i, c) in word.chars().enumerate() {
+                if i % 2 == 0 {
+                    even.push(c);
+                } else {
+                    odd.push(c);
+                }
+            }
+            even.sort();
+            odd.sort();
+            let mut key = String::new();
+            for c in even {
+                key.push(c);
+            }
+            for c in odd {
+                key.push(c);
+            }
+            if !set.contains(&key) {
+                set.insert(key);
+                count += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut r = 0;
+        let mut v = vec![false; words.len()];
+        for i in 0..words.len() {
+            if v[i] {
+                continue;
+            }
+            r += 1;
+            for j in i + 1..words.len() {
+                if v[j] {
+                    continue;
+                }
+                if Solution::is_special_equiv(&words[i], &words[j]) {
+                    v[j] = true;
+                }
+            }
+        }
+        r
+    }
+    fn is_special_equiv(a: &str, b: &str) -> bool {
+        let mut ca = [0; 26];
+        let mut cb = [0; 26];
+        for i in 0..a.len() {
+            if i % 2 == 0 {
+                ca[a.as_bytes()[i] as usize - 'a' as usize] += 1;
+            } else {
+                cb[a.as_bytes()[i] as usize - 'a' as usize] += 1;
+            }
+        }
+        for i in 0..b.len() {
+            if i % 2 == 0 {
+                ca[b.as_bytes()[i] as usize - 'a' as usize] -= 1;
+            } else {
+                cb[b.as_bytes()[i] as usize - 'a' as usize] -= 1;
+            }
+        }
+        ca == cb
+
+=======
+
+        let mut v: Vec<Vec<usize>> = words.iter().map(|s| s.chars().enumerate().map(|(i, c)| (c as usize, i % 2)).collect()).collect();
+        v.sort_by(|a, b| {
+            for i in 0..a.len() {
+                if a[i].0 != b[i].0 {
+                    return a[i].0.cmp(&b[i].0);
+                }
+                if a[i].1 != b[i].1 {
+                    return a[i].1.cmp(&b[i].1);
+                }
+            }
+            std::cmp::Ordering::Equal
+        });
+        let mut ans = 1;
+        for i in 1..v.len() {
+            if v[i] != v[i - 1] {
+                ans += 1;
+            }
+        }
+        ans

@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(items, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                return a[0] - b[0];
+            }
+        });
+        int[] max = new int[items.length];
+        max[0] = items[0][1];
+        for (int i = 1; i < items.length; i++) {
+            max[i] = Math.max(max[i-1], items[i][1]);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int index = binarySearch(items, queries[i]);
+            if (index >= 0) {
+                ans[i] = max[index];
+            }
+        }
+        return ans;
+    }
+    
+    private int binarySearch(int[][] items, int target) {
+        int left = 0;
+        int right = items.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (items[mid][0] <= target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return right;
+
+=======
+
+        int n = items.length;
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        for (int i = 0; i < n; i++) {
+            int price = items[i][0];
+            int beauty = items[i][1];
+            if (map.containsKey(price)) {
+                map.put(price, Math.max(map.get(price), beauty));
+            } else {
+                map.put(price, beauty);
+            }
+        }
+        int[] ans = new int[queries.length];
+        int[] prefixMax = new int[n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, items[i][1]);
+            prefixMax[i] = max;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int query = queries[i];
+            Integer key = map.floorKey(query);
+            if (key == null) {
+                ans[i] = 0;
+            } else {
+                ans[i] = map.get(key);
+            }
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[queries.length];
+        Arrays.sort(items, (a, b) -> a[1] - b[1]);
+        for (int i = 0; i < queries.length; i++) {
+            int maxBeauty = 0;
+            for (int[] item : items) {
+                if (item[0] <= queries[i]) {
+                    maxBeauty = item[1];
+                }
+            }
+            res[i] = maxBeauty;
+        }
+        return res;
+
+=======
+
+        Arrays.sort(items, (a,b) -> a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]);
+        int[] result = new int[queries.length];
+        int maxBeauty = 0;
+        int j = 0;
+        for (int i = 0; i < queries.length; i++) {
+            while (j < items.length && items[j][0] <= queries[i]) {
+                maxBeauty = Math.max(maxBeauty, items[j][1]);
+                j++;
+            }
+            result[i] = maxBeauty;
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(items, (a, b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            return b[1] - a[1];
+        });
+        int[] max = new int[items.length];
+        max[0] = items[0][1];
+        for (int i = 1; i < items.length; i++) {
+            max[i] = Math.max(max[i - 1], items[i][1]);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int j = binarySearch(items, queries[i]);
+            if (j >= 0) ans[i] = max[j];
+        }
+        return ans;
+    }
+    private int binarySearch(int[][] items, int target) {
+        int l = 0;
+        int r = items.length - 1;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (items[m][0] == target) return m;
+            if (items[m][0] < target) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        if (items[l][0] <= target) return l;
+        return l - 1;
+
+=======
+
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int[] ans = new int[queries.length];
+        int[] maxBeauty = new int[items.length];
+        maxBeauty[0] = items[0][1];
+        for (int i = 1; i < items.length; i++) {
+            maxBeauty[i] = Math.max(maxBeauty[i - 1], items[i][1]);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int index = binarySearch(items, queries[i]);
+            ans[i] = index == -1 ? 0 : maxBeauty[index];
+        }
+        return ans;
+    }
+    private int binarySearch(int[][] items, int target) {
+        int l = 0, r = items.length - 1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (items[mid][0] == target) {
+                return mid;
+            }
+            if (items[mid][0] < target) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        if (items[l][0] > target) {
+            return l - 1;
+        }
+        return l;
+
+=======
+
+        int n = queries.length;
+        int m = items.length;
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int[] ans = new int[n];
+        int i = 0;
+        int max = 0;
+        for (int q : queries) {
+            while (i < m && items[i][0] <= q) {
+                max = Math.max(max, items[i][1]);
+                i++;
+            }
+            ans[i] = max;
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(items, (a, b) -> Integer.compare(a[0], b[0]));
+        int n = queries.length;
+        int[] res = new int[n];
+        int max = 0;
+        for (int i = 0, j = 0; i < n; i++) {
+            while (j < items.length && items[j][0] <= queries[i]) {
+                max = Math.max(max, items[j++][1]);
+            }
+            res[i] = max;
+        }
+        return res;
+
+=======
+
+        int[] result = new int[queries.length];
+        Map<Integer, Integer> map = new HashMap<>();
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int max = 0;
+        for (int i = 0; i < items.length; i++) {
+            max = Math.max(max, items[i][1]);
+            map.put(items[i][0], max);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = map.getOrDefault(queries[i], 0);
+        }
+        return result;
+
+=======
+
+        int n = queries.length;
+        int[] ans = new int[n];
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
+        int[] pre = new int[items.length + 1];
+        for (int i = 0; i < items.length; i++) {
+            pre[i + 1] = Math.max(pre[i], items[i][1]);
+        }
+        for (int i = 0; i < n; i++) {
+            int idx = Arrays.binarySearch(items, new int[]{queries[i], 0}, (a, b) -> a[0] - b[0]);
+            if (idx < 0) {
+                idx = -idx - 2;
+            }
+            ans[i] = Math.max(pre[idx + 1], ans[i]);
+            if (i > 0) {
+                ans[i] = Math.max(ans[i], ans[i - 1]);
+            }
+        }
+        return ans;

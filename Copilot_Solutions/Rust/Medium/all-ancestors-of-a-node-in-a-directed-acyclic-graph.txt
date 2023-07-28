@@ -1,0 +1,215 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            graph[edge[1] as usize].push(edge[0]);
+        }
+        let mut result = vec![vec![]; n as usize];
+        for i in 0..n {
+            let mut queue = vec![];
+            queue.push(i);
+            while !queue.is_empty() {
+                let node = queue.pop().unwrap();
+                for neighbor in &graph[node as usize] {
+                    if !result[i as usize].contains(neighbor) {
+                        result[i as usize].push(*neighbor);
+                        queue.push(*neighbor);
+                    }
+                }
+            }
+        }
+        result
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            let (from, to) = (edge[0] as usize, edge[1] as usize);
+            graph[to].push(from);
+        }
+        let mut result = vec![vec![]; n as usize];
+        for i in 0..n as usize {
+            Self::dfs(&graph, i, &mut result);
+        }
+        result
+    }
+    fn dfs(graph: &[Vec<usize>], node: usize, result: &mut Vec<Vec<i32>>) {
+        for &parent in &graph[node] {
+            result[node].push(parent as i32);
+            Self::dfs(graph, parent, result);
+        }
+        result[node].sort();
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            graph[edge[0] as usize].push(edge[1]);
+        }
+        let mut res = vec![vec![]; n as usize];
+        for i in 0..n {
+            let mut stack = vec![(i, vec![i])];
+            while let Some((node, path)) = stack.pop() {
+                for &next in &graph[node as usize] {
+                    let mut path = path.clone();
+                    path.push(next);
+                    res[next as usize] = path;
+                    stack.push((next, path));
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            graph[edge[0] as usize].push(edge[1] as usize);
+        }
+        let mut ans = vec![vec![]; n as usize];
+        for i in 0..n {
+            let mut stack = vec![i as usize];
+            while let Some(node) = stack.pop() {
+                for &child in &graph[node] {
+                    if !ans[child].contains(&i) {
+                        ans[child].push(i);
+                        stack.push(child);
+                    }
+                }
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut adj = vec![vec![]; n as usize];
+        for edge in edges {
+            adj[edge[0] as usize].push(edge[1]);
+        }
+        let mut ans = vec![vec![]; n as usize];
+        for i in 0..n {
+            Self::dfs(i, &adj, &mut ans);
+        }
+        ans
+    }
+    fn dfs(i: i32, adj: &Vec<Vec<i32>>, ans: &mut Vec<Vec<i32>>) {
+        for &j in &adj[i as usize] {
+            ans[j as usize].push(i);
+            Self::dfs(j, adj, ans);
+        }
+
+=======
+
+        let mut ans = vec![vec![]; n as usize];
+        let mut map = vec![vec![]; n as usize];
+        for e in edges {
+            map[e[0] as usize].push(e[1]);
+        }
+        for i in 0..n {
+            Self::dfs(i, &mut ans, &map);
+        }
+        ans
+    }
+    fn dfs(i: i32, ans: &mut Vec<Vec<i32>>, map: &Vec<Vec<i32>>) {
+        for j in map[i as usize].iter() {
+            ans[*j as usize].push(i);
+            Self::dfs(*j, ans, map);
+        }
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        
+        for edge in edges {
+            graph[edge[1] as usize].push(edge[0]);
+        }
+        
+        let mut ans = vec![vec![]; n as usize];
+        let mut visited = vec![false; n as usize];
+        
+        for i in 0..n as usize {
+            Solution::dfs(i, &graph, &mut ans, &mut visited);
+        }
+        
+        ans
+    }
+    
+    fn dfs(node: usize, graph: &Vec<Vec<i32>>, ans: &mut Vec<Vec<i32>>, visited: &mut Vec<bool>) {
+        if visited[node] {
+            return;
+        }
+        
+        visited[node] = true;
+        
+        for &parent in &graph[node] {
+            ans[node].push(parent);
+            Solution::dfs(parent as usize, graph, ans, visited);
+        }
+        
+        ans[node].sort();
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        let mut res = vec![vec![]; n as usize];
+        for v in edges {
+            graph[v[0] as usize].push(v[1] as usize);
+        }
+        for i in 0..n as usize {
+            let mut visited = vec![false; n as usize];
+            let mut stack = vec![i];
+            while !stack.is_empty() {
+                let u = stack.pop().unwrap();
+                if visited[u] {
+                    continue;
+                }
+                visited[u] = true;
+                for &v in &graph[u] {
+                    stack.push(v);
+                    res[v].push(u as i32);
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        let mut indegree = vec![0; n as usize];
+        for e in edges {
+            let u = e[0] as usize;
+            let v = e[1] as usize;
+            graph[u].push(v);
+            indegree[v] += 1;
+        }
+        let mut q = std::collections::VecDeque::new();
+        for i in 0..n as usize {
+            if indegree[i] == 0 {
+                q.push_back(i);
+            }
+        }
+        let mut res = vec![vec![]; n as usize];
+        while !q.is_empty() {
+            let u = q.pop_front().unwrap();
+            for &v in graph[u].iter() {
+                indegree[v] -= 1;
+                if indegree[v] == 0 {
+                    q.push_back(v);
+                }
+                res[v].push(u as i32);
+                res[v].append(&mut res[u].clone());
+            }
+        }
+        res
+
+=======
+
+        
+    }
+}

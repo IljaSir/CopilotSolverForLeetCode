@@ -1,0 +1,285 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        double[] result = new double[nums.length - k + 1];
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (maxHeap.size() == minHeap.size()) {
+                if (maxHeap.size() == 0 || nums[i] <= maxHeap.peek()) {
+                    maxHeap.offer(nums[i]);
+                } else {
+                    minHeap.offer(nums[i]);
+                    maxHeap.offer(minHeap.poll());
+                }
+            } else {
+                if (nums[i] < maxHeap.peek()) {
+                    maxHeap.offer(nums[i]);
+                    minHeap.offer(maxHeap.poll());
+                } else {
+                    minHeap.offer(nums[i]);
+                }
+            }
+            if (i >= k - 1) {
+                if (maxHeap.size() == minHeap.size()) {
+                    result[i - k + 1] = (maxHeap.peek() + minHeap.peek()) / 2.0;
+                } else {
+                    result[i - k + 1] = maxHeap.peek();
+                }
+                if (nums[i - k + 1] <= maxHeap.peek()) {
+                    maxHeap.remove(nums[i - k + 1]);
+                    if (maxHeap.size() < minHeap.size()) {
+                        maxHeap.offer(minHeap.poll());
+                    }
+                } else {
+                    minHeap.remove(nums[i - k + 1]);
+                    if (maxHeap.size() > minHeap.size() + 1) {
+                        minHeap.offer(maxHeap.poll());
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        double[] result = new double[nums.length - k + 1];
+        for (int i = 0; i < nums.length; i++) {
+            if (i >= k) {
+                if (nums[i - k] <= maxHeap.peek()) {
+                    maxHeap.remove(nums[i - k]);
+                } else {
+                    minHeap.remove(nums[i - k]);
+                }
+            }
+            if (maxHeap.isEmpty() || nums[i] <= maxHeap.peek()) {
+                maxHeap.add(nums[i]);
+            } else {
+                minHeap.add(nums[i]);
+            }
+            if (maxHeap.size() > minHeap.size() + 1) {
+                minHeap.add(maxHeap.poll());
+            } else if (maxHeap.size() < minHeap.size()) {
+                maxHeap.add(minHeap.poll());
+            }
+            if (i >= k - 1) {
+                result[i - k + 1] = maxHeap.size() == minHeap.size() ? (maxHeap.peek() + minHeap.peek()) / 2.0 : maxHeap.peek();
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.length - k + 1;
+        double[] medians = new double[n];
+        int[] window = new int[k];
+        System.arraycopy(nums, 0, window, 0, k);
+        Arrays.sort(window);
+        for (int i = 0; i < n; i++) {
+            medians[i] = k % 2 == 0 ? ((double) window[k / 2] + window[k / 2 - 1]) / 2 : window[k / 2];
+            if (i == n - 1) {
+                break;
+            }
+            int left = Arrays.binarySearch(window, nums[i]);
+            int right = Arrays.binarySearch(window, nums[i + k]);
+            if (left < right) {
+                System.arraycopy(window, left + 1, window, left, right - left);
+                window[right] = nums[i + k];
+            } else {
+                System.arraycopy(window, right + 1, window, right, left - right);
+                window[left] = nums[i + k];
+            }
+        }
+        return medians;
+
+=======
+
+        int n = nums.length;
+        int m = n - k + 1;
+        double[] ans = new double[m];
+        int[] window = new int[k];
+        System.arraycopy(nums, 0, window, 0, k);
+        Arrays.sort(window);
+        for (int i = k; i <= n; i++) {
+            if (k % 2 == 0) {
+                ans[i - k] = ((double) window[k / 2 - 1] + window[k / 2]) / 2;
+            } else {
+                ans[i - k] = window[k / 2];
+            }
+            if (i == n) {
+                break;
+            }
+            // remove nums[i - k]
+            int j = Arrays.binarySearch(window, nums[i - k]);
+            System.arraycopy(window, j + 1, window, j, k - j - 1);
+            // add nums[i]
+            j = Arrays.binarySearch(window, nums[i]);
+            if (j < 0) {
+                j = -j - 1;
+            }
+            System.arraycopy(window, j, window, j + 1, k - j - 1);
+            window[j] = nums[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        double[] ans = new double[n - k + 1];
+        for (int i = 0; i < n - k + 1; i++) {
+            int[] window = Arrays.copyOfRange(nums, i, i + k);
+            Arrays.sort(window);
+            if (k % 2 == 1) {
+                ans[i] = window[k / 2];
+            } else {
+                ans[i] = (window[k / 2 - 1] + window[k / 2]) / 2.0;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        double[] ans = new double[n - k + 1];
+        int index = 0;
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for (int i = 0; i < n; i++) {
+            if (maxHeap.size() == minHeap.size()) {
+                if (minHeap.isEmpty() || nums[i] <= minHeap.peek()) {
+                    maxHeap.offer(nums[i]);
+                } else {
+                    maxHeap.offer(minHeap.poll());
+                    minHeap.offer(nums[i]);
+                }
+            } else {
+                if (nums[i] > maxHeap.peek()) {
+                    minHeap.offer(nums[i]);
+                } else {
+                    minHeap.offer(maxHeap.poll());
+                    maxHeap.offer(nums[i]);
+                }
+            }
+            if (i >= k - 1) {
+                if (maxHeap.size() == minHeap.size()) {
+                    ans[index++] = (double) (maxHeap.peek() + minHeap.peek()) / 2;
+                } else {
+                    ans[index++] = (double) maxHeap.peek();
+                }
+                if (!maxHeap.remove(nums[i - k + 1])) {
+                    minHeap.remove(nums[i - k + 1]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        PriorityQueue<Integer> left = new PriorityQueue<>((a, b) -> nums[b] - nums[a]);
+        PriorityQueue<Integer> right = new PriorityQueue<>((a, b) -> nums[a] - nums[b]);
+        double[] result = new double[nums.length - k + 1];
+        for (int i = 0; i < nums.length; i++) {
+            if (left.size() <= right.size()) {
+                right.offer(i);
+                left.offer(right.poll());
+            } else {
+                left.offer(i);
+                right.offer(left.poll());
+            }
+            if (left.size() + right.size() == k) {
+                if (left.size() == right.size()) {
+                    result[i - k + 1] = (nums[left.peek()] + nums[right.peek()]) / 2.0;
+                } else {
+                    result[i - k + 1] = nums[left.peek()];
+                }
+                if (!left.remove(i - k + 1)) {
+                    right.remove(i - k + 1);
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        double[] ans = new double[n-k+1];
+        PriorityQueue<Integer> lo = new PriorityQueue<Integer>(Collections.reverseOrder());
+        PriorityQueue<Integer> hi = new PriorityQueue<Integer>();
+        for (int i = 0; i < n; i++) {
+            if (lo.size() <= hi.size()) {
+                hi.add(nums[i]);
+                lo.add(hi.poll());
+            } else {
+                lo.add(nums[i]);
+                hi.add(lo.poll());
+            }
+            if (i >= k-1) {
+                ans[i-k+1] = (lo.size() == hi.size()) ? (lo.peek()+hi.peek())/2.0 : lo.peek();
+                if (!lo.remove(nums[i-k+1])) {
+                    hi.remove(nums[i-k+1]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        double[] result = new double[nums.length - k + 1];
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        int l = 0, r = 0;
+        while (r < nums.length) {
+            maxHeap.offer(nums[r]);
+            minHeap.offer(maxHeap.poll());
+            if (minHeap.size() > maxHeap.size()) {
+                maxHeap.offer(minHeap.poll());
+            }
+            if (r - l + 1 == k) {
+                if (k % 2 == 0) {
+                    result[l] = ((double)maxHeap.peek() + minHeap.peek()) / 2;
+                } else {
+                    result[l] = maxHeap.peek();
+                }
+                if (!maxHeap.remove(nums[l])) {
+                    minHeap.remove(nums[l]);
+                }
+                l++;
+            }
+            r++;
+        }
+        return result;
+
+=======
+
+        // 1. get the median of the first window
+        // 2. move the window to the right and get the median of the new window
+        // 3. repeat step 2 until the end of the array
+        // 4. return the result
+        double[] result = new double[nums.length - k + 1];
+        int[] window = new int[k];
+        for (int i = 0; i < k; i++) {
+            window[i] = nums[i];
+        }
+        result[0] = getMedian(window);
+        for (int i = 1; i < nums.length - k + 1; i++) {
+            // remove the first element of the window
+            // add the new element at the end of the window
+            // get the median of the new window
+            window[0] = window[1];
+            window[1] = window[2];
+            window[2] = nums[i + 2];
+            result[i] = getMedian(window);
+        }
+        return result;
+    }
+    
+    private double getMedian(int[] window) {
+        Arrays.sort(window);
+        if (window.length % 2 == 0) {
+            return (window[window.length / 2 - 1] + window[window.length / 2]) / 2.0;
+        } else {
+            return window[window.length / 2];
+        }

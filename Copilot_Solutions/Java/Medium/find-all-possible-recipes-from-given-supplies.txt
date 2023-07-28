@@ -1,0 +1,274 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<String> res = new ArrayList<>();
+        Map<String, List<String>> map = new HashMap<>();
+        for (int i = 0; i < recipes.length; i++) {
+            map.put(recipes[i], ingredients.get(i));
+        }
+        Set<String> set = new HashSet<>();
+        for (String s : supplies) {
+            set.add(s);
+        }
+        for (String s : recipes) {
+            if (canMake(s, map, set)) {
+                res.add(s);
+            }
+        }
+        return res;
+    }
+    private boolean canMake(String s, Map<String, List<String>> map, Set<String> set) {
+        List<String> list = map.get(s);
+        for (String str : list) {
+            if (!set.contains(str)) {
+                if (!canMake(str, map, set)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        List<String> res = new ArrayList<>();
+        Map<String, List<String>> map = new HashMap<>();
+        for (int i = 0; i < recipes.length; i++) {
+            map.put(recipes[i], ingredients.get(i));
+        }
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        for (String s : supplies) {
+            queue.offer(s);
+        }
+        while (!queue.isEmpty()) {
+            String s = queue.poll();
+            if (visited.contains(s)) {
+                continue;
+            }
+            visited.add(s);
+            for (String r : map.keySet()) {
+                if (map.get(r).contains(s)) {
+                    map.get(r).remove(s);
+                    if (map.get(r).isEmpty()) {
+                        res.add(r);
+                    } else {
+                        queue.addAll(map.get(r));
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<String> result = new ArrayList<>();
+        Set<String> supplySet = new HashSet<>();
+        for (String supply : supplies) {
+            supplySet.add(supply);
+        }
+        for (int i = 0; i < recipes.length; i++) {
+            List<String> ingredientList = ingredients.get(i);
+            boolean canMake = true;
+            for (String ingredient : ingredientList) {
+                if (!supplySet.contains(ingredient)) {
+                    canMake = false;
+                    break;
+                }
+            }
+            if (canMake) {
+                result.add(recipes[i]);
+            }
+        }
+        return result;
+
+=======
+
+        Map<String, Set<String>> recipeMap = new HashMap<>();
+        for (int i = 0; i < recipes.length; i++) {
+            recipeMap.put(recipes[i], new HashSet<>(ingredients.get(i)));
+        }
+        Set<String> supplySet = new HashSet<>(Arrays.asList(supplies));
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < recipes.length; i++) {
+            if (canMake(recipeMap, supplySet, recipes[i])) {
+                result.add(recipes[i]);
+            }
+        }
+        return result;
+    }
+    
+    private boolean canMake(Map<String, Set<String>> recipeMap, Set<String> supplySet, String recipe) {
+        if (supplySet.containsAll(recipeMap.get(recipe))) {
+            return true;
+        }
+        for (String ingredient : recipeMap.get(recipe)) {
+            if (!supplySet.contains(ingredient)) {
+                if (canMake(recipeMap, supplySet, ingredient)) {
+                    supplySet.add(ingredient);
+                } else {
+                    return false;
+                }
+            }
+        }
+        return supplySet.containsAll(recipeMap.get(recipe));
+
+=======
+
+        List<String> result = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+        for (String s : supplies) {
+            map.put(s, map.getOrDefault(s, 0) + 1);
+        }
+        for (int i = 0; i < recipes.length; i++) {
+            if (canMake(map, ingredients.get(i))) {
+                result.add(recipes[i]);
+            }
+        }
+        return result;
+    }
+    private boolean canMake(Map<String, Integer> map, List<String> list) {
+        for (String s : list) {
+            if (map.containsKey(s)) {
+                if (map.get(s) > 0) {
+                    map.put(s, map.get(s) - 1);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        List<String> ans = new ArrayList<>();
+        Set<String> supplySet = new HashSet<>();
+        for (String s : supplies) {
+            supplySet.add(s);
+        }
+        for (int i = 0; i < recipes.length; i++) {
+            String recipe = recipes[i];
+            List<String> ingredient = ingredients.get(i);
+            boolean canMake = true;
+            for (String s : ingredient) {
+                if (!supplySet.contains(s)) {
+                    canMake = false;
+                    break;
+                }
+            }
+            if (canMake) {
+                ans.add(recipe);
+            }
+        }
+        return ans;
+
+=======
+
+        Map<String, Integer> supplyMap = new HashMap<>();
+        for (String s : supplies) {
+            supplyMap.put(s, supplyMap.getOrDefault(s, 0) + 1);
+        }
+        Set<String> res = new HashSet<>();
+        for (int i = 0; i < recipes.length; i++) {
+            if (canMake(supplyMap, ingredients.get(i))) {
+                res.add(recipes[i]);
+            }
+        }
+        return new ArrayList<>(res);
+    }
+    
+    private boolean canMake(Map<String, Integer> supplyMap, List<String> recipe) {
+        Map<String, Integer> recipeMap = new HashMap<>();
+        for (String s : recipe) {
+            recipeMap.put(s, recipeMap.getOrDefault(s, 0) + 1);
+        }
+        for (String s : recipeMap.keySet()) {
+            if (supplyMap.getOrDefault(s, 0) < recipeMap.get(s)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        Map<String, Set<String>> recipeMap = new HashMap<>();
+        Map<String, Integer> supplyMap = new HashMap<>();
+        for (int i = 0; i < recipes.length; i++) {
+            String recipe = recipes[i];
+            for (String ingredient : ingredients.get(i)) {
+                recipeMap.putIfAbsent(ingredient, new HashSet<>());
+                recipeMap.get(ingredient).add(recipe);
+            }
+        }
+        for (String supply : supplies) {
+            supplyMap.put(supply, supplyMap.getOrDefault(supply, 0) + 1);
+        }
+        Set<String> result = new HashSet<>();
+        for (String supply : supplies) {
+            if (recipeMap.containsKey(supply)) {
+                for (String recipe : recipeMap.get(supply)) {
+                    result.add(recipe);
+                }
+            }
+        }
+        List<String> list = new ArrayList<>(result);
+        Collections.sort(list);
+        return list;
+
+=======
+
+        List<String> ans = new ArrayList<String>();
+        Map<String, Integer> supplyMap = new HashMap<String, Integer>();
+        for (String s : supplies) {
+            supplyMap.put(s, supplyMap.getOrDefault(s, 0) + 1);
+        }
+        for (int i = 0; i < recipes.length; i++) {
+            if (canMake(ingredients.get(i), supplyMap)) {
+                ans.add(recipes[i]);
+            }
+        }
+        return ans;
+    }
+
+    public boolean canMake(List<String> ing, Map<String, Integer> supplyMap) {
+        for (String s : ing) {
+            if (!supplyMap.containsKey(s)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = recipes.length;
+        List<String> ans = new ArrayList<>();
+        boolean[] isAvailable = new boolean[n];
+        boolean[] isVisited = new boolean[n];
+        Set<String> supplySet = new HashSet<>();
+        for (String s : supplies) {
+            supplySet.add(s);
+        }
+        for (int i = 0; i < n; i++) {
+            if (isVisited[i]) {
+                continue;
+            }
+            if (isAvailable(i, ingredients.get(i), supplySet)) {
+                ans.add(recipes[i]);
+                isAvailable[i] = true;
+            }
+            isVisited[i] = true;
+        }
+        return ans;
+    }
+    
+    private boolean isAvailable(int recipe, List<String> ingredients, Set<String> supplies) {
+        boolean available = true;
+        for (String s : ingredients) {
+            if (!supplies.contains(s)) {
+                available = false;
+                break;
+            }
+        }
+        return available;

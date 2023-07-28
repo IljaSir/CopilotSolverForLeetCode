@@ -1,0 +1,269 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        unordered_map<string, int> pos;
+        for (auto& s : positive_feedback) pos[s] = 3;
+        unordered_map<string, int> neg;
+        for (auto& s : negative_feedback) neg[s] = -1;
+        unordered_map<int, int> scores;
+        for (int i = 0; i < report.size(); i++) {
+            int id = student_id[i];
+            int score = 0;
+            stringstream ss(report[i]);
+            string word;
+            while (ss >> word) {
+                if (pos.count(word)) score += pos[word];
+                else if (neg.count(word)) score += neg[word];
+            }
+            scores[id] += score;
+        }
+        vector<pair<int, int>> vp;
+        for (auto& [id, score] : scores) vp.push_back({score, id});
+        sort(vp.rbegin(), vp.rend());
+        vector<int> res;
+        for (int i = 0; i < k; i++) res.push_back(vp[i].second);
+        return res;
+
+=======
+
+        unordered_map<string, int> pos;
+        unordered_map<string, int> neg;
+        for (auto& s : positive_feedback) {
+            pos[s]++;
+        }
+        for (auto& s : negative_feedback) {
+            neg[s]++;
+        }
+        unordered_map<int, int> score;
+        for (int i = 0; i < report.size(); i++) {
+            int id = student_id[i];
+            int s = 0;
+            stringstream ss(report[i]);
+            string word;
+            while (ss >> word) {
+                if (pos.count(word)) {
+                    s += 3;
+                }
+                else if (neg.count(word)) {
+                    s -= 1;
+                }
+            }
+            score[id] += s;
+        }
+        vector<pair<int, int>> v;
+        for (auto& p : score) {
+            v.push_back({p.second, p.first});
+        }
+        sort(v.begin(), v.end(), greater<pair<int, int>>());
+        vector<int> ans;
+        for (int i = 0; i < k; i++) {
+            ans.push_back(v[i].second);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> positive;
+        for (auto& w : positive_feedback) positive[w]++;
+        unordered_map<string, int> negative;
+        for (auto& w : negative_feedback) negative[w]++;
+        unordered_map<int, int> scores;
+        for (int i = 0; i < report.size(); ++i) {
+            istringstream iss(report[i]);
+            string word;
+            while (iss >> word) {
+                if (positive.count(word)) scores[student_id[i]] += 3;
+                if (negative.count(word)) scores[student_id[i]] -= 1;
+            }
+        }
+        vector<pair<int, int>> score;
+        for (auto& p : scores) {
+            score.push_back({p.second, p.first});
+        }
+        sort(score.begin(), score.end(), [](const auto& a, const auto& b) {
+            return a.first > b.first || (a.first == b.first && a.second < b.second);
+        });
+        vector<int> ans;
+        for (int i = 0; i < k; ++i) {
+            ans.push_back(score[i].second);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> positive, negative;
+        for (auto& word : positive_feedback) positive[word]++;
+        for (auto& word : negative_feedback) negative[word]++;
+        unordered_map<int, int> score;
+        for (int i = 0; i < report.size(); i++) {
+            istringstream iss(report[i]);
+            string word;
+            while (iss >> word) {
+                if (positive.count(word)) score[student_id[i]] += 3;
+                else if (negative.count(word)) score[student_id[i]]--;
+            }
+        }
+        vector<pair<int, int>> tmp;
+        for (auto& [id, s] : score) tmp.push_back({s, id});
+        sort(tmp.begin(), tmp.end(), [](const auto& a, const auto& b) {
+            return a.first > b.first || (a.first == b.first && a.second < b.second);
+        });
+        vector<int> ans;
+        for (int i = 0; i < k; i++) ans.push_back(tmp[i].second);
+        return ans;
+
+=======
+
+        unordered_map<string, int> positive, negative;
+        for (auto& word : positive_feedback) positive[word] = 3;
+        for (auto& word : negative_feedback) negative[word] = -1;
+        int n = report.size();
+        vector<int> score(n, 0);
+        for (int i = 0; i < n; ++i) {
+            istringstream iss(report[i]);
+            string word;
+            while (iss >> word) {
+                if (positive.find(word) != positive.end()) score[i] += positive[word];
+                else if (negative.find(word) != negative.end()) score[i] += negative[word];
+            }
+        }
+        vector<pair<int, int>> pairs;
+        for (int i = 0; i < n; ++i) pairs.push_back({score[i], student_id[i]});
+        sort(pairs.begin(), pairs.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+            if (a.first != b.first) return a.first > b.first;
+            return a.second < b.second;
+        });
+        vector<int> res;
+        for (int i = 0; i < k; ++i) res.push_back(pairs[i].second);
+        return res;
+
+=======
+
+        vector<int> res;
+        unordered_map<string, int> positive;
+        unordered_map<string, int> negative;
+        for (auto& word : positive_feedback) positive[word] = 1;
+        for (auto& word : negative_feedback) negative[word] = 1;
+        unordered_map<int, int> score;
+        for (int i = 0; i < report.size(); ++i) {
+            istringstream ss(report[i]);
+            string word;
+            while (ss >> word) {
+                if (positive.count(word)) ++score[student_id[i]];
+                else if (negative.count(word)) --score[student_id[i]];
+            }
+        }
+        priority_queue<pair<int, int>> pq;
+        for (auto& [id, s] : score) {
+            pq.emplace(s, id);
+        }
+        while (k--) {
+            res.push_back(pq.top().second);
+            pq.pop();
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        unordered_map<string, int> positive;
+        unordered_map<string, int> negative;
+        for (auto& str : positive_feedback) positive[str] = 1;
+        for (auto& str : negative_feedback) negative[str] = 1;
+        unordered_map<int, int> students;
+        for (int i = 0; i < report.size(); ++i) {
+            int id = student_id[i];
+            istringstream iss(report[i]);
+            string word;
+            while (iss >> word) {
+                if (positive.count(word)) ++students[id];
+                else if (negative.count(word)) --students[id];
+            }
+        }
+        vector<pair<int, int>> v;
+        for (auto& p : students) v.push_back(p);
+        sort(v.begin(), v.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+            if (a.second == b.second) return a.first < b.first;
+            return a.second > b.second;
+        });
+        for (int i = 0; i < k; ++i) res.push_back(v[i].first);
+        return res;
+
+=======
+
+        map<string, int> positive;
+        map<string, int> negative;
+        map<int, int> points;
+        for (string &word: positive_feedback) {
+            positive[word] = 1;
+        }
+        for (string &word: negative_feedback) {
+            negative[word] = 1;
+        }
+        for (int i = 0; i < report.size(); ++i) {
+            istringstream iss(report[i]);
+            string word;
+            while (iss >> word) {
+                if (positive.count(word)) {
+                    points[student_id[i]] += 3;
+                }
+                if (negative.count(word)) {
+                    points[student_id[i]] -= 1;
+                }
+            }
+        }
+        vector<pair<int, int>> v;
+        for (auto &p: points) {
+            v.push_back({p.second, p.first});
+        }
+        sort(v.begin(), v.end(), [](const pair<int, int> &p1, const pair<int, int> &p2) {
+            if (p1.first == p2.first) {
+                return p1.second < p2.second;
+            }
+            return p1.first > p2.first;
+        });
+        vector<int> ans;
+        for (int i = 0; i < k; ++i) {
+            ans.push_back(v[i].second);
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        unordered_map<string, int> posMap;
+        unordered_map<string, int> negMap;
+        unordered_map<int, int> stuMap;
+        for (string& word : positive_feedback) {
+            posMap[word]++;
+        }
+        for (string& word : negative_feedback) {
+            negMap[word]++;
+        }
+        for (int i = 0; i < report.size(); ++i) {
+            stringstream ss(report[i]);
+            string word;
+            while (ss >> word) {
+                if (posMap.find(word) != posMap.end()) {
+                    stuMap[student_id[i]] += 3;
+                }
+                if (negMap.find(word) != negMap.end()) {
+                    stuMap[student_id[i]] -= 1;
+                }
+            }
+        }
+        vector<pair<int, int>> stuVec;
+        for (auto& [id, score] : stuMap) {
+            stuVec.push_back({score, id});
+        }
+        sort(stuVec.begin(), stuVec.end(), [](pair<int, int>& a, pair<int, int>& b) {
+            if (a.first == b.first) {
+                return a.second < b.second;
+            }
+            return a.first > b.first;
+        });
+        for (int i = 0; i < k; ++i) {
+            res.push_back(stuVec[i].second);
+        }
+        return res;

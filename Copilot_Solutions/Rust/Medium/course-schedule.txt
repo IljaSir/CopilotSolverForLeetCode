@@ -1,0 +1,301 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut in_degree = vec![0; num_courses as usize];
+        for p in prerequisites {
+            graph[p[1] as usize].push(p[0]);
+            in_degree[p[0] as usize] += 1;
+        }
+        let mut queue = std::collections::VecDeque::new();
+        for (i, &d) in in_degree.iter().enumerate() {
+            if d == 0 {
+                queue.push_back(i);
+            }
+        }
+        let mut cnt = 0;
+        while let Some(v) = queue.pop_front() {
+            cnt += 1;
+            for &w in graph[v].iter() {
+                in_degree[w as usize] -= 1;
+                if in_degree[w as usize] == 0 {
+                    queue.push_back(w as usize);
+                }
+            }
+        }
+        cnt == num_courses
+
+=======
+Suggestion 2
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut in_degrees = vec![0; num_courses as usize];
+        for p in prerequisites {
+            graph[p[1] as usize].push(p[0] as usize);
+            in_degrees[p[0] as usize] += 1;
+        }
+        let mut queue = Vec::new();
+        for i in 0..num_courses {
+            if in_degrees[i as usize] == 0 {
+                queue.push(i as usize);
+            }
+        }
+        let mut count = 0;
+        while let Some(i) = queue.pop() {
+            count += 1;
+            for j in &graph[i] {
+                in_degrees[*j] -= 1;
+                if in_degrees[*j] == 0 {
+                    queue.push(*j);
+                }
+            }
+        }
+        count == num_courses
+
+=======
+Suggestion 3
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegrees = vec![0; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0] as usize);
+            indegrees[edge[0] as usize] += 1;
+        }
+        let mut queue = Vec::new();
+        for i in 0..num_courses as usize {
+            if indegrees[i] == 0 {
+                queue.push(i);
+            }
+        }
+        let mut ans = 0;
+        while let Some(u) = queue.pop() {
+            ans += 1;
+            for &v in &graph[u] {
+                indegrees[v] -= 1;
+                if indegrees[v] == 0 {
+                    queue.push(v);
+                }
+            }
+        }
+        ans == num_courses as usize
+
+=======
+Suggestion 4
+
+        let num_courses = num_courses as usize;
+        let mut adj = vec![vec![]; num_courses];
+        for p in &prerequisites {
+            adj[p[0] as usize].push(p[1] as usize);
+        }
+        let mut visited = vec![0; num_courses];
+        for i in 0..num_courses {
+            if visited[i] == 0 && Self::dfs(i, &mut visited, &adj) {
+                return false;
+            }
+        }
+        true
+    }
+
+    fn dfs(
+        i: usize,
+        visited: &mut Vec<i32>,
+        adj: &Vec<Vec<usize>>,
+    ) -> bool {
+        visited[i] = 1;
+        for &j in &adj[i] {
+            if visited[j] == 1 || (visited[j] == 0 && Self::dfs(j, visited, adj)) {
+                return true;
+            }
+        }
+        visited[i] = 2;
+        false
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        for pre in prerequisites {
+            graph[pre[0] as usize].push(pre[1]);
+        }
+        let mut visited = vec![0; num_courses as usize];
+        for i in 0..num_courses {
+            if !Self::dfs(i as usize, &graph, &mut visited) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(i: usize, graph: &Vec<Vec<i32>>, visited: &mut Vec<i32>) -> bool {
+        if visited[i] == 1 {
+            return false;
+        }
+        if visited[i] == 2 {
+            return true;
+        }
+        visited[i] = 1;
+        for &j in &graph[i] {
+            if !Self::dfs(j as usize, graph, visited) {
+                return false;
+            }
+        }
+        visited[i] = 2;
+        true
+
+=======
+Suggestion 6
+
+        let n = num_courses as usize;
+        let mut graph = vec![vec![]; n];
+        let mut indegree = vec![0; n];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0] as usize);
+            indegree[edge[0] as usize] += 1;
+        }
+        let mut queue = vec![];
+        for i in 0..n {
+            if indegree[i] == 0 {
+                queue.push(i);
+            }
+        }
+        let mut count = 0;
+        while let Some(node) = queue.pop() {
+            count += 1;
+            for &next in &graph[node] {
+                indegree[next] -= 1;
+                if indegree[next] == 0 {
+                    queue.push(next);
+                }
+            }
+        }
+        count == n
+
+=======
+Suggestion 7
+
+        let mut graph: Vec<Vec<i32>> = vec![vec![]; num_courses as usize];
+        let mut visited: Vec<i32> = vec![0; num_courses as usize];
+        for pre in prerequisites {
+            graph[pre[1] as usize].push(pre[0]);
+        }
+        for i in 0..num_courses {
+            if !Self::dfs(i as usize, &mut visited, &graph) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(node: usize, visited: &mut Vec<i32>, graph: &Vec<Vec<i32>>) -> bool {
+        if visited[node] == -1 {
+            return false;
+        }
+        if visited[node] == 1 {
+            return true;
+        }
+        visited[node] = -1;
+        for &v in graph[node].iter() {
+            if !Self::dfs(v as usize, visited, graph) {
+                return false;
+            }
+        }
+        visited[node] = 1;
+        true
+    }
+}
+
+=======
+Suggestion 8
+
+        let num_courses = num_courses as usize;
+        let mut graph = vec![vec![]; num_courses];
+        let mut visit = vec![0; num_courses];
+        for p in prerequisites {
+            graph[p[1] as usize].push(p[0] as usize);
+        }
+        for i in 0..num_courses {
+            if !Solution::dfs(i, &mut visit, &graph) {
+                return false;
+            }
+        }
+        true
+    }
+    
+    fn dfs(x: usize, visit: &mut Vec<i32>, graph: &Vec<Vec<usize>>) -> bool {
+        if visit[x] == 1 {
+            return false;
+        }
+        if visit[x] == 2 {
+            return true;
+        }
+        visit[x] = 1;
+        for &y in &graph[x] {
+            if !Solution::dfs(y, visit, graph) {
+                return false;
+            }
+        }
+        visit[x] = 2;
+        true
+
+=======
+Suggestion 9
+
+        let mut graph: Vec<Vec<i32>> = vec![vec![]; num_courses as usize];
+        for v in prerequisites {
+            graph[v[1] as usize].push(v[0]);
+        }
+        let mut visited = vec![0; num_courses as usize];
+        for i in 0..num_courses {
+            if !Self::dfs(&graph, i as usize, &mut visited) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(graph: &Vec<Vec<i32>>, i: usize, visited: &mut Vec<i32>) -> bool {
+        if visited[i] == 1 { return true; }
+        if visited[i] == 2 { return false; }
+        visited[i] = 2;
+        for &j in &graph[i] {
+            if !Self::dfs(graph, j as usize, visited) {
+                return false;
+            }
+        }
+        visited[i] = 1;
+        true
+
+=======
+Suggestion 10
+
+        if num_courses <= 0 || prerequisites.len() == 0 {
+            return true;
+        }
+        let mut graph = vec![vec![]; num_courses as usize];
+        for p in prerequisites {
+            graph[p[1] as usize].push(p[0]);
+        }
+        let mut visited = vec![0; num_courses as usize];
+        for i in 0..num_courses {
+            if Self::dfs(&graph, &mut visited, i as usize) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(graph: &Vec<Vec<i32>>, visited: &mut Vec<i32>, i: usize) -> bool {
+        if visited[i] == -1 {
+            return false;
+        }
+        if visited[i] == 1 {
+            return true;
+        }
+        visited[i] = 1;
+        for j in &graph[i] {
+            if Self::dfs(graph, visited, *j as usize) {
+                return true;
+            }
+        }
+        visited[i] = -1;
+        false

@@ -1,0 +1,246 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m, n = len(board), len(board[0])
+        def dfs(i, j):
+            if 0 <= i < m and 0 <= j < n:
+                if board[i][j] == 'M':
+                    board[i][j] = 'X'
+                elif board[i][j] == 'E':
+                    cnt = 0
+                    for x, y in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
+                        if 0 <= x < m and 0 <= y < n and board[x][y] == 'M':
+                            cnt += 1
+                    if cnt == 0:
+                        board[i][j] = 'B'
+                        for x, y in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
+                            dfs(x, y)
+                    else:
+                        board[i][j] = str(cnt)
+        dfs(*click)
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m = len(board)
+        n = len(board[0])
+        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]
+        def dfs(board, click):
+            i, j = click
+            if board[i][j] == 'M':
+                board[i][j] = 'X'
+                return
+            cnt = 0
+            for di, dj in dirs:
+                ni, nj = i + di, j + dj
+                if ni < 0 or ni >= m or nj < 0 or nj >= n:
+                    continue
+                if board[ni][nj] == 'M' or board[ni][nj] == 'X':
+                    cnt += 1
+            if cnt > 0:
+                board[i][j] = str(cnt)
+                return
+            board[i][j] = 'B'
+            for di, dj in dirs:
+                ni, nj = i + di, j + dj
+                if ni < 0 or ni >= m or nj < 0 or nj >= n:
+                    continue
+                if board[ni][nj] == 'E':
+                    dfs(board, [ni, nj])
+        dfs(board, click)
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        def dfs(i, j):
+            if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]):
+                return
+            if board[i][j] != 'E':
+                return
+            count = 0
+            for x, y in [(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+                if 0 <= i + x < len(board) and 0 <= j + y < len(board[0]) and board[i + x][j + y] == 'M':
+                    count += 1
+            if count == 0:
+                board[i][j] = 'B'
+                for x, y in [(1, 1), (1, -1), (-1, 1), (-1, -1), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+                    dfs(i + x, j + y)
+            else:
+                board[i][j] = str(count)
+        if board[click[0]][click[1]] == 'M':
+            board[click[0]][click[1]] = 'X'
+            return board
+        dfs(click[0], click[1])
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m = len(board)
+        n = len(board[0])
+        def dfs(r, c):
+            if r < 0 or r >= m or c < 0 or c >= n:
+                return
+            if board[r][c] == 'M':
+                board[r][c] = 'X'
+                return
+            if board[r][c] != 'E':
+                return
+            cnt = 0
+            for i in range(r-1, r+2):
+                for j in range(c-1, c+2):
+                    if i < 0 or i >= m or j < 0 or j >= n:
+                        continue
+                    if board[i][j] == 'M':
+                        cnt += 1
+            if cnt == 0:
+                board[r][c] = 'B'
+                for i in range(r-1, r+2):
+                    for j in range(c-1, c+2):
+                        if i < 0 or i >= m or j < 0 or j >= n:
+                            continue
+                        dfs(i, j)
+            else:
+                board[r][c] = str(cnt)
+        dfs(click[0], click[1])
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m, n = len(board), len(board[0])
+        def dfs(x, y):
+            if 0 <= x < m and 0 <= y < n:
+                if board[x][y] == 'E':
+                    count = sum([board[x+i][y+j] == 'M' for i in (-1,0,1) for j in (-1,0,1) if 0 <= x+i < m and 0 <= y+j < n])
+                    if count > 0:
+                        board[x][y] = str(count)
+                    else:
+                        board[x][y] = 'B'
+                        for i in (-1,0,1):
+                            for j in (-1,0,1):
+                                dfs(x+i, y+j)
+        dfs(*click)
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        def dfs(board, i, j):
+            if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]) or board[i][j] != 'E':
+                return
+            cnt = 0
+            for x, y in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
+                if 0 <= i + x < len(board) and 0 <= j + y < len(board[0]) and board[i + x][j + y] == 'M':
+                    cnt += 1
+            if cnt == 0:
+                board[i][j] = 'B'
+                for x, y in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
+                    dfs(board, i + x, j + y)
+            else:
+                board[i][j] = str(cnt)
+        if board[click[0]][click[1]] == 'M':
+            board[click[0]][click[1]] = 'X'
+        else:
+            dfs(board, click[0], click[1])
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m, n = len(board), len(board[0])
+        visited = set()
+        def dfs(x, y):
+            if (x, y) in visited:
+                return
+            visited.add((x, y))
+            if board[x][y] == "M":
+                board[x][y] = "X"
+                return
+            cnt = 0
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and board[nx][ny] == "M":
+                    cnt += 1
+            if cnt:
+                board[x][y] = str(cnt)
+            else:
+                board[x][y] = "B"
+                for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < m and 0 <= ny < n and board[nx][ny] == "E":
+                        dfs(nx, ny)
+        dfs(click[0], click[1])
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        def dfs(board, i, j):
+            if i < 0 or i >= len(board) or j < 0 or j >= len(board[0]) or board[i][j] != "E":
+                return
+            mines = 0
+            for x, y in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
+                if 0 <= x < len(board) and 0 <= y < len(board[0]) and board[x][y] == "M":
+                    mines += 1
+            if mines > 0:
+                board[i][j] = str(mines)
+            else:
+                board[i][j] = "B"
+                for x, y in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
+                    dfs(board, x, y)
+        
+        i, j = click[0], click[1]
+        if board[i][j] == "M":
+            board[i][j] = "X"
+        else:
+            dfs(board, i, j)
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        def dfs(i, j):
+            if board[i][j] == "M":
+                board[i][j] = "X"
+                return
+            elif board[i][j] == "E":
+                board[i][j] = "B"
+                for x, y in [(i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1)]:
+                    if 0 <= x < len(board) and 0 <= y < len(board[0]):
+                        if board[x][y] == "E":
+                            dfs(x, y)
+        i, j = click
+        if board[i][j] == "M":
+            board[i][j] = "X"
+        else:
+            dfs(i, j)
+        return board
+
+=======
+
+def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        def dfs(i, j):
+            if board[i][j] == "M":
+                board[i][j] = "X"
+            else:
+                cnt = 0
+                for x in range(i-1, i+2):
+                    for y in range(j-1, j+2):
+                        if 0 <= x < m and 0 <= y < n and board[x][y] == "M":
+                            cnt += 1
+                if cnt > 0:
+                    board[i][j] = str(cnt)
+                else:
+                    board[i][j] = "B"
+                    for x in range(i-1, i+2):
+                        for y in range(j-1, j+2):
+                            if 0 <= x < m and 0 <= y < n and board[x][y] == "E":
+                                dfs(x, y)
+        m, n = len(board), len(board[0])
+        dfs(click[0], click[1])
+        return board

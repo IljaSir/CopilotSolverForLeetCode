@@ -1,0 +1,214 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_map<string, int> count;
+        for (string word : words) {
+            count[word]++;
+        }
+        auto cmp = [](const pair<string, int>& a, const pair<string, int>& b) {
+            return a.second > b.second || (a.second == b.second && a.first < b.first);
+        };
+        priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(cmp)> pq(cmp);
+        for (auto& [word, n] : count) {
+            pq.emplace(word, n);
+            if (pq.size() > k) {
+                pq.pop();
+            }
+        }
+        vector<string> ans;
+        while (!pq.empty()) {
+            ans.push_back(pq.top().first);
+            pq.pop();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        unordered_map<string, int> freq;
+        for (auto& w : words) {
+            freq[w]++;
+        }
+        priority_queue<pair<int, string>> pq;
+        for (auto& p : freq) {
+            pq.push({p.second, p.first});
+            if (pq.size() > k) {
+                pq.pop();
+            }
+        }
+        vector<string> ans;
+        while (!pq.empty()) {
+            ans.push_back(pq.top().second);
+            pq.pop();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        unordered_map<string, int> freq;
+        for (auto& w : words) {
+            ++freq[w];
+        }
+        priority_queue<pair<int, string>> pq;
+        for (auto& [w, f] : freq) {
+            pq.push({f, w});
+            if (pq.size() > k) {
+                pq.pop();
+            }
+        }
+        vector<string> ans;
+        while (!pq.empty()) {
+            ans.push_back(pq.top().second);
+            pq.pop();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        unordered_map<string, int> freq;
+        for (auto w : words) {
+            ++freq[w];
+        }
+        auto cmp = [](const pair<string, int>& a, const pair<string, int>& b) {
+            return a.second < b.second || (a.second == b.second && a.first > b.first);
+        };
+        priority_queue<pair<string, int>, vector<pair<string, int>>, decltype(cmp)> pq(cmp);
+        for (auto [w, f] : freq) {
+            pq.push({w, f});
+            if (pq.size() > k) {
+                pq.pop();
+            }
+        }
+        vector<string> ans;
+        while (!pq.empty()) {
+            ans.push_back(pq.top().first);
+            pq.pop();
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        unordered_map<string, int> wordCount;
+        for (auto& word : words) {
+            wordCount[word]++;
+        }
+        vector<vector<string>> bucket(words.size() + 1);
+        for (auto& [word, count] : wordCount) {
+            bucket[count].push_back(word);
+        }
+        vector<string> result;
+        for (int i = bucket.size() - 1; i >= 0 && result.size() < k; i--) {
+            if (bucket[i].empty()) {
+                continue;
+            }
+            sort(bucket[i].begin(), bucket[i].end());
+            for (int j = 0; j < bucket[i].size() && result.size() < k; j++) {
+                result.push_back(bucket[i][j]);
+            }
+        }
+        return result;
+
+=======
+
+        unordered_map<string, int> freq;
+        for (string& w : words) {
+            freq[w]++;
+        }
+        vector<pair<string, int>> v;
+        for (auto& p : freq) {
+            v.push_back(p);
+        }
+        sort(v.begin(), v.end(), [](const pair<string, int>& p1, const pair<string, int>& p2) {
+            if (p1.second == p2.second) {
+                return p1.first < p2.first;
+            }
+            return p1.second > p2.second;
+        });
+        vector<string> ans;
+        for (int i = 0; i < k; i++) {
+            ans.push_back(v[i].first);
+        }
+        return ans;
+
+=======
+
+        map<string, int> wordCount;
+        for (string word : words) {
+            wordCount[word]++;
+        }
+        vector<string> result;
+        for (auto it = wordCount.begin(); it != wordCount.end(); it++) {
+            result.push_back(it->first);
+        }
+        sort(result.begin(), result.end(), [&wordCount](const string &w1, const string &w2) {
+            return wordCount[w1] > wordCount[w2] || (wordCount[w1] == wordCount[w2] && w1 < w2);
+        });
+        result.resize(k);
+        return result;
+
+=======
+
+        map<string, int> freq;
+        for (auto& word: words) {
+            freq[word]++;
+        }
+        vector<pair<string, int>> v;
+        for (auto& p: freq) {
+            v.push_back(p);
+        }
+        sort(v.begin(), v.end(), [](auto& p1, auto& p2) {
+            return p1.second > p2.second || (p1.second == p2.second && p1.first < p2.first);
+        });
+        vector<string> ans;
+        for (int i = 0; i < k; ++i) {
+            ans.push_back(v[i].first);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> umap;
+        for (auto& s : words) {
+            umap[s]++;
+        }
+        vector<pair<string, int>> v;
+        for (auto& p : umap) {
+            v.push_back(p);
+        }
+        sort(v.begin(), v.end(), [](auto& a, auto& b) {
+            if (a.second == b.second) {
+                return a.first < b.first;
+            }
+            return a.second > b.second;
+        });
+        vector<string> res;
+        for (int i = 0; i < k; ++i) {
+            res.push_back(v[i].first);
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> freq;
+        for (auto &word: words) {
+            freq[word]++;
+        }
+        vector<pair<string, int>> v;
+        for (auto &f: freq) {
+            v.push_back(make_pair(f.first, f.second));
+        }
+        sort(v.begin(), v.end(), [](pair<string, int> &a, pair<string, int> &b) {
+            if (a.second == b.second) {
+                return a.first < b.first;
+            }
+            return a.second > b.second;
+        });
+        vector<string> ans;
+        for (int i = 0; i < k; i++) {
+            ans.push_back(v[i].first);
+        }
+        return ans;

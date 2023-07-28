@@ -1,0 +1,15 @@
+impl Solution {
+    pub fn kth_factor(n: i32, k: i32) -> i32 {
+        
+        let mut factors = vec![];
+        for i in 1..=n {
+            if n % i == 0 {
+                factors.push(i);
+            }
+            if factors.len() == k as usize {
+                return factors[k as usize - 1];
+            }
+        }
+        -1
+    }
+}

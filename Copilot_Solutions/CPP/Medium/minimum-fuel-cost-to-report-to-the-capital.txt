@@ -1,0 +1,363 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n);
+        for (auto& r : roads) {
+            g[r[0]].push_back(r[1]);
+            g[r[1]].push_back(r[0]);
+        }
+        vector<int> cnt(n);
+        vector<long long> dp(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            cnt[u] = 1;
+            for (auto v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                cnt[u] += cnt[v];
+            }
+            dp[u] = cnt[u] - 1;
+            for (auto v : g[u]) {
+                if (v == p) continue;
+                dp[u] += dp[v];
+            }
+            if (p != -1) {
+                dp[u] += dp[p] - cnt[u];
+            }
+        };
+        dfs(0, -1);
+        sort(dp.begin(), dp.end());
+        long long ans = 0;
+        for (int i = n - 1; i >= n - seats; --i) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n);
+        for (auto& r : roads) {
+            g[r[0]].push_back(r[1]);
+            g[r[1]].push_back(r[0]);
+        }
+        vector<int> sz(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sz[u] += sz[v];
+            }
+        };
+        dfs(0, -1);
+        int m = seats;
+        vector<vector<long long>> f(n, vector<long long>(m + 1));
+        function<void(int, int)> solve = [&](int u, int p) {
+            for (int v : g[u]) {
+                if (v == p) continue;
+                solve(v, u);
+                for (int i = m; i >= 0; i--) {
+                    for (int j = 0; j <= i; j++) {
+                        f[u][i] = min(f[u][i], f[u][i - j] + f[v][j]);
+                    }
+                }
+            }
+            f[u][1] = sz[u] - 1;
+        };
+        solve(0, -1);
+        long long ans = 1e18;
+        for (int i = 0; i <= m; i++) ans = min(ans, f[0][i]);
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n);
+        for (auto& e : roads) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<long long> dp(n);
+        vector<int> sz(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sz[u] += sz[v];
+                dp[u] += dp[v];
+            }
+            dp[u] += sz[u] - 1;
+        };
+        dfs(0, -1);
+        vector<long long> dp2(n);
+        function<void(int, int)> dfs2 = [&](int u, int p) {
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dp2[v] = dp2[u] + n - 2 * sz[v];
+                dfs2(v, u);
+            }
+        };
+        dfs2(0, -1);
+        long long ans = 1e18;
+        for (int i = 0; i < n; ++i) {
+            ans = min(ans, dp[i] + dp2[i] - (seats - 1) * (n - 1));
+        }
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n);
+        for (auto& road : roads) {
+            g[road[0]].push_back(road[1]);
+            g[road[1]].push_back(road[0]);
+        }
+        vector<int> sons(n);
+        vector<long long> dp(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sons[u] = 1;
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sons[u] += sons[v];
+                dp[u] += dp[v] + sons[v];
+            }
+        };
+        dfs(0, -1);
+        vector<int> tmp;
+        for (int v : g[0]) {
+            tmp.push_back(sons[v]);
+        }
+        sort(tmp.begin(), tmp.end());
+        long long ans = dp[0];
+        for (int i = 0; i < tmp.size(); i++) {
+            ans += 1LL * (i + 1) * tmp[i];
+        }
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n);
+        for (auto& road : roads) {
+            g[road[0]].push_back(road[1]);
+            g[road[1]].push_back(road[0]);
+        }
+        vector<int> dp(n, 0);
+        dfs(0, -1, g, dp);
+        priority_queue<int> pq;
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (dp[i] > 0) {
+                pq.push(dp[i]);
+                ans += dp[i];
+            }
+        }
+        for (int i = 0; i < n - seats; ++i) {
+            int t = pq.top();
+            pq.pop();
+            ans -= t - 1;
+            pq.push(t - 1);
+        }
+        return ans;
+    }
+    
+    void dfs(int u, int prev, vector<vector<int>>& g, vector<int>& dp) {
+        for (int v : g[u]) {
+            if (v == prev) continue;
+            dfs(v, u, g, dp);
+            dp[u] += dp[v];
+        }
+        dp[u]++;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> graph(n);
+        for (auto& r : roads) {
+            graph[r[0]].push_back(r[1]);
+            graph[r[1]].push_back(r[0]);
+        }
+        vector<int> count(n, 1);
+        vector<int> parent(n, -1);
+        vector<long long> cost(n, 0);
+        dfs(0, graph, count, parent, cost);
+        return cost[0];
+
+=======
+
+        int N = roads.size() + 1;
+        vector<vector<int>> graph(N);
+        for (auto& road: roads) {
+            graph[road[0]].push_back(road[1]);
+            graph[road[1]].push_back(road[0]);
+        }
+        vector<int> depth(N, 0);
+        vector<int> size(N, 0);
+        vector<int> parent(N, -1);
+        vector<int> cost(N, 0);
+        vector<int> visited(N, 0);
+        dfs(graph, depth, size, parent, cost, visited, 0);
+        long long ans = 0;
+        for (int i = 1; i < N; ++i) {
+            int cur = i;
+            int curCost = cost[i];
+            while (cur != 0) {
+                int p = parent[cur];
+                int pCost = cost[p];
+                if (pCost < curCost) {
+                    swap(pCost, curCost);
+                }
+                int curSize = size[cur];
+                if (curSize > seats) {
+                    curSize = seats;
+                }
+                int pSize = size[p];
+                if (pSize > seats) {
+                    pSize = seats;
+                }
+                int minSize = min(curSize, pSize);
+                int maxSize = max(curSize, pSize);
+                int minCost = min(curCost, pCost);
+                int maxCost = max(curCost, pCost);
+                int diff = minSize - (seats - minSize);
+                if (diff > 0) {
+                    minCost += diff;
+                    minSize -= diff;
+                }
+                diff = maxSize - (seats - maxSize);
+                if (diff > 0) {
+                    maxCost += diff;
+                    maxSize -= diff;
+                }
+                ans += (long long)minCost * (long long)(seats - minSize);
+                ans += (long long)maxCost * (long long)(seats - maxSize);
+                cur = p;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> g(n, vector<int>());
+        for (auto& e: roads) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> sub(n, 1);
+        vector<int> f(n, 0);
+        vector<int> dp(n, 0);
+        vector<int> g1(n, 0);
+        vector<int> g2(n, 0);
+        vector<int> g3(n, 0);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            for (int v: g[u]) {
+                if (v != p) {
+                    dfs(v, u);
+                    sub[u] += sub[v];
+                    f[u] += f[v] + sub[v];
+                }
+            }
+        };
+        dfs(0, -1);
+        function<void(int, int, int)> dfs2 = [&](int u, int p, int s) {
+            dp[u] = s;
+            for (int v: g[u]) {
+                if (v != p) {
+                    dfs2(v, u, s + f[0] - f[v] - sub[v] + n - sub[v]);
+                }
+            }
+        };
+        dfs2(0, -1, 0);
+        function<void(int, int)> dfs3 = [&](int u, int p) {
+            for (int v: g[u]) {
+                if (v != p) {
+                    g1[v] = g1[u] + f[u] - f[v] - sub[v] + n - sub[v];
+                    g2[v] = min(g2[u], g1[v]);
+                    g3[v] = min(g3[u], g1[v]);
+                    dfs3(v, u);
+                }
+            }
+        };
+        dfs3(0, -1);
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans += min({dp[i], g1[i], g2[i], g3[i]});
+        }
+        return ans / 2;
+
+=======
+
+        int n = roads.size()+1;
+        vector<vector<int>> g(n);
+        for(auto& e: roads) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> sz(n);
+        function<void(int,int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            for(int v: g[u]) if(v != p) {
+                dfs(v, u);
+                sz[u] += sz[v];
+            }
+        };
+        dfs(0, -1);
+        vector<int> f(n);
+        function<void(int,int)> dfs2 = [&](int u, int p) {
+            f[u] = 0;
+            for(int v: g[u]) if(v != p) {
+                dfs2(v, u);
+                f[u] += f[v];
+            }
+            f[u] += sz[u]-1;
+        };
+        dfs2(0, -1);
+        sort(f.begin(), f.end(), greater<int>());
+        long long ans = 0;
+        for(int i = 0; i < seats; i++) {
+            ans += f[i];
+        }
+        return ans;
+
+=======
+
+        int n = roads.size() + 1;
+        vector<vector<int>> adj(n);
+        vector<int> degree(n);
+        for (auto& road : roads) {
+            adj[road[0]].push_back(road[1]);
+            adj[road[1]].push_back(road[0]);
+            degree[road[0]]++;
+            degree[road[1]]++;
+        }
+        vector<int> leaf;
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 1) {
+                leaf.push_back(i);
+            }
+        }
+        vector<int> count(n);
+        vector<long long> cost(n);
+        for (int i = n - 1; i >= 0; i--) {
+            int u = leaf[i];
+            count[u] = 1;
+            cost[u] = 0;
+            for (int v : adj[u]) {
+                if (degree[v] == 1) {
+                    continue;
+                }
+                count[u] += count[v];
+                cost[u] += cost[v];
+                cost[u] += count[v];
+            }
+            if (count[u] > seats) {
+                cost[u] += count[u] - seats;
+                count[u] = seats;
+            }
+        }
+        return cost[0];

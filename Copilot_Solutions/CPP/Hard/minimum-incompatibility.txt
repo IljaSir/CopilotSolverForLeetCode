@@ -1,0 +1,165 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        int m = n / k;
+        int dp[1 << n];
+        memset(dp, 0x3f, sizeof(dp));
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            int c = __builtin_popcount(mask);
+            if (c % m == 0) {
+                int mx = 0, mn = 0x3f3f3f3f;
+                unordered_set<int> st;
+                for (int i = 0; i < n; ++i) {
+                    if (mask >> i & 1) {
+                        mx = max(mx, nums[i]);
+                        mn = min(mn, nums[i]);
+                        st.insert(nums[i]);
+                    }
+                }
+                if (st.size() == c) {
+                    dp[mask] = mx - mn;
+                }
+            }
+            for (int i = 0; i < n; ++i) {
+                if (mask >> i & 1) {
+                    dp[mask] = min(dp[mask], dp[mask ^ (1 << i)] + dp[1 << i]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1] == 0x3f3f3f3f ? -1 : dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.size();
+        int m = n / k;
+        vector<int> dp(1 << n, INT_MAX);
+        dp[0] = 0;
+        sort(nums.begin(), nums.end());
+        for (int i = 1; i < (1 << n); i++) {
+            int cnt = 0;
+            int minNum = INT_MAX, maxNum = INT_MIN;
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    cnt++;
+                    minNum = min(minNum, nums[j]);
+                    maxNum = max(maxNum, nums[j]);
+                }
+            }
+            if (cnt % m == 0) {
+                int prev = i - (1 << (find(nums.begin(), nums.end(), minNum) - nums.begin()));
+                if (dp[prev] != INT_MAX) {
+                    dp[i] = dp[prev] + maxNum - minNum;
+                }
+            }
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    dp[i] = min(dp[i], dp[i ^ (1 << j)]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1] == INT_MAX ? -1 : dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.size();
+        int m = n / k;
+        vector<int> dp(1 << n, INT_MAX / 2);
+        dp[0] = 0;
+        for (int mask = 1; mask < (1 << n); mask++) {
+            vector<int> cnt(n + 1);
+            int maxNum = 0, minNum = n + 1;
+            for (int i = 0; i < n; i++) {
+                if (mask & (1 << i)) {
+                    cnt[nums[i]]++;
+                    maxNum = max(maxNum, nums[i]);
+                    minNum = min(minNum, nums[i]);
+                }
+            }
+            bool valid = true;
+            for (int i = 1; i <= n; i++) {
+                if (cnt[i] > 1) {
+                    valid = false;
+                    break;
+                }
+            }
+            if (!valid) {
+                continue;
+            }
+            for (int sub = mask; sub; sub = (sub - 1) & mask) {
+                if (__builtin_popcount(sub) == m) {
+                    dp[mask] = min(dp[mask], dp[mask ^ sub] + maxNum - minNum);
+                }
+            }
+        }
+        int ans = dp[(1 << n) - 1];
+        return ans >= INT_MAX / 2 ? -1 : ans;
+
+=======
+
+        int n = nums.size();
+        int m = n / k;
+        int all = 1 << n;
+        vector<int> dp(all, -1);
+        dp[0] = 0;
+        for (int i = 0; i < all; i++) {
+            if (dp[i] == -1) continue;
+            vector<int> cnt(n + 1);
+            int maxv = 0, minv = n + 1;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    cnt[nums[j]]++;
+                    maxv = max(maxv, nums[j]);
+                    minv = min(minv, nums[j]);
+                }
+            }
+            if (*max_element(cnt.begin(), cnt.end()) > m) continue;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] = max(dp[i | (1 << j)], dp[i] + (cnt[nums[j]] == 0 ? maxv - minv : 0));
+                }
+            }
+        }
+        return dp[all - 1];
+
+=======
+
+        int n = nums.size();
+        int m = n/k;
+        sort(nums.begin(), nums.end());
+        vector<int> dp(1<<n, 1e9);
+        dp[0] = 0;
+        for(int i=0; i<(1<<n); i++){
+            int cnt = 0, x = i;
+            while(x){
+                cnt += x&1;
+                x >>= 1;
+            }
+            if(cnt%m != 0) continue;
+            int l = 0, r = 0;
+            while(l < n){
+                while(r < n && (i&(1<<r)) == 0) r++;
+                if(r == n) break;
+                int tmp = i;
+                for(int j=l; j<r; j++) tmp ^= (1<<j);
+                dp[i] = min(dp[i], dp[tmp]);
+                l = r;
+            }
+            if(dp[i] == 1e9) continue;
+            bool flag = true;
+            for(int j=0; j<n; j++){
+                if((i&(1<<j)) && (j>0 && (i&(1<<(j-1))) && nums[j-1] == nums[j])){
+                    flag = false;
+                    break;
+                }
+            }
+            if(!flag) continue;
+            int cur = 0;
+            for(int j=0; j<m; j++){
+                cur += nums[i*__builtin_popcount(i) + j] - nums[i*__builtin_popcount(i)];
+            }
+            dp[i] += cur;
+        }
+        return dp[(1<<n)-1] == 1e9 ? -1 : dp[(1<<n)-1];

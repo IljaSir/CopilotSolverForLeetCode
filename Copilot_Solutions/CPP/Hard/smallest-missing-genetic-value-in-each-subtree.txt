@@ -1,0 +1,66 @@
+Synthesizing 3/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; i++) {
+            children[parents[i]].push_back(i);
+        }
+        vector<int> ans(n);
+        vector<int> seen(n+1);
+        function<void(int)> dfs = [&](int u) {
+            seen[nums[u]] = 1;
+            for (int v : children[u]) {
+                dfs(v);
+            }
+            for (int v = 1; v <= n; v++) {
+                if (seen[v] == 0) {
+                    ans[u] = v;
+                    break;
+                }
+            }
+            seen[nums[u]] = 0;
+        };
+        dfs(0);
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> ans(n, 1);
+        vector<vector<int>> g(n);
+        for (int i = 1; i < n; ++i) {
+            g[parents[i]].push_back(i);
+        }
+        vector<int> sub(n);
+        function<void(int)> dfs = [&](int u) {
+            sub[u] = 1;
+            for (int v : g[u]) {
+                dfs(v);
+                sub[u] += sub[v];
+            }
+        };
+        dfs(0);
+        vector<int> cnt(n + 1);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[nums[i]];
+        }
+        function<void(int)> solve = [&](int u) {
+            for (int v : g[u]) {
+                solve(v);
+                if (sub[v] > sub[u]) {
+                    swap(sub[v], sub[u]);
+                }
+            }
+            for (int v : g[u]) {
+                for (int i = 1; i <= n; ++i) {
+                    if (cnt[i] == sub[v]) {
+                        ans[u] = i;
+                    }
+                }
+            }
+            --cnt[nums[u]];
+        };
+        solve(0);
+        return ans;

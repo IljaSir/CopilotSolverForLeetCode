@@ -1,0 +1,167 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut last_index = vec![-1; 26];
+        for (i, c) in s.chars().enumerate() {
+            let idx = c as usize - 'a' as usize;
+            if last_index[idx] != -1 && i as i32 - last_index[idx] - 1 != distance[idx] {
+                return false;
+            }
+            last_index[idx] = i as i32;
+        }
+        true
+
+=======
+
+        let mut last_pos = [None; 26];
+        for (i, c) in s.chars().enumerate() {
+            let idx = c as usize - 'a' as usize;
+            if let Some(last) = last_pos[idx] {
+                if i as i32 - last - 1 != distance[idx] {
+                    return false;
+                }
+            }
+            last_pos[idx] = Some(i as i32);
+        }
+        true
+
+=======
+
+        let mut last = vec![None; 26];
+        for (i, c) in s.chars().enumerate() {
+            let c = c as usize - 'a' as usize;
+            if let Some(last) = last[c] {
+                if (i - last) as i32 != distance[c] {
+                    return false;
+                }
+            }
+            last[c] = Some(i);
+        }
+        true
+
+=======
+
+        let mut last = s.chars().nth(0).unwrap() as i32 - 'a' as i32;
+        let mut last_index = 0;
+        for (i, c) in s.chars().enumerate() {
+            let index = c as i32 - 'a' as i32;
+            if last == index {
+                if i - last_index - 1 < distance[index as usize] {
+                    return false;
+                }
+                last_index = i;
+            }
+            last = index;
+        }
+        true
+    }
+}
+
+=======
+
+        let mut last = vec![0; 26];
+        let mut i = 0;
+        for c in s.chars() {
+            i += 1;
+            let d = distance[c as usize - 'a' as usize];
+            if d == 0 { continue; }
+            if i - last[c as usize - 'a' as usize] != d as usize + 1 {
+                return false;
+            }
+            last[c as usize - 'a' as usize] = i;
+        }
+        true
+
+=======
+
+        let mut last = [0; 26];
+        for (i, c) in s.chars().enumerate() {
+            let c = c as usize - 'a' as usize;
+            let diff = i - last[c];
+            if distance[c] != 0 && diff != distance[c] as usize {
+                return false;
+            }
+            last[c] = i;
+        }
+        true
+
+=======
+
+        let mut last = [0;26];
+        let mut first = true;
+        for (i,c) in s.chars().enumerate() {
+            let d = c as usize - 'a' as usize;
+            if first {
+                first = false;
+            } else {
+                if (i as i32 - last[d]) as i32 != distance[d] {
+                    return false;
+                }
+            }
+            last[d] = i as i32;
+        }
+        true
+
+=======
+
+        let mut dist = distance;
+        let mut chrs = s.chars().collect::<Vec<char>>();
+        let mut i = 0;
+        while i < chrs.len() {
+            if chrs[i] == chrs[i + 1] {
+                if dist[chrs[i] as usize - 97] == 0 {
+                    return false;
+                }
+                dist[chrs[i] as usize - 97] -= 1;
+                chrs.remove(i);
+                chrs.remove(i);
+                i = 0;
+            } else {
+                i += 1;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut pos = vec![0; 26];
+        let mut diff = vec![0; 26];
+        let mut last = 0;
+        for (i, c) in s.chars().enumerate() {
+            let idx = (c as u8 - 'a' as u8) as usize;
+            diff[idx] = i - pos[idx];
+            pos[idx] = i;
+            last = i;
+        }
+        for i in 0..26 {
+            diff[i] = last - pos[i] + diff[i];
+        }
+        for i in 0..26 {
+            if distance[i] != 0 && distance[i] != diff[i] {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut prev = 0;
+        let mut cur = 0;
+        let mut char_set = vec![false; 26];
+        for ch in s.chars() {
+            let index = (ch as u8 - b'a') as usize;
+            if char_set[index] {
+                cur = index;
+                if distance[cur] < (index - prev) as i32 {
+                    return false;
+                }
+                prev = index;
+            }
+            char_set[index] = true;
+        }
+        true

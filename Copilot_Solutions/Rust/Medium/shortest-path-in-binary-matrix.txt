@@ -1,0 +1,365 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n - 1][n - 1] == 1 {
+            return -1;
+        }
+        if n == 1 {
+            return 1;
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, 0));
+        let mut visited = vec![vec![false; n]; n];
+        visited[0][0] = true;
+        let mut step = 1;
+        while !queue.is_empty() {
+            let size = queue.len();
+            for _ in 0..size {
+                let (x, y) = queue.pop_front().unwrap();
+                for i in x.saturating_sub(1)..=x + 1 {
+                    for j in y.saturating_sub(1)..=y + 1 {
+                        if i == x && j == y {
+                            continue;
+                        }
+                        if i == n - 1 && j == n - 1 {
+                            return step + 1;
+                        }
+                        if i < n && j < n && grid[i][j] == 0 && !visited[i][j] {
+                            queue.push_back((i, j));
+                            visited[i][j] = true;
+                        }
+                    }
+                }
+            }
+            step += 1;
+        }
+        return -1;
+    }
+}
+
+=======
+
+        use std::collections::VecDeque;
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n-1][n-1] == 1 {
+            return -1;
+        }
+        let mut q = VecDeque::new();
+        q.push_back((0, 0, 1));
+        while !q.is_empty() {
+            let (x, y, d) = q.pop_front().unwrap();
+            if x == n-1 && y == n-1 {
+                return d as i32;
+            }
+            for i in -1..=1 {
+                for j in -1..=1 {
+                    if i == 0 && j == 0 {
+                        continue;
+                    }
+                    let (nx, ny) = (x as i32 + i, y as i32 + j);
+                    if nx >= 0 && nx < n as i32 && ny >= 0 && ny < n as i32 && grid[nx as usize][ny as usize] == 0 {
+                        q.push_back((nx as usize, ny as usize, d+1));
+                        grid[nx as usize][ny as usize] = 1;
+                    }
+                }
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n - 1][n - 1] == 1 {
+            return -1;
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, 0, 1));
+        while !queue.is_empty() {
+            let (x, y, step) = queue.pop_front().unwrap();
+            if x == n - 1 && y == n - 1 {
+                return step;
+            }
+            for i in x.saturating_sub(1)..=x + 1 {
+                for j in y.saturating_sub(1)..=y + 1 {
+                    if i < n && j < n && grid[i][j] == 0 {
+                        grid[i][j] = 1;
+                        queue.push_back((i, j, step + 1));
+                    }
+                }
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n-1][n-1] == 1 {
+            return -1;
+        }
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = vec![vec![false; n]; n];
+        q.push_back((0, 0));
+        visited[0][0] = true;
+        let mut step = 1;
+        while !q.is_empty() {
+            let size = q.len();
+            for _ in 0..size {
+                let (x, y) = q.pop_front().unwrap();
+                if x == n-1 && y == n-1 {
+                    return step;
+                }
+                for i in x.saturating_sub(1)..=x+1 {
+                    for j in y.saturating_sub(1)..=y+1 {
+                        if i == x && j == y {
+                            continue;
+                        }
+                        if i < n && j < n && !visited[i][j] && grid[i][j] == 0 {
+                            visited[i][j] = true;
+                            q.push_back((i, j));
+                        }
+                    }
+                }
+            }
+            step += 1;
+        }
+        -1
+
+=======
+
+        use std::collections::VecDeque;
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n-1][n-1] == 1 { return -1; }
+        let mut q = VecDeque::new();
+        q.push_back((0, 0));
+        let mut visited = vec![vec![false; n]; n];
+        visited[0][0] = true;
+        let mut dist = 1;
+        while !q.is_empty() {
+            let mut next_q = VecDeque::new();
+            while let Some((x, y)) = q.pop_front() {
+                if x == n - 1 && y == n - 1 {
+                    return dist;
+                }
+                for dx in -1..=1 {
+                    for dy in -1..=1 {
+                        if dx == 0 && dy == 0 { continue; }
+                        let nx = x as i32 + dx;
+                        let ny = y as i32 + dy;
+                        if nx < 0 || nx >= n as i32 || ny < 0 || ny >= n as i32 { continue; }
+                        let nx = nx as usize;
+                        let ny = ny as usize;
+                        if visited[nx][ny] || grid[nx][ny] == 1 { continue; }
+                        visited[nx][ny] = true;
+                        next_q.push_back((nx, ny));
+                    }
+                }
+            }
+            q = next_q;
+            dist += 1;
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n-1][n-1] == 1 {
+            return -1;
+        }
+        let mut queue = std::collections::VecDeque::new();
+        let mut visited = vec![vec![false; n]; n];
+        queue.push_back((0, 0));
+        visited[0][0] = true;
+        let mut step = 1;
+        while !queue.is_empty() {
+            let len = queue.len();
+            for _ in 0..len {
+                let (x, y) = queue.pop_front().unwrap();
+                if x == n - 1 && y == n - 1 {
+                    return step;
+                }
+                for i in -1..=1 {
+                    for j in -1..=1 {
+                        if i == 0 && j == 0 {
+                            continue;
+                        }
+                        let nx = x as i32 + i;
+                        let ny = y as i32 + j;
+                        if nx < 0 || nx >= n as i32 || ny < 0 || ny >= n as i32 {
+                            continue;
+                        }
+                        let nx = nx as usize;
+                        let ny = ny as usize;
+                        if grid[nx][ny] == 1 || visited[nx][ny] {
+                            continue;
+                        }
+                        queue.push_back((nx, ny));
+                        visited[nx][ny] = true;
+                    }
+                }
+            }
+            step += 1;
+        }
+        -1
+
+=======
+
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n-1][n-1] == 1 {
+            return -1;
+        }
+        let mut queue = Vec::new();
+        let mut visited = vec![vec![false; n]; n];
+        queue.push((0, 0));
+        visited[0][0] = true;
+        let mut step = 1;
+        while !queue.is_empty() {
+            let mut new_queue = Vec::new();
+            for (i, j) in queue {
+                if i == n-1 && j == n-1 {
+                    return step;
+                }
+                for (di, dj) in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)].iter() {
+                    let (ni, nj) = (i as i32 + di, j as i32 + dj);
+                    if ni >= 0 && nj >= 0 && ni < n as i32 && nj < n as i32 {
+                        let (ni, nj) = (ni as usize, nj as usize);
+                        if !visited[ni][nj] && grid[ni][nj] == 0 {
+                            visited[ni][nj] = true;
+                            new_queue.push((ni, nj));
+                        }
+                    }
+                }
+            }
+            step += 1;
+            queue = new_queue;
+        }
+        -1
+
+=======
+
+        // BFS
+        let mut grid = grid;
+        let n = grid.len();
+        if grid[0][0] == 1 || grid[n - 1][n - 1] == 1 {
+            return -1;
+        }
+        if n == 1 {
+            return 1;
+        }
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        grid[0][0] = 1;
+        let mut step = 1;
+        while !queue.is_empty() {
+            let mut next = Vec::new();
+            for (i, j) in queue {
+                for (x, y) in vec![(i - 1, j), (i, j - 1), (i + 1, j), (i, j + 1), (i - 1, j - 1), (i + 1, j + 1), (i - 1, j + 1), (i + 1, j - 1)] {
+                    if x < n && y < n && x >= 0 && y >= 0 && grid[x][y] == 0 {
+                        if x == n - 1 && y == n - 1 {
+                            return step + 1;
+                        }
+                        next.push((x, y));
+                        grid[x][y] = 1;
+                    }
+                }
+            }
+            queue = next;
+            step += 1;
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = grid.len();
+        let mut grid = grid;
+        let mut queue = Vec::new();
+        queue.push((0, 0, 1));
+        while !queue.is_empty() {
+            let (x, y, d) = queue.remove(0);
+            if x == n - 1 && y == n - 1 {
+                return d as i32;
+            }
+            let dirs = vec![
+                (0, 1), (0, -1), (1, 0), (-1, 0),
+                (1, 1), (1, -1), (-1, 1), (-1, -1),
+            ];
+            for (dx, dy) in dirs {
+                let nx = x as i32 + dx;
+                let ny = y as i32 + dy;
+                if nx >= 0 && nx < n as i32 && ny >= 0 && ny < n as i32 && grid[nx as usize][ny as usize] == 0 {
+                    queue.push((nx as usize, ny as usize, d + 1));
+                    grid[nx as usize][ny as usize] = 1;
+                }
+            }
+        }
+        -1
+
+=======
+
+        let mut queue: Vec<(usize, usize)> = Vec::new();
+        let mut visited: Vec<Vec<bool>> = Vec::new();
+        let mut step = 0;
+        let n = grid.len();
+        for i in 0..n {
+            let mut line: Vec<bool> = Vec::new();
+            for j in 0..n {
+                line.push(false);
+            }
+            visited.push(line);
+        }
+        queue.push((0, 0));
+        visited[0][0] = true;
+        while queue.len() > 0 {
+            step += 1;
+            let mut new_queue: Vec<(usize, usize)> = Vec::new();
+            for (i, j) in queue {
+                if i == n - 1 && j == n - 1 {
+                    return step;
+                }
+                for (x, y) in Self::get_next((i, j), n) {
+                    if !visited[x][y] && grid[x][y] == 0 {
+                        visited[x][y] = true;
+                        new_queue.push((x, y));
+                    }
+                }
+            }
+            queue = new_queue;
+        }
+        -1
+    }
+    fn get_next((i, j): (usize, usize), n: usize) -> Vec<(usize, usize)> {
+        let mut res: Vec<(usize, usize)> = Vec::new();
+        if i > 0 {
+            res.push((i - 1, j));
+        }
+        if j > 0 {
+            res.push((i, j - 1));
+        }
+        if i > 0 && j > 0 {
+            res.push((i - 1, j - 1));
+        }
+        if i < n - 1 {
+            res.push((i + 1, j));
+        }
+        if j < n - 1 {
+            res.push((i, j + 1));
+        }
+        if i < n - 1 && j < n - 1 {
+            res.push((i + 1, j + 1));
+        }
+        if i > 0 && j < n - 1 {
+            res.push((i - 1, j + 1));
+        }
+        if i < n - 1 && j > 0 {
+            res.push((i + 1, j - 1));
+        }
+        res

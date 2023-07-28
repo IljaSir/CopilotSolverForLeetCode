@@ -1,0 +1,410 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = board.size();
+        int m = board[0].size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    if (check(board, i, j, word, 0, 1)) return true;
+                    if (check(board, i, j, word, 1, 0)) return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    bool check(vector<vector<char>>& board, int i, int j, string& word, int x, int y) {
+        int n = board.size();
+        int m = board[0].size();
+        int k = 0;
+        while (k < word.size() && i >= 0 && i < n && j >= 0 && j < m && (board[i][j] == ' ' || board[i][j] == word[k])) {
+            i += x;
+            j += y;
+            k++;
+        }
+        if (k == word.size() && (i < 0 || i >= n || j < 0 || j >= m || board[i][j] == '#')) return true;
+        return false;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(board[i][j] == ' ' || board[i][j] == word[0]) {
+                    if(j == 0 || board[i][j - 1] == '#') {
+                        int k = 0;
+                        while(j + k < n && board[i][j + k] != '#') {
+                            if(board[i][j + k] == word[k]) {
+                                k++;
+                                if(k == word.size()) {
+                                    return true;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if(j == n - 1 || board[i][j + 1] == '#') {
+                        int k = 0;
+                        while(j - k >= 0 && board[i][j - k] != '#') {
+                            if(board[i][j - k] == word[k]) {
+                                k++;
+                                if(k == word.size()) {
+                                    return true;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if(i == 0 || board[i - 1][j] == '#') {
+                        int k = 0;
+                        while(i + k < m && board[i + k][j] != '#') {
+                            if(board[i + k][j] == word[k]) {
+                                k++;
+                                if(k == word.size()) {
+                                    return true;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if(i == m - 1 || board[i + 1][j] == '#') {
+                        int k = 0;
+                        while(i - k >= 0 && board[i - k][j] != '#') {
+                            if(board[i - k][j] == word[k]) {
+                                k++;
+                                if(k == word.size()) {
+                                    return true;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int m = board.size(), n = board[0].size();
+        int len = word.size();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    if (j + len <= n && (j == 0 || board[i][j - 1] == '#')) {
+                        int k = 0;
+                        for (; k < len; k++) {
+                            if (board[i][j + k] != ' ' && board[i][j + k] != word[k])
+                                break;
+                        }
+                        if (k == len && (j + len == n || board[i][j + len] == '#'))
+                            return true;
+                    }
+                    if (j - len >= -1 && (j == n - 1 || board[i][j + 1] == '#')) {
+                        int k = 0;
+                        for (; k < len; k++) {
+                            if (board[i][j - k] != ' ' && board[i][j - k] != word[k])
+                                break;
+                        }
+                        if (k == len && (j - len == -1 || board[i][j - len] == '#'))
+                            return true;
+                    }
+                    if (i + len <= m && (i == 0 || board[i - 1][j] == '#')) {
+                        int k = 0;
+                        for (; k < len; k++) {
+                            if (board[i + k][j] != ' ' && board[i + k][j] != word[k])
+                                break;
+                        }
+                        if (k == len && (i + len == m || board[i + len][j] == '#'))
+                            return true;
+                    }
+                    if (i - len >= -1 && (i == m - 1 || board[i + 1][j] == '#')) {
+                        int k = 0;
+                        for (; k < len; k++) {
+                            if (board[i - k][j] != ' ' && board[i - k][j] != word[k])
+                                break;
+                        }
+                        if (k == len && (i - len == -1 || board[i - len][j] == '#'))
+                            return true;
+
+=======
+
+        int m = board.size(), n = board[0].size();
+        int len = word.length();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] != ' ' && board[i][j] != word[0]) continue;
+                if (j + len <= n && check(board, i, j, 0, 1, word)) return true;
+                if (j - len >= -1 && check(board, i, j, 0, -1, word)) return true;
+                if (i + len <= m && check(board, i, j, 1, 0, word)) return true;
+                if (i - len >= -1 && check(board, i, j, -1, 0, word)) return true;
+            }
+        }
+        return false;
+    }
+    bool check(vector<vector<char>>& board, int i, int j, int di, int dj, string& word) {
+        int m = board.size(), n = board[0].size();
+        int len = word.length();
+        for (int k = 0; k < len; k++) {
+            if (i < 0 || i >= m || j < 0 || j >= n || board[i][j] != ' ' && board[i][j] != word[k]) return false;
+            i += di;
+            j += dj;
+        }
+        if (i < 0 || i >= m || j < 0 || j >= n || board[i][j] != ' ') return false;
+        return true;
+
+=======
+
+        int R = board.size(), C = board[0].size();
+        for (int i = 0; i < R; ++i) {
+            for (int j = 0; j < C; ++j) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    if (j == 0 || board[i][j - 1] == '#') {
+                        int k = 0;
+                        for (; k < word.size() && j + k < C; ++k) {
+                            if (board[i][j + k] != ' ' && board[i][j + k] != word[k]) {
+                                break;
+                            }
+                        }
+                        if (k == word.size() && (j + k == C || board[i][j + k] == '#')) {
+                            return true;
+                        }
+                    }
+                    if (i == 0 || board[i - 1][j] == '#') {
+                        int k = 0;
+                        for (; k < word.size() && i + k < R; ++k) {
+                            if (board[i + k][j] != ' ' && board[i + k][j] != word[k]) {
+                                break;
+                            }
+                        }
+                        if (k == word.size() && (i + k == R || board[i + k][j] == '#')) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        vector<vector<char>> board2(n, vector<char>(m));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board2[j][i] = board[i][j];
+            }
+        }
+        return check(board, word) || check(board2, word);
+    }
+    bool check(vector<vector<char>>& board, string word) {
+        int m = board.size();
+        int n = board[0].size();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n - word.length() + 1; j++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    int k = 0;
+                    for (; k < word.length(); k++) {
+                        if (board[i][j + k] == '#' || (board[i][j + k] != ' ' && board[i][j + k] != word[k])) {
+                            break;
+                        }
+                    }
+                    if (k == word.length() && (j + k == n || board[i][j + k] == '#')) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int m = board.size(), n = board[0].size();
+        int len = word.size();
+        // check horizontal
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n - len + 1; j++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    int k = 1;
+                    for (k = 1; k < len; k++) {
+                        if (board[i][j + k] != ' ' && board[i][j + k] != word[k]) break;
+                    }
+                    if (k == len && (j + len == n || board[i][j + len] == '#')) return true;
+                }
+                if (board[i][j + len - 1] == ' ' || board[i][j + len - 1] == word[len - 1]) {
+                    int k = 1;
+                    for (k = 1; k < len; k++) {
+                        if (board[i][j + len - 1 - k] != ' ' && board[i][j + len - 1 - k] != word[k]) break;
+                    }
+                    if (k == len && (j == 0 || board[i][j - 1] == '#')) return true;
+                }
+            }
+        }
+        // check vertical
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m - len + 1; i++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    int k = 1;
+                    for (k = 1; k < len; k++) {
+                        if (board[i + k][j] != ' ' && board[i + k][j] != word[k]) break;
+                    }
+                    if (k == len && (i + len == m || board[i + len][j] == '#')) return true;
+                }
+                if (board[i + len - 1][j] == ' ' || board[i + len - 1][j] == word[len - 1]) {
+                    int k = 1;
+                    for (k = 1; k < len; k++) {
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int len = word.length();
+        vector<vector<int>> row(m, vector<int>(n, 0));
+        vector<vector<int>> col(n, vector<int>(m, 0));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (board[i][j] == '#') {
+                    row[i][j] = 0;
+                } else {
+                    row[i][j] = (j == 0 ? 0 : row[i][j-1]) + 1;
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (board[j][i] == '#') {
+                    col[i][j] = 0;
+                } else {
+                    col[i][j] = (j == 0 ? 0 : col[i][j-1]) + 1;
+                }
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (row[i][j] >= len) {
+                    bool flag = true;
+                    for (int k = 0; k < len; ++k) {
+                        if (board[i][j-k] != ' ' && board[i][j-k] != word[k]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        return true;
+                    }
+                }
+                if (col[j][i] >= len) {
+                    bool flag = true;
+                    for (int k = 0; k < len; ++k) {
+                        if (board[i-k][j] != ' ' && board[i-k][j] != word[k]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int n = board.size();
+        int m = board[0].size();
+        int len = word.size();
+        if (len > m && len > n) return false;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (board[i][j] == ' ' || board[i][j] == word[0]) {
+                    if (check(board, word, i, j, 1, 0) || check(board, word, i, j, 0, 1)) return true;
+                }
+            }
+        }
+        return false;
+    }
+    bool check(vector<vector<char>>& board, string word, int x, int y, int dx, int dy) {
+        int len = word.size();
+        int n = board.size();
+        int m = board[0].size();
+        for (int i = 0; i < len; i++) {
+            if (x < 0 || x >= n || y < 0 || y >= m || (board[x][y] != ' ' && board[x][y] != word[i])) return false;
+            x += dx;
+            y += dy;
+        }
+        return true;
+
+=======
+
+        int m = board.size(), n = board[0].size();
+        int i, j, k, l, len;
+        // check horizontal
+        for (i = 0; i < m; i++) {
+            for (j = 0; j < n; j++) {
+                if (board[i][j] != ' ' && board[i][j] != word[0]) {
+                    continue;
+                }
+                len = 0;
+                for (k = j; k < n; k++) {
+                    if (board[i][k] == '#') {
+                        break;
+                    }
+                    len++;
+                }
+                if (len < word.size()) {
+                    continue;
+                }
+                for (l = 0; l < word.size(); l++) {
+                    if (board[i][j + l] != ' ' && board[i][j + l] != word[l]) {
+                        break;
+                    }
+                }
+                if (l == word.size()) {
+                    if (j > 0 && board[i][j - 1] != '#') {
+                        continue;
+                    }
+                    if (j + word.size() < n && board[i][j + word.size()] != '#') {
+                        continue;
+                    }
+                    return true;
+                }
+            }
+        }
+        // check vertical
+        for (j = 0; j < n; j++) {
+            for (i = 0; i < m; i++) {
+                if (board[i][j] != ' ' && board[i][j] != word[0]) {
+                    continue;
+                }
+                len = 0;
+                for (k = i; k < m; k++) {
+                    if (board[k][j] == '#') {
+                        break;
+                    }
+                    len++;
+                }
+                if (len < word.size()) {
+                    continue;
+                }
+                for (l = 0; l < word.size(); l++) {
+                    if (board[i + l][j] != ' ' && board[i + l][j] != word[l]) {
+                        break;
+                    }
+                }
+                if (l == word.size()) {
+                    if (i > 0 && board[i - 1][j] != '#') {
+                        continue;
+                    }
+                    if (i + word.size() < m && board[i + word.size()][j] != '#') {
+                        continue;
+                    }
+                    return

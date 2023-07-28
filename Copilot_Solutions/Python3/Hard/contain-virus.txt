@@ -1,0 +1,104 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def containVirus(self, isInfected: List[List[int]]) -> int:
+        m, n = len(isInfected), len(isInfected[0])
+        def get_neighbors(i, j):
+            for x, y in ((i-1, j), (i+1, j), (i, j-1), (i, j+1)):
+                if 0 <= x < m and 0 <= y < n:
+                    yield x, y
+        def bfs(i, j):
+            q = [(i, j)]
+            virus = set()
+            empty = set()
+            while q:
+                i, j = q.pop()
+                if (i, j) in virus:
+                    continue
+                virus.add((i, j))
+                for x, y in get_neighbors(i, j):
+                    if isInfected[x][y] == 1:
+                        q.append((x, y))
+                    elif isInfected[x][y] == 0:
+                        empty.add((x, y))
+            return virus, empty
+        def get_contagion(virus):
+            return sum(1 for i, j in virus if isInfected[i][j] == 0)
+        def get_walls(virus):
+            return sum(1 for i, j in virus if isInfected[i][j] == 1)
+        def infect(virus):
+            for i, j in virus:
+                isInfected[i][j] = 1
+        ans = 0
+        while True:
+            max_contagion = 0
+            max_virus = None
+            max_walls = 0
+            for i in range(m):
+                for j in range(n):
+                    if isInfected[i][j] == 1:
+                        virus, empty = bfs(i, j)
+                        contagion = get_contagion(virus)
+                        walls = get_walls(virus)
+                        if contagion > max_contagion:
+                            max_contagion = contagion
+                            max_virus = virus
+                            max_walls = walls
+                        elif contagion == max_contagion and walls > max_walls:
+                            max_virus = virus
+                            max_walls = walls
+            if max_virus is None:
+                break
+            ans += max_walls
+            infect(max_virus)
+        return ans
+
+=======
+
+def containVirus(self, isInfected: List[List[int]]) -> int:
+        
+        pass
+
+=======
+
+        m, n = len(isInfected), len(isInfected[0])
+        def dfs(x, y, visited):
+            visited.add((x, y))
+            for dx, dy in ((-1, 0), (0, 1), (1, 0), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and (nx, ny) not in visited and isInfected[nx][ny] == 1:
+                    dfs(nx, ny, visited)
+        def bfs(x, y, visited):
+            q = collections.deque([(x, y)])
+            while q:
+                x, y = q.popleft()
+                for dx, dy in ((-1, 0), (0, 1), (1, 0), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < m and 0 <= ny < n and (nx, ny) not in visited and isInfected[nx][ny] == 1:
+                        visited.add((nx, ny))
+                        q.append((nx, ny))
+        def count(x, y, visited):
+            q = collections.deque([(x, y)])
+            res = 0
+            while q:
+                x, y = q.popleft()
+                for dx, dy in ((-1, 0), (0, 1), (1, 0), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < m and 0 <= ny < n and (nx, ny) not in visited and isInfected[nx][ny] == 0:
+                        visited.add((nx, ny))
+                        res += 1
+                        q.append((nx, ny))
+            return res
+        res = 0
+        while True:
+            visited = set()
+            max_cnt = 0
+            max_x, max_y = -1, -1
+            max_visited = set()
+            for x in range(m):
+                for y in range(n):
+                    if isInfected[x][y] == 1 and (x, y) not in visited:
+                        visited.add((x, y))
+                        cnt = count(x, y, visited)
+                        if cnt > max

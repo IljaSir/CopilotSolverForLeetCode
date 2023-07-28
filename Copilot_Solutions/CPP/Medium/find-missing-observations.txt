@@ -1,0 +1,175 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int target = mean * (m + n) - sum;
+        if (target < n || target > 6 * n) return {};
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            ans[i] = min(target - (n - i - 1), 6);
+            target -= ans[i];
+        }
+        return ans;
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int target = (m + n) * mean - sum;
+        if (target < n || target > 6 * n) {
+            return {};
+        }
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i) {
+            int x = min(6, target - n + i + 1);
+            ans[i] = x;
+            target -= x;
+        }
+        return ans;
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int s = mean * (m + n) - sum;
+        if (s < n || s > 6 * n) return {};
+        vector<int> res(n, 1);
+        s -= n;
+        for (int i = 0; i < n; ++i) {
+            int t = min(5, s);
+            res[i] += t;
+            s -= t;
+        }
+        return res;
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int total = mean * (m + n);
+        int missing = total - sum;
+        if (missing < n || missing > 6 * n) {
+            return {};
+        }
+        vector<int> result(n);
+        for (int i = 0; i < n; ++i) {
+            result[i] = missing / n;
+            missing -= result[i];
+            --n;
+        }
+        for (int i = 0; i < result.size(); ++i) {
+            if (result[i] == 0) {
+                result[i] = 1;
+                --missing;
+            }
+        }
+        for (int i = result.size() - 1; i >= 0 && missing > 0; --i) {
+            if (result[i] < 6) {
+                ++result[i];
+                --missing;
+            }
+        }
+        return result;
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int total = mean * (m + n);
+        int missing = total - sum;
+        if (missing < n || missing > 6 * n) return {};
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            ans[i] = 1;
+            missing -= 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (missing >= 5) {
+                ans[i] += 5;
+                missing -= 5;
+            } else {
+                ans[i] += missing;
+                missing = 0;
+            }
+        }
+        return ans;
+
+=======
+
+        int m = rolls.size();
+        int sum = accumulate(rolls.begin(), rolls.end(), 0);
+        int total = (m + n) * mean;
+        int missing = total - sum;
+        if (missing < n || missing > 6 * n) return {};
+        int avg = missing / n;
+        int rest = missing % n;
+        vector<int> res(n, avg);
+        for (int i = 0; i < rest; ++i) {
+            res[i] += 1;
+        }
+        return res;
+
+=======
+
+        int sum = 0;
+        for (int i = 0; i < rolls.size(); i++) {
+            sum += rolls[i];
+        }
+        int total = mean * (n + rolls.size());
+        int missing = total - sum;
+        if (missing < n || missing > 6 * n) {
+            return {};
+        }
+        int avg = missing / n;
+        int remainder = missing % n;
+        vector<int> ret;
+        for (int i = 0; i < n; i++) {
+            ret.push_back(avg + (i < remainder ? 1 : 0));
+        }
+        return ret;
+
+=======
+
+        int sum = 0;
+        for (int i = 0; i < rolls.size(); i++) {
+            sum += rolls[i];
+        }
+        int all = (sum + mean * (n + rolls.size())) / (n + rolls.size());
+        int missing = all * n - sum;
+        if (missing < n || missing > 6 * n) {
+            return {};
+        }
+        vector<int> res(n, all);
+        missing -= n;
+        for (int i = 0; i < n; i++) {
+            int add = min(5, missing);
+            res[i] += add;
+            missing -= add;
+        }
+        return res;
+
+=======
+
+        int total = 0;
+        int m = rolls.size();
+        for (auto roll : rolls) {
+            total += roll;
+        }
+        int missingTotal = (mean * (m + n)) - total;
+        if (missingTotal < n || missingTotal > 6 * n) {
+            return {};
+        }
+        vector<int> result;
+        int missingCount = n;
+        while (missingCount > 0) {
+            int missing = missingTotal / missingCount;
+            if (missing > 6) {
+                missing = 6;
+            }
+            result.push_back(missing);
+            missingTotal -= missing;
+            missingCount--;
+        }
+        return result;

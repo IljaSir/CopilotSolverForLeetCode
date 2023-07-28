@@ -1,0 +1,258 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int left = *max_element(weights.begin(), weights.end());
+        int right = accumulate(weights.begin(), weights.end(), 0);
+        while (left < right) {
+            int mid = (left + right) / 2;
+            int need = 1;
+            int cur = 0;
+            for (int weight : weights) {
+                if (cur + weight > mid) {
+                    ++need;
+                    cur = 0;
+                }
+                cur += weight;
+            }
+            if (need <= days) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+
+=======
+
+        int left = 0, right = 0;
+        for (int w : weights) {
+            left = max(left, w);
+            right += w;
+        }
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int need = 1, cur = 0;
+            for (int w : weights) {
+                if (cur + w > mid) {
+                    ++need;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            if (need <= days) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+
+=======
+
+        int l = *max_element(weights.begin(), weights.end());
+        int r = accumulate(weights.begin(), weights.end(), 0) + 1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            int need = 1;
+            int cur = 0;
+            for (int i = 0; i < weights.size() && need <= days; ++i) {
+                if (cur + weights[i] > mid) {
+                    ++need;
+                    cur = 0;
+                }
+                cur += weights[i];
+            }
+            if (need > days) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+
+=======
+
+        int lo = 0, hi = 0;
+        for (int w : weights) {
+            lo = max(lo, w);
+            hi += w;
+        }
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            int need = 1, cur = 0;
+            for (int w : weights) {
+                if (cur + w > mid) {
+                    need++;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            if (need <= days) hi = mid;
+            else lo = mid + 1;
+        }
+        return lo;
+
+=======
+
+        int l = 0, r = 0;
+        for (int w: weights) {
+            l = max(l, w);
+            r += w;
+        }
+        while (l < r) {
+            int mid = (l + r) / 2;
+            int need = 1, cur = 0;
+            for (int w: weights) {
+                if (cur + w > mid) {
+                    ++need;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            if (need <= days) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+
+=======
+
+        int l = 0, r = 0;
+        for (int w : weights) {
+            r += w;
+            l = max(l, w);
+        }
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            int d = 1, s = 0;
+            for (int w : weights) {
+                if (s + w > m) {
+                    d++;
+                    s = 0;
+                }
+                s += w;
+            }
+            if (d > days) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+
+=======
+
+        int max = 0;
+        int sum = 0;
+        for (int i = 0; i < weights.size(); i++) {
+            sum += weights[i];
+            if (max < weights[i])
+                max = weights[i];
+        }
+        int min = sum / days;
+        if (min < max)
+            min = max;
+        while (true) {
+            int d = 1;
+            int s = 0;
+            for (int i = 0; i < weights.size(); i++) {
+                s += weights[i];
+                if (s > min) {
+                    d++;
+                    s = weights[i];
+                }
+            }
+            if (d <= days)
+                return min;
+            min++;
+        }
+
+=======
+
+        int n = weights.size();
+        int maxWeight = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += weights[i];
+            maxWeight = max(maxWeight, weights[i]);
+        }
+        int left = maxWeight;
+        int right = sum;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            int need = 1;
+            int cur = 0;
+            for (int i = 0; i < n; i++) {
+                if (cur + weights[i] > mid) {
+                    need++;
+                    cur = 0;
+                }
+                cur += weights[i];
+            }
+            if (need <= days) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+
+=======
+
+        long sum = 0;
+        int max = 0;
+        for (int i = 0; i < weights.size(); i++) {
+            sum += weights[i];
+            max = std::max(max, weights[i]);
+        }
+        long l = max, r = sum;
+        while (l < r) {
+            long mid = l + (r - l) / 2;
+            if (canShip(weights, days, mid)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+    
+    bool canShip(vector<int>& weights, int days, int cap) {
+        int count = 1;
+        int sum = 0;
+        for (int i = 0; i < weights.size(); i++) {
+            sum += weights[i];
+            if (sum > cap) {
+                sum = weights[i];
+                count++;
+                if (count > days) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int left=0, right=0;
+        for (auto &w: weights) {
+            left = max(left, w);
+            right += w;
+        }
+        while (left < right) {
+            int mid = left + (right-left)/2;
+            int need = 1, cur = 0;
+            for (auto &w: weights) {
+                if (cur + w > mid) {
+                    need += 1;
+                    cur = 0;
+                }
+                cur += w;
+            }
+            if (need > days) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;

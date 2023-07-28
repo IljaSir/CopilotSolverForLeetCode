@@ -1,0 +1,293 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        String[] cells = s.split(":");
+        String[] cell1 = cells[0].split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        String[] cell2 = cells[1].split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        List<String> result = new ArrayList<>();
+        int c1 = cell1[0].charAt(0) - 'A' + 1;
+        int c2 = cell2[0].charAt(0) - 'A' + 1;
+        int r1 = Integer.parseInt(cell1[1]);
+        int r2 = Integer.parseInt(cell2[1]);
+        for (int i = c1; i <= c2; i++) {
+            for (int j = r1; j <= r2; j++) {
+                result.add((char) (i + 'A' - 1) + Integer.toString(j));
+            }
+        }
+        return result;
+
+=======
+
+        String[] cells = s.split(":");
+        String[] cell1 = cells[0].split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        String[] cell2 = cells[1].split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+        int col1 = cell1[0].chars().reduce(0, (a, b) -> a * 26 + b - 'A' + 1);
+        int col2 = cell2[0].chars().reduce(0, (a, b) -> a * 26 + b - 'A' + 1);
+        int row1 = Integer.parseInt(cell1[1]);
+        int row2 = Integer.parseInt(cell2[1]);
+        List<String> result = new ArrayList<>();
+        for (int i = row1; i <= row2; i++) {
+            for (int j = col1; j <= col2; j++) {
+                result.add(getColumn(j) + i);
+            }
+        }
+        return result;
+    }
+    private String getColumn(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n > 0) {
+            n--;
+            sb.append((char) ('A' + n % 26));
+            n /= 26;
+        }
+        return sb.reverse().toString();
+
+=======
+
+        String[] cells = s.split(":");
+        String c1 = cells[0].substring(0, cells[0].length() - 1);
+        String r1 = cells[0].substring(cells[0].length() - 1);
+        String c2 = cells[1].substring(0, cells[1].length() - 1);
+        String r2 = cells[1].substring(cells[1].length() - 1);
+        int c1i = c1.charAt(0) - 'A' + 1;
+        int r1i = Integer.parseInt(r1);
+        int c2i = c2.charAt(0) - 'A' + 1;
+        int r2i = Integer.parseInt(r2);
+        List<String> result = new ArrayList<>();
+        for (int i = r1i; i <= r2i; i++) {
+            for (int j = c1i; j <= c2i; j++) {
+                char c = (char)('A' + j - 1);
+                result.add("" + c + i);
+            }
+        }
+        return result;
+
+=======
+
+        String[] cells = s.split(":");
+        String cell1 = cells[0], cell2 = cells[1];
+        int r1 = Integer.parseInt(cell1.substring(1));
+        int r2 = Integer.parseInt(cell2.substring(1));
+        int c1 = cell1.charAt(0) - 'A' + 1;
+        int c2 = cell2.charAt(0) - 'A' + 1;
+        List<String> ans = new ArrayList<>();
+        for (int i = r1; i <= r2; i++) {
+            for (int j = c1; j <= c2; j++) {
+                ans.add("" + (char)('A' + j - 1) + i);
+            }
+        }
+        return ans;
+
+=======
+
+        String[] parts = s.split(":");
+        int[] start = parse(parts[0]);
+        int[] end = parse(parts[1]);
+        List<String> res = new ArrayList<>();
+        for (int i = start[0]; i <= end[0]; i++) {
+            for (int j = start[1]; j <= end[1]; j++) {
+                res.add(encode(i, j));
+            }
+        }
+        return res;
+    }
+    
+    int[] parse(String s) {
+        int[] res = new int[2];
+        int i = 0;
+        while (i < s.length() && Character.isLetter(s.charAt(i))) i++;
+        res[0] = Integer.parseInt(s.substring(i));
+        res[1] = decode(s.substring(0, i));
+        return res;
+    }
+    
+    String encode(int row, int col) {
+        return encode(col) + row;
+    }
+    
+    String encode(int col) {
+        StringBuilder sb = new StringBuilder();
+        while (col > 0) {
+            sb.append((char)('A' + (col - 1) % 26));
+            col = (col - 1) / 26;
+        }
+        return sb.reverse().toString();
+    }
+    
+    int decode(String s) {
+        int res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            res = res * 26 + (s.charAt(i) - 'A' + 1);
+        }
+        return res;
+
+=======
+
+        String[] parts = s.split(":");
+        String a = parts[0];
+        String b = parts[1];
+        int c1 = a.charAt(0) - 'A';
+        int r1 = Integer.parseInt(a.substring(1));
+        int c2 = b.charAt(0) - 'A';
+        int r2 = Integer.parseInt(b.substring(1));
+        List<String> res = new ArrayList<>();
+        for (int i = c1; i <= c2; i++) {
+            for (int j = r1; j <= r2; j++) {
+                res.add((char)('A' + i) + "" + j);
+            }
+        }
+        return res;
+
+=======
+
+        String[] cols = s.split(":");
+        int col1 = getCol(cols[0]);
+        int col2 = getCol(cols[1]);
+        int row1 = Integer.parseInt(cols[0].substring(1));
+        int row2 = Integer.parseInt(cols[1].substring(1));
+        List<String> ans = new ArrayList<>();
+        for (int i = col1; i <= col2; i++) {
+            for (int j = row1; j <= row2; j++) {
+                ans.add(getColName(i) + j);
+            }
+        }
+        return ans;
+    }
+    private String getColName(int col) {
+        StringBuilder sb = new StringBuilder();
+        while (col > 0) {
+            int c = (col - 1) % 26;
+            sb.append((char)('A' + c));
+            col = (col - 1) / 26;
+        }
+        return sb.reverse().toString();
+    }
+    private int getCol(String s) {
+        int ans = 0;
+        for (char c : s.toCharArray()) {
+            if (c >= 'A' && c <= 'Z') {
+                ans = ans * 26 + (c - 'A' + 1);
+            }
+        }
+        return ans;
+
+=======
+
+        int[] range = parse(s);
+        List<String> result = new ArrayList<>();
+        for (int i = range[0]; i <= range[1]; i++) {
+            for (int j = range[2]; j <= range[3]; j++) {
+                result.add(convert(i, j));
+            }
+        }
+        return result;
+    }
+    
+    private int[] parse(String s) {
+        int[] result = new int[4];
+        String[] parts = s.split(":");
+        int[] first = parseCell(parts[0]);
+        int[] second = parseCell(parts[1]);
+        result[0] = first[0];
+        result[1] = second[0];
+        result[2] = first[1];
+        result[3] = second[1];
+        return result;
+    }
+    
+    private int[] parseCell(String s) {
+        int[] result = new int[2];
+        int i = 0;
+        while (i < s.length() && Character.isAlphabetic(s.charAt(i))) {
+            i++;
+        }
+        result[0] = Integer.parseInt(s.substring(i));
+        result[1] = parseCol(s.substring(0, i));
+        return result;
+    }
+    
+    private int parseCol(String s) {
+        int result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            result = result * 26 + (s.charAt(i) - 'A' + 1);
+        }
+        return result;
+    }
+    
+    private String convert(int row, int col) {
+        String result = "";
+        while (col > 0) {
+            char c = (char) ((col - 1) % 26 + 'A');
+            result = c + result;
+            col = (col - 1) / 26;
+        }
+        result += row;
+        return result;
+
+=======
+
+        int i = 0;
+        int j = 0;
+        while (s.charAt(j) >= 'A' && s.charAt(j) <= 'Z') {
+            j++;
+        }
+        int c1 = getCol(s.substring(0, j));
+        int r1 = Integer.parseInt(s.substring(j, j + 1));
+        j++;
+        while (s.charAt(j) >= 'A' && s.charAt(j) <= 'Z') {
+            j++;
+        }
+        int c2 = getCol(s.substring(j - 1, j));
+        int r2 = Integer.parseInt(s.substring(j, j + 1));
+        List<String> list = new ArrayList<>();
+        for (int r = r1; r <= r2; r++) {
+            for (int c = c1; c <= c2; c++) {
+                list.add(getCol(c) + r);
+            }
+        }
+        return list;
+    }
+    
+    private int getCol(String s) {
+        int res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            res = res * 26 + (s.charAt(i) - 'A' + 1);
+        }
+        return res;
+    }
+    
+    private String getCol(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n > 0) {
+            n--;
+            sb.insert(0, (char) (n % 26 + 'A'));
+            n /= 26;
+        }
+        return sb.toString();
+
+=======
+
+        List<String> result = new ArrayList<>();
+        // Split the string into two parts
+        String[] parts = s.split(":");
+        // Get the first part
+        String first = parts[0];
+        // Get the second part
+        String second = parts[1];
+        // Get the row and col of the first part
+        int row1 = Integer.parseInt(first.substring(1));
+        int col1 = first.charAt(0) - 'A' + 1;
+        // Get the row and col of the second part
+        int row2 = Integer.parseInt(second.substring(1));
+        int col2 = second.charAt(0) - 'A' + 1;
+        // Iterate over the range and add each cell to the result
+        for (int i = row1; i <= row2; i++) {
+            for (int j = col1; j <= col2; j++) {
+                result.add(getCell(j, i));
+            }
+        }
+        // Sort the result
+        Collections.sort(result);
+        // Return the result
+        return result;

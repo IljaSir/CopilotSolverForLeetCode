@@ -1,0 +1,321 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back({e[1], e[2]});
+            graph[e[1]].push_back({e[0], e[2]});
+        }
+        priority_queue<pair<int, int>> pq;
+        pq.push({maxMoves, 0});
+        vector<int> dist(n, -1);
+        while (!pq.empty()) {
+            int d = pq.top().first, node = pq.top().second;
+            pq.pop();
+            if (dist[node] != -1) continue;
+            dist[node] = d;
+            for (auto& e : graph[node]) {
+                int v = e.first, w = e.second;
+                if (dist[v] == -1 && d > w) pq.push({d - w - 1, v});
+            }
+        }
+        int ans = 0;
+        for (int d : dist) if (d >= 0) ans++;
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            int du = dist[u], dv = dist[v];
+            if (du >= 0 && dv >= 0) {
+                ans += min(du + dv, w);
+            } else if (du >= 0 || dv >= 0) {
+                ans += min(du + dv + w, w);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back({edge[1], edge[2]});
+            graph[edge[1]].push_back({edge[0], edge[2]});
+        }
+        priority_queue<pair<int, int>> pq;
+        pq.push({maxMoves, 0});
+        vector<int> seen(n);
+        while (!pq.empty()) {
+            auto [moves, node] = pq.top();
+            pq.pop();
+            if (seen[node]) continue;
+            seen[node] = moves + 1;
+            for (auto [next, nextMoves] : graph[node]) {
+                if (seen[next] <= moves - nextMoves - 1) {
+                    pq.push({moves - nextMoves - 1, next});
+                }
+            }
+        }
+        int ans = accumulate(begin(seen), end(seen), 0);
+        for (auto& edge : edges) {
+            ans -= max(0, seen[edge[0]] + seen[edge[1]] - edge[2] - 1);
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto edge : edges) {
+            graph[edge[0]].push_back({edge[1], edge[2]});
+            graph[edge[1]].push_back({edge[0], edge[2]});
+        }
+        priority_queue<pair<int, int>> pq;
+        pq.push({maxMoves, 0});
+        unordered_set<int> visited;
+        int res = 0;
+        while (!pq.empty()) {
+            auto [moves, node] = pq.top();
+            pq.pop();
+            if (visited.count(node)) continue;
+            visited.insert(node);
+            res++;
+            for (auto [neighbor, edge] : graph[node]) {
+                int moves2 = moves - edge - 1;
+                if (moves2 >= 0 && !visited.count(neighbor)) {
+                    pq.push({moves2, neighbor});
+                }
+                res += min(moves, edge);
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e: edges) {
+            graph[e[0]].push_back({e[1], e[2] + 1});
+            graph[e[1]].push_back({e[0], e[2] + 1});
+        }
+        priority_queue<pair<int, int>> pq;
+        pq.push({maxMoves, 0});
+        vector<int> dist(n, -1);
+        while (!pq.empty()) {
+            auto [d, node] = pq.top();
+            pq.pop();
+            if (dist[node] != -1) continue;
+            dist[node] = d;
+            for (auto [nei, w]: graph[node]) {
+                if (dist[nei] == -1 && d >= w) {
+                    pq.push({d - w, nei});
+                }
+            }
+        }
+        int res = 0;
+        for (auto d: dist) {
+            if (d != -1) res++;
+        }
+        for (auto& e: edges) {
+            int a = dist[e[0]] >= 0 ? dist[e[0]] : 0;
+            int b = dist[e[1]] >= 0 ? dist[e[1]] : 0;
+            res += min(a + b, e[2]);
+        }
+        return res;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back({edge[1], edge[2] + 1});
+            graph[edge[1]].push_back({edge[0], edge[2] + 1});
+        }
+        priority_queue<pair<int, int>> pq;
+        vector<int> dist(n, INT_MAX);
+        dist[0] = 0;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto [d, node] = pq.top();
+            pq.pop();
+            if (d > dist[node]) {
+                continue;
+            }
+            for (auto [nei, w] : graph[node]) {
+                if (dist[node] + w < dist[nei]) {
+                    dist[nei] = dist[node] + w;
+                    pq.push({dist[nei], nei});
+                }
+            }
+        }
+        int res = 0;
+        for (int d : dist) {
+            if (d <= maxMoves) {
+                ++res;
+            }
+        }
+        for (auto& edge : edges) {
+            int d1 = dist[edge[0]] <= maxMoves ? dist[edge[0]] : 0;
+            int d2 = dist[edge[1]] <= maxMoves ? dist[edge[1]] : 0;
+            res += min(edge[2], d1 + d2);
+        }
+        return res;
+
+=======
+
+        vector<unordered_map<int, int>> graph(n);
+        for (auto &e : edges) {
+            graph[e[0]][e[1]] = e[2];
+            graph[e[1]][e[0]] = e[2];
+        }
+        priority_queue<pair<int, int>> pq;
+        pq.push({maxMoves, 0});
+        unordered_map<int, int> seen;
+        while (!pq.empty()) {
+            auto [moves, i] = pq.top(); pq.pop();
+            if (!seen.count(i)) {
+                seen[i] = moves;
+                for (auto &[j, cnt] : graph[i]) {
+                    int moves2 = moves - cnt - 1;
+                    if (!seen.count(j) && moves2 >= 0)
+                        pq.push({moves2, j});
+                }
+            }
+        }
+        int res = seen.size();
+        for (auto &e : edges) {
+            int a = seen.count(e[0]) ? seen[e[0]] : 0;
+            int b = seen.count(e[1]) ? seen[e[1]] : 0;
+            res += min(a + b, e[2]);
+        }
+        return res;
+
+=======
+
+        vector<vector<pair<int, int>>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back({e[1], e[2]});
+            adj[e[1]].push_back({e[0], e[2]});
+        }
+        priority_queue<pair<int, int>> pq;
+        vector<int> dist(n, INT_MAX);
+        pq.push({maxMoves, 0});
+        dist[0] = maxMoves;
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (d < dist[u]) continue;
+            for (auto [v, w] : adj[u]) {
+                int nd = d - w - 1;
+                if (nd >= 0 && nd < dist[v]) {
+                    dist[v] = nd;
+                    pq.push({nd, v});
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] != INT_MAX) ans++;
+        }
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            int du = dist[u] >= 0 ? dist[u] : 0;
+            int dv = dist[v] >= 0 ? dist[v] : 0;
+            ans += min(w, du + dv);
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, unordered_map<int, int>> graph;
+        for (vector<int>& edge : edges) {
+            graph[edge[0]][edge[1]] = edge[2];
+            graph[edge[1]][edge[0]] = edge[2];
+        }
+        unordered_map<int, int> seen;
+        seen[0] = maxMoves;
+        priority_queue<pair<int, int>> heap;
+        heap.push({maxMoves, 0});
+        while (!heap.empty()) {
+            int moves = heap.top().first, i = heap.top().second;
+            heap.pop();
+            if (seen[i] > moves) continue;
+            for (auto it : graph[i]) {
+                int j = it.first, moves2 = moves - it.second - 1;
+                if (!seen.count(j) && moves2 >= 0) {
+                    seen[j] = moves2;
+                    heap.push({moves2, j});
+                }
+            }
+        }
+        int ans = seen.size();
+        for (vector<int>& edge : edges) {
+            int i = edge[0], j = edge[1], cnt = edge[2];
+            int a = seen.count(i) ? seen[i] : 0;
+            int b = seen.count(j) ? seen[j] : 0;
+            ans += min(a + b, cnt);
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int,int>>> g(n);
+        for (auto &e: edges) {
+            g[e[0]].push_back({e[1], e[2]+1});
+            g[e[1]].push_back({e[0], e[2]+1});
+        }
+        priority_queue<pair<int,int>> q;
+        q.push({maxMoves, 0});
+        vector<int> dist(n, -1);
+        while (!q.empty()) {
+            auto [d, u] = q.top();
+            q.pop();
+            if (dist[u] > d) continue;
+            dist[u] = d;
+            for (auto [v, w]: g[u]) {
+                int nd = d - w;
+                if (nd < 0) continue;
+                if (dist[v] >= nd) continue;
+                q.push({nd, v});
+            }
+        }
+        int ans = 0;
+        for (int d: dist) ans += d >= 0;
+        for (auto &e: edges) {
+            int d1 = dist[e[0]], d2 = dist[e[1]];
+            if (d1 == -1 && d2 == -1) continue;
+            if (d1 == -1) d1 = 0;
+            if (d2 == -1) d2 = 0;
+            ans += min(d1+d2, e[2]);
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int,int>>> graph(n);
+        for(auto& e: edges) {
+            graph[e[0]].push_back({e[1], e[2]});
+            graph[e[1]].push_back({e[0], e[2]});
+        }
+        priority_queue<pair<int,int>> pq;
+        pq.push({maxMoves, 0});
+        vector<int> dist(n, -1);
+        while(!pq.empty()) {
+            int d = pq.top().first;
+            int u = pq.top().second;
+            pq.pop();
+            if(dist[u] != -1) continue;
+            dist[u] = d;
+            for(auto& p: graph[u]) {
+                int v = p.first;
+                int w = p.second;
+                if(dist[v] == -1 && d - w - 1 >= 0) {
+                    pq.push({d - w - 1, v});
+                }
+            }
+        }
+        int ans = 0;
+        for(int i = 0; i < n; ++i) ans += dist[i] >= 0;
+        for(auto& e: edges) {
+            int u = e[0];
+            int v = e[1];
+            int w = e[2];
+            int d1 = dist[u] == -1 ? 0 : dist[u];
+            int d2 = dist[v] == -1 ? 0 : dist[v];
+            ans += min(d1 + d2, w);
+        }
+        return ans;

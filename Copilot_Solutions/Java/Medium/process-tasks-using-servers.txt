@@ -1,0 +1,329 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = servers.length;
+        int m = tasks.length;
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> busy = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int i = 0; i < n; i++) {
+            free.add(new int[] {servers[i], i});
+        }
+        int[] ans = new int[m];
+        int time = 0;
+        for (int i = 0; i < m; i++) {
+            while (!busy.isEmpty() && busy.peek()[0] <= time) {
+                free.add(new int[] {busy.poll()[2], busy.peek()[1]});
+            }
+            if (free.isEmpty()) {
+                time = busy.peek()[0];
+                while (!busy.isEmpty() && busy.peek()[0] <= time) {
+                    free.add(new int[] {busy.poll()[2], busy.peek()[1]});
+                }
+            }
+            int[] cur = free.poll();
+            busy.add(new int[] {time + tasks[i], cur[1], cur[0]});
+            ans[i] = cur[1];
+            time = Math.max(time, i);
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[tasks.length];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        for (int i = 0; i < servers.length; i++) {
+            free.offer(new int[]{servers[i], i});
+        }
+        int j = 0;
+        int t = 0;
+        while (j < tasks.length) {
+            while (!pq.isEmpty() && pq.peek()[2] <= t) {
+                free.offer(pq.poll());
+            }
+            if (free.isEmpty()) {
+                t = pq.peek()[2];
+                continue;
+            }
+            while (j < tasks.length && j <= t) {
+                int[] server = free.poll();
+                ans[j] = server[1];
+                pq.offer(new int[]{server[0], server[1], t + tasks[j]});
+                j++;
+            }
+            t++;
+        }
+        return ans;
+
+=======
+
+        int n = servers.length;
+        int m = tasks.length;
+        int[] ans = new int[m];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> pq2 = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        for (int i = 0; i < n; i++) {
+            pq.offer(new int[]{servers[i], i});
+        }
+        for (int i = 0; i < m; i++) {
+            while (!pq2.isEmpty() && pq2.peek()[2] <= i) {
+                pq.offer(pq2.poll());
+            }
+            if (pq.isEmpty()) {
+                int[] cur = pq2.poll();
+                ans[i] = cur[1];
+                cur[2] = i + tasks[i];
+                pq2.offer(cur);
+            } else {
+                int[] cur = pq.poll();
+                ans[i] = cur[1];
+                cur[0] = tasks[i];
+                cur[2] = i + tasks[i];
+                pq2.offer(cur);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = servers.length;
+        int m = tasks.length;
+        int[] ans = new int[m];
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> busy = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        for (int i = 0; i < n; i++) {
+            free.add(new int[]{servers[i], i, 0});
+        }
+        for (int i = 0; i < m; i++) {
+            while (!busy.isEmpty() && busy.peek()[2] <= i) {
+                free.add(new int[]{busy.poll()[0], busy.peek()[1], 0});
+            }
+            if (free.isEmpty()) {
+                int[] server = busy.poll();
+                server[2] += tasks[i];
+                busy.add(server);
+                ans[i] = server[1];
+            } else {
+                int[] server = free.poll();
+                server[2] = i + tasks[i];
+                busy.add(server);
+                ans[i] = server[1];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = servers.length;
+        int m = tasks.length;
+        int[] ans = new int[m];
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        for (int i = 0; i < n; i++) {
+            free.offer(new int[]{servers[i], i});
+        }
+        PriorityQueue<int[]> busy = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        int time = 0;
+        for (int i = 0; i < m; i++) {
+            while (!busy.isEmpty() && busy.peek()[0] <= time) {
+                free.offer(new int[]{busy.poll()[2], busy.peek()[1]});
+            }
+            if (!free.isEmpty()) {
+                int[] server = free.poll();
+                ans[i] = server[1];
+                busy.offer(new int[]{time + tasks[i], server[1], server[0]});
+            } else {
+                time = busy.peek()[0];
+                i--;
+            }
+        }
+        return ans;
+
+=======
+
+        PriorityQueue<int[]> freeServers = new PriorityQueue<>((a, b) -> {
+            if (a[0] == b[0]) {
+                return a[1] - b[1];
+            } else {
+                return a[0] - b[0];
+            }
+        });
+        PriorityQueue<int[]> busyServers = new PriorityQueue<>((a, b) -> {
+            if (a[2] == b[2]) {
+                return a[1] - b[1];
+            } else {
+                return a[2] - b[2];
+            }
+        });
+        for (int i = 0; i < servers.length; i++) {
+            freeServers.add(new int[] {servers[i], i});
+        }
+        int[] ans = new int[tasks.length];
+        int time = 0;
+        for (int i = 0; i < tasks.length; i++) {
+            while (!busyServers.isEmpty() && busyServers.peek()[2] <= time) {
+                int[] server = busyServers.poll();
+                freeServers.add(new int[] {server[0], server[1]});
+            }
+            if (!freeServers.isEmpty()) {
+                int[] server = freeServers.poll();
+                busyServers.add(new int[] {server[0], server[1], time + tasks[i]});
+                ans[i] = server[1];
+            } else {
+                while (busyServers.peek()[2] <= time) {
+                    int[] server = busyServers.poll();
+                    freeServers.add(new int[] {server[0], server[1]});
+                }
+                int[] server = freeServers.poll();
+                busyServers.add(new int[] {server[0], server[1], busyServers.peek()[2] + tasks[i]});
+                ans[i] = server[1];
+                time = busyServers.peek()[2] - 1;
+            }
+            time++;
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[tasks.length];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> busy = new PriorityQueue<>((a, b) -> a[2] == b[2] ? a[0] - b[0] : a[2] - b[2]);
+        for (int i = 0; i < servers.length; i++) {
+            pq.offer(new int[] {servers[i], i, 0});
+        }
+        int time = 0;
+        for (int i = 0; i < tasks.length; i++) {
+            while (!busy.isEmpty() && busy.peek()[2] <= time) {
+                int[] server = busy.poll();
+                pq.offer(new int[] {server[0], server[1], 0});
+            }
+            if (pq.isEmpty()) {
+                time = busy.peek()[2];
+                while (!busy.isEmpty() && busy.peek()[2] <= time) {
+                    int[] server = busy.poll();
+                    pq.offer(new int[] {server[0], server[1], 0});
+                }
+            }
+            int[] server = pq.poll();
+            server[2] = time + tasks[i];
+            busy.offer(server);
+            res[i] = server[1];
+            time = Math.max(time, i + 1);
+        }
+        return res;
+
+=======
+
+        PriorityQueue<int[]> pq1 = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
+            }
+            return a[1] - b[1];
+        });
+        for (int i = 0; i < servers.length; i++) {
+            pq1.add(new int[]{servers[i], i});
+        }
+        PriorityQueue<int[]> pq2 = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
+            }
+            return a[1] - b[1];
+        });
+        int[] ans = new int[tasks.length];
+        int time = 0;
+        int i = 0;
+        while (i < tasks.length) {
+            while (!pq2.isEmpty() && pq2.peek()[0] <= time) {
+                pq1.add(pq2.poll());
+            }
+            if (pq1.isEmpty()) {
+                time = pq2.peek()[0];
+            } else {
+                int[] server = pq1.poll();
+                ans[i] = server[1];
+                pq2.add(new int[]{time + tasks[i], server[1]});
+                i++;
+            }
+        }
+        while (!pq2.isEmpty()) {
+            int[] server = pq2.poll();
+            ans[i] = server[1];
+            i++;
+        }
+        return ans;
+
+=======
+
+        int m = tasks.length;
+        int n = servers.length;
+        int[] ans = new int[m];
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+        PriorityQueue<int[]> busy = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int i = 0; i < n; i++) {
+            free.offer(new int[]{servers[i], i});
+        }
+        int time = 0;
+        for (int i = 0; i < m; i++) {
+            time = Math.max(time, i);
+            while (!busy.isEmpty() && busy.peek()[0] <= time) {
+                free.offer(new int[]{busy.poll()[1], busy.peek()[2]});
+            }
+            if (free.isEmpty()) {
+                time = busy.peek()[0];
+                while (!busy.isEmpty() && busy.peek()[0] <= time) {
+                    free.offer(new int[]{busy.poll()[1], busy.peek()[2]});
+                }
+            }
+            int[] cur = free.poll();
+            ans[i] = cur[1];
+            busy.offer(new int[]{time + tasks[i], cur[0], cur[1]});
+        }
+        return ans;
+
+=======
+
+        int n = servers.length;
+        int m = tasks.length;
+        int[] ans = new int[m];
+        // <time, index>
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
+            } else {
+                return a[1] - b[1];
+            }
+        });
+        // <weight, index>
+        PriorityQueue<int[]> free = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0]) {
+                return a[0] - b[0];
+            } else {
+                return a[1] - b[1];
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            free.add(new int[] {servers[i], i});
+        }
+        int time = 0;
+        int i = 0;
+        while (i < m) {
+            while (!queue.isEmpty() && queue.peek()[0] <= time) {
+                int[] server = queue.poll();
+                free.add(new int[] {servers[server[1]], server[1]});
+            }
+            if (free.isEmpty()) {
+                time = queue.peek()[0];
+                while (!queue.isEmpty() && queue.peek()[0] <= time) {
+                    int[] server = queue.poll();
+                    free.add(new int[] {servers[server[1]], server[1]});
+                }
+            }
+            while (i < m && i <= time) {
+                int[] server = free.poll();
+                ans[i] = server[1];
+                queue.add(new int[] {time + tasks[i], server[1]});
+                i++;
+            }
+            time++;
+        }
+        return ans;

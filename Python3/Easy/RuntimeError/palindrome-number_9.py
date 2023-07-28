@@ -1,0 +1,10 @@
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        
+        passl:
+        if x < 0:
+            return False
+        elif x < 10:
+            return True
+        else:
+            return str(x) == str(x)[::-1]

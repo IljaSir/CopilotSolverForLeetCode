@@ -1,0 +1,326 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> rowSum(m, vector<int>(n, 0));
+        vector<vector<int>> colSum(m, vector<int>(n, 0));
+        vector<vector<int>> diaSum1(m, vector<int>(n, 0));
+        vector<vector<int>> diaSum2(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) {
+            rowSum[i][0] = grid[i][0];
+            for (int j = 1; j < n; j++) {
+                rowSum[i][j] = rowSum[i][j - 1] + grid[i][j];
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            colSum[0][j] = grid[0][j];
+            for (int i = 1; i < m; i++) {
+                colSum[i][j] = colSum[i - 1][j] + grid[i][j];
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            diaSum1[i][0] = grid[i][0];
+            for (int j = 1; j < n; j++) {
+                if (i + j < m) {
+                    diaSum1[i + j][j] = diaSum1[i + j - 1][j - 1] + grid[i + j][j];
+                }
+                if (i - j >= 0) {
+                    diaSum2[i - j][j] = diaSum2[i - j + 1][j - 1] + grid[i - j][j];
+                }
+            }
+        }
+        for (int j = 1; j < n; j++) {
+            diaSum1[0][j] = grid[0][j];
+            for (int i = 1; i < m; i++) {
+                if (i + j < n) {
+                    diaSum1[i][i + j] = diaSum1[i - 1][i + j - 1] + grid[i][i + j];
+                }
+                if (j - i >= 0) {
+                    diaSum2[i][j - i] = diaSum2[i - 1
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> rowSum(m, vector<int>(n, 0));
+        vector<vector<int>> colSum(m, vector<int>(n, 0));
+        vector<vector<int>> diagSum(m, vector<int>(n, 0));
+        vector<vector<int>> antiDiagSum(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowSum[i][j] = grid[i][j] + (j > 0 ? rowSum[i][j - 1] : 0);
+                colSum[i][j] = grid[i][j] + (i > 0 ? colSum[i - 1][j] : 0);
+                diagSum[i][j] = grid[i][j] + (i > 0 && j > 0 ? diagSum[i - 1][j - 1] : 0);
+                antiDiagSum[i][j] = grid[i][j] + (i > 0 && j < n - 1 ? antiDiagSum[i - 1][j + 1] : 0);
+            }
+        }
+        int res = 1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 1; i + k < m && j + k < n; k++) {
+                    int row = rowSum[i][j + k] - (j > 0 ? rowSum[i][j - 1] : 0);
+                    int col = colSum[i + k][j] - (i > 0 ? colSum[i - 1][j] : 0);
+                    int diag = diagSum[i + k][j + k] - (i > 0 && j > 0 ? diagSum[i - 1][j - 1] : 0);
+                    int antiDiag = antiDiagSum[i + k][j] - (i > 0 && j + k < n - 1 ? antiDiagSum[i - 1][j + k + 1] : 0);
+                    if (
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> rowSum(m, vector<int>(n, 0));
+        vector<vector<int>> colSum(m, vector<int>(n, 0));
+        vector<vector<int>> diagSum1(m, vector<int>(n, 0));
+        vector<vector<int>> diagSum2(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowSum[i][j] = grid[i][j] + (j > 0 ? rowSum[i][j - 1] : 0);
+                colSum[i][j] = grid[i][j] + (i > 0 ? colSum[i - 1][j] : 0);
+                diagSum1[i][j] = grid[i][j] + (i > 0 && j > 0 ? diagSum1[i - 1][j - 1] : 0);
+                diagSum2[i][j] = grid[i][j] + (i > 0 && j < n - 1 ? diagSum2[i - 1][j + 1] : 0);
+            }
+        }
+        // for (auto row : rowSum) {
+        //     for (auto i : row) {
+        //         cout << i << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+        // for (auto row : colSum) {
+        //     for (auto i : row) {
+        //         cout << i << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+        // for (auto row : diagSum1) {
+        //     for (auto i : row) {
+        //         cout << i << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+        // for (auto row : diagSum2) {
+        //     for (auto i : row) {
+        //         cout << i << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << endl;
+        int ans = 1;
+        for (int i = 0; i <
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> rowSum(m, vector<int>(n+1, 0));
+        vector<vector<int>> colSum(m+1, vector<int>(n, 0));
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                rowSum[i][j+1] = rowSum[i][j] + grid[i][j];
+                colSum[i+1][j] = colSum[i][j] + grid[i][j];
+            }
+        }
+        int ans = 1;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                for(int k = min(m-i, n-j); k > ans; k--){
+                    int sum = 0;
+                    for(int l = 0; l < k; l++){
+                        sum += grid[i+l][j+l];
+                    }
+                    if(sum != rowSum[i][j+k] - rowSum[i][j]) continue;
+                    if(sum != colSum[i+k][j] - colSum[i][j]) continue;
+                    if(sum != rowSum[i+k-1][j+k] - rowSum[i+k-1][j]) continue;
+                    if(sum != colSum[i+k][j+k-1] - colSum[i][j+k-1]) continue;
+                    ans = k;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> rowSum(m, vector<int>(n, 0)), colSum(m, vector<int>(n, 0));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                rowSum[i][j] = grid[i][j] + (j > 0 ? rowSum[i][j - 1] : 0);
+                colSum[i][j] = grid[i][j] + (i > 0 ? colSum[i - 1][j] : 0);
+            }
+        }
+        int ans = 1;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int k = 1; i + k - 1 < m && j + k - 1 < n; ++k) {
+                    bool isMagic = true;
+                    int sum = rowSum[i][j + k - 1] - (j > 0 ? rowSum[i][j - 1] : 0);
+                    for (int r = i; r <= i + k - 1; ++r) {
+                        if (rowSum[r][j + k - 1] - (j > 0 ? rowSum[r][j - 1] : 0) != sum) {
+                            isMagic = false;
+                            break;
+                        }
+                    }
+                    if (!isMagic) {
+                        continue;
+                    }
+                    for (int c = j; c <= j + k - 1; ++c) {
+                        if (colSum[i + k - 1][c] - (i > 0 ? colSum[i - 1][c] : 0) != sum) {
+                            isMagic = false;
+                            break;
+                        }
+                    }
+                    if (!isMagic) {
+                        continue;
+                    }
+                    int diagonalSum = 0;
+                    for (int r = i, c = j; r <= i + k - 1; ++r, ++c) {
+                        diagonalSum += grid[r][c];
+                    }
+                    if (diagonalSum != sum) {
+                        continue;
+                    }
+                    diagonalSum = 0;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> row(m, vector<int>(n, 0)), col(m, vector<int>(n, 0));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                row[i][j] = grid[i][j] + (j > 0 ? row[i][j - 1] : 0);
+                col[i][j] = grid[i][j] + (i > 0 ? col[i - 1][j] : 0);
+            }
+        }
+        for (int k = min(m, n); k >= 2; --k) {
+            for (int i = 0; i <= m - k; ++i) {
+                for (int j = 0; j <= n - k; ++j) {
+                    int sum = row[i][j + k - 1] - (j > 0 ? row[i][j - 1] : 0);
+                    bool ok = true;
+                    for (int p = 1; p < k; ++p) {
+                        int cur = row[i + p][j + k - 1] - (j > 0 ? row[i + p][j - 1] : 0);
+                        if (cur != sum) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok) continue;
+                    for (int p = 0; p < k; ++p) {
+                        int cur = col[i + k - 1][j + p] - (i > 0 ? col[i - 1][j + p] : 0);
+                        if (cur != sum) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok) continue;
+                    int cur = 0;
+                    for (int p = 0; p < k; ++p) {
+                        cur += grid[i + p][j + p];
+                    }
+                    if (cur != sum) continue;
+                    cur = 0;
+                    for (int p = 0; p < k; ++p) {
+                        cur += grid[i + p][j + k - 1 - p];
+                    }
+                    if (cur == sum) return k
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int res = 1;
+        vector<vector<int>> rowSum(m, vector<int>(n, 0));
+        vector<vector<int>> colSum(m, vector<int>(n, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowSum[i][j] = grid[i][j];
+                if (j > 0) {
+                    rowSum[i][j] += rowSum[i][j - 1];
+                }
+                colSum[i][j] = grid[i][j];
+                if (i > 0) {
+                    colSum[i][j] += colSum[i - 1][j];
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = res; k <= min(m - i, n - j); k++) {
+                    int sum = rowSum[i][j + k - 1];
+                    if (j > 0) {
+                        sum -= rowSum[i][j - 1];
+                    }
+                    int flag = 1;
+                    for (int p = i; p < i + k; p++) {
+                        int curSum = rowSum[p][j + k - 1];
+                        if (j > 0) {
+                            curSum -= rowSum[p][j - 1];
+                        }
+                        if (curSum != sum) {
+                            flag = 0;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        continue;
+                    }
+                    for (int p = j; p < j + k; p++) {
+                        int curSum = colSum[i + k - 1][p];
+                        if (i > 0) {
+                            curSum -= colSum[i - 1][p];
+                        }
+                        if (curSum != sum) {
+                            flag = 0;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        continue;
+                    }
+                    int curSum = colSum[i + k - 1][j + k - 1];
+                    if (i > 0 && j > 0) {
+                        curSum -= colSum[i -
+
+=======
+
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> row(n, vector<int>(m+1, 0));
+        vector<vector<int>> col(n+1, vector<int>(m, 0));
+        vector<vector<int>> diag1(n+1, vector<int>(m+1, 0));
+        vector<vector<int>> diag2(n+1, vector<int>(m+1, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                row[i][j+1] = row[i][j] + grid[i][j];
+                col[i+1][j] = col[i][j] + grid[i][j];
+                diag1[i+1][j+1] = diag1[i][j] + grid[i][j];
+                diag2[i+1][j] = diag2[i][j+1] + grid[i][j];
+            }
+        }
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = ans; k <= min(n-i, m-j); k++) {
+                    int sum = row[i][j+k] - row[i][j];
+                    bool flag = true;
+                    for (int p = 0; p < k; p++) {
+                        if (row[i+p][j+k] - row[i+p][j] != sum) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (!flag) continue;
+                    for (int p = 0; p < k; p++) {
+                        if (col[i+k][j+p] - col[i][j+p] != sum) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (!flag) continue;
+                    if (diag1[i+k][j+k] - diag1[i][j] != sum) continue;
+                    if (diag2[i+k][j] - diag2[i][j+k] != sum) continue;
+                    ans = k;
+                }
+            }
+        }
+        return ans;

@@ -1,0 +1,196 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let k = k as usize;
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut sum = 0;
+        for i in 0..k {
+            heap.push(nums[i]);
+            sum += nums[i] as i64;
+        }
+        let mut ans = sum;
+        for i in k..nums.len() {
+            let min = heap.peek().unwrap();
+            if nums[i] > *min {
+                heap.pop();
+                heap.push(nums[i]);
+                sum += nums[i] as i64 - *min as i64;
+                ans = ans.max(sum);
+            }
+        }
+        ans
+
+=======
+
+        let mut set = std::collections::HashSet::new();
+        let mut sum = 0;
+        let mut ans = 0;
+        let k = k as usize;
+        for i in 0..nums.len() {
+            if i >= k {
+                set.remove(&nums[i - k]);
+                sum -= nums[i - k];
+            }
+            while set.contains(&nums[i]) {
+                set.remove(&nums[i - k]);
+                sum -= nums[i - k];
+            }
+            set.insert(nums[i]);
+            sum += nums[i];
+            ans = std::cmp::max(ans, sum);
+        }
+        ans as i64
+    }
+}
+
+=======
+
+        let mut sum = 0;
+        let mut max = 0;
+        let mut set = std::collections::HashSet::new();
+        let mut i = 0;
+        for j in 0..nums.len() {
+            while set.contains(&nums[j]) {
+                set.remove(&nums[i]);
+                sum -= nums[i] as i64;
+                i += 1;
+            }
+            sum += nums[j] as i64;
+            set.insert(nums[j]);
+            if (j - i + 1) as i32 == k {
+                if sum > max {
+                    max = sum;
+                }
+                set.remove(&nums[i]);
+                sum -= nums[i] as i64;
+                i += 1;
+            }
+        }
+        max
+
+=======
+
+        let mut sum = 0;
+        let mut max = 0;
+        let mut set = std::collections::HashSet::new();
+        for i in 0..nums.len() {
+            while set.contains(&nums[i]) {
+                set.remove(&nums[i - k as usize]);
+                sum -= nums[i - k as usize] as i64;
+            }
+            set.insert(nums[i]);
+            sum += nums[i] as i64;
+            max = std::cmp::max(max, sum);
+        }
+        max
+
+=======
+
+        let k = k as usize;
+        let mut set = std::collections::HashSet::new();
+        let mut sum = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut ans = 0;
+        while j < nums.len() {
+            if set.len() == k {
+                sum -= nums[i] as i64;
+                set.remove(&nums[i]);
+                i += 1;
+            }
+            if !set.contains(&nums[j]) {
+                set.insert(nums[j]);
+                sum += nums[j] as i64;
+                ans = ans.max(sum);
+                j += 1;
+            } else {
+                j += 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut sum = 0;
+        let mut q = std::collections::BTreeSet::new();
+        for i in 0..nums.len() {
+            sum += nums[i] as i64;
+            if i as i32 >= k {
+                sum -= nums[i - k as usize] as i64;
+                q.remove(&(nums[i - k as usize], i as i32 - k));
+            }
+            q.insert((nums[i], i as i32));
+            if i as i32 >= k - 1 {
+                sum -= q.iter().next().unwrap().0 as i64;
+            }
+        }
+        sum
+    }
+}
+
+=======
+
+        use std::collections::HashSet;
+        let mut set = HashSet::new();
+        let mut sum = 0;
+        let mut max = 0;
+        for i in 0..nums.len() {
+            let x = nums[i];
+            set.insert(x);
+            sum += x;
+            if i >= k as usize {
+                sum -= nums[i - k as usize];
+                set.remove(&nums[i - k as usize]);
+            }
+            if i >= k as usize - 1 && set.len() == k as usize {
+                max = std::cmp::max(max, sum);
+            }
+        }
+        max as i64
+
+=======
+
+        let k = k as usize;
+        let mut sorted: Vec<i32> = nums.iter().take(k).cloned().collect();
+        sorted.sort();
+        let mut sum = sorted.iter().take(k-1).sum::<i32>() as i64;
+        let mut i = k-1;
+        for num in nums.iter().skip(k) {
+            let idx = sorted.binary_search(num).unwrap_or_else(|x| x);
+            if idx < k-1 {
+                sum += sorted[k-1] as i64;
+                sorted.remove(k-1);
+                sorted.insert(idx, *num);
+            } else {
+                sum += *num as i64;
+            }
+            i += 1;
+        }
+        sum
+
+=======
+
+        let mut sum = 0;
+        let mut max_sum = 0;
+        let mut seen = std::collections::HashSet::new();
+        let mut window = std::collections::VecDeque::new();
+        for i in 0..nums.len() {
+            let num = nums[i];
+            if !seen.contains(&num) {
+                seen.insert(num);
+                sum += num;
+            }
+            window.push_back(num);
+            if window.len() > k as usize {
+                let out = window.pop_front().unwrap();
+                if !window.contains(&out) {
+                    seen.remove(&out);
+                    sum -= out;
+                }
+            }
+            max_sum = std::cmp::max(max_sum, sum);
+        }
+        max_sum
+    }
+}

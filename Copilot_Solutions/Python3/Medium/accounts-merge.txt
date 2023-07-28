@@ -1,0 +1,262 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        email_to_name = {}
+        graph = collections.defaultdict(set)
+        for account in accounts:
+            name = account[0]
+            for email in account[1:]:
+                graph[account[1]].add(email)
+                graph[email].add(account[1])
+                email_to_name[email] = name
+        seen = set()
+        ans = []
+        for email in graph:
+            if email not in seen:
+                seen.add(email)
+                stack = [email]
+                component = []
+                while stack:
+                    node = stack.pop()
+                    component.append(node)
+                    for nei in graph[node]:
+                        if nei not in seen:
+                            seen.add(nei)
+                            stack.append(nei)
+                ans.append([email_to_name[email]] + sorted(component))
+        return ans
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        graph = collections.defaultdict(set)
+        for account in accounts:
+            for i in range(1, len(account)):
+                graph[account[i]].add(account[1])
+                graph[account[1]].add(account[i])
+        seen = set()
+        def dfs(email):
+            ans = [email]
+            seen.add(email)
+            for nei in graph[email]:
+                if nei not in seen:
+                    ans.extend(dfs(nei))
+            return ans
+        ans = []
+        for email in graph:
+            if email not in seen:
+                ans.append([accounts[0][0]] + sorted(dfs(email)))
+        return ans
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        graph = collections.defaultdict(list)
+        for account in accounts:
+            for i in range(1, len(account)):
+                graph[account[i]].append(account[1])
+                graph[account[1]].append(account[i])
+        visited = set()
+        result = []
+        for account in accounts:
+            name = account[0]
+            emails = account[1:]
+            if emails[0] in visited:
+                continue
+            visited.add(emails[0])
+            stack = [emails[0]]
+            while stack:
+                email = stack.pop()
+                for e in graph[email]:
+                    if e not in visited:
+                        visited.add(e)
+                        stack.append(e)
+                        emails.append(e)
+            result.append([name] + sorted(emails))
+        return result
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        emails = collections.defaultdict(set)
+        for account in accounts:
+            name = account[0]
+            for email in account[1:]:
+                emails[email].add(name)
+        graph = collections.defaultdict(set)
+        for account in accounts:
+            for email in account[1:]:
+                for other_email in account[1:]:
+                    if email != other_email:
+                        graph[email].add(other_email)
+                        graph[other_email].add(email)
+        seen = set()
+        def dfs(email):
+            if email in seen:
+                return set()
+            seen.add(email)
+            res = set([email])
+            for other_email in graph[email]:
+                res |= dfs(other_email)
+            return res
+        res = []
+        for email in emails:
+            if email not in seen:
+                res.append([emails[email].pop()] + sorted(list(dfs(email))))
+        return res
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        d = {}
+        for i, account in enumerate(accounts):
+            for email in account[1:]:
+                if email not in d:
+                    d[email] = set()
+                d[email].add(i)
+        visited = set()
+        res = []
+        for i, account in enumerate(accounts):
+            if i in visited:
+                continue
+            res.append([account[0]])
+            stack = [i]
+            visited.add(i)
+            while stack:
+                j = stack.pop()
+                for email in accounts[j][1:]:
+                    for k in d[email]:
+                        if k not in visited:
+                            stack.append(k)
+                            visited.add(k)
+                    res[-1].append(email)
+            res[-1] = list(set(res[-1]))
+            res[-1].sort()
+        return res
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        # union find
+        d = {}
+        for i, account in enumerate(accounts):
+            for email in account[1:]:
+                if email not in d:
+                    d[email] = i
+                else:
+                    self.union(d, email, account[1])
+        res = collections.defaultdict(set)
+        for email, i in d.items():
+            res[accounts[i][0]].add(email)
+        return [[name] + sorted(emails) for name, emails in res.items()]
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        # Dfs
+        # Time  complexity: O(AlogA)
+        # Space complexity: O(A)
+        graph = collections.defaultdict(list)
+        email_to_name = {}
+        for acc in accounts:
+            name = acc[0]
+            for email in acc[1:]:
+                graph[acc[1]].append(email)
+                graph[email].append(acc[1])
+                email_to_name[email] = name
+        seen = set()
+        ans = []
+        def dfs(node, emails):
+            seen.add(node)
+            emails.append(node)
+            for nei in graph[node]:
+                if nei not in seen:
+                    dfs(nei, emails)
+        for email in graph:
+            if email not in seen:
+                emails = []
+                dfs(email, emails)
+                ans.append([email_to_name[email]] + sorted(emails))
+        return ans
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        # O(n^2) time
+        # O(n) space
+        # union find
+        # email: index
+        email_index = {}
+        # index: name
+        index_name = {}
+        # index: set of emails
+        index_emails = {}
+        for i, account in enumerate(accounts):
+            name = account[0]
+            for email in account[1:]:
+                if email not in email_index:
+                    email_index[email] = i
+                    index_name[i] = name
+                    index_emails[i] = set([email])
+                else:
+                    j = email_index[email]
+                    index_emails[j].add(email)
+        # union find
+        parent = {i: i for i in range(len(accounts))}
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        def union(x, y):
+            x, y = find(x), find(y)
+            if x != y:
+                parent[x] = y
+        for i in range(len(accounts)):
+            for email in index_emails[i]:
+                j = email_index[email]
+                if i != j:
+                    union(i, j)
+        # merge emails
+        res = []
+        for i in range(len(accounts)):
+            i = find(i)
+            if i not in res:
+                res.append(i)
+        for i in res:
+            emails = sorted(index_emails[i])
+            emails.insert(0, index_name[i])
+            res[i] = emails
+        return res
+
+=======
+
+def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        # 1. build graph
+        # 2. DFS or BFS to find connected components
+        # 3. sort email and return
+        # 4. O(nlogn) time, O(n) space
+        graph = collections.defaultdict(set)
+        for account in accounts:
+            name = account[0]
+            for email in account[1:]:
+                graph[account[1]].add(email)
+                graph[email].add(account[1])
+        
+        def dfs(email, visited):
+            visited.add(email)
+            for nei in graph[email]:
+                if nei not in visited:
+                    dfs(nei, visited)
+        
+        visited = set()
+        res = []
+        for email in graph:
+            if email not in visited:
+                emails = []
+                dfs(email, visited)
+                for email in visited:
+                    emails.append(email)
+                res.append([name] + sorted(emails))
+        return res

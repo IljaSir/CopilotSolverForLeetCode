@@ -1,0 +1,100 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut sums = vec![0; nums.len()];
+        sums[0] = nums[0];
+        for i in 1..nums.len() {
+            sums[i] = sums[i - 1] + nums[i];
+        }
+        let mut dp = vec![vec![0; nums.len()]; k as usize];
+        for i in 0..nums.len() {
+            dp[0][i] = sums[i];
+        }
+        for i in 1..k as usize {
+            for j in 0..nums.len() {
+                if j < i {
+                    dp[i][j] = 0;
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] + nums[j];
+                }
+            }
+        }
+        dp[k as usize - 1][nums.len() - 1] as i64
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut dp = vec![vec![0; nums.len() + 1]; k as usize + 1];
+        for i in 1..=k as usize {
+            for j in 1..=nums.len() {
+                dp[i][j] = dp[i][j - 1];
+                if i as usize <= j {
+                    dp[i][j] = dp[i][j].max(dp[i - 1][j - 1] + nums[j - 1] as i64);
+                }
+            }
+        }
+        dp[k as usize][nums.len()] as i64
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut k = k;
+        let mut n = nums.len() as i32;
+        let mut ans = 0;
+        let mut dp = vec![vec![vec![0; 2]; 2000]; 2000];
+        for i in 0..n {
+            dp[i as usize][0][0] = 1;
+        }
+        for i in 0..n {
+            for j in 1..k as usize {
+                for l in 0..2 {
+                    for m in 0..2 {
+                        let mut x = i;
+                        if l == 1 {
+                            x += 1;
+                        }
+                        if m == 1 {
+                            x += 1;
+                        }
+                        if x < n {
+                            dp[x as usize][j][m] += dp[i as usize][j - 1][l];
+                        }
+                    }
+                }
+            }
+        }
+        for i in 0..n {
+            if nums[i as usize] < 0 {
+                ans += dp[i as usize][k as usize - 1][1];
+            }
+        }
+        ans as i64
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut sums = vec![0];
+        let mut k = k as usize;
+        let mut i = 0;
+        while k > 0 {
+            let mut j = 0;
+            while sums[i] + nums[j] <= sums[i + 1] && j < nums.len() {
+                sums.push(sums[i] + nums[j]);
+                j += 1;
+            }
+            i += 1;
+            k -= 1;
+        }
+        sums[i] as i64

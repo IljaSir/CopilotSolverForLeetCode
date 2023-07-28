@@ -1,0 +1,349 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        if (n < 2) {
+            return 0;
+        }
+        int exp = 1;
+        int buf[] = new int[n];
+        int maxVal = Arrays.stream(nums).max().getAsInt();
+        while (maxVal >= exp) {
+            int[] cnt = new int[10];
+            for (int i = 0; i < n; i++) {
+                int digit = (nums[i] / exp) % 10;
+                cnt[digit]++;
+            }
+            for (int i = 1; i < 10; i++) {
+                cnt[i] += cnt[i - 1];
+            }
+            for (int i = n - 1; i >= 0; i--) {
+                int digit = (nums[i] / exp) % 10;
+                buf[cnt[digit] - 1] = nums[i];
+                cnt[digit]--;
+            }
+            System.arraycopy(buf, 0, nums, 0, n);
+            exp *= 10;
+        }
+        int ret = 0;
+        for (int i = 1; i < n; i++) {
+            ret = Math.max(ret, nums[i] - nums[i - 1]);
+        }
+        return ret;
+
+=======
+
+        if (nums.length < 2) {
+            return 0;
+        }
+        int min = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < min) {
+                min = nums[i];
+            }
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+        }
+        int bucketSize = Math.max(1, (max - min) / (nums.length - 1));
+        int bucketCount = (max - min) / bucketSize + 1;
+        int[][] buckets = new int[bucketCount][2];
+        for (int i = 0; i < bucketCount; i++) {
+            buckets[i][0] = -1;
+            buckets[i][1] = -1;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int idx = (nums[i] - min) / bucketSize;
+            if (buckets[idx][0] == -1) {
+                buckets[idx][0] = nums[i];
+                buckets[idx][1] = nums[i];
+            } else {
+                if (nums[i] < buckets[idx][0]) {
+                    buckets[idx][0] = nums[i];
+                }
+                if (nums[i] > buckets[idx][1]) {
+                    buckets[idx][1] = nums[i];
+                }
+            }
+        }
+        int prev = -1;
+        int maxGap = 0;
+        for (int i = 0; i < bucketCount; i++) {
+            if (buckets[i][0] == -1) {
+                continue;
+            }
+            if (prev != -1) {
+                maxGap = Math.max(maxGap, buckets[i][0] - buckets[prev][1]);
+            }
+            prev = i;
+        }
+        return maxGap;
+
+=======
+
+        int n = nums.length;
+        if (n < 2) {
+            return 0;
+        }
+        int minVal = nums[0];
+        int maxVal = nums[0];
+        for (int i = 1; i < n; i++) {
+            minVal = Math.min(minVal, nums[i]);
+            maxVal = Math.max(maxVal, nums[i]);
+        }
+        int d = Math.max(1, (maxVal - minVal) / (n - 1));
+        int bucketSize = (maxVal - minVal) / d + 1;
+        int[] bucketMin = new int[bucketSize];
+        int[] bucketMax = new int[bucketSize];
+        Arrays.fill(bucketMin, Integer.MAX_VALUE);
+        Arrays.fill(bucketMax, Integer.MIN_VALUE);
+        for (int i = 0; i < n; i++) {
+            int idx = (nums[i] - minVal) / d;
+            bucketMin[idx] = Math.min(bucketMin[idx], nums[i]);
+            bucketMax[idx] = Math.max(bucketMax[idx], nums[i]);
+        }
+        int ret = 0;
+        int prev = -1;
+        for (int i = 0; i < bucketSize; i++) {
+            if (bucketMin[i] == Integer.MAX_VALUE && bucketMax[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            if (prev != -1) {
+                ret = Math.max(ret, bucketMin[i] - bucketMax[prev]);
+            }
+            prev = i;
+        }
+        return ret;
+
+=======
+
+        if (nums.length < 2) {
+            return 0;
+        }
+        int max = nums[0];
+        int min = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            max = Math.max(max, nums[i]);
+            min = Math.min(min, nums[i]);
+        }
+        int gap = (int) Math.ceil((double) (max - min) / (nums.length - 1));
+        int[] maxBucket = new int[nums.length - 1];
+        int[] minBucket = new int[nums.length - 1];
+        Arrays.fill(maxBucket, Integer.MIN_VALUE);
+        Arrays.fill(minBucket, Integer.MAX_VALUE);
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == min || nums[i] == max) {
+                continue;
+            }
+            int index = (nums[i] - min) / gap;
+            maxBucket[index] = Math.max(maxBucket[index], nums[i]);
+            minBucket[index] = Math.min(minBucket[index], nums[i]);
+        }
+        int maxGap = Integer.MIN_VALUE;
+        int previous = min;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (minBucket[i] == Integer.MAX_VALUE && maxBucket[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxGap = Math.max(maxGap, minBucket[i] - previous);
+            previous = maxBucket[i];
+        }
+        maxGap = Math.max(maxGap, max - previous);
+        return maxGap;
+
+=======
+
+        int n = nums.length;
+        if (n < 2) {
+            return 0;
+        }
+        int exp = 1;
+        int maxVal = Arrays.stream(nums).max().getAsInt();
+        int[] buf = new int[n];
+        while (maxVal >= exp) {
+            int[] cnt = new int[10];
+            for (int i = 0; i < n; i++) {
+                int digit = (nums[i] / exp) % 10;
+                cnt[digit]++;
+            }
+            for (int i = 1; i < 10; i++) {
+                cnt[i] += cnt[i - 1];
+            }
+            for (int i = n - 1; i >= 0; i--) {
+                int digit = (nums[i] / exp) % 10;
+                buf[cnt[digit] - 1] = nums[i];
+                cnt[digit]--;
+            }
+            System.arraycopy(buf, 0, nums, 0, n);
+            exp *= 10;
+        }
+        int ret = 0;
+        for (int i = 1; i < n; i++) {
+            ret = Math.max(ret, nums[i] - nums[i - 1]);
+        }
+        return ret;
+
+=======
+
+        if (nums == null || nums.length < 2) {
+            return 0;
+        }
+        int n = nums.length;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int num : nums) {
+            min = Math.min(min, num);
+            max = Math.max(max, num);
+        }
+        // min == max
+        if (min == max) {
+            return 0;
+        }
+        int gap = (max - min) / (n - 1);
+        if (gap == 0) {
+            gap = 1;
+        }
+        int bucketNum = (max - min) / gap + 1;
+        int[] bucketMin = new int[bucketNum];
+        int[] bucketMax = new int[bucketNum];
+        Arrays.fill(bucketMin, Integer.MAX_VALUE);
+        Arrays.fill(bucketMax, Integer.MIN_VALUE);
+        for (int num : nums) {
+            int index = (num - min) / gap;
+            bucketMin[index] = Math.min(bucketMin[index], num);
+            bucketMax[index] = Math.max(bucketMax[index], num);
+        }
+        int maxGap = 0;
+        int prev = min;
+        for (int i = 0; i < bucketNum; i++) {
+            if (bucketMin[i] == Integer.MAX_VALUE && bucketMax[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxGap = Math.max(maxGap, bucketMin[i] - prev);
+            prev = bucketMax[i];
+        }
+        return maxGap;
+
+=======
+
+        if (nums == null || nums.length < 2) {
+            return 0;
+        }
+        int n = nums.length;
+        int max = nums[0];
+        int min = nums[0];
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, nums[i]);
+            min = Math.min(min, nums[i]);
+        }
+        int gap = (int) Math.ceil((double) (max - min) / (n - 1));
+        int[] bucketMin = new int[n - 1];
+        int[] bucketMax = new int[n - 1];
+        Arrays.fill(bucketMin, Integer.MAX_VALUE);
+        Arrays.fill(bucketMax, Integer.MIN_VALUE);
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == max || nums[i] == min) {
+                continue;
+            }
+            int idx = (nums[i] - min) / gap;
+            bucketMin[idx] = Math.min(bucketMin[idx], nums[i]);
+            bucketMax[idx] = Math.max(bucketMax[idx], nums[i]);
+        }
+        int maxGap = Integer.MIN_VALUE;
+        int previous = min;
+        for (int i = 0; i < n - 1; i++) {
+            if (bucketMin[i] == Integer.MAX_VALUE && bucketMax[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxGap = Math.max(maxGap, bucketMin[i] - previous);
+            previous = bucketMax[i];
+        }
+        maxGap = Math.max(maxGap, max - previous);
+        return maxGap;
+
+=======
+
+        if (nums.length < 2) {
+            return 0;
+        }
+        int min = nums[0];
+        int max = nums[0];
+        for (int i : nums) {
+            min = Math.min(min, i);
+            max = Math.max(max, i);
+        }
+        int gap = (int) Math.ceil((double) (max - min) / (nums.length - 1));
+        int[] bucketMin = new int[nums.length - 1];
+        int[] bucketMax = new int[nums.length - 1];
+        Arrays.fill(bucketMin, Integer.MAX_VALUE);
+        Arrays.fill(bucketMax, Integer.MIN_VALUE);
+        for (int i : nums) {
+            if (i == min || i == max) {
+                continue;
+            }
+            int index = (i - min) / gap;
+            bucketMin[index] = Math.min(bucketMin[index], i);
+            bucketMax[index] = Math.max(bucketMax[index], i);
+        }
+        int maxGap = Integer.MIN_VALUE;
+        int previous = min;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (bucketMin[i] == Integer.MAX_VALUE && bucketMax[i] == Integer.MIN_VALUE) {
+                continue;
+            }
+            maxGap = Math.max(maxGap, bucketMin[i] - previous);
+            previous = bucketMax[i];
+        }
+        maxGap = Math.max(maxGap, max - previous);
+        return maxGap;
+
+=======
+
+        if (nums.length < 2) {
+            return 0;
+        }
+        int max = 0;
+        int min = Integer.MAX_VALUE;
+        for (int num: nums) {
+            max = Math.max(max, num);
+            min = Math.min(min, num);
+        }
+        int bucketSize = Math.max(1, (max - min) / (nums.length - 1));
+        int bucketCount = (max - min) / bucketSize + 1;
+        int[][] buckets = new int[bucketCount][2];
+        for (int i = 0; i < bucketCount; i++) {
+            buckets[i][0] = -1;
+            buckets[i][1] = -1;
+        }
+        for (int num: nums) {
+            int idx = (num - min) / bucketSize;
+            if (buckets[idx][0] == -1) {
+                buckets[idx][0] = num;
+                buckets[idx][1] = num;
+            } else {
+                buckets[idx][0] = Math.min(buckets[idx][0], num);
+                buckets[idx][1] = Math.max(buckets[idx][1], num);
+            }
+        }
+        int gap = 0;
+        int prev = 0;
+        for (int i = 1; i < bucketCount; i++) {
+            if (buckets[i][0] == -1) {
+                continue;
+            }
+            gap = Math.max(gap, buckets[i][0] - buckets[prev][1]);
+            prev = i;
+        }
+        return gap;
+
+=======
+
+        if(nums.length<2) return 0;
+        int max = 0;
+        Arrays.sort(nums);
+        for(int i=1;i<nums.length;i++){
+            max = Math.max(max, nums[i]-nums[i-1]);
+        }
+        return max;

@@ -1,0 +1,222 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut stack = Vec::new();
+        for c in s.chars() {
+            if let Some((last, count)) = stack.last_mut() {
+                if *last == c {
+                    *count += 1;
+                    if *count == k {
+                        stack.pop();
+                    }
+                } else {
+                    stack.push((c, 1));
+                }
+            } else {
+                stack.push((c, 1));
+            }
+        }
+        stack.into_iter().map(|(c, count)| c.to_string().repeat(count as usize)).collect()
+
+=======
+
+        let mut stack = Vec::new();
+        for c in s.chars() {
+            if let Some((last, count)) = stack.last_mut() {
+                if *last == c {
+                    *count += 1;
+                    if *count == k {
+                        stack.pop();
+                    }
+                    continue;
+                }
+            }
+            stack.push((c, 1));
+        }
+        stack.into_iter().map(|(c, count)| c.to_string().repeat(count as usize)).collect()
+    }
+}
+
+=======
+
+        let mut stack: Vec<(char, i32)> = vec![];
+        for c in s.chars() {
+            if stack.is_empty() {
+                stack.push((c, 1));
+            } else {
+                let (last_char, last_count) = stack.pop().unwrap();
+                if last_char == c {
+                    if last_count + 1 < k {
+                        stack.push((last_char, last_count + 1));
+                    }
+                } else {
+                    stack.push((last_char, last_count));
+                    stack.push((c, 1));
+                }
+            }
+        }
+        stack.into_iter().map(|(c, n)| c.to_string().repeat(n as usize)).collect::<String>()
+
+=======
+
+        let mut stack: Vec<(char, i32)> = vec![];
+        for c in s.chars() {
+            if let Some((_, count)) = stack.last_mut() {
+                if *count == k - 1 && *c == stack.last().unwrap().0 {
+                    stack.pop();
+                    continue;
+                }
+                if *c == stack.last().unwrap().0 {
+                    *count += 1;
+                    continue;
+                }
+            }
+            stack.push((c, 1));
+        }
+        stack
+            .into_iter()
+            .map(|(c, count)| c.to_string().repeat(count as usize))
+            .collect()
+    }
+}
+
+=======
+
+        let mut stack: Vec<(char, i32)> = Vec::new();
+        for c in s.chars() {
+            if let Some(&mut (ref mut cc, ref mut count)) = stack.last_mut() {
+                if *cc == c {
+                    *count += 1;
+                } else {
+                    stack.push((c, 1));
+                }
+            } else {
+                stack.push((c, 1));
+            }
+            while stack.last().unwrap().1 >= k {
+                stack.pop();
+            }
+        }
+        let mut res = String::new();
+        for (c, count) in stack {
+            res.push_str(&c.to_string().repeat(count as usize));
+        }
+        res
+
+=======
+
+        let mut stack: Vec<(char, i32)> = Vec::new();
+        for c in s.chars() {
+            if stack.len() > 0 && stack.last().unwrap().0 == c {
+                let mut p = stack.last_mut().unwrap();
+                p.1 += 1;
+                if p.1 == k {
+                    stack.pop();
+                }
+            } else {
+                stack.push((c, 1));
+            }
+        }
+        stack.iter().map(|t| t.0.to_string().repeat(t.1 as usize)).collect()
+
+=======
+
+        let mut stack = Vec::new();
+        for c in s.chars() {
+            if let Some((c2, mut count)) = stack.pop() {
+                if c == c2 {
+                    count += 1;
+                    if count < k {
+                        stack.push((c2, count));
+                    }
+                } else {
+                    stack.push((c2, count));
+                    stack.push((c, 1));
+                }
+            } else {
+                stack.push((c, 1));
+            }
+        }
+        stack.iter().map(|(c, n)| c.to_string().repeat(*n as usize)).collect()
+    }
+}
+
+=======
+
+        let mut stack = vec![];
+        for c in s.chars() {
+            if stack.is_empty() {
+                stack.push((c, 1));
+            } else {
+                let (last_c, last_count) = stack.last().unwrap();
+                if last_c == &c {
+                    if last_count + 1 == k {
+                        stack.pop();
+                    } else {
+                        stack.push((c, last_count + 1));
+                    }
+                } else {
+                    stack.push((c, 1));
+                }
+            }
+        }
+        stack.iter().map(|(c, _)| *c).collect()
+
+=======
+
+        let mut result = String::new();
+        let mut stack = Vec::new();
+        for c in s.chars() {
+            if let Some(&last) = stack.last() {
+                if last.0 == c {
+                    stack.push((c, last.1 + 1));
+                    if last.1 + 1 == k {
+                        for _ in 0..k {
+                            stack.pop();
+                        }
+                    }
+                } else {
+                    stack.push((c, 1));
+                }
+            } else {
+                stack.push((c, 1));
+            }
+        }
+        for (c, _) in stack {
+            result.push(c);
+        }
+        result
+
+=======
+
+        let mut stack = vec![];
+        let mut last = None;
+        for c in s.chars() {
+            if let Some((ch, cnt)) = last {
+                if c == ch {
+                    if cnt + 1 == k {
+                        last = stack.pop();
+                    } else {
+                        last = Some((ch, cnt + 1));
+                    }
+                } else {
+                    stack.push(last.unwrap());
+                    last = Some((c, 1));
+                }
+            } else {
+                last = Some((c, 1));
+            }
+        }
+        if let Some((ch, cnt)) = last {
+            for _ in 0..cnt {
+                stack.push((ch, 1));
+            }
+        }
+        let mut result = String::new();
+        for (ch, cnt) in stack {
+            for _ in 0..cnt {
+                result.push(ch);
+            }
+        }
+        result

@@ -1,0 +1,233 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        long min = 0;
+        long max = 0;
+        for (int i = 0; i < n; i++) {
+            min += batteries[i];
+            max += batteries[batteries.length - 1 - i];
+        }
+        while (min < max) {
+            long mid = min + (max - min) / 2;
+            long need = 0;
+            for (int i = 0; i < n; i++) {
+                need += mid - batteries[i];
+            }
+            if (need >= 0) {
+                min = mid + 1;
+            } else {
+                max = mid;
+            }
+        }
+        return min - 1;
+
+=======
+
+        long sum = 0;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for (int i = 0; i < n; i++) {
+            pq.offer(batteries[i]);
+            sum += batteries[i];
+        }
+        long res = sum;
+        for (int i = n; i < batteries.length; i++) {
+            int battery = pq.poll();
+            sum -= battery;
+            sum += batteries[i];
+            pq.offer(batteries[i]);
+            res = Math.min(res, sum);
+        }
+        return res;
+
+=======
+
+        long lo = 1;
+        long hi = 0;
+        for (int i = 0; i < n; i++) {
+            hi += batteries[i];
+        }
+        while (lo < hi) {
+            long mid = (lo + hi) / 2;
+            if (canRun(n, batteries, mid)) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+    private boolean canRun(int n, int[] batteries, long mid) {
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += batteries[i];
+        }
+        for (int i = n; i < batteries.length; i++) {
+            sum += batteries[i];
+            sum -= batteries[i - n];
+            if (sum >= mid * n) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        long l = 0, r = 0;
+        for (int i = 0; i < n; i++) {
+            r += batteries[i];
+        }
+        long res = 0;
+        while (l <= r) {
+            long mid = (l + r) / 2;
+            if (check(n, batteries, mid)) {
+                res = mid;
+                l = mid + 1;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return res;
+    }
+    private boolean check(int n, int[] batteries, long mid) {
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += batteries[i];
+        }
+        for (int i = n; i < batteries.length; i++) {
+            sum += batteries[i];
+            sum -= batteries[i - n];
+            if (sum >= mid * n) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += batteries[i];
+        }
+        long max = sum / n;
+        if (sum % n != 0) {
+            max++;
+        }
+        for (int i = n; i < batteries.length; i++) {
+            sum += batteries[i];
+            sum -= batteries[i - n];
+            long currentMax = sum / n;
+            if (sum % n != 0) {
+                currentMax++;
+            }
+            max = Math.max(max, currentMax);
+        }
+        return max;
+
+=======
+
+        long l = 0, r = 0, mid;
+        for (int i = 0; i < n; i++) {
+            r += batteries[i];
+        }
+        while (l < r) {
+            mid = (l + r + 1) >> 1;
+            if (check(batteries, mid, n)) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+    }
+    boolean check(int[] batteries, long mid, int n) {
+        int i = 0;
+        while (i < n && mid >= batteries[i]) {
+            mid -= batteries[i];
+            i++;
+        }
+        if (i == n) {
+            return true;
+        }
+        int j = batteries.length - 1;
+        while (j >= i && mid >= batteries[j]) {
+            mid -= batteries[j];
+            j--;
+        }
+        return j == i - 1;
+
+=======
+
+        long[] mins = new long[n];
+        long[] maxs = new long[n];
+        for (int i = 0; i < n; i++) {
+            mins[i] = batteries[i];
+            maxs[i] = batteries[i];
+        }
+        for (int i = n; i < batteries.length; i++) {
+            long min = Long.MAX_VALUE;
+            long max = Long.MIN_VALUE;
+            for (int j = 0; j < n; j++) {
+                min = Math.min(min, mins[j]);
+                max = Math.max(max, maxs[j]);
+            }
+            mins[i % n] = min + batteries[i];
+            maxs[i % n] = max + batteries[i];
+        }
+        long min = Long.MAX_VALUE;
+        long max = Long.MIN_VALUE;
+        for (int j = 0; j < n; j++) {
+            min = Math.min(min, mins[j]);
+            max = Math.max(max, maxs[j]);
+        }
+        return max;
+
+=======
+
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += batteries[i];
+        }
+        long max = sum / n;
+        int i = 0;
+        while (i < n && batteries[i] >= max) {
+            i++;
+        }
+        if (i == n) {
+            return max;
+        }
+        long min = max - 1;
+        long mid;
+        while (min < max) {
+            mid = (max + min) / 2;
+            if (check(mid, n, batteries)) {
+                min = mid + 1;
+            } else {
+                max = mid;
+            }
+        }
+        return min - 1;
+    }
+    
+    public boolean check(long time, int n, int[] batteries) {
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += Math.min(batteries[i], time);
+        }
+        return sum >= time * n;
+
+=======
+
+        long l = 0, r = 1, m = 0, ans = 0;
+        while (r < batteries.length) {
+            r = Math.max(r, l + n);
+            while (r < batteries.length && batteries[(int) r] >= m) {
+                r++;
+            }
+            ans = Math.max(ans, r - l);
+            while (l < batteries.length && batteries[(int) l] < m) {
+                l++;
+            }
+            m = l < batteries.length ? batteries[(int) l] : 0;
+        }
+        return ans;

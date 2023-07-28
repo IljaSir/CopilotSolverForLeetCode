@@ -1,0 +1,242 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = s.size();
+        int mod = 1e9 + 7;
+        vector<int> fact(n + 1, 1);
+        for (int i = 1; i <= n; i++) {
+            fact[i] = (fact[i - 1] * i) % mod;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            vector<int> cnt(26, 0);
+            for (int j = i; j < n; j++) {
+                cnt[s[j] - 'a']++;
+            }
+            for (int j = 0; j < s[i] - 'a'; j++) {
+                if (cnt[j] == 0) {
+                    continue;
+                }
+                int cur = fact[n - i - 1];
+                for (int k = 0; k < 26; k++) {
+                    cur = (cur * pow(fact[cnt[k]], mod - 2, mod)) % mod;
+                }
+                ans = (ans + cur) % mod;
+            }
+            cnt[s[i] - 'a']--;
+        }
+        return ans;
+    }
+    int pow(int x, int n, int mod) {
+        if (n == 0) {
+            return 1;
+        }
+        int half = pow(x, n / 2, mod);
+        int ret = (half * half) % mod;
+        if (n % 2) {
+            ret = (ret * x) % mod;
+        }
+        return ret;
+
+=======
+
+        int n = s.size();
+        vector<int> fact(n + 1);
+        fact[0] = 1;
+        for (int i = 1; i <= n; ++i)
+            fact[i] = (long long)fact[i - 1] * i % mod;
+        vector<int> cnt(26);
+        int res = 0;
+        for (int i = n - 1; i >= 0; --i) {
+            int cur = 0;
+            for (int j = 0; j < s[i] - 'a'; ++j)
+                cur = (cur + cnt[j]) % mod;
+            res = (res + (long long)cur * fact[n - i - 1]) % mod;
+            ++cnt[s[i] - 'a'];
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        int mod = 1e9 + 7;
+        vector<int> fact(n + 1, 1);
+        for (int i = 1; i <= n; i++) {
+            fact[i] = 1ll * fact[i - 1] * i % mod;
+        }
+        int ans = 0;
+        vector<int> cnt(26, 0);
+        for (int i = n - 1; i >= 0; i--) {
+            int c = s[i] - 'a';
+            int smaller = 0;
+            for (int j = 0; j < c; j++) {
+                smaller += cnt[j];
+            }
+            ans = (ans + 1ll * smaller * fact[n - i - 1]) % mod;
+            for (int j = c + 1; j < 26; j++) {
+                ans = (ans + 1ll * cnt[j] * fact[n - i - 1]) % mod;
+            }
+            cnt[c]++;
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int n = s.size();
+        vector<int> fact(n + 1, 1);
+        for (int i = 1; i <= n; ++i) {
+            fact[i] = (long long)fact[i - 1] * i % 1000000007;
+        }
+        for (int i = 0; i < n; ++i) {
+            int cnt = 0;
+            for (int j = i + 1; j < n; ++j) {
+                if (s[j] < s[i]) {
+                    ++cnt;
+                }
+            }
+            res = (res + (long long)cnt * fact[n - i - 1]) % 1000000007;
+            for (int j = i + 1; j < n; ++j) {
+                if (s[j] == s[i]) {
+                    swap(s[j], s[i]);
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int MOD = 1e9 + 7;
+        int N = s.size();
+        vector<int> fact(N + 1, 1);
+        for (int i = 1; i <= N; ++i)
+            fact[i] = 1LL * fact[i - 1] * i % MOD;
+
+        vector<int> count(26, 0);
+        int res = 0;
+        for (int i = N - 1; i >= 0; --i) {
+            int c = s[i] - 'a';
+            int less = 0;
+            for (int j = 0; j < c; ++j)
+                less += count[j];
+            res = (res + 1LL * less * fact[N - i - 1]) % MOD;
+            for (int j = c; j < 26; ++j)
+                count[j]++;
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int n = s.size();
+        vector<int> fact(n+1, 1);
+        for(int i = 1; i <= n; i++) {
+            fact[i] = (fact[i-1] * i) % mod;
+        }
+        vector<int> cnt(26);
+        int ans = 0;
+        for(int i = n-1; i >= 0; i--) {
+            int c = s[i] - 'a';
+            for(int j = 0; j < c; j++) {
+                ans = (ans + cnt[j] * fact[n-i-1]) % mod;
+            }
+            cnt[c]++;
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        int cnt[26] = {0};
+        int fac[n+1];
+        fac[0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            fac[i] = 1ll * fac[i-1] * i % 1000000007;
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int less = 0;
+            for (int j = s[i] - 'a' + 1; j < 26; ++j) {
+                less = (less + cnt[j]) % 1000000007;
+            }
+            res = (res + 1ll * less * fac[n-i-1]) % 1000000007;
+            for (int j = s[i] - 'a'; j >= 0; --j) {
+                cnt[j] = (cnt[j] + fac[n-i-1]) % 1000000007;
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        vector<int> f(26, 0);
+        for (auto c : s) {
+            f[c - 'a']++;
+        }
+        long long ans = 0;
+        long long fact = 1;
+        for (int i = 1; i <= n; i++) {
+            fact = (fact * i) % 1000000007;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < s[i] - 'a'; j++) {
+                if (f[j] > 0) {
+                    f[j]--;
+                    long long tmp = fact;
+                    for (int k = 0; k < 26; k++) {
+                        for (int l = 1; l <= f[k]; l++) {
+                            tmp = (tmp * modInv(l)) % 1000000007;
+                        }
+                    }
+                    ans = (ans + tmp) % 1000000007;
+                    f[j]++;
+                }
+            }
+            f[s[i] - 'a']--;
+            fact = (fact * modInv(n - i)) % 1000000007;
+        }
+        return ans;
+    }
+    
+    long long modInv(long long x) {
+        return powMod(x, 1000000007 - 2);
+    }
+    
+    long long powMod(long long x, long long y) {
+        long long ans = 1;
+        while (y > 0) {
+            if (y & 1) {
+                ans = (ans * x) % 1000000007;
+            }
+            y >>= 1;
+            x = (x * x) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        vector<int> cnt(26);
+        for (auto c : s) {
+            ++cnt[c - 'a'];
+        }
+        long long res = 0, fact = 1;
+        for (int i = 0; i < s.size(); ++i) {
+            fact = fact * (i + 1) % 1000000007;
+            for (int j = 0; j < s[i] - 'a'; ++j) {
+                if (cnt[j]) {
+                    long long cur = fact;
+                    for (int k = 0; k < 26; ++k) {
+                        if (k != j) {
+                            for (int l = 1; l <= cnt[k]; ++l) {
+                                cur = cur * l % 1000000007;
+                            }
+                        }
+                    }
+                    res = (res + cur * cnt[j]) % 1000000007;
+                }
+            }
+            --cnt[s[i] - 'a'];
+        }
+        return res;

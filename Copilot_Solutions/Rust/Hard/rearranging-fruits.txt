@@ -1,0 +1,120 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        let mut sum1 = basket1.iter().fold(0, |acc, &x| acc + x);
+        let mut sum2 = basket2.iter().fold(0, |acc, &x| acc + x);
+        let mut sum = sum1 + sum2;
+        let mut dp = vec![vec![0; 3]; 3];
+        for i in 0..3 {
+            for j in 0..3 {
+                dp[i][j] = if basket1[i] == basket2[j] { sum - basket1[i] } else { sum };
+            }
+        }
+        for i in 0..3 {
+            for j in 0..3 {
+                if i != j {
+                    for k in 0..3 {
+                        if i != k && j != k {
+                            dp[i][j] = std::cmp::min(dp[i][j], dp[i][k] + dp[k][j] - basket2[k]);
+                        }
+                    }
+                }
+            }
+        }
+        let mut res = std::i64::MAX;
+        for i in 0..3 {
+            for j in 0..3 {
+                if i != j {
+                    res = std::cmp::min(res, dp[i][j]);
+                }
+            }
+        }
+        res as i64
+
+=======
+
+        let mut b1 = basket1.clone();
+        let mut b2 = basket2.clone();
+        b1.sort();
+        b2.sort();
+        
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = 0;
+        let mut res = std::i64::MAX;
+        while i < b1.len() && j < b2.len() {
+            if b1[i] == b2[j] {
+                res = res.min(b1[i] as i64 + b2[j] as i64);
+                i += 1;
+                j += 1;
+            } else if b1[i] < b2[j] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        
+        let mut sum = 0;
+        let mut i = 0;
+        let mut j = 0;
+        while i < basket1.len() && j < basket2.len() {
+            if basket1[i] == basket2[j] {
+                sum += basket1[i] as i64;
+                i += 1;
+                j += 1;
+            } else if basket1[i] < basket2[j] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        
+        if res == std::i64::MAX {
+            return -1;
+        }
+        res.min(sum)
+
+=======
+
+        let n = basket1.len();
+        let mut dp = vec![vec![vec![0; 3]; 3]; n + 1];
+        for i in 1..=n {
+            let b1 = basket1[i - 1];
+            let b2 = basket2[i - 1];
+            for j in 0..3 {
+                for k in 0..3 {
+                    if j == k {
+                        continue;
+                    }
+                    let mut cost = 0;
+                    if j != 0 {
+                        cost = dp[i - 1][j][k];
+                    }
+                    if k != 0 {
+                        cost = std::cmp::max(cost, dp[i - 1][j][k]);
+                    }
+                    if j == 0 {
+                        cost += b1;
+                    }
+                    if k == 0 {
+                        cost += b2;
+                    }
+                    dp[i][j][k] = cost;
+                }
+            }
+        }
+        let mut res = 0;
+        for j in 0..3 {
+            for k in 0..3 {
+                if j == k {
+                    continue;
+                }
+                res = std::cmp::max(res, dp[n][j][k]);
+            }
+        }
+        if res == 0 {
+            -1
+        } else {
+            res as i64
+        }

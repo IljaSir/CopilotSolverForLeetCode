@@ -1,0 +1,176 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        unordered_map<int, int> row, col, diag1, diag2;
+        unordered_set<int> lampSet;
+        for (auto& lamp : lamps) {
+            int x = lamp[0], y = lamp[1];
+            row[x]++;
+            col[y]++;
+            diag1[x + y]++;
+            diag2[x - y]++;
+            lampSet.insert(x * n + y);
+        }
+        vector<int> ans;
+        for (auto& query : queries) {
+            int x = query[0], y = query[1];
+            if (row[x] > 0 || col[y] > 0 || diag1[x + y] > 0 || diag2[x - y] > 0) {
+                ans.push_back(1);
+            } else {
+                ans.push_back(0);
+            }
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    if (lampSet.count(i * n + j)) {
+                        row[i]--;
+                        col[j]--;
+                        diag1[i + j]--;
+                        diag2[i - j]--;
+                        lampSet.erase(i * n + j);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        unordered_set<string> lamp;
+        unordered_map<int, int> row;
+        unordered_map<int, int> col;
+        unordered_map<int, int> diag1;
+        unordered_map<int, int> diag2;
+        for (auto& l : lamps) {
+            lamp.insert(to_string(l[0]) + "," + to_string(l[1]));
+            row[l[0]]++;
+            col[l[1]]++;
+            diag1[l[0] - l[1]]++;
+            diag2[l[0] + l[1]]++;
+        }
+        for (auto& q : queries) {
+            if (row[q[0]] > 0 || col[q[1]] > 0 || diag1[q[0] - q[1]] > 0 || diag2[q[0] + q[1]] > 0) {
+                ans.push_back(1);
+            } else {
+                ans.push_back(0);
+            }
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    int x = q[0] + i;
+                    int y = q[1] + j;
+                    if (lamp.find(to_string(x) + "," + to_string(y)) != lamp.end()) {
+                        lamp.erase(to_string(x) + "," + to_string(y));
+                        row[x]--;
+                        col[y]--;
+                        diag1[x - y]--;
+                        diag2[x + y]--;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        unordered_map<int, int> row, col, diag1, diag2;
+        unordered_set<int> lamp;
+        for (auto& l : lamps) {
+            int x = l[0], y = l[1];
+            row[x]++;
+            col[y]++;
+            diag1[x - y]++;
+            diag2[x + y]++;
+            lamp.insert(x * n + y);
+        }
+        for (auto& q : queries) {
+            int x = q[0], y = q[1];
+            if (row[x] > 0 || col[y] > 0 || diag1[x - y] > 0 || diag2[x + y] > 0)
+                ans.push_back(1);
+            else
+                ans.push_back(0);
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    if (lamp.count(i * n + j)) {
+                        row[i]--;
+                        col[j]--;
+                        diag1[i - j]--;
+                        diag2[i + j]--;
+                        lamp.erase(i * n + j);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        unordered_map<int, int> row, col, diag1, diag2;
+        unordered_set<long long> lamp;
+        for (auto& l: lamps) {
+            int r = l[0], c = l[1];
+            row[r]++;
+            col[c]++;
+            diag1[r - c]++;
+            diag2[r + c]++;
+            lamp.insert(((long long)r << 32) | c);
+        }
+        for (auto& q: queries) {
+            int r = q[0], c = q[1];
+            if (row[r] || col[c] || diag1[r - c] || diag2[r + c]) {
+                ans.push_back(1);
+            } else {
+                ans.push_back(0);
+            }
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    int nr = r + i, nc = c + j;
+                    if (lamp.count(((long long)nr << 32) | nc)) {
+                        lamp.erase(((long long)nr << 32) | nc);
+                        row[nr]--;
+                        col[nc]--;
+                        diag1[nr - nc]--;
+                        diag2[nr + nc]--;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        unordered_map<int, int> row, col;
+        unordered_map<int, int> diag1, diag2;
+        unordered_set<int> lamp;
+        for (auto lamp: lamps) {
+            int x = lamp[0], y = lamp[1];
+            row[x]++;
+            col[y]++;
+            diag1[x+y]++;
+            diag2[x-y]++;
+            lamp.insert(x * n + y);
+        }
+        for (auto query: queries) {
+            int x = query[0], y = query[1];
+            if (row[x] || col[y] || diag1[x+y] || diag2[x-y]) {
+                ans.push_back(1);
+            } else {
+                ans.push_back(0);
+            }
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    int xx = x + i, yy = y + j;
+                    if (lamp.count(xx * n + yy)) {
+                        lamp.erase(xx * n + yy);
+                        row[xx]--;
+                        col[yy]--;
+                        diag1[xx+yy]--;
+                        diag2[xx-yy]--;
+                    }
+                }
+            }
+        }
+        return ans;

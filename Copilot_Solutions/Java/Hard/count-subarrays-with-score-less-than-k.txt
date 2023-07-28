@@ -1,0 +1,195 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        long ans = 0;
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 0; i <= n; ++i) {
+            while (!deque.isEmpty() && prefix[i] <= prefix[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            while (!deque.isEmpty() && prefix[i] - prefix[deque.peekFirst()] >= k) {
+                deque.pollFirst();
+            }
+            ans += deque.size();
+            deque.offerLast(i);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        long[] prefix = new long[n];
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+        }
+        long count = 0;
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!deque.isEmpty() && prefix[i] - prefix[deque.peekFirst()] >= k) {
+                deque.pollFirst();
+            }
+            count += deque.size();
+            while (!deque.isEmpty() && prefix[i] <= prefix[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+        }
+        return count;
+
+=======
+
+        long ans = 0;
+        int n = nums.length;
+        long[] sum = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        for (int i = 0; i < n; i++) {
+            int left = i, right = n;
+            while (left < right) {
+                int mid = (left + right) >> 1;
+                if (sum[mid + 1] - sum[i] < k) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            ans += left - i;
+        }
+        return ans;
+
+=======
+
+        long count = 0;
+        long sum = 0;
+        int left = 0;
+        for (int right = 0; right < nums.length; right++) {
+            sum += nums[right];
+            while (left <= right && sum * (right - left + 1) >= k) {
+                sum -= nums[left];
+                left++;
+            }
+            count += right - left + 1;
+        }
+        return count;
+
+=======
+
+        long count = 0;
+        long product = 1;
+        int left = 0;
+        for (int i = 0; i < nums.length; i++) {
+            product *= nums[i];
+            while (product >= k) {
+                product /= nums[left];
+                left++;
+            }
+            count += i - left + 1;
+        }
+        return count;
+
+=======
+
+        long sum = 0;
+        long res = 0;
+        int left = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            while (sum * (i - left + 1) >= k) {
+                sum -= nums[left++];
+            }
+            res += i - left + 1;
+        }
+        return res;
+
+=======
+
+        long sum = 0;
+        long res = 0;
+        int l = 0;
+        int r = 0;
+        int n = nums.length;
+        while (r < n) {
+            sum += nums[r];
+            while (sum * (r - l + 1) >= k) {
+                sum -= nums[l];
+                l++;
+            }
+            res += r - l + 1;
+            r++;
+        }
+        return res;
+
+=======
+
+        long score = 0;
+        long count = 0;
+        int left = 0;
+        int right = 0;
+        while (right < nums.length) {
+            score += nums[right];
+            while (score >= k && left <= right) {
+                score -= nums[left++];
+            }
+            count += right - left + 1;
+            right++;
+        }
+        return count;
+
+=======
+
+        long result = 0;
+        int left = 0;
+        int right = 0;
+        long sum = 0L;
+        long len = 0L;
+        while (right < nums.length) {
+            sum += nums[right];
+            len += 1;
+            while (sum * len >= k) {
+                sum -= nums[left];
+                len -= 1;
+                left++;
+            }
+            result += len;
+            right++;
+        }
+        return result;
+
+=======
+
+        long res = 0;
+        int n = nums.length;
+        int[] prevLess = new int[n];
+        int[] nextLess = new int[n];
+        Arrays.fill(nextLess, n);
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                nextLess[stack.pop()] = i;
+            }
+            if (!stack.isEmpty()) {
+                prevLess[i] = stack.peek();
+            }
+            stack.push(i);
+        }
+        for (int i = 0; i < n; i++) {
+            long sum = 0;
+            int j = i;
+            while (j < n) {
+                sum += nums[j];
+                if (sum * (nextLess[j] - i) >= k) {
+                    break;
+                }
+                j = nextLess[j];
+            }
+            res += j - i;
+        }
+        return res;

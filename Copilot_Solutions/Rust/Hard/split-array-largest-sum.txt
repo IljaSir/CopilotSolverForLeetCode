@@ -1,0 +1,225 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut sums = vec![0; n + 1];
+        for i in 0..n {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        let mut dp = vec![vec![0; k as usize + 1]; n + 1];
+        for i in 0..=n {
+            dp[i][0] = sums[n] - sums[i];
+        }
+        for i in (0..n).rev() {
+            for j in 1..=k as usize {
+                let mut min = std::i32::MAX;
+                for l in i + 1..=n {
+                    let val = std::cmp::max(dp[l][j - 1], sums[l] - sums[i]);
+                    if val < min {
+                        min = val;
+                    } else {
+                        break;
+                    }
+                }
+                dp[i][j] = min;
+            }
+        }
+        dp[0][k as usize]
+
+=======
+
+        let k = k as usize;
+        let n = nums.len();
+        let mut sums = vec![0; n + 1];
+        for i in 0..n {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        let mut dp = vec![vec![0; k + 1]; n + 1];
+        for i in 0..=n {
+            dp[i][0] = sums[n] - sums[i];
+        }
+        for i in (0..n).rev() {
+            for j in 1..=k {
+                dp[i][j] = std::i32::MAX;
+                for p in i + 1..=n {
+                    dp[i][j] = std::cmp::min(dp[i][j], std::cmp::max(dp[p][j - 1], sums[p] - sums[i]));
+                }
+            }
+        }
+        dp[0][k]
+
+=======
+
+        let n = nums.len();
+        let mut dp = vec![vec![std::i32::MAX; k as usize + 1]; n + 1];
+        let mut sub = vec![0; n + 1];
+        for i in 0..n {
+            sub[i + 1] = sub[i] + nums[i];
+        }
+        dp[0][0] = 0;
+        for i in 1..=n {
+            for j in 1..=k as usize {
+                for p in 0..i {
+                    dp[i][j] = std::cmp::min(dp[i][j], std::cmp::max(dp[p][j - 1], sub[i] - sub[p]));
+                }
+            }
+        }
+        dp[n][k as usize]
+
+=======
+
+        let mut left = 0;
+        let mut right = 0;
+        for n in nums.iter() {
+            left = left.max(*n);
+            right += n;
+        }
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let mut sum = 0;
+            let mut cnt = 1;
+            for n in nums.iter() {
+                sum += n;
+                if sum > mid {
+                    cnt += 1;
+                    sum = *n;
+                }
+            }
+            if cnt > k {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        left
+
+=======
+
+        let mut dp = vec![vec![std::i32::MAX; nums.len() + 1]; k as usize + 1];
+        let mut sums = vec![0; nums.len() + 1];
+        for i in 0..nums.len() {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        dp[0][0] = 0;
+        for i in 1..=k as usize {
+            for j in 1..=nums.len() {
+                for p in 0..j {
+                    dp[i][j] = std::cmp::min(dp[i][j], std::cmp::max(dp[i - 1][p], sums[j] - sums[p]));
+                }
+            }
+        }
+        dp[k as usize][nums.len()]
+
+=======
+
+        let (mut left, mut right) = (0, 0);
+        for n in nums.iter() {
+            left = left.max(*n);
+            right += n;
+        }
+
+        while left < right {
+            let mid = left + (right - left) / 2;
+            let mut count = 1;
+            let mut sum = 0;
+            for n in nums.iter() {
+                if sum + n > mid {
+                    count += 1;
+                    sum = *n;
+                } else {
+                    sum += n;
+                }
+            }
+            if count > k {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        left
+
+=======
+
+        let mut l = 0;
+        let mut r = 0;
+        for i in &nums {
+            l = l.max(*i);
+            r += i;
+        }
+        while l < r {
+            let mid = (l + r) >> 1;
+            if Solution::check(&nums, k, mid) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        l
+    }
+    fn check(nums: &Vec<i32>, k: i32, t: i32) -> bool {
+        let mut sum = 0;
+        let mut cnt = 1;
+        for i in nums {
+            if sum + i > t {
+                cnt += 1;
+                sum = *i;
+            } else {
+                sum += i;
+            }
+        }
+        cnt <= k
+
+=======
+
+        let mut l = *nums.iter().max().unwrap();
+        let mut r = nums.iter().sum::<i32>();
+        while l < r {
+            let m = (l + r) / 2;
+            let mut cnt = 1;
+            let mut sum = 0;
+            for x in nums.iter() {
+                if sum + x > m {
+                    cnt += 1;
+                    sum = *x;
+                } else {
+                    sum += *x;
+                }
+            }
+            if cnt <= k {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        l
+
+=======
+
+        let (mut l, mut r) = (0, 0);
+        for &v in nums.iter() {
+            l = l.max(v);
+            r += v;
+        }
+        while l < r {
+            let m = l + (r - l) / 2;
+            if Self::check(&nums, k, m) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        l
+    }
+    fn check(nums: &[i32], k: i32, t: i32) -> bool {
+        let mut sum = 0;
+        let mut k = k;
+        for &v in nums.iter() {
+            if sum + v > t {
+                k -= 1;
+                sum = v;
+            } else {
+                sum += v;
+            }
+        }
+        k > 0

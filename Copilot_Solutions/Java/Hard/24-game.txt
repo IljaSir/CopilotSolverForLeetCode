@@ -1,0 +1,454 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        double[] nums = new double[4];
+        for (int i = 0; i < 4; i++) {
+            nums[i] = cards[i];
+        }
+        return solve(nums);
+    }
+    private boolean solve(double[] nums) {
+        if (nums.length == 1) {
+            return Math.abs(nums[0] - 24) < 1e-6;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                double[] nums2 = new double[nums.length - 1];
+                for (int k = 0, idx = 0; k < nums.length; k++) {
+                    if (k != i && k != j) {
+                        nums2[idx++] = nums[k];
+                    }
+                }
+                for (double d : compute(nums[i], nums[j])) {
+                    nums2[nums.length - 2] = d;
+                    if (solve(nums2)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int card : cards) {
+            list.add((double) card);
+        }
+        return dfs(list);
+    }
+
+    public boolean dfs(List<Double> list) {
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24) < 1e-6;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                List<Double> next = new ArrayList<>();
+                for (int k = 0; k < list.size(); k++) {
+                    if (k != i && k != j) {
+                        next.add(list.get(k));
+                    }
+                }
+                for (int k = 0; k < 4; k++) {
+                    if (k < 2 && j == i + 1) {
+                        continue;
+                    }
+                    if (k == 0) {
+                        next.add(list.get(i) + list.get(j));
+                    } else if (k == 1) {
+                        next.add(list.get(i) * list.get(j));
+                    } else if (k == 2) {
+                        next.add(list.get(i) - list.get(j));
+                    } else {
+                        if (Math.abs(list.get(j)) < 1e-6) {
+                            continue;
+                        }
+                        next.add(list.get(i) / list.get(j));
+                    }
+                    if (dfs(next)) {
+                        return true;
+                    }
+                    next.remove(next.size() - 1);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        double[] nums = new double[cards.length];
+        for (int i = 0; i < cards.length; i++) {
+            nums[i] = cards[i];
+        }
+        return solve(nums);
+    }
+    private boolean solve(double[] nums) {
+        if (nums.length == 1) {
+            return Math.abs(nums[0] - 24) < 1e-6;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                double[] nums2 = new double[nums.length - 1];
+                for (int k = 0, idx = 0; k < nums.length; k++) {
+                    if (k != i && k != j) {
+                        nums2[idx++] = nums[k];
+                    }
+                }
+                for (double v : compute(nums[i], nums[j])) {
+                    nums2[nums.length - 2] = v;
+                    if (solve(nums2)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int card : cards) {
+            list.add((double) card);
+        }
+        return helper(list);
+    }
+    private boolean helper(List<Double> list) {
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24) < 1e-6;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                List<Double> next = new ArrayList<>();
+                for (int k = 0; k < list.size(); k++) {
+                    if (k != i && k != j) {
+                        next.add(list.get(k));
+                    }
+                }
+                for (int k = 0; k < 6; k++) {
+                    if (k < 4 && i > j) {
+                        continue;
+                    }
+                    if (k == 0) {
+                        next.add(list.get(i) + list.get(j));
+                    } else if (k == 1) {
+                        next.add(list.get(i) * list.get(j));
+                    } else if (k == 2) {
+                        next.add(list.get(i) - list.get(j));
+                    } else if (k == 3) {
+                        if (list.get(j) != 0) {
+                            next.add(list.get(i) / list.get(j));
+                        } else {
+                            continue;
+                        }
+                    } else if (k == 4) {
+                        next.add(list.get(j) - list.get(i));
+                    } else if (k == 5) {
+                        if (list.get(i) != 0) {
+                            next.add(list.get(j) / list.get(i));
+                        } else {
+                            continue;
+                        }
+                    }
+                    if (helper(next)) {
+                        return true;
+                    }
+                    next.remove(next.size() - 1);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int card : cards) {
+            list.add((double) card);
+        }
+        return judgePoint24(list);
+    }
+
+    private boolean judgePoint24(List<Double> list) {
+        if (list.size() == 0) {
+            return false;
+        }
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24) < 1e-6;
+        }
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (i != j) {
+                    List<Double> list2 = new ArrayList<>();
+                    for (int k = 0; k < size; k++) {
+                        if (k != i && k != j) {
+                            list2.add(list.get(k));
+                        }
+                    }
+                    for (int k = 0; k < 4; k++) {
+                        if (k < 2 && i > j) {
+                            continue;
+                        }
+                        if (k == 0) {
+                            list2.add(list.get(i) + list.get(j));
+                        } else if (k == 1) {
+                            list2.add(list.get(i) * list.get(j));
+                        } else if (k == 2) {
+                            list2.add(list.get(i) - list.get(j));
+                        } else {
+                            if (Math.abs(list.get(j)) < 1e-6) {
+                                continue;
+                            }
+                            list2.add(list.get(i) / list.get(j));
+                        }
+                        if (judgePoint24(list2)) {
+                            return true;
+                        }
+                        list2.remove(list2.size() - 1);
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int card : cards) {
+            list.add((double) card);
+        }
+        return judgePoint24(list);
+    }
+
+    private boolean judgePoint24(List<Double> list) {
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24) < 0.001;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                List<Double> next = new ArrayList<>();
+                for (int k = 0; k < list.size(); k++) {
+                    if (k != i && k != j) {
+                        next.add(list.get(k));
+                    }
+                }
+                for (int k = 0; k < 4; k++) {
+                    if (k < 2 && i > j) {
+                        continue;
+                    }
+                    if (k == 0) {
+                        next.add(list.get(i) + list.get(j));
+                    } else if (k == 1) {
+                        next.add(list.get(i) * list.get(j));
+                    } else if (k == 2) {
+                        next.add(list.get(i) - list.get(j));
+                    } else {
+                        if (list.get(j) < 0.001) {
+                            continue;
+                        }
+                        next.add(list.get(i) / list.get(j));
+                    }
+                    if (judgePoint24(next)) {
+                        return true;
+                    }
+                    next.remove(next.size() - 1);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int card: cards) {
+            list.add((double) card);
+        }
+        return solve(list);
+    }
+    
+    private boolean solve(List<Double> list) {
+        if (list.size() == 0) {
+            return false;
+        }
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24) < 0.001;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (i != j) {
+                    List<Double> list2 = new ArrayList<>();
+                    for (int k = 0; k < list.size(); k++) {
+                        if (k != i && k != j) {
+                            list2.add(list.get(k));
+                        }
+                    }
+                    for (int k = 0; k < 4; k++) {
+                        if (k < 2 && j > i) {
+                            continue;
+                        }
+                        if (k == 0) {
+                            list2.add(list.get(i) + list.get(j));
+                        } else if (k == 1) {
+                            list2.add(list.get(i) * list.get(j));
+                        } else if (k == 2) {
+                            list2.add(list.get(i) - list.get(j));
+                        } else if (k == 3) {
+                            if (list.get(j) != 0) {
+                                list2.add(list.get(i) / list.get(j));
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (solve(list2)) {
+                            return true;
+                        }
+                        list2.remove(list2.size() - 1);
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        return judgePoint24(new double[]{cards[0], cards[1], cards[2], cards[3]});
+    }
+    public boolean judgePoint24(double[] cards) {
+        if (cards.length == 1) {
+            return Math.abs(cards[0] - 24) < 1e-6;
+        }
+        for (int i = 0; i < cards.length; i++) {
+            for (int j = 0; j < cards.length; j++) {
+                if (i != j) {
+                    double[] next = new double[cards.length - 1];
+                    for (int k = 0, l = 0; k < cards.length; k++) {
+                        if (k != i && k != j) {
+                            next[l++] = cards[k];
+                        }
+                    }
+                    for (int k = 0; k < 4; k++) {
+                        if (k < 2 && j > i) {
+                            continue;
+                        }
+                        if (k == 0) {
+                            next[cards.length - 2] = cards[i] + cards[j];
+                        } else if (k == 1) {
+                            next[cards.length - 2] = cards[i] * cards[j];
+                        } else if (k == 2) {
+                            next[cards.length - 2] = cards[i] - cards[j];
+                        } else if (k == 3) {
+                            if (cards[j] != 0) {
+                                next[cards.length - 2] = cards[i] / cards[j];
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (judgePoint24(next)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Double> list = new ArrayList<>();
+        for (int i : cards) {
+            list.add((double) i);
+        }
+        return solve(list);
+    }
+    
+    public boolean solve(List<Double> list) {
+        if (list.size() == 1) {
+            return Math.abs(list.get(0) - 24.0) < 1e-6;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                List<Double> list2 = new ArrayList<>();
+                for (int k = 0; k < list.size(); k++) {
+                    if (k != i && k != j) {
+                        list2.add(list.get(k));
+                    }
+                }
+                for (int k = 0; k < 4; k++) {
+                    if (k < 2 && j == i + 1) {
+                        continue;
+                    }
+                    if (k == 0) {
+                        list2.add(list.get(i) + list.get(j));
+                    } else if (k == 1) {
+                        list2.add(list.get(i) * list.get(j));
+                    } else if (k == 2) {
+                        list2.add(list.get(i) - list.get(j));
+                    } else {
+                        if (list.get(j) == 0) {
+                            continue;
+                        }
+                        list2.add(list.get(i) / list.get(j));
+                    }
+                    if (solve(list2)) {
+                        return true;
+                    }
+                    list2.remove(list2.size() - 1);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        if (cards == null || cards.length == 0) {
+            return false;
+        }
+        List<Double> nums = new ArrayList<>();
+        for (int i = 0; i < cards.length; i++) {
+            nums.add((double) cards[i]);
+        }
+        return helper(nums);
+    }
+    private boolean helper(List<Double> nums) {
+        if (nums.size() == 1) {
+            return Math.abs(nums.get(0) - 24) < 0.001;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            for (int j = 0; j < nums.size(); j++) {
+                if (i != j) {
+                    List<Double> next = new ArrayList<>();
+                    for (int k = 0; k < nums.size(); k++) {
+                        if (k != i && k != j) {
+                            next.add(nums.get(k));
+                        }
+                    }
+                    for (int k = 0; k < 4; k++) {
+                        if (k < 2 && j > i) {
+                            continue;
+                        }
+                        if (k == 0) {
+                            next.add(nums.get(i) + nums.get(j));
+                        } else if (k == 1) {
+                            next.add(nums.get(i) * nums.get(j));
+                        } else if (k == 2) {
+                            next.add(nums.get(i) - nums.get(j));
+                        } else {
+                            if (nums.get(j) != 0) {
+                                next.add(nums.get(i) / nums.get(j));
+                            } else {
+                                continue;
+                            }
+                        }
+                        if (helper(next)) {
+                            return true;
+                        }
+                        next.remove(next.size() - 1);
+                    }
+                }
+            }
+        }
+        return false;

@@ -1,0 +1,182 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = points.length;
+        int res = Integer.MIN_VALUE;
+        Deque<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!q.isEmpty() && points[i][0] - points[q.peekFirst()][0] > k) {
+                q.pollFirst();
+            }
+            if (!q.isEmpty()) {
+                res = Math.max(res, points[i][0] + points[i][1] + points[q.peekFirst()][1] - points[q.peekFirst()][0]);
+            }
+            while (!q.isEmpty() && points[i][0] + points[i][1] - points[q.peekLast()][0] > points[i][0] + points[i][1] - points[q.peekLast()][1]) {
+                q.pollLast();
+            }
+            q.offer(i);
+        }
+        return res;
+
+=======
+
+        int n = points.length;
+        int[] dp = new int[n];
+        dp[0] = Integer.MIN_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, dp[i - 1] + points[i][0] - points[i][1]);
+            dp[i] = Math.max(dp[i - 1], points[i][1] - points[i][0] + max);
+            if (i > k) {
+                if (points[i - k][0] + points[i - k][1] > dp[i - k]) {
+                    max = Math.max(max, points[i - k][0] - points[i - k][1]);
+                }
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = points.length;
+        int ans = Integer.MIN_VALUE;
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.add(0);
+        for (int i = 1; i < n; i++) {
+            while (!dq.isEmpty() && points[i][0] - points[dq.peek()][0] > k) {
+                dq.poll();
+            }
+            if (!dq.isEmpty()) {
+                ans = Math.max(ans, points[i][0] + points[i][1] + points[dq.peek()][1] - points[dq.peek()][0]);
+            }
+            while (!dq.isEmpty() && points[i][1] - points[i][0] > points[dq.peekLast()][1] - points[dq.peekLast()][0]) {
+                dq.pollLast();
+            }
+            dq.add(i);
+        }
+        return ans;
+
+=======
+
+        int max = Integer.MIN_VALUE;
+        int i = 0;
+        int j = 1;
+        while (j < points.length) {
+            if (points[j][0] - points[i][0] > k) {
+                i++;
+            } else {
+                max = Math.max(max, points[j][0] + points[j][1] + points[i][0] - points[i][1]);
+                j++;
+            }
+        }
+        return max;
+
+=======
+
+        int n = points.length;
+        int[] dp = new int[n];
+        dp[0] = Integer.MIN_VALUE;
+        int res = Integer.MIN_VALUE;
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], points[i - 1][1] - points[i - 1][0]);
+            res = Math.max(res, dp[i] + points[i][1] + points[i][0]);
+            int j = i - 1;
+            while (j >= 0 && points[i][0] - points[j][0] <= k) {
+                res = Math.max(res, points[i][1] + points[i][0] + points[j][1] - points[j][0]);
+                j--;
+            }
+        }
+        return res;
+
+=======
+
+        int n = points.length;
+        int max = Integer.MIN_VALUE;
+        Deque<int[]> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            while (!q.isEmpty() && points[i][0] - q.peekFirst()[1] > k) {
+                q.pollFirst();
+            }
+            if (!q.isEmpty()) {
+                max = Math.max(max, points[i][0] + points[i][1] + q.peekFirst()[0]);
+            }
+            while (!q.isEmpty() && points[i][1] - points[i][0] >= q.peekLast()[0]) {
+                q.pollLast();
+            }
+            q.offerLast(new int[]{points[i][1] - points[i][0], points[i][0]});
+        }
+        return max;
+
+=======
+
+        int ans = Integer.MIN_VALUE;
+        int n = points.length;
+        Deque<Integer> dq = new ArrayDeque<>();
+        dq.addLast(0);
+        for(int i = 1; i < n; i++) {
+            while(!dq.isEmpty() && points[i][0] - points[dq.getFirst()][0] > k) {
+                dq.removeFirst();
+            }
+            if(!dq.isEmpty()) {
+                ans = Math.max(ans, points[i][0] + points[i][1] + points[dq.getFirst()][1] - points[dq.getFirst()][0]);
+            }
+            while(!dq.isEmpty() && points[i][0] + points[i][1] >= points[dq.getLast()][0] + points[dq.getLast()][1]) {
+                dq.removeLast();
+            }
+            dq.addLast(i);
+        }
+        return ans;
+
+=======
+
+        Deque<Integer> queue = new LinkedList<>();
+        int n = points.length;
+        int ans = Integer.MIN_VALUE;
+        for(int i = 0; i < n; i++){
+            while(!queue.isEmpty() && points[i][0] - points[queue.peek()][0] > k){
+                queue.poll();
+            }
+            if(!queue.isEmpty()){
+                ans = Math.max(ans, points[i][0] + points[i][1] + points[queue.peek()][1] - points[queue.peek()][0]);
+            }
+            while(!queue.isEmpty() && points[i][1] - points[i][0] > points[queue.peekLast()][1] - points[queue.peekLast()][0]){
+                queue.pollLast();
+            }
+            queue.offer(i);
+        }
+        return ans;
+
+=======
+
+        int n = points.length;
+        int max = Integer.MIN_VALUE;
+        int i = 0;
+        int j = 1;
+        while (j < n) {
+            while (i < j && points[j][0] - points[i][0] > k) {
+                i++;
+            }
+            max = Math.max(max, points[i][1] + points[j][1] + points[j][0] - points[i][0]);
+            j++;
+        }
+        return max;
+
+=======
+
+        // y1 + y2 + |x1 - x2| = y1 - x1 + y2 + x2
+        // y1 + y2 + x1 - x2 = y1 - x1 + y2 + x2
+        int max = Integer.MIN_VALUE;
+        Deque<int[]> queue = new ArrayDeque<>();
+        for (int[] point : points) {
+            while (!queue.isEmpty() && point[0] - queue.peekFirst()[0] > k) {
+                queue.pollFirst();
+            }
+            if (!queue.isEmpty()) {
+                max = Math.max(max, point[0] + point[1] + queue.peekFirst()[1] - queue.peekFirst()[0]);
+            }
+            while (!queue.isEmpty() && point[1] - point[0] >= queue.peekLast()[1] - queue.peekLast()[0]) {
+                queue.pollLast();
+            }
+            queue.offerLast(point);
+        }
+        return max;

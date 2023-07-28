@@ -1,0 +1,423 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new HashMap<>());
+            graph.putIfAbsent(edge[1], new HashMap<>());
+            graph.get(edge[0]).put(edge[1], edge[2]);
+            graph.get(edge[1]).put(edge[0], edge[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, 0});
+        Set<Integer> seen = new HashSet<>();
+        Map<Integer, Integer> moves = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (!seen.add(cur[0])) continue;
+            moves.put(cur[0], cur[1]);
+            if (graph.containsKey(cur[0])) {
+                for (int nei : graph.get(cur[0]).keySet()) {
+                    int move = cur[1] + graph.get(cur[0]).get(nei) + 1;
+                    if (!seen.contains(nei) && move > 0) {
+                        pq.offer(new int[]{nei, move});
+                    }
+                }
+            }
+        }
+        int res = moves.size();
+        for (int[] edge : edges) {
+            int a = edge[0], b = edge[1], len = edge[2];
+            int aMove = moves.getOrDefault(a, 0);
+            int bMove = moves.getOrDefault(b, 0);
+            res += Math.min(len, aMove + bMove);
+        }
+        for (int i : restricted) {
+            if (moves.containsKey(i)) res--;
+        }
+        return res;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] edge : edges) {
+            graph[edge[0]][edge[1]] = edge[2] + 1;
+            graph[edge[1]][edge[0]] = edge[2] + 1;
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, -1);
+        dist[0] = 0;
+        boolean[] visited = new boolean[n];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0];
+            int d = cur[1];
+            if (visited[node]) {
+                continue;
+            }
+            visited[node] = true;
+            for (int i = 0; i < n; i++) {
+                if (graph[node][i] == 0) {
+                    continue;
+                }
+                int newD = d + graph[node][i];
+                if (newD > dist[i]) {
+                    dist[i] = newD;
+                    pq.offer(new int[]{i, newD});
+                }
+                graph[i][node] = 0;
+            }
+        }
+        int ans = 0;
+        for (int node : restricted) {
+            if (dist[node] >= 0) {
+                ans++;
+            }
+        }
+        for (int[] edge : edges) {
+            int a = edge[0];
+            int b = edge[1];
+            int w = edge[2];
+            if (dist[a] >= 0 && dist[b] >= 0) {
+                ans += Math.min(dist[a] + dist[b] + 1, w);
+            } else {
+                ans += Math.min(dist[a] + dist[b] + 1, w + Math.max(dist[a], dist[b]));
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] e : edges) {
+            graph.putIfAbsent(e[0], new HashMap<>());
+            graph.putIfAbsent(e[1], new HashMap<>());
+            graph.get(e[0]).put(e[1], e[2]);
+            graph.get(e[1]).put(e[0], e[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, 0});
+        Map<Integer, Integer> dist = new HashMap<>();
+        dist.put(0, 0);
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (dist.get(cur[0]) < cur[1]) continue;
+            for (int nei : graph.getOrDefault(cur[0], new HashMap<>()).keySet()) {
+                int d = cur[1] + graph.get(cur[0]).get(nei) + 1;
+                if (d > dist.getOrDefault(nei, 0)) {
+                    dist.put(nei, d);
+                    pq.offer(new int[]{nei, d});
+                }
+            }
+        }
+        int res = dist.size();
+        for (int[] e : edges) {
+            int a = dist.getOrDefault(e[0], 0);
+            int b = dist.getOrDefault(e[1], 0);
+            res += Math.min(a + b, e[2]);
+        }
+        for (int r : restricted) {
+            if (dist.containsKey(r)) res--;
+        }
+        return res;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] e : edges) {
+            graph[e[0]][e[1]] = e[2] + 1;
+            graph[e[1]][e[0]] = e[2] + 1;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i : restricted) set.add(i);
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int u = cur[0], d = cur[1];
+            if (d > dist[u]) continue;
+            for (int v = 0; v < n; v++) {
+                if (graph[u][v] == 0) continue;
+                int nd = d + graph[u][v];
+                if (nd < dist[v]) {
+                    dist[v] = nd;
+                    pq.offer(new int[]{v, nd});
+                }
+            }
+        }
+        int res = set.contains(0) ? 0 : 1;
+        for (int i = 1; i < n; i++) {
+            if (set.contains(i)) continue;
+            res++;
+            for (int j = i + 1; j < n; j++) {
+                if (set.contains(j)) continue;
+                if (dist[i] == Integer.MAX_VALUE || dist[j] == Integer.MAX_VALUE) continue;
+                int d = dist[i] + dist[j] + 1;
+                if (d <= graph[i][j]) {
+                    res += graph[i][j] - d;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(0);
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            for (int v : graph.get(u)) {
+                if (dist[v] == Integer.MAX_VALUE) {
+                    dist[v] = dist[u] + 1;
+                    q.offer(v);
+                }
+            }
+        }
+        int ans = 0;
+        for (int r : restricted) {
+            if (dist[r] != Integer.MAX_VALUE) {
+                ans++;
+            }
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int w = edge[2];
+            if (dist[u] == Integer.MAX_VALUE && dist[v] == Integer.MAX_VALUE) {
+                continue;
+            }
+            if (dist[u] == Integer.MAX_VALUE) {
+                ans += Math.min(w, dist[v]);
+            } else if (dist[v] == Integer.MAX_VALUE) {
+                ans += Math.min(w, dist[u]);
+            } else {
+                ans += Math.min(w, dist[u] + dist[v]);
+                ans += Math.min(w - dist[u] - dist[v], 0);
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Set<Integer>> restrictedMap = new HashMap<>();
+        for (int i = 0; i < restricted.length; i++) {
+            restrictedMap.putIfAbsent(restricted[i], new HashSet<>());
+            restrictedMap.get(restricted[i]).add(i);
+        }
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.get(edge[0]).add(new int[]{edge[1], edge[2]});
+            graph.putIfAbsent(edge[1], new ArrayList<>());
+            graph.get(edge[1]).add(new int[]{edge[0], edge[2]});
+        }
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.add(new int[]{0, n - 1});
+        Set<Integer> visited = new HashSet<>();
+        int res = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (!visited.add(cur[0])) {
+                continue;
+            }
+            res++;
+            if (restrictedMap.containsKey(cur[0])) {
+                for (int i : restrictedMap.get(cur[0])) {
+                    if (cur[1] >= restricted[i]) {
+                        res += restricted[i] + 1;
+                        cur[1] -= restricted[i] + 1;
+                    } else {
+                        res += cur[1] + 1;
+                        cur[1] = -1;
+                    }
+                }
+            }
+            if (cur[1] <= 0) {
+                continue;
+            }
+            for (int[] next : graph.getOrDefault(cur[0], Collections.emptyList())) {
+                if (!visited.contains(next[0])) {
+                    pq.add(new int[]{next[0], Math.min(cur[1], next[1])});
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] restrictedSet = new int[n];
+        for (int i : restricted) {
+            restrictedSet[i] = 1;
+        }
+        int[][] graph = new int[n][n];
+        for (int[] e : edges) {
+            graph[e[0]][e[1]] = e[2] + 1;
+            graph[e[1]][e[0]] = e[2] + 1;
+        }
+        return reachableNodes(graph, restrictedSet);
+    }
+    
+    private int reachableNodes(int[][] graph, int[] restricted) {
+        int n = graph.length;
+        int[] distance = new int[n];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[0] = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0];
+            int dist = cur[1];
+            if (dist > distance[node]) continue;
+            for (int nei = 0; nei < n; nei++) {
+                if (graph[node][nei] > 0) {
+                    int d = dist + graph[node][nei];
+                    if (d < distance[nei]) {
+                        distance[nei] = d;
+                        pq.offer(new int[]{nei, d});
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (distance[i] != Integer.MAX_VALUE) ans++;
+        }
+        for (int[] e : graph) {
+            for (int i : e) {
+                if (i > 0) ans--;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (graph[i][j] > 0) {
+                    int d = distance[i] + distance[j] + 1;
+                    ans += Math.min(d, graph[i][j]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = edges.length;
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            int u = edges[i][0], v = edges[i][1], w = edges[i][2];
+            graph.computeIfAbsent(u, x -> new HashMap<>()).put(v, w);
+            graph.computeIfAbsent(v, x -> new HashMap<>()).put(u, w);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[] {0, 0});
+        boolean[] vis = new boolean[n];
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int u = cur[0];
+            if (vis[u]) continue;
+            vis[u] = true;
+            if (!graph.containsKey(u)) continue;
+            for (int v : graph.get(u).keySet()) {
+                int w = graph.get(u).get(v);
+                if (dist[v] > dist[u] + w + 1) {
+                    dist[v] = dist[u] + w + 1;
+                    pq.offer(new int[] {v, dist[v]});
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] && Arrays.binarySearch(restricted, i) < 0) ans++;
+        }
+        for (int i = 0; i < m; i++) {
+            int u = edges[i][0], v = edges[i][1], w = edges[i][2];
+            int d1 = dist[u] < Integer.MAX_VALUE ? dist[u] : 0;
+            int d2 = dist[v] < Integer.MAX_VALUE ? dist[v] : 0;
+            ans += Math.min(w, d1 + d2);
+            if (d1 < w) ans -= w - d1;
+            if (d2 < w) ans -= w - d2;
+        }
+        return ans;
+
+=======
+
+        return 0;
+
+=======
+
+        // 1. construct graph
+        // 2. bfs
+        // 3. dfs
+        // 4. calculate
+        // 5. return
+        // 1. construct graph
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            int a = edge[0];
+            int b = edge[1];
+            graph.computeIfAbsent(a, k -> new ArrayList<>()).add(new int[]{b, i});
+            graph.computeIfAbsent(b, k -> new ArrayList<>()).add(new int[]{a, i});
+        }
+        // 2. bfs
+        Set<Integer> restrictedSet = new HashSet<>();
+        for (int i : restricted) {
+            restrictedSet.add(i);
+        }
+        int[] reach = new int[n];
+        int[] maxReach = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        reach[0] = 1;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int[] neighbor : graph.getOrDefault(cur, new ArrayList<>())) {
+                int nei = neighbor[0];
+                int idx = neighbor[1];
+                int[] edge = edges[idx];
+                int a = edge[0];
+                int b = edge[1];
+                int total = edge[2];
+                if (reach[nei] == 0) {
+                    reach[nei] = 1;
+                    queue.offer(nei);
+                }
+                if (nei == a) {
+                    maxReach[nei] = Math.max(maxReach[nei], Math.min(total, maxReach[cur] + reach[cur] - 1));
+                } else {
+                    maxReach[nei] = Math.max(maxReach[nei], Math.min(total, maxReach[cur] + reach[cur] - 1));
+                }
+            }
+        }
+        // 3. dfs
+        int[] used = new int[edges.length];
+        dfs(graph, edges, 0, reach, maxReach, used);
+        // 4. calculate
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (reach[i] > 0) {
+                ans++;
+            }
+        }
+        for (int i

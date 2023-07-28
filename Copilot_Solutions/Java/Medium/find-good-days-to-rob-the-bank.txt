@@ -1,0 +1,268 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = security.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = security[0];
+        right[n - 1] = security[n - 1];
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.max(left[i - 1], security[i]);
+            right[n - 1 - i] = Math.max(right[n - i], security[n - 1 - i]);
+        }
+        List<Integer> res = new ArrayList<>();
+        for (int i = time; i < n - time; i++) {
+            if (left[i - time] >= security[i] && right[i + time] >= security[i]) {
+                res.add(i);
+            }
+        }
+        return res;
+
+=======
+
+        int n = security.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = security[0];
+        right[n - 1] = security[n - 1];
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.max(left[i - 1], security[i]);
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            right[i] = Math.max(right[i + 1], security[i]);
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int l = i - time;
+            int r = i + time;
+            boolean ok = true;
+            if (l >= 0 && left[l] < security[i]) {
+                ok = false;
+            }
+            if (r < n && right[r] < security[i]) {
+                ok = false;
+            }
+            if (ok) {
+                ans.add(i);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = security.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = security[0];
+        right[n-1] = security[n-1];
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.max(left[i-1], security[i]);
+        }
+        for (int i = n-2; i >= 0; i--) {
+            right[i] = Math.max(right[i+1], security[i]);
+        }
+        List<Integer> res = new ArrayList<>();
+        for (int i = time; i < n-time; i++) {
+            boolean isGood = true;
+            for (int j = i - time; j < i; j++) {
+                if (security[j] > security[j+1]) {
+                    isGood = false;
+                    break;
+                }
+            }
+            if (isGood) {
+                for (int j = i + 1; j <= i + time; j++) {
+                    if (security[j] > security[j-1]) {
+                        isGood = false;
+                        break;
+                    }
+                }
+            }
+            if (isGood) res.add(i);
+        }
+        return res;
+
+=======
+
+        int n = security.length;
+        int[] pre = new int[n];
+        int[] post = new int[n];
+        pre[0] = security[0];
+        post[n - 1] = security[n - 1];
+        for (int i = 1; i < n; ++i) {
+            pre[i] = Math.max(pre[i - 1], security[i]);
+        }
+        for (int i = n - 2; i >= 0; --i) {
+            post[i] = Math.min(post[i + 1], security[i]);
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; ++i) {
+            if (i - time >= 0 && i + time < n && pre[i - time] <= security[i] && post[i + time] >= security[i]) {
+                ans.add(i);
+            }
+        }
+        return ans;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        int n = security.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        prefix[0] = security[0];
+        suffix[n - 1] = security[n - 1];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = Math.max(prefix[i - 1], security[i]);
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            suffix[i] = Math.min(suffix[i + 1], security[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (i - time >= 0 && i + time < n) {
+                if (prefix[i - 1] <= security[i] && security[i] <= suffix[i + 1]) {
+                    res.add(i);
+                }
+            } else if (i - time >= 0) {
+                if (prefix[i - 1] <= security[i]) {
+                    res.add(i);
+                }
+            } else if (i + time < n) {
+                if (security[i] <= suffix[i + 1]) {
+                    res.add(i);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int[] maxBefore = new int[security.length];
+        int[] minAfter = new int[security.length];
+        maxBefore[0] = security[0];
+        minAfter[security.length - 1] = security[security.length - 1];
+        for (int i = 1; i < security.length; i++) {
+            maxBefore[i] = Math.max(maxBefore[i - 1], security[i]);
+            minAfter[security.length - 1 - i] = Math.min(minAfter[security.length - i], security[security.length - 1 - i]);
+        }
+        for (int i = 0; i < security.length; i++) {
+            if (i - time >= 0 && i + time < security.length) {
+                if (maxBefore[i - time] >= security[i] && minAfter[i + time] >= security[i]) {
+                    result.add(i);
+                }
+            } else if (i - time < 0) {
+                if (minAfter[i + time] >= security[i]) {
+                    result.add(i);
+                }
+            } else if (i + time >= security.length) {
+                if (maxBefore[i - time] >= security[i]) {
+                    result.add(i);
+                }
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        int n = security.length;
+        int[] max = new int[n];
+        int[] min = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                max[i] = security[i];
+                min[i] = security[i];
+            } else {
+                max[i] = Math.max(max[i - 1], security[i]);
+                min[i] = Math.min(min[i - 1], security[i]);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (i - time >= 0 && i + time < n) {
+                if (min[i] >= max[i - time] && max[i] <= min[i + time]) {
+                    res.add(i);
+                }
+            } else if (i - time >= 0) {
+                if (min[i] >= max[i - time]) {
+                    res.add(i);
+                }
+            } else if (i + time < n) {
+                if (max[i] <= min[i + time]) {
+                    res.add(i);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int n = security.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = right[n-1] = 1;
+        for (int i = 1; i < n; i++) {
+            if (i > time && security[i - time - 1] < security[i - time]) {
+                left[i] = left[i - 1];
+            } else {
+                left[i] = security[i - time] <= security[i] ? left[i - 1] + 1 : 1;
+            }
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            if (i < n - time - 1 && security[i + time + 1] < security[i + time]) {
+                right[i] = right[i + 1];
+            } else {
+                right[i] = security[i + time] <= security[i] ? right[i + 1] + 1 : 1;
+            }
+        }
+        for (int i = time; i < n - time; i++) {
+            if (left[i] >= time + 1 && right[i] >= time + 1) {
+                result.add(i);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int[] maxBefore = new int[security.length];
+        int[] minAfter = new int[security.length];
+        int max = 0;
+        for (int i = 0; i < security.length; i++) {
+            maxBefore[i] = max;
+            max = Math.max(max, security[i]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = security.length - 1; i >= 0; i--) {
+            minAfter[i] = min;
+            min = Math.min(min, security[i]);
+        }
+        for (int i = 0; i < security.length; i++) {
+            if (security[i] >= maxBefore[i] && security[i] <= minAfter[i]) {
+                result.add(i);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> goodDays = new ArrayList<>();
+        int[] minSecurity = new int[security.length];
+        int[] maxSecurity = new int[security.length];
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < security.length; i++) {
+            min = Math.min(min, security[i]);
+            max = Math.max(max, security[i]);
+            minSecurity[i] = min;
+            maxSecurity[i] = max;
+        }
+        for (int i = 0; i < security.length; i++) {
+            if (i - time >= 0 && minSecurity[i - time] >= security[i]) {
+                goodDays.add(i);
+            } else if (i + time < security.length && maxSecurity[i + time] <= security[i]) {
+                goodDays.add(i);
+            }
+        }
+        return goodDays;

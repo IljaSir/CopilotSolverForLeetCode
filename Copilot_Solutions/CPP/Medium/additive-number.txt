@@ -1,0 +1,233 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = num.size();
+        for (int i = 1; i <= n / 2; ++i) {
+            for (int j = 1; j <= (n - i) / 2; ++j) {
+                if (check(num.substr(0, i), num.substr(i, j), num.substr(i + j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    bool check(string num1, string num2, string num) {
+        if (num1.size() > 1 && num1[0] == '0' || num2.size() > 1 && num2[0] == '0') {
+            return false;
+        }
+        string sum = add(num1, num2);
+        if (sum == num) {
+            return true;
+        }
+        if (num.size() <= sum.size() || sum.compare(num.substr(0, sum.size())) != 0) {
+            return false;
+        }
+        return check(num2, sum, num.substr(sum.size()));
+    }
+    string add(string num1, string num2) {
+        string sum;
+        int carry = 0, n1 = num1.size() - 1, n2 = num2.size() - 1;
+        while (n1 >= 0 || n2 >= 0) {
+            int x1 = n1 >= 0 ? num1[n1--] - '0' : 0;
+            int x2 = n2 >= 0 ? num2[n2--] - '0' : 0;
+            int value = (x1 + x2 + carry) % 10;
+            carry = (x1 + x2 + carry) / 10;
+            sum.push_back(value + '0');
+        }
+        if (carry != 0) {
+            sum.push_back(carry + '0');
+        }
+        reverse(sum.begin(), sum.end());
+        return sum;
+
+=======
+
+        int n = num.size();
+        for (int i = 1; i <= n / 2; ++i) {
+            for (int j = 1; j <= (n - i) / 2; ++j) {
+                if (check(i, j, num)) return true;
+            }
+        }
+        return false;
+    }
+    
+    bool check(int i, int j, string num) {
+        if (num[0] == '0' && i > 1) return false;
+        if (num[i] == '0' && j > 1) return false;
+        string sum;
+        long long a = stoll(num.substr(0, i));
+        long long b = stoll(num.substr(i, j));
+        for (int start = i + j; start != num.size(); start += sum.size()) {
+            b = a + b;
+            a = b - a;
+            sum = to_string(b);
+            if (!num.compare(start, sum.size(), sum)) continue;
+            return false;
+        }
+        return true;
+
+=======
+
+        int n = num.size();
+        for (int i = 1; i <= n / 2; i++) {
+            for (int j = 1; n - i - j >= max(i, j); j++) {
+                if (check(num.substr(0, i), num.substr(i, j), num.substr(i + j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool check(string num1, string num2, string num) {
+        if (num1.size() > 1 && num1[0] == '0' || num2.size() > 1 && num2[0] == '0') {
+            return false;
+        }
+        string sum = add(num1, num2);
+        if (sum == num) {
+            return true;
+        }
+        if (num.size() <= sum.size() || sum.compare(num.substr(0, sum.size())) != 0) {
+            return false;
+        }
+        return check(num2, sum, num.substr(sum.size()));
+    }
+
+    string add(string num1, string num2) {
+        string ans;
+        int n = num1.size() - 1, m = num2.size() - 1, carry = 0;
+        while (n >= 0 || m >= 0 || carry != 0) {
+            int x = n >= 0 ? num1[n--] - '0' : 0;
+            int y = m >= 0 ? num2[m--] - '0' : 0;
+            int result = x + y + carry;
+            ans.push_back(result % 10 + '0');
+            carry = result / 10;
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        int n = num.size();
+        for (int i = 1; i <= n / 2; i++) {
+            for (int j = 1; max(i, j) <= n - i - j; j++) {
+                if (isValid(i, j, num)) return true;
+            }
+        }
+        return false;
+    }
+    bool isValid(int i, int j, string num) {
+        if (num[i] == '0' && j > 1) return false;
+        if (num[0] == '0' && i > 1) return false;
+        long x1 = stol(num.substr(0, i));
+        long x2 = stol(num.substr(i, j));
+        string sum;
+        for (int start = i + j; start != num.size(); start += sum.size()) {
+            x2 = x2 + x1;
+            x1 = x2 - x1;
+            sum = to_string(x2);
+            if (num.substr(start, sum.size()) != sum) return false;
+        }
+        return true;
+
+=======
+
+        if (num.size() < 3) return false;
+        for (int i = 1; i < num.size() - 1; i++) {
+            for (int j = i + 1; j < num.size(); j++) {
+                if (num[0] == '0' && i > 1) continue;
+                if (num[i] == '0' && j > i + 1) continue;
+                string a = num.substr(0, i);
+                string b = num.substr(i, j - i);
+                string c = num.substr(j);
+                if (isAdditive(a, b, c)) return true;
+            }
+        }
+        return false;
+    }
+    bool isAdditive(string a, string b, string c) {
+        if (c.empty()) return true;
+        if (c.size() < a.size() || c.size() < b.size()) return false;
+        string sum = add(a, b);
+        if (c.size() < sum.size() || c.substr(0, sum.size()) != sum) return false;
+        return isAdditive(b, sum, c.substr(sum.size()));
+    }
+    string add(string a, string b) {
+        string sum;
+        int carry = 0;
+        int i = a.size() - 1, j = b.size() - 1;
+        while (i >= 0 || j >= 0) {
+            int x = i >= 0 ? a[i--] - '0' : 0;
+            int y = j >= 0 ? b[j--] - '0' : 0;
+            int s = x + y + carry;
+            sum = to_string(s % 10) + sum;
+            carry = s / 10;
+        }
+        return carry ? to_string(carry) + sum : sum;
+
+=======
+
+        int n = num.size();
+        for (int i = 1; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (check(num, 0, i, j)) return true;
+            }
+        }
+        return false;
+
+=======
+
+        if(num.size() < 3) return false;
+        for(int i = 1; i <= num.size() / 2; i++) {
+            for(int j = 1; j <= (num.size() - i) / 2; j++) {
+                if(isAdditive(num.substr(0, i), num.substr(i, j), num.substr(i + j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        long long a, b, c;
+        int n = num.size();
+        for (int i = 1; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (i > 1 && num[0] == '0') break;
+                if (j - i > 1 && num[i] == '0') break;
+                a = stoll(num.substr(0, i));
+                b = stoll(num.substr(i, j - i));
+                c = a + b;
+                string cstr = to_string(c);
+                if (num.substr(j, cstr.size()) == cstr) {
+                    int k = j + cstr.size();
+                    while (k < n) {
+                        a = b;
+                        b = c;
+                        c = a + b;
+                        cstr = to_string(c);
+                        if (num.substr(k, cstr.size()) != cstr) {
+                            break;
+                        }
+                        k += cstr.size();
+                    }
+                    if (k == n) return true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        return isAdditiveNumber(num, 0, 0, 0, 0);
+    }
+    bool isAdditiveNumber(const string& num, int start, long long sum, long long prev, int k) {
+        if (start == num.size() && k > 2) return true;
+        for (int i = start; i < num.size(); i++) {
+            long long cur = stoll(num.substr(start, i - start + 1));
+            if (num[start] == '0' && i > start) break;
+            if (k >= 2 && cur != sum) continue;
+            if (isAdditiveNumber(num, i + 1, prev + cur, cur, k + 1)) return true;
+        }
+        return false;

@@ -1,0 +1,341 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < targetWords.length; i++) {
+            for (int j = 0; j < startWords.length; j++) {
+                if (startWords[j].length() == targetWords[i].length()) {
+                    if (isPermutation(startWords[j], targetWords[i])) {
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    public boolean isPermutation(String str1, String str2) {
+        if (str1.length() != str2.length()) {
+            return false;
+        }
+        int[] arr1 = new int[26];
+        int[] arr2 = new int[26];
+        for (int i = 0; i < str1.length(); i++) {
+            arr1[str1.charAt(i) - 'a']++;
+            arr2[str2.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < targetWords.length; i++) {
+            for (int j = 0; j < startWords.length; j++) {
+                if (isPossible(startWords[j], targetWords[i])) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    boolean isPossible(String startWord, String targetWord) {
+        if (startWord.length() > targetWord.length()) {
+            return false;
+        }
+        int[] freq = new int[26];
+        for (int i = 0; i < startWord.length(); i++) {
+            freq[startWord.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < targetWord.length(); i++) {
+            freq[targetWord.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] > 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        for (String targetWord : targetWords) {
+            for (String startWord : startWords) {
+                if (canConvert(startWord, targetWord)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean canConvert(String startWord, String targetWord) {
+        if (startWord.length() > targetWord.length()) {
+            return false;
+        }
+        if (startWord.length() < targetWord.length()) {
+            return canConvert(startWord, targetWord.substring(0, targetWord.length() - 1));
+        }
+        int[] startWordCharCount = new int[26];
+        for (char c : startWord.toCharArray()) {
+            startWordCharCount[c - 'a']++;
+        }
+        int[] targetWordCharCount = new int[26];
+        for (char c : targetWord.toCharArray()) {
+            targetWordCharCount[c - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (targetWordCharCount[i] > startWordCharCount[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        for (String target : targetWords) {
+            for (String start : startWords) {
+                if (wordCount(start, target)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean wordCount(String start, String target) {
+        if (target.length() < start.length()) return false;
+        int[] freq = new int[26];
+        for (char c : start.toCharArray()) freq[c - 'a']++;
+        for (char c : target.toCharArray()) freq[c - 'a']--;
+        for (int i : freq) {
+            if (i > 0) return false;
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        for (String word : targetWords) {
+            if (isPossible(startWords, word)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private boolean isPossible(String[] startWords, String targetWord) {
+        boolean[] letters = new boolean[26];
+        for (char c : targetWord.toCharArray()) {
+            letters[c - 'a'] = true;
+        }
+        for (String word : startWords) {
+            if (word.length() < targetWord.length()) {
+                continue;
+            }
+            boolean[] used = new boolean[26];
+            int i = 0;
+            for (char c : word.toCharArray()) {
+                if (i < targetWord.length() && c == targetWord.charAt(i)) {
+                    i++;
+                } else {
+                    used[c - 'a'] = true;
+                }
+            }
+            if (i == targetWord.length()) {
+                for (int j = 0; j < 26; j++) {
+                    if (letters[j] && !used[j]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        Set<String> set = new HashSet<>();
+        for (String s : startWords) {
+            set.add(s);
+        }
+        int result = 0;
+        for (String s : targetWords) {
+            if (set.contains(s)) {
+                result++;
+                continue;
+            }
+            boolean can = false;
+            for (String start : startWords) {
+                if (canAdd(start, s)) {
+                    can = true;
+                    break;
+                }
+            }
+            if (can) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    private boolean canAdd(String s1, String s2) {
+        int len1 = s1.length();
+        int len2 = s2.length();
+        if (len2 - len1 != 1) {
+            return false;
+        }
+        int[] count = new int[26];
+        for (int i = 0; i < len1; i++) {
+            count[s1.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < len2; i++) {
+            char c = s2.charAt(i);
+            count[c - 'a']--;
+            if (count[c - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        Set<String> wordSet = new HashSet<>();
+        for (String word : startWords) {
+            wordSet.add(word);
+        }
+        for (String word : targetWords) {
+            if (wordSet.contains(word)) {
+                count++;
+                continue;
+            }
+            boolean flag = false;
+            for (int i = 0; i < word.length(); i++) {
+                char c = word.charAt(i);
+                for (char ch = 'a'; ch <= 'z'; ch++) {
+                    if (ch == c) {
+                        continue;
+                    }
+                    StringBuilder sb = new StringBuilder(word);
+                    sb.insert(i, ch);
+                    if (wordSet.contains(sb.toString())) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    break;
+                }
+            }
+            if (flag) {
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        int total = 0;
+        for (String word : targetWords) {
+            for (String start : startWords) {
+                if (canConvert(start, word)) {
+                    total++;
+                    break;
+                }
+            }
+        }
+        return total;
+    }
+
+    private boolean canConvert(String start, String target) {
+        if (target.length() < start.length()) {
+            return false;
+        }
+
+        int[] startFreq = new int[26];
+        int[] targetFreq = new int[26];
+        for (int i = 0; i < start.length(); i++) {
+            startFreq[start.charAt(i) - 'a']++;
+        }
+
+        for (int i = 0; i < target.length(); i++) {
+            targetFreq[target.charAt(i) - 'a']++;
+        }
+
+        for (int i = 0; i < 26; i++) {
+            if (targetFreq[i] < startFreq[i]) {
+                return false;
+            }
+        }
+
+        return true;
+
+=======
+
+        int count = 0;
+
+        for (String target : targetWords) {
+            for (String start : startWords) {
+                if (start.length() < target.length() && isPossible(start, target)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private boolean isPossible(String start, String target) {
+        int[] freq = new int[26];
+        for (char c : start.toCharArray()) {
+            freq[c - 'a']++;
+        }
+
+        for (char c : target.toCharArray()) {
+            if (freq[c - 'a'] == 0) {
+                return false;
+            }
+            freq[c - 'a']--;
+        }
+
+        return true;
+
+=======
+
+        int count = 0;
+        for(String target: targetWords){
+            for(String start: startWords){
+                if(target.length() == start.length()){
+                    int[] targetFreq = new int[26];
+                    int[] startFreq = new int[26];
+                    for(int i=0; i<target.length(); i++){
+                        targetFreq[target.charAt(i) - 'a']++;
+                        startFreq[start.charAt(i) - 'a']++;
+                    }
+                    boolean flag = true;
+                    for(int i=0; i<26; i++){
+                        if(targetFreq[i] > startFreq[i]){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if(flag){
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+        return count;

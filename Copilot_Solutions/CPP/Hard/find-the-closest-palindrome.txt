@@ -1,0 +1,296 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int len = n.length();
+        set<long long> candidates;
+        candidates.insert((long long)pow(10, len) + 1);
+        candidates.insert((long long)pow(10, len - 1) - 1);
+        long long prefix = stoll(n.substr(0, (len + 1) / 2));
+        for (int i = -1; i <= 1; i++) {
+            string p = to_string(prefix + i);
+            string pp = p + string(p.rbegin() + (len & 1), p.rend());
+            candidates.insert(stoll(pp));
+        }
+        long long num = stoll(n), minDiff = INT_MAX, ans = 0;
+        candidates.erase(num);
+        for (long long p : candidates) {
+            if (minDiff > abs(p - num)) {
+                minDiff = abs(p - num);
+                ans = p;
+            } else if (minDiff == abs(p - num)) {
+                ans = min(ans, p);
+            }
+        }
+        return to_string(ans);
+
+=======
+
+        int len = n.length();
+        if (len == 1) {
+            return to_string(stoi(n) - 1);
+        }
+        string s = n.substr(0, (len + 1) / 2);
+        long long num = stoll(s);
+        vector<long long> candidates;
+        candidates.push_back((long long)pow(10, len) + 1);
+        candidates.push_back((long long)pow(10, len - 1) - 1);
+        for (int i = -1; i <= 1; i++) {
+            string t = to_string(num + i);
+            string rev = t;
+            reverse(rev.begin(), rev.end());
+            candidates.push_back(stoll(t + (len % 2 == 0 ? rev : rev.substr(1))));
+        }
+        long long val = stoll(n);
+        long long diff = LONG_MAX;
+        string ans;
+        for (long long candidate : candidates) {
+            if (candidate == val) {
+                continue;
+            }
+            long long d = abs(candidate - val);
+            if (d < diff) {
+                diff = d;
+                ans = to_string(candidate);
+            } else if (d == diff && candidate < stoll(ans)) {
+                ans = to_string(candidate);
+            }
+        }
+        return ans;
+
+=======
+
+        int len = n.length();
+        if (len == 1) {
+            return to_string(stoi(n) - 1);
+        }
+        int mid = len / 2;
+        string left = n.substr(0, mid);
+        int leftNum = stoi(left);
+        vector<string> candidates = {to_string(leftNum - 1), to_string(leftNum), to_string(leftNum + 1)};
+        for (int i = 0; i < candidates.size(); i++) {
+            string candidate = candidates[i];
+            string candidateMirror = candidate + (len % 2 == 0 ? "" : string(1, candidate[mid])) + string(candidate.rbegin(), candidate.rend() - (len % 2 == 0 ? 0 : 1));
+            candidates[i] = candidateMirror;
+        }
+        string nMirror = n.substr(0, (len + 1) / 2) + string(n.rbegin(), n.rend() - (len % 2 == 0 ? 0 : 1));
+        long diff = LONG_MAX;
+        string res = "";
+        for (string candidate : candidates) {
+            if (candidate == nMirror) {
+                continue;
+            }
+            long candidateNum = stol(candidate);
+            long candidateDiff = abs(candidateNum - stol(nMirror));
+            if (candidateDiff < diff) {
+                diff = candidateDiff;
+                res = candidate;
+            } else if (candidateDiff == diff) {
+                res = min(res, candidate);
+            }
+        }
+        return res;
+
+=======
+
+        int len = n.size();
+        if (len == 1) {
+            return to_string((n[0] - '0') - 1);
+        }
+        int mid = len / 2;
+        string left = n.substr(0, mid);
+        string right = n.substr(mid, len - mid);
+        reverse(right.begin(), right.end());
+        string res = left + right;
+        if (res == n) {
+            // find the closest palindrome
+            int i = mid - 1;
+            while (i >= 0 && n[i] == '0') {
+                n[i] = '9';
+                i--;
+            }
+            if (i >= 0) {
+                n[i] = n[i] - 1;
+            }
+            if (n[0] == '0') {
+                n = n.substr(1, len - 1);
+                len = len - 1;
+                mid = len / 2;
+                left = n.substr(0, mid);
+                right = n.substr(mid, len - mid);
+                reverse(right.begin(), right.end());
+                res = left + right;
+                return res;
+            }
+            left = n.substr(0, mid);
+            right = n.substr(mid, len - mid);
+            reverse(right.begin(), right.end());
+            res = left + right;
+            return res;
+        }
+        if (len % 2 == 0) {
+            int i = mid - 1;
+            // find the closest palindrome
+            while (i >= 0 && n[i] == '0') {
+                n[i] = '9';
+                i--;
+            }
+            if (i >= 0) {
+                n[i] = n[i] - 1;
+            }
+            if (n[0] == '0') {
+                n = n.substr(1, len - 1);
+                len = len - 1;
+                mid = len / 2;
+                left = n.substr(0, mid);
+                right = n.substr(mid, len - mid);
+                reverse(right.begin(), right.end());
+                res = left + right;
+                return res;
+            }
+            left = n.substr(0, mid);
+            right = n.substr(mid, len - mid);
+            reverse(right.begin(), right.end());
+            res = left + right;
+            return res;
+        } else {
+            int i = mid;
+            //
+
+=======
+
+        int len = n.size();
+        string res;
+        vector<long> candidates{long(pow(10, len)) + 1, long(pow(10, len - 1)) - 1};
+        long prefix = stol(n.substr(0, (len + 1) / 2));
+        for (int i = -1; i <= 1; ++i) {
+            string p = to_string(prefix + i);
+            string cur = p + string(p.rbegin() + (len & 1), p.rend());
+            candidates.push_back(stol(cur));
+        }
+        long num = stol(n), diff = LONG_MAX;
+        for (long cand : candidates) {
+            if (cand == num) continue;
+            if (abs(cand - num) < diff || (abs(cand - num) == diff && cand < res)) {
+                diff = abs(cand - num);
+                res = to_string(cand);
+            }
+        }
+        return res;
+
+=======
+
+        int len = n.length();
+        string ans;
+        if (len == 1) {
+            ans = to_string(stoi(n)-1);
+            return ans;
+        }
+        if (len == 2) {
+            if (n == "11") return "9";
+            if (n == "99") return "101";
+            if (n == "10") return "9";
+            if (n == "90") return "99";
+            if (n[0] == n[1]) return to_string(stoi(n)-1);
+            if (n[0] < n[1]) return to_string(stoi(n)-1);
+            if (n[0] > n[1]) return to_string(stoi(n)+1);
+        }
+        int mid = len/2;
+        string left = n.substr(0, mid);
+        string right = n.substr(mid, len-mid);
+        string left2 = left;
+        string right2 = right;
+        reverse(right2.begin(), right2.end());
+        string left3 = left;
+        string right3 = right;
+        reverse(right3.begin(), right3.end());
+        if (right2 == right) {
+            if (left == "1") {
+                ans = "9";
+                return ans;
+            }
+            if (left == "9") {
+                ans = "101";
+                return ans;
+            }
+            if (left == "10") {
+                ans = "99";
+                return ans;
+            }
+            if (left == "90") {
+                ans = "909";
+                return ans;
+            }
+            if (left == "99") {
+                ans = "1001";
+                return ans;
+            }
+            if (left[0] == '1') {
+                left3 = to_string(stoi(left)-1);
+                right3 = left3;
+                reverse(right3.begin(), right3.end());
+                ans = left3 + right3;
+                return ans;
+            }
+            if (left[0] == '9') {
+                left3 = to_string(stoi(left)+1);
+                right3 = left3;
+                reverse(right3.begin(), right3.end());
+                ans = left3 + right3;
+                return ans;
+            }
+            if (left[0] == '0') {
+                left3 = to_string(stoi(left)+1);
+                right3 = left3;
+                reverse(right
+
+=======
+
+        int len = n.size();
+        long long num = stoll(n);
+        long long minDiff = LONG_MAX;
+        long long minNum = 0;
+        long long left = stoll(n.substr(0, (len + 1) / 2));
+        for (int i = -1; i <= 1; i++) {
+            long long cur = left + i;
+            string s = to_string(cur);
+            string t = s.substr(0, s.size() - (len & 1)) + string(s.rbegin(), s.rend());
+            long long diff = abs(stoll(t) - num);
+            if (diff == 0) {
+                diff = LONG_MAX;
+            }
+            if (diff < minDiff) {
+                minDiff = diff;
+                minNum = stoll(t);
+            } else if (diff == minDiff) {
+                minNum = min(minNum, stoll(t));
+            }
+        }
+        return to_string(minNum);
+
+=======
+
+        int len = n.length();
+        int mid = len/2;
+        string left = n.substr(0, mid);
+        string right = n.substr(len-mid, mid);
+        long long leftNum = stoll(left);
+        long long rightNum = stoll(right);
+        long long num = stoll(n);
+        long long minDiff = INT_MAX;
+        long long minNum = 0;
+        long long num1 = getNum(leftNum-1, len);
+        long long num2 = getNum(leftNum, len);
+        long long num3 = getNum(leftNum+1, len);
+        vector<long long> candidates{num1, num2, num3};
+        for(auto c: candidates){
+            if(c == num) continue;
+            long long diff = abs(num-c);
+            if(diff < minDiff){
+                minDiff = diff;
+                minNum = c;
+            }else if(diff == minDiff){
+                minNum = min(minNum, c);
+            }
+        }
+        return to_string(minNum);

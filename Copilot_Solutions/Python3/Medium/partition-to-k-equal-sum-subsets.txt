@@ -1,0 +1,133 @@
+Synthesizing 6/10 solutions
+
+=======
+
+def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        target, rem = divmod(sum(nums), k)
+        if rem or max(nums) > target:
+            return False
+        nums.sort(reverse=True)
+        def dfs(groups):
+            if not nums:
+                return True
+            v = nums.pop()
+            for i, group in enumerate(groups):
+                if group + v <= target:
+                    groups[i] += v
+                    if dfs(groups):
+                        return True
+                    groups[i] -= v
+                if not group:
+                    break
+            nums.append(v)
+            return False
+        return dfs([0] * k)
+
+=======
+
+def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        if sum(nums) % k != 0: return False
+        target = sum(nums) // k
+        nums.sort(reverse=True)
+        if nums[0] > target: return False
+        visited = [False] * len(nums)
+        def dfs(k, start, cur_sum):
+            if k == 1: return True
+            if cur_sum == target:
+                return dfs(k-1, 0, 0)
+            for i in range(start, len(nums)):
+                if not visited[i]:
+                    visited[i] = True
+                    if dfs(k, i+1, cur_sum + nums[i]):
+                        return True
+                    visited[i] = False
+            return False
+        return dfs(k, 0, 0)
+
+=======
+
+def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        if k == 1:
+            return True
+        if k == len(nums):
+            return len(set(nums)) == 1
+        if len(nums) < k:
+            return False
+        if sum(nums) % k != 0:
+            return False
+        target = sum(nums) // k
+        nums.sort()
+        if nums[-1] > target:
+            return False
+        while nums and nums[-1] == target:
+            nums.pop()
+            k -= 1
+        def dfs(nums, k, target, cursum, used):
+            if k == 1:
+                return True
+            if cursum == target:
+                return dfs(nums, k - 1, target, 0, used)
+            for i in range(len(nums)):
+                if used[i]:
+                    continue
+                if cursum + nums[i] > target:
+                    break
+                used[i] = True
+                if dfs(nums, k, target, cursum + nums[i], used):
+                    return True
+                used[i] = False
+            return False
+        return dfs(nums, k, target, 0, [False] * len(nums))
+
+=======
+
+def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        nums.sort(reverse=True)
+        target, rem = divmod(sum(nums), k)
+        if rem:
+            return False
+        n = len(nums)
+        dp = [[False] * (1 << n) for _ in range(k)]
+        dp[0][0] = True
+        for i in range(k):
+            for state in range(1 << n):
+                if dp[i][state]:
+                    continue
+                for j in range(n):
+                    if state & (1 << j) or nums[j] > target:
+                        continue
+                    if i == 0 and j > 0 and nums[j] == nums[j - 1]:
+                        continue
+                    if state & (1 << (j - 1)) and nums[j] == nums[j - 1]:
+                        continue
+                    dp[i][state | (1 << j)] = dp[i][state] if nums[j] == target else dp[i - 1][state]
+        return dp[-1][-1]
+
+=======
+
+class Solution:
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        # 1. sum(nums) % k == 0
+        # 2. nums[i] <= sum(nums) // k
+        # 3. nums[i] <= max(nums)
+        # 4. nums[i] <= sum(nums) // k
+        # 5. sum(nums) // k >= max(nums)
+        # 6. k <= len(nums)
+        # 7. k <= sum(nums) // max(nums)
+        # 8. k <= sum(nums) // max(nums) <= len(nums)
+        # 9. k <= sum(nums) // max(nums) <= len(nums) < sum(nums) // min(nums)
+        # 10. k <= sum(nums) // max(nums) <= len(nums) < sum(nums) // min(nums) <= sum(nums) // (sum(nums) // len(nums))
+        # 11. k <= sum(nums) // max(nums) <= len(nums) < sum(nums) // min(nums) <= len(nums)
+        # 12. k <= sum(nums) // max(nums) <= len(nums)
+        # 13. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums)
+        # 14. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums) <= sum(nums) // (sum(nums) // len(nums))
+        # 15. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums) <= len(nums)
+        # 16. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums)
+        # 17. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums) <= sum(nums) // (sum(nums) // len(nums)) <= sum(nums) // (sum(nums) // len(nums)) + 1 <= sum(nums) // (sum(nums) // len(nums)) + 1 < sum(nums) // (sum(nums) // len(nums)) + 2
+        # 18. k <= sum(nums) // max(nums) <= len(nums) <= sum(nums) // min(nums) <= sum(nums) // (sum(nums) // len(nums)) <= sum(nums) // (sum(nums) // len(nums)) + 1 <= sum(nums) // (sum(nums) //
+
+=======
+
+def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        
+        pass

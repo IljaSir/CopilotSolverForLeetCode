@@ -1,0 +1,172 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        int n = flowers.size();
+        priority_queue<int> pq;
+        long long sum = 0;
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] >= target) {
+                ++cnt;
+            } else {
+                pq.push(target - flowers[i]);
+            }
+            sum += flowers[i];
+        }
+        long long ans = cnt * full + (pq.size() > 0 ? pq.top() * partial : 0);
+        while (!pq.empty() && newFlowers > 0) {
+            int top = pq.top();
+            pq.pop();
+            if (newFlowers >= top) {
+                newFlowers -= top;
+                ++cnt;
+                sum += top;
+                ans = max(ans, cnt * full + (pq.size() > 0 ? pq.top() * partial : 0));
+            } else {
+                sum += newFlowers;
+                ans = max(ans, cnt * full + (sum + newFlowers) * partial);
+                break;
+            }
+        }
+        return ans;
+
+=======
+
+        long long ans = 0;
+        priority_queue<int, vector<int>, greater<int>> pq;
+        int n = flowers.size();
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] >= target) {
+                ++cnt;
+            } else {
+                pq.push(flowers[i]);
+            }
+        }
+        ans = (long long)cnt * full;
+        while (!pq.empty()) {
+            int t = pq.top();
+            pq.pop();
+            if (newFlowers >= target - t) {
+                newFlowers -= target - t;
+                ++cnt;
+                ans = max(ans, (long long)cnt * full + (long long)pq.size() * partial);
+            } else {
+                break;
+            }
+        }
+        ans = max(ans, (long long)cnt * full + (long long)pq.size() * partial + newFlowers * partial);
+        return ans;
+
+=======
+
+        long long ans = 0;
+        int n = flowers.size();
+        vector<int> cnt(n + 1);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[flowers[i]];
+        }
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] < target) {
+                int x = target - flowers[i];
+                long long y = min(newFlowers, (long long)x * cnt[flowers[i]]);
+                flowers[i] += y / cnt[flowers[i]];
+                newFlowers -= y;
+            }
+        }
+        int m = 0;
+        for (int i = 0; i < n; ++i) {
+            m = max(m, flowers[i]);
+        }
+        long long sum = 0;
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] < m) {
+                sum += m - flowers[i];
+            }
+        }
+        newFlowers -= sum;
+        int c = 0;
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] >= m) {
+                ++c;
+            }
+        }
+        ans = (long long)c * full + min(newFlowers / c, (long long)m) * partial;
+        return ans;
+
+=======
+
+        long long res = 0;
+        int n = flowers.size();
+        vector<int> cnt(target + 1);
+        for (int i = 0; i < n; ++i) {
+            if (flowers[i] > target) {
+                res += full;
+            } else {
+                ++cnt[flowers[i]];
+            }
+        }
+        long long sum = 0;
+        for (int i = 1; i <= target; ++i) {
+            sum += cnt[i] * i;
+        }
+        long long ans = res + (n - res / full) * partial;
+        for (int i = 1; i <= target; ++i) {
+            long long cur = res + (n - res / full) * partial;
+            long long left = newFlowers;
+            int j = 0;
+            while (j < i) {
+                long long need = (target - j) * cnt[j];
+                if (need <= left) {
+                    cur -= need * partial;
+                    cur += need * full;
+                    left -= need;
+                } else {
+                    cur -= left * partial;
+                    cur += left * full;
+                    left = 0;
+                    break;
+                }
+                ++j;
+            }
+            if (left > 0) {
+                if (left % target == 0) {
+                    cur += left / target * full;
+                } else {
+                    cur += (left / target + 1) * full;
+                }
+            }
+            ans = max(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int n = flowers.size();
+        sort(flowers.begin(), flowers.end());
+        long long res = 0, cur = 0, minVal = 0;
+        for (int i = 0; i < n; i++) {
+            if (flowers[i] >= target) {
+                cur++;
+                res += full;
+                newFlowers += flowers[i] - target;
+            } else {
+                minVal = flowers[i];
+            }
+        }
+        if (cur == n) return res;
+        long long minCnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (flowers[i] == minVal) minCnt++;
+        }
+        long long remain = target - minVal;
+        long long maxCnt = min(newFlowers / remain, (long long)n - cur);
+        for (long long cnt = 0; cnt <= maxCnt; cnt++) {
+            long long tmp = res + cnt * full + minCnt * partial;
+            if (cnt < maxCnt) {
+                tmp += (maxCnt - cnt) * remain * partial;
+            }
+            res = max(res, tmp);
+        }
+        return res;

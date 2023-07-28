@@ -1,0 +1,271 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Double> angles = new ArrayList<>();
+        int overlap = 0;
+        for (List<Integer> point : points) {
+            if (point.get(0) == location.get(0) && point.get(1) == location.get(1)) {
+                overlap++;
+                continue;
+            }
+            double theta = Math.atan2(point.get(1) - location.get(1), point.get(0) - location.get(0)) * 180 / Math.PI;
+            angles.add(theta);
+            angles.add(theta + 360);
+        }
+        Collections.sort(angles);
+        int left = 0, right = 0;
+        int res = 0;
+        while (right < angles.size()) {
+            while (angles.get(right) - angles.get(left) > angle) {
+                left++;
+            }
+            res = Math.max(res, right - left + 1);
+            right++;
+        }
+        return res + overlap;
+
+=======
+
+        List<Double> angles = new ArrayList<>();
+        int overlap = 0;
+        for (List<Integer> point : points) {
+            int x = point.get(0) - location.get(0);
+            int y = point.get(1) - location.get(1);
+            if (x == 0 && y == 0) {
+                overlap++;
+                continue;
+            }
+            angles.add(Math.atan2(y, x) * 180 / Math.PI);
+        }
+        Collections.sort(angles);
+        int n = angles.size();
+        List<Double> newAngles = new ArrayList<>();
+        for (double angle1 : angles) {
+            newAngles.add(angle1 + 360);
+        }
+        angles.addAll(newAngles);
+        int res = 0;
+        int left = 0;
+        for (int right = 0; right < angles.size(); right++) {
+            while (angles.get(right) - angles.get(left) > angle) {
+                left++;
+            }
+            res = Math.max(res, right - left + 1);
+        }
+        return res + overlap;
+
+=======
+
+        List<Double> angles = new ArrayList<>();
+        int same = 0;
+        for (List<Integer> point : points) {
+            if (point.get(0) == location.get(0) && point.get(1) == location.get(1)) {
+                same++;
+                continue;
+            }
+            double rad = Math.atan2(point.get(1) - location.get(1), point.get(0) - location.get(0));
+            angles.add(rad);
+            angles.add(rad + 2 * Math.PI);
+        }
+        Collections.sort(angles);
+        int res = same, i = 0;
+        for (int j = 0; j < angles.size(); j++) {
+            while (angles.get(j) - angles.get(i) > angle * Math.PI / 180) {
+                i++;
+            }
+            res = Math.max(res, j - i + 1 + same);
+        }
+        return res;
+
+=======
+
+        List<Double> angles = new ArrayList<>();
+        int overlap = 0;
+        for (List<Integer> p : points) {
+            int x = p.get(0) - location.get(0);
+            int y = p.get(1) - location.get(1);
+            if (x == 0 && y == 0) {
+                overlap++;
+                continue;
+            }
+            angles.add(Math.atan2(y, x) * 180 / Math.PI);
+        }
+        Collections.sort(angles);
+        int n = angles.size();
+        for (int i = 0; i < n; i++) {
+            angles.add(angles.get(i) + 360);
+        }
+        int res = 0, l = 0, r = 0;
+        while (r < angles.size()) {
+            if (angles.get(r) - angles.get(l) <= angle) {
+                res = Math.max(res, r - l + 1);
+                r++;
+            } else {
+                l++;
+            }
+        }
+        return res + overlap;
+
+=======
+
+        List<Double> angles = new ArrayList<>();
+        int same = 0;
+        for (List<Integer> point : points) {
+            int x = point.get(0) - location.get(0);
+            int y = point.get(1) - location.get(1);
+            if (x == 0 && y == 0) {
+                same++;
+                continue;
+            }
+            double ang = Math.atan2(y, x) * 180 / Math.PI;
+            if (ang < 0) {
+                ang += 360;
+            }
+            angles.add(ang);
+        }
+        Collections.sort(angles);
+        int n = angles.size();
+        for (int i = 0; i < n; i++) {
+            angles.add(angles.get(i) + 360);
+        }
+        int res = 0;
+        int left = 0;
+        for (int right = 0; right < angles.size(); right++) {
+            while (angles.get(right) - angles.get(left) > angle) {
+                left++;
+            }
+            res = Math.max(res, right - left + 1);
+        }
+        return res + same;
+
+=======
+
+        int same = 0;
+        List<Double> angles = new ArrayList<>();
+        for (List<Integer> p : points) {
+            if (p.get(0) == location.get(0) && p.get(1) == location.get(1)) {
+                same++;
+                continue;
+            }
+            double a = Math.toDegrees(Math.atan2(p.get(1) - location.get(1), p.get(0) - location.get(0)));
+            angles.add(a);
+            angles.add(a + 360);
+        }
+        Collections.sort(angles);
+        int ans = 0;
+        int i = 0;
+        for (int j = 0; j < angles.size(); ++j) {
+            while (angles.get(j) - angles.get(i) > angle) {
+                i++;
+            }
+            ans = Math.max(ans, j - i + 1);
+        }
+        return ans + same;
+
+=======
+
+        double[] angles = new double[points.size()];
+        int same = 0;
+        for (int i = 0; i < points.size(); i++) {
+            List<Integer> p = points.get(i);
+            if (p.get(0) == location.get(0) && p.get(1) == location.get(1)) {
+                same++;
+                continue;
+            }
+            angles[i] = Math.toDegrees(Math.atan2(p.get(1) - location.get(1), p.get(0) - location.get(0)));
+            if (angles[i] < 0) {
+                angles[i] += 360;
+            }
+        }
+        Arrays.sort(angles);
+        int i = 0, j = 0, res = 0;
+        while (i < angles.length) {
+            while (j < angles.length && angles[j] - angles[i] <= angle) {
+                j++;
+            }
+            res = Math.max(res, j - i);
+            i++;
+        }
+        return res + same;
+
+=======
+
+        int same = 0;
+        List<Double> angles = new ArrayList();
+        for (List<Integer> p : points) {
+            int x = p.get(0) - location.get(0);
+            int y = p.get(1) - location.get(1);
+            if (x == 0 && y == 0) {
+                same++;
+                continue;
+            }
+            angles.add(Math.atan2(y, x) * 180 / Math.PI);
+        }
+        Collections.sort(angles);
+        int n = angles.size();
+        for (int i = 0; i < n; i++) {
+            angles.add(angles.get(i) + 360);
+        }
+        int res = same;
+        int i = 0;
+        for (int j = 0; j < angles.size(); j++) {
+            while (angles.get(j) - angles.get(i) > angle) {
+                i++;
+            }
+            res = Math.max(res, j - i + 1);
+        }
+        return res;
+
+=======
+
+        int n = points.size();
+        int same = 0;
+        double[] angles = new double[n];
+        for (int i = 0; i < n; i++) {
+            List<Integer> p = points.get(i);
+            if (p.get(0) == location.get(0) && p.get(1) == location.get(1)) {
+                same++;
+                continue;
+            }
+            angles[i] = Math.toDegrees(Math.atan2(p.get(1) - location.get(1), p.get(0) - location.get(0)));
+            angles[i] = angles[i] < 0 ? 360 + angles[i] : angles[i];
+        }
+        Arrays.sort(angles);
+        int res = 0;
+        int i = 0;
+        for (int j = 0; j < n; j++) {
+            if (angles[j] - angles[i] > angle) {
+                i++;
+            }
+            res = Math.max(res, j - i + 1);
+        }
+        return res + same;
+
+=======
+
+        int n = points.size();
+        int count = 0;
+        double[] angles = new double[n];
+        for (int i = 0; i < n; i++) {
+            List<Integer> p = points.get(i);
+            if (p.get(0) == location.get(0) && p.get(1) == location.get(1)) {
+                count++;
+            } else {
+                angles[i] = Math.toDegrees(Math.atan2(p.get(1) - location.get(1), p.get(0) - location.get(0)));
+            }
+        }
+        Arrays.sort(angles);
+        int res = count;
+        int i = 0;
+        for (int j = 0; j < n; j++) {
+            if (angles[j] < 0) {
+                angles[j] += 360;
+            }
+            double a = angles[j] + 360;
+            while (a - angles[i] > angle) {
+                i++;
+            }
+            res = Math.max(res, count + j - i + 1);
+        }
+        return res;

@@ -1,0 +1,165 @@
+Synthesizing 9/10 solutions
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        n = len(seats)
+        left = [n] * n
+        right = [n] * n
+        for i in range(n):
+            if seats[i] == 1:
+                left[i] = 0
+            elif i > 0:
+                left[i] = left[i - 1] + 1
+        for i in range(n - 1, -1, -1):
+            if seats[i] == 1:
+                right[i] = 0
+            elif i < n - 1:
+                right[i] = right[i + 1] + 1
+        return max(min(left[i], right[i])
+                   for i, seat in enumerate(seats) if not seat)
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        n = len(seats)
+        dist = [n] * n
+        last = -n
+        for i in range(n):
+            if seats[i]:
+                last = i
+            dist[i] = i - last
+        last = 2 * n
+        for i in range(n-1, -1, -1):
+            if seats[i]:
+                last = i
+            dist[i] = min(dist[i], last - i)
+        return max(dist)
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        n = len(seats)
+        for i in range(n):
+            if seats[i] == 1:
+                break
+        for j in range(n-1, -1, -1):
+            if seats[j] == 1:
+                break
+        res = max(i, n-j-1)
+        i = j = 0
+        while i < n and j < n:
+            while i < n and seats[i] == 0:
+                i += 1
+            j = i
+            while j < n and seats[j] == 1:
+                j += 1
+            res = max(res, (j-i+1)//2)
+            i = j
+        return res
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        N = len(seats)
+        dist = [N] * N
+        last = -N
+        for i in range(N):
+            if seats[i] == 1:
+                last = i
+            dist[i] = min(dist[i], i - last)
+        last = 2 * N
+        for i in range(N - 1, -1, -1):
+            if seats[i] == 1:
+                last = i
+            dist[i] = min(dist[i], last - i)
+        return max(dist)
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        max_dist = 0
+        last_seat = -1
+        for i in range(len(seats)):
+            if seats[i] == 1:
+                if last_seat == -1:
+                    max_dist = max(max_dist, i)
+                else:
+                    max_dist = max(max_dist, (i - last_seat) // 2)
+                last_seat = i
+        max_dist = max(max_dist, len(seats) - last_seat - 1)
+        return max_dist
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        dist = 0
+        i = 0
+        while i < len(seats):
+            if seats[i] == 1:
+                j = i + 1
+                while j < len(seats) and seats[j] == 0:
+                    j += 1
+                if i == 0:
+                    dist = max(dist, j - i)
+                elif j == len(seats):
+                    dist = max(dist, j - i)
+                else:
+                    dist = max(dist, (j - i + 1) // 2)
+                i = j - 1
+            i += 1
+        return dist
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        seats = [i for i, x in enumerate(seats) if x == 1]
+        print(seats)
+        return max(seats[0], len(seats) - seats[-1] - 1, *[b - a >> 1 for a, b in zip(seats, seats[1:])])
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        i = 0
+        while i < len(seats) and seats[i] == 0:
+            i += 1
+        max_dist = i
+        prev = i
+        while i < len(seats):
+            while i < len(seats) and seats[i] == 1:
+                i += 1
+            if i == len(seats):
+                max_dist = max(max_dist, i - prev - 1)
+                break
+            start = i
+            while i < len(seats) and seats[i] == 0:
+                i += 1
+            max_dist = max(max_dist, (i - prev) // 2)
+            prev = start
+        return max_dist
+
+=======
+
+def maxDistToClosest(self, seats: List[int]) -> int:
+        max_dist = 0
+        for i in range(len(seats)):
+            if seats[i] == 0:
+                dist = 0
+                j = i
+                while j>=0 and seats[j] == 0:
+                    dist += 1
+                    j -= 1
+                if j < 0:
+                    dist -= 1
+                else:
+                    dist -= 0.5
+                j = i
+                while j<len(seats) and seats[j] == 0:
+                    dist += 1
+                    j += 1
+                if j >= len(seats):
+                    dist -= 1
+                else:
+                    dist -= 0.5
+                max_dist = max(max_dist, int(dist))
+        return max_dist

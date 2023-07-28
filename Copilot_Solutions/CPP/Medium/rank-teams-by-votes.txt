@@ -1,0 +1,225 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = votes[0].length();
+        vector<vector<int>> cnt(26, vector<int>(n + 1));
+        for (int i = 0; i < 26; ++i) {
+            cnt[i][n] = i;
+        }
+        for (string& vote: votes) {
+            for (int i = 0; i < n; ++i) {
+                ++cnt[vote[i] - 'A'][i];
+            }
+        }
+        sort(cnt.begin(), cnt.end(), greater<vector<int>>());
+        string ans;
+        for (int i = 0; i < n; ++i) {
+            ans += cnt[i][n] + 'A';
+        }
+        return ans;
+
+=======
+
+        int n = votes.size();
+        int m = votes[0].size();
+        vector<vector<int>> count(m, vector<int>(26, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                count[j][votes[i][j] - 'A']++;
+            }
+        }
+        vector<pair<int, string>> teams;
+        for (int i = 0; i < 26; i++) {
+            string team = "";
+            team += ('A' + i);
+            teams.push_back({i, team});
+        }
+        sort(teams.begin(), teams.end(), [&](pair<int, string> a, pair<int, string> b) {
+            for (int i = 0; i < m; i++) {
+                if (count[i][a.first] > count[i][b.first]) {
+                    return true;
+                } else if (count[i][a.first] < count[i][b.first]) {
+                    return false;
+                }
+            }
+            return a.second < b.second;
+        });
+        string res = "";
+        for (auto it : teams) {
+            res += it.second;
+        }
+        return res;
+
+=======
+
+        int n = votes[0].size();
+        vector<vector<int>> cnt(26, vector<int>(n + 1));
+        for (int i = 0; i < n; i++) {
+            cnt[votes[0][i] - 'A'][n] = votes[0][i];
+            for (auto & vote : votes) {
+                cnt[vote[i] - 'A'][i]++;
+            }
+        }
+        sort(cnt.begin(), cnt.end(), [](const vector<int> & u, const vector<int> & v) {
+            for (int i = 0; i < u.size(); i++) {
+                if (u[i] > v[i]) {
+                    return true;
+                } else if (u[i] < v[i]) {
+                    return false;
+                }
+            }
+            return false;
+        });
+        string ans;
+        for (int i = 0; i < n; i++) {
+            ans.push_back(cnt[i][n]);
+        }
+        return ans;
+
+=======
+
+        int n = votes[0].size();
+        vector<vector<int>> count(26, vector<int>(n + 1, 0));
+        for (int i = 0; i < votes.size(); i++) {
+            for (int j = 0; j < n; j++) {
+                count[votes[i][j] - 'A'][j]++;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            count[i][n] = i;
+        }
+        sort(count.begin(), count.end(), [](const vector<int>& a, const vector<int>& b) {
+            for (int i = 0; i < a.size() - 1; i++) {
+                if (a[i] != b[i]) {
+                    return a[i] > b[i];
+                }
+            }
+            return a.back() < b.back();
+        });
+        string ans;
+        for (int i = 0; i < n; i++) {
+            ans += 'A' + count[i].back();
+        }
+        return ans;
+
+=======
+
+        int n = votes[0].size();
+        vector<vector<int>> cnt(26, vector<int>(n, 0));
+        for (string vote : votes) {
+            for (int i = 0; i < n; i++) {
+                cnt[vote[i] - 'A'][i]++;
+            }
+        }
+        sort(votes[0].begin(), votes[0].end(), [&](char a, char b) {
+            for (int i = 0; i < n; i++) {
+                if (cnt[a - 'A'][i] != cnt[b - 'A'][i]) {
+                    return cnt[a - 'A'][i] > cnt[b - 'A'][i];
+                }
+            }
+            return a < b;
+        });
+        return votes[0];
+
+=======
+
+        int n = votes[0].size();
+        vector<vector<int>> cnt(26, vector<int>(n+1, 0));
+        for (int i = 0; i < n; i++) {
+            cnt[votes[0][i] - 'A'][n] = votes[0][i] - 'A';
+        }
+        for (string vote : votes) {
+            for (int i = 0; i < n; i++) {
+                cnt[vote[i] - 'A'][i]++;
+            }
+        }
+        sort(cnt.begin(), cnt.end(), [](vector<int> &a, vector<int> &b) {
+            for (int i = 0; i < a.size(); i++) {
+                if (a[i] != b[i]) {
+                    return a[i] > b[i];
+                }
+            }
+            return false;
+        });
+        string res;
+        for (int i = 0; i < n; i++) {
+            res += char(cnt[i][n] + 'A');
+        }
+        return res;
+
+=======
+
+        int n = votes.size();
+        int m = votes[0].size();
+        vector<vector<int>> count(26, vector<int>(m + 1));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                count[votes[i][j] - 'A'][j]++;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            count[i][m] = i;
+        }
+        sort(count.begin(), count.end(), [](const vector<int>& a, const vector<int>& b) {
+            for (int i = 0; i < a.size(); i++) {
+                if (a[i] > b[i]) return true;
+                if (a[i] < b[i]) return false;
+            }
+            return false;
+        });
+        string ans;
+        for (int i = 0; i < 26; i++) {
+            if (count[i][m] > 0) {
+                ans += 'A' + count[i][m];
+            }
+        }
+        return ans;
+
+=======
+
+        if (votes.empty()) return "";
+        int n = votes[0].size();
+        vector<vector<int>> cnt(26, vector<int>(n+1, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < votes.size(); j++) {
+                cnt[votes[j][i]-'A'][i]++;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            cnt[i][n] = i;
+        }
+        sort(cnt.begin(), cnt.end(), [](vector<int>& a, vector<int>& b) {
+            for (int i = 0; i < a.size()-1; i++) {
+                if (a[i] != b[i]) return a[i] > b[i];
+            }
+            return a.back() < b.back();
+        });
+        string res;
+        for (int i = 0; i < n; i++) {
+            res += (char)('A' + cnt[i].back());
+        }
+        return res;
+
+=======
+
+        int n = votes[0].size();
+        vector<vector<int>> v(26, vector<int>(n,0));
+        for (auto vote: votes) {
+            for (int i=0; i<n; i++) {
+                v[vote[i]-'A'][i]++;
+            }
+        }
+        sort(v.begin(), v.end(), [](vector<int> &a, vector<int> &b) {
+            for (int i=0; i<a.size(); i++) {
+                if (a[i] > b[i]) return true;
+                if (a[i] < b[i]) return false;
+            }
+            return false;
+        });
+        string result = "";
+        for (auto &v : v) {
+            if (v[0] == 0) break;
+            result += 'A' + (&v-&v[0]);
+        }
+        return result;

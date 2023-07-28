@@ -1,0 +1,211 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < hats.size(); i++) {
+            for (int hat : hats.get(i)) {
+                List<Integer> list = map.getOrDefault(hat, new ArrayList<>());
+                list.add(i);
+                map.put(hat, list);
+            }
+        }
+        int mod = (int)1e9 + 7;
+        int[][] dp = new int[41][1 << hats.size()];
+        dp[0][0] = 1;
+        for (int i = 1; i <= 40; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (map.containsKey(i)) {
+                    for (int person : map.get(i)) {
+                        if ((j & (1 << person)) != 0) {
+                            dp[i][j] = (dp[i][j] + dp[i - 1][j - (1 << person)]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[40][dp[0].length - 1];
+
+=======
+
+        int n = hats.size();
+        int mod = (int)1e9 + 7;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int hat : hats.get(i)) {
+                map.computeIfAbsent(hat, x -> new ArrayList<>()).add(i);
+            }
+        }
+        for (int hat = 1; hat <= 40; hat++) {
+            int[] dp2 = dp.clone();
+            for (int mask = 0; mask < (1 << n); mask++) {
+                for (int i : map.getOrDefault(hat, new ArrayList<>())) {
+                    if (((mask >> i) & 1) == 0) {
+                        dp2[mask | (1 << i)] = (dp2[mask | (1 << i)] + dp[mask]) % mod;
+                    }
+                }
+            }
+            dp = dp2;
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int mod = 1000000007;
+        int n = hats.size();
+        int[][] dp = new int[1 << n][41];
+        dp[0][0] = 1;
+        for (int j = 1; j <= 40; j++) {
+            for (int i = 0; i < (1 << n); i++) {
+                dp[i][j] = dp[i][j - 1];
+                for (int k = 0; k < n; k++) {
+                    if (((i >> k) & 1) == 1 || !hats.get(k).contains(j)) continue;
+                    dp[i | (1 << k)][j] = (dp[i | (1 << k)][j] + dp[i][j - 1]) % mod;
+                }
+            }
+        }
+        return dp[(1 << n) - 1][40];
+
+=======
+
+        int n = hats.size();
+        Map<Integer, List<Integer>> hatsMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int hat : hats.get(i)) {
+                hatsMap.putIfAbsent(hat, new ArrayList<>());
+                hatsMap.get(hat).add(i);
+            }
+        }
+        int mod = 1000000007;
+        int[][] dp = new int[41][1024];
+        dp[0][0] = 1;
+        for (int i = 1; i <= 40; i++) {
+            for (int mask = 0; mask < (1 << n); mask++) {
+                dp[i][mask] = dp[i - 1][mask];
+                if (hatsMap.containsKey(i)) {
+                    for (int j : hatsMap.get(i)) {
+                        if (((mask >> j) & 1) == 0) {
+                            dp[i][mask] = (dp[i][mask] + dp[i - 1][mask | (1 << j)]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[40][(1 << n) - 1];
+
+=======
+
+        int mod = 1000000007;
+        int n = hats.size();
+        int m = 40;
+        int[][] dp = new int[n + 1][1 << n];
+        dp[0][0] = 1;
+        int[] last = new int[41];
+        Arrays.fill(last, -1);
+        for (int j = 0; j < m; j++) {
+            int mask = 0;
+            for (int i = 0; i < n; i++) {
+                if (hats.get(i).contains(j + 1)) {
+                    mask |= (1 << i);
+                }
+            }
+            for (int i = n; i >= 1; i--) {
+                for (int k = 0; k < (1 << n); k++) {
+                    if ((k & mask) != 0) {
+                        dp[i][k] = (dp[i][k] + dp[i - 1][k ^ mask]) % mod;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            res = (res + dp[i][(1 << n) - 1]) % mod;
+        }
+        return res;
+
+=======
+
+        int n = hats.size();
+        int m = 40;
+        int mod = 1000000007;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(hats, 0, 0, dp) % mod;
+    }
+    private int dfs(List<List<Integer>> hats, int i, int mask, int[][] dp) {
+        if (i == 40) {
+            return mask == (1 << hats.size()) - 1 ? 1 : 0;
+        }
+        if (dp[i][mask] != -1) {
+            return dp[i][mask];
+        }
+        int res = dfs(hats, i + 1, mask, dp);
+        for (int j = 0; j < hats.size(); j++) {
+            if ((mask & (1 << j)) != 0) {
+                continue;
+            }
+            if (hats.get(j).contains(i + 1)) {
+                res += dfs(hats, i + 1, mask | (1 << j), dp);
+            }
+        }
+        dp[i][mask] = res;
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int n = hats.size();
+        int[] dp = new int[1<<n];
+        dp[0] = 1;
+        int[] last = new int[41];
+        for (int i = 0; i < 41; i++) {
+            last[i] = -1;
+        }
+        for (int i = 1; i <= 40; i++) {
+            int mask = 0;
+            for (int j = 0; j < n; j++) {
+                if (hats.get(j).contains(i)) {
+                    mask |= (1<<j);
+                }
+            }
+            for (int j = (1<<n)-1; j >= 0; j--) {
+                if (dp[j] > 0) {
+                    dp[j|mask] = (dp[j|mask] + dp[j]) % mod;
+                }
+            }
+        }
+        return dp[(1<<n)-1];
+
+=======
+
+        int n = hats.size();
+        int m = 40;
+        int mod = (int)1e9 + 7;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        int[] hatToPeople = new int[41];
+        for (int i = 0; i < n; i++) {
+            for (int hat : hats.get(i)) {
+                hatToPeople[hat] |= (1 << i);
+            }
+        }
+        return dfs(1, hatToPeople, 0, dp, mod);
+    }
+    
+    private int dfs(int hat, int[] hatToPeople, int mask, int[][] dp, int mod) {
+        if (hat > 40) {
+            return mask == (1 << dp.length) - 1 ? 1 : 0;
+        }
+        if (dp[Integer.bitCount(mask)][mask] != -1) {
+            return dp[Integer.bitCount(mask)][mask];
+        }
+        int res = dfs(hat + 1, hatToPeople, mask, dp, mod);
+        res = (res + dfs(hat + 1, hatToPeople, mask | hatToPeople[hat], dp, mod)) % mod;
+        return dp[Integer.bitCount(mask)][mask] = res;

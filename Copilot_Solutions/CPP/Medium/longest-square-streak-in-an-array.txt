@@ -1,0 +1,180 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; i++) {
+            mp[nums[i]] = i;
+        }
+        sort(nums.begin(), nums.end());
+        vector<int> dp(n, 1);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (nums[j] % nums[i] == 0 && mp.count(nums[j] / nums[i])) {
+                    dp[j] = max(dp[j], dp[i] + 1);
+                }
+            }
+        }
+        return *max_element(dp.begin(), dp.end()) >= 2 ? *max_element(dp.begin(), dp.end()) : -1;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n, 1);
+        int ans = 1;
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (nums[i] == nums[j] * nums[j]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = max(ans, dp[i]);
+        }
+        return ans >= 3 ? ans : -1;
+
+=======
+
+        int n = nums.size();
+        if (n < 2) return -1;
+        sort(nums.begin(), nums.end());
+        int res = 0;
+        for (int i = 0; i < n - 1; ++i) {
+            if (nums[i] == 0) continue;
+            int j = i + 1;
+            while (j < n && nums[j] == nums[i] * nums[i]) ++j;
+            res = max(res, j - i);
+            i = j - 1;
+        }
+        return res >= 2 ? res : -1;
+
+=======
+
+        sort(nums.begin(), nums.end());
+        int n = nums.size(), res = 0, cnt = 0;
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] == nums[i - 1] || nums[i] == nums[i - 1] + 1) continue;
+            if (nums[i] == nums[i - 1] * nums[i - 1]) ++cnt;
+            else {
+                res = max(res, cnt);
+                cnt = 0;
+            }
+        }
+        res = max(res, cnt);
+        return res;
+
+=======
+
+        int n = nums.size();
+        unordered_map<int, int> m;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            m[nums[i]] = 1;
+            if (m.find(nums[i] * nums[i]) != m.end()) {
+                m[nums[i]] = m[nums[i] * nums[i]] + 1;
+                ans = max(ans, m[nums[i]]);
+            }
+            if (nums[i] % sqrt(nums[i]) == 0 && m.find(nums[i] / sqrt(nums[i])) != m.end()) {
+                m[nums[i]] = m[nums[i] / sqrt(nums[i])] + 1;
+                ans = max(ans, m[nums[i]]);
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = -1;
+        int n = nums.size();
+        int i = 0;
+        while (i < n) {
+            int j = i + 1;
+            while (j < n && nums[j] == nums[j-1]) j++;
+            int cnt = j - i;
+            if (cnt >= 2) {
+                int k = j - 1;
+                int num = nums[k];
+                while (k >= i) {
+                    if (nums[k] != num) return -1;
+                    num = sqrt(num);
+                    k--;
+                }
+                ans = max(ans, cnt);
+            }
+            i = j;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (j < n && nums[j] == nums[i]) j++;
+            int cnt = j - i;
+            if (cnt > ans) ans = cnt;
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        for(int i = 0; i < n; i++)
+        {
+            int j = i;
+            while(j < n && nums[j] == nums[i]) j++;
+            if(j - i >= 2)
+            {
+                if(nums[i] == 0) ans = max(ans, j - i);
+                else if(nums[i] % 4 == 0 && binary_search(nums.begin(), nums.end(), nums[i] / 4)) ans = max(ans, j - i);
+            }
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int maxLen = 0;
+        for(int i = 0; i < n; i++) {
+            int len = 0;
+            int last = nums[i];
+            for(int j = i + 1; j < n; j++) {
+                int curr = nums[j];
+                if(curr == last + 1) {
+                    len++;
+                    last = curr;
+                } else if(curr == last) {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if(len >= 2) {
+                maxLen = max(maxLen, len);
+            }
+        }
+        return maxLen;
+
+=======
+
+        int n = nums.size();
+        int maxStreak = 0;
+        for(int i=0; i<n; i++){
+            int streak = 1;
+            int curr = nums[i];
+            int prev = nums[i];
+            for(int j=i+1; j<n; j++){
+                if(nums[j] == curr*curr && nums[j] != prev){
+                    streak++;
+                    prev = curr;
+                    curr = nums[j];
+                }
+            }
+            maxStreak = max(maxStreak, streak);
+        }
+        return maxStreak >= 2 ? maxStreak : -1;

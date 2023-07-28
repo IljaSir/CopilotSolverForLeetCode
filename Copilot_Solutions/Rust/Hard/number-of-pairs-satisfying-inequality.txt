@@ -1,0 +1,185 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut ans = 0;
+        let n = nums1.len();
+        let mut nums1 = nums1;
+        let mut nums2 = nums2;
+        nums1.sort();
+        nums2.sort();
+        for i in 0..n {
+            let mut l = i;
+            let mut r = n - 1;
+            while l < r {
+                let m = (l + r + 1) / 2;
+                if nums1[m] - nums1[i] <= nums2[i] - nums2[m] + diff {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            ans += (l - i) as i64;
+        }
+        ans
+
+=======
+
+        let mut nums1 = nums1;
+        let mut nums2 = nums2;
+        nums1.sort();
+        nums2.sort();
+        let mut ans: i64 = 0;
+        for i in 0..nums1.len() {
+            ans += nums2.len() as i64 - Self::upper_bound(&nums2, nums1[i] - diff) as i64;
+        }
+        ans
+    }
+    fn upper_bound(nums: &Vec<i32>, target: i32) -> usize {
+        let mut left = 0;
+        let mut right = nums.len();
+        while left < right {
+            let mid = (left + right) / 2;
+            if nums[mid] > target {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        left
+
+=======
+
+        let mut ans = 0;
+        let n = nums1.len();
+        let mut v = vec![0; n];
+        for i in 0..n {
+            v[i] = nums1[i] - nums2[i];
+        }
+        v.sort();
+        for i in 0..n {
+            let t = nums2[i] + diff;
+            let mut l = i + 1;
+            let mut r = n - 1;
+            while l < r {
+                let mid = (l + r) / 2;
+                if v[mid] <= t {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            if v[l] <= t {
+                ans += l as i64 - i as i64;
+            } else {
+                ans += l as i64 - i as i64 - 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut result = 0;
+        let n = nums1.len();
+        let mut nums2 = nums2;
+        nums2.sort();
+        for i in 0..n {
+            let j = nums2.binary_search(&(nums1[i] - diff)).unwrap_or_else(|x| x);
+            result += j as i64;
+        }
+        result
+
+=======
+
+        let (mut i, mut j) = (0, 0);
+        let mut ans = 0;
+        let mut nums2 = nums2;
+        nums2.sort();
+        for n1 in nums1 {
+            while i < nums2.len() && n1 - nums2[i] > diff {
+                i += 1;
+            }
+            while j < nums2.len() && n1 - nums2[j] >= diff {
+                j += 1;
+            }
+            ans += (j - i) as i64;
+        }
+        ans
+
+=======
+
+        let mut res = 0;
+        let mut nums2 = nums2;
+        nums2.sort();
+        for num in nums1 {
+            let target = num - diff;
+            res += nums2.binary_search(&target).unwrap_or_else(|x| x) as i64;
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut nums2_sorted = nums2.clone();
+        nums2_sorted.sort();
+        for n in nums1 {
+            let mut l = 0;
+            let mut r = nums2_sorted.len() - 1;
+            while l <= r {
+                let m = (l + r) / 2;
+                if nums2_sorted[m] < n - diff {
+                    l = m + 1;
+                } else {
+                    r = m - 1;
+                }
+            }
+            res += l as i64;
+        }
+        res
+
+=======
+
+        let mut res = 0i64;
+        let mut nums2 = nums2;
+        nums2.sort();
+        for i in 0..nums1.len() {
+            let mut left = 0;
+            let mut right = nums2.len();
+            while left < right {
+                let mid = left + (right - left) / 2;
+                if nums1[i] - nums2[mid] > diff {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            res += left as i64;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = 0i64;
+        let mut nums = vec![0i64; 20001];
+        for i in 0..nums1.len() {
+            ans += nums[(nums1[i] - nums2[i] + diff + 10000) as usize];
+            nums[(nums1[i] - nums2[i] + 10000) as usize] += 1;
+        }
+        ans
+
+=======
+
+        let mut pairs = 0;
+        let mut sorted_nums2 = nums2.clone();
+        sorted_nums2.sort();
+        for i in 0..nums1.len() {
+            let upper_bound = nums1[i] - diff;
+            let index = match sorted_nums2.binary_search(&upper_bound) {
+                Ok(index) => index,
+                Err(index) => index,
+            };
+            pairs += index as i64;
+        }
+        pairs

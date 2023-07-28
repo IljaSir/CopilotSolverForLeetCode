@@ -1,0 +1,520 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int[] start = new int[3];
+        int totalKeys = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    start[0] = i;
+                    start[1] = j;
+                    start[2] = 0;
+                }
+                if (c >= 'a' && c <= 'f') {
+                    totalKeys++;
+                }
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(start);
+        Set<String> visited = new HashSet<>();
+        visited.add(start[0] + " " + start[1] + " " + start[2]);
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                if (cur[2] == (1 << totalKeys) - 1) {
+                    return steps;
+                }
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    int keys = cur[2];
+                    if (x >= 0 && x < m && y >= 0 && y < n) {
+                        char c = grid[x].charAt(y);
+                        if (c != '#') {
+                            if (c >= 'a' && c <= 'f') {
+                                keys |= 1 << (c - 'a');
+                            }
+                            if (c >= 'A' && c <= 'F' && (keys & (1 << (c - 'A'))) == 0) {
+                                continue;
+                            }
+                            if (!visited.contains(x + " " + y + " " + keys)) {
+                                queue.offer(new int[]{x, y, keys});
+                                visited.add(x + " " + y + " " + keys);
+                            }
+                        }
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int m = grid.length, n = grid[0].length();
+        int[] start = new int[2];
+        int keys = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i].charAt(j) == '@') {
+                    start[0] = i;
+                    start[1] = j;
+                } else if (grid[i].charAt(j) >= 'a' && grid[i].charAt(j) <= 'f') {
+                    keys++;
+                }
+            }
+        }
+        return bfs(grid, start, keys);
+    }
+    
+    private int bfs(String[] grid, int[] start, int keys) {
+        int m = grid.length, n = grid[0].length();
+        int[][] dirs = new int[][] {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> q = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        q.offer(start);
+        visited.add(start[0] + "," + start[1] + "," + 0);
+        int steps = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0], y = cur[1], k = cur[2];
+                if (k == (1 << keys) - 1) {
+                    return steps;
+                }
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0], ny = y + dir[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n || grid[nx].charAt(ny) == '#') {
+                        continue;
+                    }
+                    int nk = k;
+                    if (grid[nx].charAt(ny) >= 'a' && grid[nx].charAt(ny) <= 'f') {
+                        nk |= (1 << (grid[nx].charAt(ny) - 'a'));
+                    }
+                    if (grid[nx].charAt(ny) >= 'A' && grid[nx].charAt(ny) <= 'F') {
+                        if ((nk & (1 << (grid[nx].charAt
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int[] start = new int[2];
+        int keyCount = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i].charAt(j) == '@') {
+                    start[0] = i;
+                    start[1] = j;
+                }
+                if (grid[i].charAt(j) >= 'a' && grid[i].charAt(j) <= 'f') {
+                    keyCount++;
+                }
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{start[0], start[1], 0});
+        int[][] dirs = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        boolean[][][] visited = new boolean[m][n][64];
+        visited[start[0]][start[1]][0] = true;
+        int steps = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] curr = queue.poll();
+                int x = curr[0];
+                int y = curr[1];
+                int keys = curr[2];
+                if (keys == (1 << keyCount) - 1) {
+                    return steps;
+                }
+                for (int[] dir : dirs) {
+                    int newX = x + dir[0];
+                    int newY = y + dir[1];
+                    if (newX < 0 || newX >= m || newY < 0 || newY >= n || grid[newX].charAt(newY) == '#') {
+                        continue;
+                    }
+                    int newKeys = keys;
+                    if (grid[newX].charAt(newY) >= 'a' && grid[newX].charAt(newY) <= 'f') {
+                        newKeys |= (1 << (grid[newX].charAt(newY) - 'a'));
+                    }
+                    if (grid[newX].charAt(newY) >= 'A' && grid[newX].charAt(newY) <= 'F' && ((newKeys >> (grid[newX].charAt(newY) - 'A')) & 1) == 0) {
+                        continue;
+                    }
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int startx = 0;
+        int starty = 0;
+        int keys = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i].charAt(j) == '@') {
+                    startx = i;
+                    starty = j;
+                }
+                if (grid[i].charAt(j) >= 'a' && grid[i].charAt(j) <= 'f') {
+                    keys++;
+                }
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{startx, starty, 0});
+        boolean[][][] visited = new boolean[m][n][1 << keys];
+        visited[startx][starty][0] = true;
+        int[][] dirs = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                int x = cur[0];
+                int y = cur[1];
+                int k = cur[2];
+                if (k == (1 << keys) - 1) {
+                    return step;
+                }
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                        continue;
+                    }
+                    char c = grid[nx].charAt(ny);
+                    if (c == '#') {
+                        continue;
+                    }
+                    int nk = k;
+                    if (c >= 'a' && c <= 'f') {
+                        nk = k | (1 << (c - 'a'));
+                    }
+                    if (c >= 'A' && c <= 'F' && ((nk >> (c - 'A')) & 1) == 0) {
+                        continue;
+                    }
+                    if (visited[nx][ny][nk]) {
+                        continue;
+                    }
+                    queue.offer(new int[]{nx, ny, nk});
+                    visited[nx
+
+=======
+
+        int m = grid.length, n = grid[0].length();
+        int[][][] dist = new int[m][n][1 << 6];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                Arrays.fill(dist[i][j], Integer.MAX_VALUE);
+            }
+        }
+        int[] start = new int[3];
+        int keys = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i].charAt(j) == '@') {
+                    start[0] = i;
+                    start[1] = j;
+                }
+                if (grid[i].charAt(j) >= 'a' && grid[i].charAt(j) <= 'f') {
+                    keys++;
+                }
+            }
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(start);
+        dist[start[0]][start[1]][0] = 0;
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int x = cur[0], y = cur[1], k = cur[2];
+            if (k == (1 << keys) - 1) {
+                return dist[x][y][k];
+            }
+            for (int[] d : dirs) {
+                int i = x + d[0], j = y + d[1], nk = k;
+                if (i < 0 || i >= m || j < 0 || j >= n || grid[i].charAt(j) == '#') {
+                    continue;
+                }
+                if (grid[i].charAt(j) >= 'A' && grid[i].charAt(j) <= 'F' && ((k >> (grid[i].charAt(j) - 'A')) & 1) == 0) {
+                    continue;
+                }
+                if (grid[i].charAt(j) >= 'a' && grid[i].charAt(j) <= 'f') {
+                    nk |= (1 << (grid[i].charAt(j) - 'a'));
+                }
+                if (dist[i][j][nk] > dist[x][y][
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int si = 0, sj = 0;
+        int k = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    si = i;
+                    sj = j;
+                } else if (c >= 'a' && c <= 'f') {
+                    k = Math.max(k, c - 'a' + 1);
+                }
+            }
+        }
+        int[][] dirs = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int target = (1 << k) - 1;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{si, sj, 0});
+        boolean[][][] visited = new boolean[m][n][1 << k];
+        visited[si][sj][0] = true;
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0];
+                int y = cur[1];
+                int keys = cur[2];
+                if (keys == target) {
+                    return step;
+                }
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                        continue;
+                    }
+                    char c = grid[nx].charAt(ny);
+                    if (c == '#') {
+                        continue;
+                    }
+                    int nkeys = keys;
+                    if (c >= 'a' && c <= 'f') {
+                        nkeys |= (1 << (c - 'a'));
+                    }
+                    if (c >= 'A' && c <= 'F' && ((nkeys >> (c - 'A')) & 1) == 0) {
+                        continue;
+                    }
+                    if (visited[nx][ny][nkeys]) {
+                        continue;
+                    }
+                    visited[nx][ny][nkeys]
+
+=======
+
+        int m = grid.length, n = grid[0].length();
+        int[][][] dist = new int[m][n][1 << 6];
+        int[] start = new int[2];
+        int target = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                Arrays.fill(dist[i][j], Integer.MAX_VALUE);
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    start[0] = i;
+                    start[1] = j;
+                } else if (c >= 'a' && c <= 'f') {
+                    target |= (1 << (c - 'a'));
+                }
+            }
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{start[0], start[1], 0});
+        dist[start[0]][start[1]][0] = 0;
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!q.isEmpty()) {
+            int[] curr = q.poll();
+            int x = curr[0], y = curr[1], keys = curr[2];
+            if (keys == target) {
+                return dist[x][y][keys];
+            }
+            for (int[] dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    char c = grid[nx].charAt(ny);
+                    if (c == '#') {
+                        continue;
+                    }
+                    int nkeys = keys;
+                    if (c >= 'a' && c <= 'f') {
+                        nkeys |= (1 << (c - 'a'));
+                    }
+                    if (c >= 'A' && c <= 'F' && ((nkeys >> (c - 'A')) & 1) == 0) {
+                        continue;
+                    }
+                    if (dist[nx][ny][nkeys] > dist[x][y][keys] + 1) {
+                        dist[nx][ny][nkeys] = dist[x][y][keys] + 1;
+                        q.offer(new int[]{nx, ny, nkeys});
+
+=======
+
+        int m = grid.length, n = grid[0].length();
+        int[][][] dist = new int[m][n][1<<6];
+        int[] start = new int[2];
+        int keys = 0;
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                char c = grid[i].charAt(j);
+                if(c == '@'){
+                    start[0] = i;
+                    start[1] = j;
+                }
+                if(c >= 'a' && c <= 'f'){
+                    keys |= (1<<(c-'a'));
+                }
+            }
+        }
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{start[0], start[1], 0});
+        int[][] dirs = {{0,1},{0,-1},{1,0},{-1,0}};
+        while(!queue.isEmpty()){
+            int[] cur = queue.poll();
+            int x = cur[0], y = cur[1], k = cur[2];
+            if(dist[x][y][k] != 0) continue;
+            dist[x][y][k] = 1;
+            for(int[] d : dirs){
+                int i = x + d[0], j = y + d[1];
+                if(i < 0 || i >= m || j < 0 || j >= n || grid[i].charAt(j) == '#') continue;
+                char c = grid[i].charAt(j);
+                int newKey = k;
+                if(c >= 'a' && c <= 'f'){
+                    newKey |= (1<<(c-'a'));
+                } else if(c >= 'A' && c <= 'F'){
+                    if((k & (1<<(c-'A'))) == 0) continue;
+                }
+                if(dist[i][j][newKey] == 0){
+                    queue.add(new int[]{i,j,newKey});
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for(int i=0; i<1<<6; i++){
+            if((i & keys) == keys && dist[start[0]][start[1]][i] != 0){
+                res = Math.min(res, dist[start[0]][start[1]][i] - 1);
+            }
+        }
+        return res == Integer.MAX_VALUE ? -1 : res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int[][][] dist = new int[m][n][1 << 6];
+        int si = -1, sj = -1;
+        int totalKeys = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c >= 'a' && c <= 'f') {
+                    totalKeys |= 1 << (c - 'a');
+                }
+                if (c == '@') {
+                    si = i;
+                    sj = j;
+                }
+            }
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{si, sj, 0});
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0];
+                int y = cur[1];
+                int keys = cur[2];
+                if (keys == totalKeys) {
+                    return step;
+                }
+                if (dist[x][y][keys] != 0) {
+                    continue;
+                }
+                dist[x][y][keys] = 1;
+                for (int[] d : new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}}) {
+                    int nx = x + d[0];
+                    int ny = y + d[1];
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx].charAt(ny) != '#') {
+                        char c = grid[nx].charAt(ny);
+                        if (c >= 'A' && c <= 'F') {
+                            if ((keys & (1 << (c - 'A'))) == 0) {
+                                continue;
+                            }
+                        }
+                        int nkeys = keys;
+                        if (c >= 'a' && c <= 'f') {
+                            nkeys |= 1 << (c - 'a');
+                        }
+                        q.add(new int[]{nx, ny, nkeys});
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length();
+        int startx = 0;
+        int starty = 0;
+        int maxMask = 0;
+        int keyCount = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = grid[i].charAt(j);
+                if (c == '@') {
+                    startx = i;
+                    starty = j;
+                } else if (c >= 'a' && c <= 'f') {
+                    keyCount++;
+                    maxMask |= (1 << (c - 'a'));
+                }
+            }
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[] {startx, starty, 0});
+        boolean[][][] visited = new boolean[m][n][64];
+        visited[startx][starty][0] = true;
+        int[] dx = new int[] {0, 0, -1, 1};
+        int[] dy = new int[] {-1, 1, 0, 0};
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0];
+                int y = cur[1];
+                int mask = cur[2];
+                if (mask == maxMask) {
+                    return step;
+                }
+                for (int j = 0; j < 4; j++) {
+                    int nx = x + dx[j];
+                    int ny = y + dy[j];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                        continue;
+                    }
+                    char c = grid[nx].charAt(ny);
+                    if (c == '#') {
+                        continue;
+                    }
+                    int nmask = mask;
+                    if (c >= 'a' && c <= 'f') {
+                        nmask |= (1 << (c - 'a'));
+                    }
+                    if (c >= 'A' && c <= 'F') {
+                        if ((nmask & (1 << (c - 'A'))) == 0) {
+                            continue;
+                        }
+                    }
+                    if (!visited[nx

@@ -1,0 +1,283 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> res;
+        int n = buildings.size();
+        if (n == 0) return res;
+        if (n == 1) {
+            res.push_back({buildings[0][0], buildings[0][2]});
+            res.push_back({buildings[0][1], 0});
+            return res;
+        }
+        vector<vector<int>> leftSkyline = getSkyline(vector<vector<int>>(buildings.begin(), buildings.begin() + n / 2));
+        vector<vector<int>> rightSkyline = getSkyline(vector<vector<int>>(buildings.begin() + n / 2, buildings.end()));
+        return mergeSkyline(leftSkyline, rightSkyline);
+    }
+    vector<vector<int>> mergeSkyline(vector<vector<int>>& leftSkyline, vector<vector<int>>& rightSkyline) {
+        vector<vector<int>> res;
+        int n = leftSkyline.size(), m = rightSkyline.size();
+        int i = 0, j = 0;
+        int leftH = 0, rightH = 0;
+        while (i < n && j < m) {
+            if (leftSkyline[i][0] < rightSkyline[j][0]) {
+                leftH = leftSkyline[i][1];
+                res.push_back({leftSkyline[i][0], max(leftH, rightH)});
+                i++;
+            } else if (leftSkyline[i][0] > rightSkyline[j][0]) {
+                rightH = rightSkyline[j][1];
+                res.push_back({rightSkyline[j][0], max(leftH, rightH)});
+                j++;
+            } else {
+                leftH = leftSkyline[i][1];
+                rightH = rightSkyline[j][1];
+                res.push_back({leftSkyline[i][0], max(leftH, rightH)});
+                i++;
+                j++;
+            }
+        }
+        while (i < n) {
+            res.push_back(leftSkyline[i++]);
+        }
+        while (j < m) {
+            res.push_back(rightSkyline[j++]);
+        }
+        return res;
+
+=======
+
+        int n = buildings.size();
+        vector<vector<int>> res;
+        if (n == 0) return res;
+        if (n == 1) {
+            res.push_back({buildings[0][0], buildings[0][2]});
+            res.push_back({buildings[0][1], 0});
+            return res;
+        }
+        vector<vector<int>> left(buildings.begin(), buildings.begin() + n/2);
+        vector<vector<int>> right(buildings.begin() + n/2, buildings.end());
+        vector<vector<int>> lSkyline = getSkyline(left);
+        vector<vector<int>> rSkyline = getSkyline(right);
+        return merge(lSkyline, rSkyline);
+    }
+    vector<vector<int>> merge(vector<vector<int>>& lSkyline, vector<vector<int>>& rSkyline) {
+        vector<vector<int>> res;
+        int n = lSkyline.size();
+        int m = rSkyline.size();
+        int i = 0, j = 0;
+        int curL = 0, curR = 0;
+        int curH = 0, curMaxH = 0;
+        while (i < n && j < m) {
+            if (lSkyline[i][0] < rSkyline[j][0]) {
+                curL = lSkyline[i][0];
+                curH = lSkyline[i][1];
+                i++;
+            } else {
+                curL = rSkyline[j][0];
+                curH = rSkyline[j][1];
+                j++;
+            }
+            curMaxH = max(curH, curMaxH);
+            if (res.empty() || curMaxH != res.back()[1]) {
+                res.push_back({curL, curMaxH});
+            }
+        }
+        while (i < n) {
+            res.push_back(lSkyline[i++]);
+        }
+        while (j < m) {
+            res.push_back(rSkyline[j++]);
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> res;
+        vector<pair<int, int>> h;
+        for (auto b : buildings) {
+            h.push_back({b[0], -b[2]});
+            h.push_back({b[1], b[2]});
+        }
+        sort(h.begin(), h.end());
+        multiset<int> m{0};
+        int prev = 0;
+        for (auto a : h) {
+            if (a.second < 0) m.insert(-a.second);
+            else m.erase(m.find(a.second));
+            int cur = *m.rbegin();
+            if (cur != prev) {
+                res.push_back({a.first, cur});
+                prev = cur;
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> res;
+        vector<pair<int, int>> points;
+        for (auto& b : buildings) {
+            points.push_back({b[0], -b[2]});
+            points.push_back({b[1], b[2]});
+        }
+        sort(points.begin(), points.end());
+        multiset<int> mset;
+        mset.insert(0);
+        int prev = 0;
+        for (auto& p : points) {
+            if (p.second < 0) {
+                mset.insert(-p.second);
+            } else {
+                mset.erase(mset.find(p.second));
+            }
+            int cur = *mset.rbegin();
+            if (prev != cur) {
+                res.push_back({p.first, cur});
+                prev = cur;
+            }
+        }
+        return res;
+
+=======
+
+        multiset<pair<int, int>> events;
+        for (auto& b: buildings) {
+            events.insert({b[0], -b[2]});
+            events.insert({b[1], b[2]});
+        }
+        multiset<int> heights({0});
+        vector<vector<int>> res;
+        int prev = 0, curr = 0;
+        for (auto& e: events) {
+            if (e.second < 0) heights.insert(-e.second);
+            else heights.erase(heights.find(e.second));
+            curr = *heights.rbegin();
+            if (curr != prev) {
+                res.push_back({e.first, curr});
+                prev = curr;
+            }
+        }
+        return res;
+
+=======
+
+        multimap<int, int> events;
+        for (auto& b: buildings) {
+            events.insert({b[0], -b[2]});
+            events.insert({b[1], b[2]});
+        }
+        multiset<int> heights {0};
+        vector<vector<int>> res;
+        int prev = 0, curr = 0;
+        for (auto& e: events) {
+            if (e.second < 0) heights.insert(-e.second);
+            else heights.erase(heights.find(e.second));
+            curr = *heights.rbegin();
+            if (curr != prev) {
+                res.push_back({e.first, curr});
+                prev = curr;
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> res;
+        multiset<pair<int, int>> points;
+        for (auto& b : buildings) {
+            points.insert(make_pair(b[0], -b[2]));
+            points.insert(make_pair(b[1], b[2]));
+        }
+        multiset<int> heights = {0};
+        vector<int> last = {0, 0};
+        for (auto& p : points) {
+            if (p.second < 0) heights.insert(-p.second);
+            else heights.erase(heights.find(p.second));
+            auto maxHeight = *heights.rbegin();
+            if (last[1] != maxHeight) {
+                last[0] = p.first;
+                last[1] = maxHeight;
+                res.push_back(last);
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> ans;
+        multiset<pair<int, int>> events;
+        for (auto& b: buildings) {
+            events.insert({b[0], -b[2]});
+            events.insert({b[1], b[2]});
+        }
+        multiset<int> heights = {0};
+        vector<int> last = {0, 0};
+        for (auto& [x, h]: events) {
+            if (h < 0) {
+                heights.insert(-h);
+            } else {
+                heights.erase(heights.find(h));
+            }
+            auto maxHeight = *heights.rbegin();
+            if (last[1] != maxHeight) {
+                last[0] = x;
+                last[1] = maxHeight;
+                ans.push_back(last);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> res;
+        map<int, int> m;
+        int maxH = 0;
+        for (auto &b : buildings) {
+            m[b[0]] = max(m[b[0]], b[2]);
+            m[b[1]] = max(m[b[1]], 0);
+        }
+        for (auto &p : m) {
+            if (p.second >= maxH) {
+                res.push_back({p.first, p.second});
+            } else if (p.second < maxH) {
+                res.push_back({p.first, p.second});
+                res.push_back({p.first, maxH});
+            }
+            maxH = p.second;
+        }
+        for (int i = 1; i < res.size(); ++i) {
+            if (res[i][1] == res[i - 1][1]) {
+                res.erase(res.begin() + i--);
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> v;
+        vector<int> t;
+        int i, j;
+        for (i = 0; i < buildings.size(); i++) {
+            t = buildings[i];
+            for (j = 0; j < v.size() && v[j][0] < t[0]; j++) {
+                if (v[j][1] > t[2]) {
+                    t[2] = v[j][1];
+                }
+            }
+            v.insert(v.begin() + j, t);
+        }
+        for (i = 0; i < v.size() - 1; i++) {
+            for (j = i + 1; j < v.size(); j++) {
+                if (v[j][0] > v[i][1]) {
+                    break;
+                }
+                if (v[j][1] >= v[i][1]) {
+                    v[i][1] = v[j][0];
+                }
+            }
+        }
+        for (i = 0; i < v.size(); i++) {
+            v[i][1] = v[i][2];
+            v[i].pop_back();
+        }
+        return v;

@@ -1,0 +1,194 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut max = 0;
+        let mut start = 0;
+        let mut map = std::collections::HashMap::new();
+        for (i, c) in s.chars().enumerate() {
+            if let Some(&j) = map.get(&c) {
+                if j >= start {
+                    start = j + 1;
+                }
+            }
+            map.insert(c, i);
+            max = max.max(i - start + 1);
+        }
+        max as i32
+
+=======
+Suggestion 2
+
+        let mut max = 0;
+        let mut start = 0;
+        let mut map = std::collections::HashMap::new();
+        for (i, c) in s.chars().enumerate() {
+            if let Some(&j) = map.get(&c) {
+                max = std::cmp::max(max, i - start);
+                start = std::cmp::max(start, j + 1);
+            }
+            map.insert(c, i);
+        }
+        std::cmp::max(max, s.len() - start) as i32
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut map: std::collections::HashMap<char, i32> = std::collections::HashMap::new();
+        let mut start = 0;
+        let mut max = 0;
+        for (i, c) in s.chars().enumerate() {
+            if let Some(&j) = map.get(&c) {
+                start = start.max(j + 1);
+            }
+            map.insert(c, i as i32);
+            max = max.max(i - start + 1);
+        }
+        max as i32
+
+=======
+Suggestion 4
+
+        let mut left = 0;
+        let mut right = 0;
+        let mut max = 0;
+        let mut set = std::collections::HashSet::new();
+        while right < s.len() {
+            if !set.contains(&s[right..right+1]) {
+                set.insert(s[right..right+1].to_string());
+                right += 1;
+                max = std::cmp::max(max, right - left);
+            } else {
+                set.remove(&s[left..left+1]);
+                left += 1;
+            }
+        }
+        max as i32
+
+=======
+Suggestion 5
+
+        let mut max = 0;
+        let mut left = 0;
+        let mut right = 0;
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            if let Some(&i) = map.get(&c) {
+                left = left.max(i+1);
+            }
+            map.insert(c, right);
+            right += 1;
+            max = max.max(right - left);
+        }
+        max as i32
+
+=======
+Suggestion 6
+
+        let mut max = 0;
+        let mut start = 0;
+        let mut map = std::collections::HashMap::new();
+        let chars: Vec<char> = s.chars().collect();
+        for i in 0..chars.len() {
+            if let Some(&j) = map.get(&chars[i]) {
+                if j >= start {
+                    start = j + 1;
+                }
+            }
+            map.insert(chars[i], i);
+            max = std::cmp::max(max, i - start + 1);
+        }
+        max as i32
+    }
+}
+
+=======
+Suggestion 7
+
+        let mut max = 0;
+        let mut start = 0;
+        let mut end = 0;
+        let mut set = std::collections::HashSet::new();
+        while end < s.len() {
+            if !set.contains(&s[end..end + 1]) {
+                set.insert(s[end..end + 1].to_owned());
+                end += 1;
+                max = max.max(end - start);
+            } else {
+                set.remove(&s[start..start + 1]);
+                start += 1;
+            }
+        }
+        max as i32
+
+=======
+Suggestion 8
+
+        let mut max = 0;
+        let mut start = 0;
+        let mut end = 0;
+        let mut set: std::collections::HashSet<char> = std::collections::HashSet::new();
+        let mut chars = s.chars();
+        while let Some(c) = chars.next() {
+            while set.contains(&c) {
+                set.remove(&s.chars().nth(start).unwrap());
+                start += 1;
+            }
+            set.insert(c);
+            end += 1;
+            max = std::cmp::max(max, end - start);
+        }
+        max as i32
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut chars = s.chars();
+        let mut max = 0;
+        let mut start = 0;
+        let mut end = 1;
+        let mut map = std::collections::HashMap::new();
+        map.insert(chars.next().unwrap(), 0);
+        for c in chars {
+            if let Some(&i) = map.get(&c) {
+                if i >= start {
+                    start = i + 1;
+                }
+            }
+            map.insert(c, end);
+            end += 1;
+            max = std::cmp::max(max, end - start);
+        }
+        max as i32
+
+=======
+Suggestion 10
+
+        let mut max = 0;
+        let mut count = 0;
+        let mut last_seen = [0; 256];
+        for (i, c) in s.chars().enumerate() {
+            let idx = c as usize;
+            if last_seen[idx] == 0 {
+                count += 1;
+            } else {
+                let last_idx = last_seen[idx] - 1;
+                if i as i32 - last_idx as i32 <= count {
+                    count = i as i32 - last_idx as i32;
+                } else {
+                    count += 1;
+                }
+            }
+            if count > max {
+                max = count;
+            }
+            last_seen[idx] = i + 1;
+        }
+        max
+    }
+}

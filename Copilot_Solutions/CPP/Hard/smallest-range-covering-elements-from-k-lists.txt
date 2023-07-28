@@ -1,0 +1,280 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int k = nums.size();
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int lo = INT_MAX, hi = INT_MIN;
+        for (int i = 0; i < k; ++i) {
+            pq.push({nums[i][0], i});
+            lo = min(lo, nums[i][0]);
+            hi = max(hi, nums[i][0]);
+        }
+        vector<int> ans = {lo, hi};
+        vector<int> idx(k, 0);
+        int diff = hi - lo;
+        while (true) {
+            int num = pq.top().first, i = pq.top().second;
+            pq.pop();
+            if (hi - num < diff) {
+                diff = hi - num;
+                ans = {num, hi};
+            }
+            if (idx[i] + 1 == nums[i].size()) break;
+            ++idx[i];
+            pq.push({nums[i][idx[i]], i});
+            hi = max(hi, nums[i][idx[i]]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> idx(n, 0);
+        auto cmp = [&nums, &idx](int x, int y){
+            return nums[x][idx[x]] > nums[y][idx[y]];
+        };
+        priority_queue<int, vector<int>, decltype(cmp)> pq(cmp);
+        int minVal = INT_MAX;
+        int maxVal = INT_MIN;
+        for (int i = 0; i < n; ++i) {
+            pq.push(i);
+            minVal = min(minVal, nums[i][0]);
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        int rangeLeft = minVal;
+        int rangeRight = maxVal;
+        while (true) {
+            int i = pq.top();
+            pq.pop();
+            if (rangeRight - rangeLeft > maxVal - minVal) {
+                rangeLeft = minVal;
+                rangeRight = maxVal;
+            }
+            if (idx[i] + 1 == nums[i].size()) {
+                break;
+            }
+            ++idx[i];
+            minVal = min(minVal, nums[i][idx[i]]);
+            maxVal = max(maxVal, nums[i][idx[i]]);
+            pq.push(i);
+        }
+        return {rangeLeft, rangeRight};
+
+=======
+
+        int k = nums.size();
+        vector<int> cur(k, 0);
+        int left = INT_MAX, right = INT_MIN;
+        for (int i = 0; i < k; i++) {
+            left = min(left, nums[i][0]);
+            right = max(right, nums[i][0]);
+        }
+        vector<int> ans = {left, right};
+        while (true) {
+            int idx = -1, mn = INT_MAX;
+            for (int i = 0; i < k; i++) {
+                if (cur[i] + 1 < nums[i].size() && mn > nums[i][cur[i] + 1]) {
+                    idx = i;
+                    mn = nums[i][cur[i] + 1];
+                }
+            }
+            if (idx == -1) {
+                break;
+            }
+            cur[idx]++;
+            left = INT_MAX;
+            for (int i = 0; i < k; i++) {
+                left = min(left, nums[i][cur[i]]);
+            }
+            if (right - left < ans[1] - ans[0]) {
+                ans = {left, right};
+            }
+            right = max(right, mn);
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        int k = nums.size();
+        int n = nums[0].size();
+        vector<int> index(k, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int minVal = INT_MAX, maxVal = INT_MIN;
+        for (int i = 0; i < k; i++) {
+            pq.push({nums[i][0], i});
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        while (true) {
+            auto t = pq.top();
+            pq.pop();
+            int i = t.second;
+            minVal = t.first;
+            if (maxVal - minVal < res.back() - res.front() || res.empty()) {
+                res = {minVal, maxVal};
+            }
+            if (index[i] + 1 == n) {
+                break;
+            }
+            index[i]++;
+            pq.push({nums[i][index[i]], i});
+            maxVal = max(maxVal, nums[i][index[i]]);
+        }
+        return res;
+
+=======
+
+        int k = nums.size();
+        vector<int> res;
+        vector<int> index(k, 0);
+        int minVal = INT_MAX;
+        int maxVal = INT_MIN;
+        for (int i = 0; i < k; ++i) {
+            minVal = min(minVal, nums[i][0]);
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        res = {minVal, maxVal};
+        while (true) {
+            int minIndex = -1;
+            minVal = INT_MAX;
+            for (int i = 0; i < k; ++i) {
+                if (index[i] < nums[i].size() && nums[i][index[i]] < minVal) {
+                    minVal = nums[i][index[i]];
+                    minIndex = i;
+                }
+            }
+            if (minIndex == -1) {
+                break;
+            }
+            ++index[minIndex];
+            maxVal = max(maxVal, minVal);
+            if (maxVal - minVal < res[1] - res[0]) {
+                res = {minVal, maxVal};
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int k = nums.size();
+        int n = nums[0].size();
+        vector<int> idx(k, 0);
+        int minVal = INT_MAX;
+        int maxVal = INT_MIN;
+        for (int i = 0; i < k; i++) {
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        while (true) {
+            int minIdx = -1;
+            minVal = INT_MAX;
+            for (int i = 0; i < k; i++) {
+                if (idx[i] < n && nums[i][idx[i]] < minVal) {
+                    minVal = nums[i][idx[i]];
+                    minIdx = i;
+                }
+            }
+            if (maxVal - minVal < res.empty() ? INT_MAX : res[1] - res[0]) {
+                res = {minVal, maxVal};
+            }
+            if (idx[minIdx] == n - 1) {
+                break;
+            }
+            idx[minIdx]++;
+            maxVal = max(maxVal, nums[minIdx][idx[minIdx]]);
+        }
+        return res;
+
+=======
+
+        int k = nums.size();
+        vector<int> idx(k, 0);
+        vector<int> ret(2, 0);
+        int minVal = INT_MAX, maxVal = INT_MIN;
+        for (int i = 0; i < k; i++) {
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        int range = INT_MAX;
+        while (true) {
+            int minIdx = -1;
+            minVal = INT_MAX;
+            for (int i = 0; i < k; i++) {
+                if (idx[i] < nums[i].size() && nums[i][idx[i]] < minVal) {
+                    minVal = nums[i][idx[i]];
+                    minIdx = i;
+                }
+            }
+            if (minVal > maxVal) {
+                break;
+            }
+            if (maxVal - minVal < range) {
+                range = maxVal - minVal;
+                ret[0] = minVal;
+                ret[1] = maxVal;
+            }
+            idx[minIdx]++;
+            if (idx[minIdx] == nums[minIdx].size()) {
+                break;
+            }
+            maxVal = max(maxVal, nums[minIdx][idx[minIdx]]);
+        }
+        return ret;
+
+=======
+
+        int k = nums.size();
+        vector<int> ans = {0, 100000};
+        vector<int> next(k, 0);
+        auto cmp = [&](int i, int j) {
+            return nums[i][next[i]] > nums[j][next[j]];
+        };
+        priority_queue<int, vector<int>, decltype(cmp)> pq(cmp);
+        int maxVal = INT_MIN;
+        for (int i = 0; i < k; i++) {
+            pq.push(i);
+            maxVal = max(maxVal, nums[i][0]);
+        }
+        while (true) {
+            int row = pq.top();
+            pq.pop();
+            int minVal = nums[row][next[row]];
+            if (maxVal - minVal < ans[1] - ans[0]) {
+                ans[0] = minVal;
+                ans[1] = maxVal;
+            }
+            if (next[row] + 1 == nums[row].size()) {
+                break;
+            }
+            next[row]++;
+            maxVal = max(maxVal, nums[row][next[row]]);
+            pq.push(row);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> next(n, 0), minVal(n, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int range = INT_MAX, left = -1, right = -1;
+        for (int i = 0; i < n; i++) {
+            pq.emplace(nums[i][0], i);
+            minVal[i] = nums[i][0];
+        }
+        while (true) {
+            auto [x, i] = pq.top();
+            pq.pop();
+            if (range > minVal[i] - x) {
+                range = minVal[i] - x;
+                left = x;
+                right = minVal[i];
+            }
+            if (next[i] + 1 == nums[i].size()) {
+                break;
+            }
+            next[i]++;
+            minVal[i] = nums[i][next[i]];
+            pq.emplace(minVal[i], i);
+        }
+        return {left, right};

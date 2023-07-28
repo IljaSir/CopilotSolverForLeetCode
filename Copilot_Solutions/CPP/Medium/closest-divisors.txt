@@ -1,0 +1,242 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int i = sqrt(num + 2);
+        while (i > 0) {
+            if ((num + 1) % i == 0) {
+                return {i, (num + 1) / i};
+            } else if ((num + 2) % i == 0) {
+                return {i, (num + 2) / i};
+            }
+            --i;
+        }
+        return {};
+
+=======
+
+        vector<int> ans = {1, num + 1};
+        for (int i = 2; i <= sqrt(num + 2); ++i) {
+            if ((num + 1) % i == 0) {
+                ans[0] = i;
+                ans[1] = (num + 1) / i;
+            }
+            if ((num + 2) % i == 0) {
+                if (abs(ans[0] - ans[1]) > abs(i - (num + 2) / i)) {
+                    ans[0] = i;
+                    ans[1] = (num + 2) / i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        int a = num + 1;
+        int b = num + 2;
+        for (int i = sqrt(a); i >= 1; i--) {
+            if (a % i == 0) {
+                res.push_back(i);
+                res.push_back(a / i);
+                break;
+            }
+        }
+        for (int i = sqrt(b); i >= 1; i--) {
+            if (b % i == 0) {
+                if (abs(res[0] - res[1]) > abs(i - b / i)) {
+                    res[0] = i;
+                    res[1] = b / i;
+                }
+                break;
+            }
+        }
+        return res;
+
+=======
+
+        int n1 = num + 1;
+        int n2 = num + 2;
+        vector<int> v1 = getDivisors(n1);
+        vector<int> v2 = getDivisors(n2);
+        int d1 = abs(v1[0] - v1[1]);
+        int d2 = abs(v2[0] - v2[1]);
+        if (d1 < d2) {
+            return v1;
+        } else {
+            return v2;
+        }
+    }
+    
+    vector<int> getDivisors(int n) {
+        int i = 1;
+        int j = n;
+        while (i <= j) {
+            if (i * j == n) {
+                break;
+            } else if (i * j > n) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+        return vector<int>{i, j};
+
+=======
+
+        vector<int> ans;
+        int a = num + 1, b = num + 2;
+        int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
+        int min = INT_MAX;
+        for (int i = 1; i <= sqrt(a); i++) {
+            if (a % i == 0) {
+                if (abs(a / i - i) < min) {
+                    min = abs(a / i - i);
+                    a1 = i;
+                    a2 = a / i;
+                }
+            }
+        }
+        min = INT_MAX;
+        for (int i = 1; i <= sqrt(b); i++) {
+            if (b % i == 0) {
+                if (abs(b / i - i) < min) {
+                    min = abs(b / i - i);
+                    b1 = i;
+                    b2 = b / i;
+                }
+            }
+        }
+        if (a1 == 0) {
+            ans.push_back(b1);
+            ans.push_back(b2);
+        } else if (b1 == 0) {
+            ans.push_back(a1);
+            ans.push_back(a2);
+        } else {
+            if (abs(a1 - a2) < abs(b1 - b2)) {
+                ans.push_back(a1);
+                ans.push_back(a2);
+            } else if (abs(a1 - a2) > abs(b1 - b2)) {
+                ans.push_back(b1);
+                ans.push_back(b2);
+            } else {
+                if (a1 < b1) {
+                    ans.push_back(a1);
+                    ans.push_back(a2);
+                } else {
+                    ans.push_back(b1);
+                    ans.push_back(b2);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        return solve(num + 1);
+    }
+    vector<int> solve(int num) {
+        int a = sqrt(num);
+        while (num % a != 0) a--;
+        return {a, num / a};
+
+=======
+
+        int a = num + 1;
+        int b = num + 2;
+        int i = sqrt(a);
+        int j = sqrt(b);
+        while(i > 0) {
+            if(a % i == 0) {
+                return {i, a / i};
+            }
+            if(b % j == 0) {
+                return {j, b / j};
+            }
+            --i;
+            --j;
+        }
+        return {0, 0};
+
+=======
+
+        int a = num+1;
+        int b = num+2;
+        int a1 = sqrt(a);
+        int a2 = sqrt(b);
+        int d1 = INT_MAX;
+        int d2 = INT_MAX;
+        int r1 = 0;
+        int r2 = 0;
+        for(int i = 1; i <= a1; ++i) {
+            if(a % i == 0) {
+                int j = a/i;
+                if(abs(i-j) < d1) {
+                    d1 = abs(i-j);
+                    r1 = i;
+                }
+            }
+        }
+        for(int i = 1; i <= a2; ++i) {
+            if(b % i == 0) {
+                int j = b/i;
+                if(abs(i-j) < d2) {
+                    d2 = abs(i-j);
+                    r2 = i;
+                }
+            }
+        }
+        if(d1 < d2) {
+            return {r1, a/r1};
+        } else {
+            return {r2, b/r2};
+        }
+
+=======
+
+        int d1 = divisors(num+1);
+        int d2 = divisors(num+2);
+        if(abs(d1 - d2) > abs(d1 - (num+1)/d1))
+            return {d1, (num+1)/d1};
+        else
+            return {d2, (num+2)/d2};
+    }
+    int divisors(int num){
+        int d = sqrt(num);
+        while(num%d != 0)
+            d--;
+        return d;
+
+=======
+
+        vector<int> ans;
+        int p1 = 1;
+        int p2 = 1;
+        int q1 = 1;
+        int q2 = 1;
+        int d1 = INT_MAX;
+        int d2 = INT_MAX;
+        for (int i = 1; i <= sqrt(num+1); i++) {
+            if ((num+1) % i == 0) {
+                p1 = i;
+                p2 = (num+1) / i;
+                d1 = abs(p1 - p2);
+            }
+        }
+        for (int i = 1; i <= sqrt(num+2); i++) {
+            if ((num+2) % i == 0) {
+                q1 = i;
+                q2 = (num+2) / i;
+                d2 = abs(q1 - q2);
+            }
+        }
+        if (d1 <= d2) {
+            ans.push_back(p1);
+            ans.push_back(p2);
+        }
+        else {
+            ans.push_back(q1);
+            ans.push_back(q2);
+        }
+        return ans;

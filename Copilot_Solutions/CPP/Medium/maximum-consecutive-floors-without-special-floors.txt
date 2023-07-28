@@ -1,0 +1,98 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        sort(special.begin(), special.end());
+        int ans = 0;
+        int n = special.size();
+        for (int i = 0; i < n; ++i) {
+            if (i == 0) {
+                ans = max(ans, special[i] - bottom);
+            } else {
+                ans = max(ans, special[i] - special[i - 1] - 1);
+            }
+        }
+        if (n > 0) {
+            ans = max(ans, top - special[n - 1]);
+        } else {
+            ans = top - bottom + 1;
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        for (int i = 0; i < special.size(); ++i) {
+            if (i == 0) {
+                ans = max(ans, special[i] - bottom);
+            }
+            if (i == special.size() - 1) {
+                ans = max(ans, top - special[i]);
+            }
+            if (i > 0) {
+                ans = max(ans, special[i] - special[i - 1] - 1);
+            }
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        sort(special.begin(), special.end());
+        int last = bottom - 1;
+        for (int i = 0; i < special.size(); ++i) {
+            res = max(res, special[i] - last - 1);
+            last = special[i];
+        }
+        res = max(res, top - last);
+        return res;
+
+=======
+
+        int ans = 0;
+        int l = bottom;
+        for (int i = 0; i < special.size(); ++i) {
+            int r = special[i] - 1;
+            if (l <= r) {
+                ans = max(ans, r - l + 1);
+            }
+            l = special[i] + 1;
+        }
+        if (l <= top) {
+            ans = max(ans, top - l + 1);
+        }
+        return ans;
+
+=======
+
+        int n = special.size();
+        vector<int> dp(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            int j = i - 1;
+            while (j >= 0 && special[j] == special[j+1] - 1) j--;
+            dp[i+1] = max(dp[i+1], dp[j+1] + 1);
+            dp[i+1] = max(dp[i+1], special[i] - bottom + 1);
+            if (i < n-1) dp[i+1] = max(dp[i+1], special[i+1] - special[i] - 1);
+            else dp[i+1] = max(dp[i+1], top - special[i]);
+        }
+        return dp[n];
+
+=======
+
+        int max = 0;
+        int count = 0;
+        int i = 0;
+        int j = 0;
+        sort(special.begin(), special.end());
+        for(i = bottom; i <= top; i++){
+            if(j < special.size() && special[j] == i){
+                count = 0;
+                j++;
+            }else{
+                count++;
+                if(count > max){
+                    max = count;
+                }
+            }
+        }
+        return max;

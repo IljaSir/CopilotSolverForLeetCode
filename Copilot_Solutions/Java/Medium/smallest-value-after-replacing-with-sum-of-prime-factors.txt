@@ -1,0 +1,163 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int sum = 0;
+        for (int i = 2; i * i <= n; i++) {
+            while (n % i == 0) {
+                sum += i;
+                n /= i;
+            }
+        }
+        if (n > 1) sum += n;
+        return sum;
+
+=======
+
+        int sum = 0;
+        for (int i = 2; i <= n; i++) {
+            while (n % i == 0) {
+                sum += i;
+                n /= i;
+            }
+        }
+        return sum;
+
+=======
+
+        int[] primeFactors = new int[n + 1];
+        for (int i = 2; i <= n; i++) {
+            if (primeFactors[i] == 0) {
+                for (int j = i; j <= n; j += i) {
+                    primeFactors[j] += i;
+                }
+            }
+        }
+        while (n > primeFactors[n]) {
+            n = primeFactors[n];
+        }
+        return n;
+
+=======
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = i; j <= n; j += i) {
+                dp[j] = Math.min(dp[j], dp[i] + (j / i));
+            }
+        }
+        return dp[n];
+
+=======
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 2; j <= i; j++) {
+                if (i % j != 0) {
+                    continue;
+                }
+                int k = i / j;
+                dp[i] = Math.min(dp[i], dp[j] + dp[k]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[1] = 0;
+        dp[2] = 2;
+        for (int i = 2; i <= n; i++) {
+            if (dp[i] == Integer.MAX_VALUE) {
+                dp[i] = i;
+            }
+            for (int j = i + i; j <= n; j += i) {
+                dp[j] = Math.min(dp[j], dp[i] + dp[j / i]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int primeFactorsSum = 0;
+        for (int i = 2; i <= n; i++) {
+            while (n % i == 0) {
+                primeFactorsSum += i;
+                n /= i;
+            }
+        }
+        return primeFactorsSum;
+
+=======
+
+        if (n == 2 || n == 3) {
+            return n;
+        }
+        int[] primes = new int[] {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919,
+
+=======
+
+        if (n == 2) {
+            return 2;
+        }
+        int[] primes = new int[100000];
+        int[] count = new int[100000];
+        int p = 0;
+        for (int i = 2; i <= n; i++) {
+            if (isPrime(i)) {
+                primes[p++] = i;
+            }
+        }
+        while (n > 1) {
+            for (int i = 0; i < p; i++) {
+                if (n % primes[i] == 0) {
+                    count[i]++;
+                    n /= primes[i];
+                    break;
+                }
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i < p; i++) {
+            sum += primes[i] * count[i];
+        }
+        return sum;
+    }
+    private boolean isPrime(int n) {
+        for (int i = 2; i <= Math.sqrt(n); i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int[] primes = new int[100000];
+        int[] primeCount = new int[100000];
+        int primeCountCount = 0;
+        for (int i = 2; i <= n; i++) {
+            if (primes[i] == 0) {
+                primes[primeCountCount++] = i;
+            }
+            for (int j = 0; j < primeCountCount && primes[j] * i < n; j++) {
+                primes[primes[j] * i] = 1;
+                if (i % primes[j] == 0) {
+                    break;
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < primeCountCount; i++) {
+            int prime = primes[i];
+            while (n % prime == 0) {
+                result += prime;
+                n /= prime;
+            }
+        }
+        return result;

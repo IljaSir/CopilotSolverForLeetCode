@@ -1,0 +1,196 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        m, n = len(s), len(p)
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[0][0] = True
+        for j in range(1, n + 1):
+            if p[j - 1] == '*':
+                dp[0][j] = dp[0][j - 1]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if p[j - 1] == '*':
+                    dp[i][j] = dp[i][j - 1] or dp[i - 1][j]
+                elif p[j - 1] == '?' or s[i - 1] == p[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]
+        return dp[m][n]
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        m, n = len(s), len(p)
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[0][0] = True
+        for i in range(m + 1):
+            for j in range(1, n + 1):
+                if p[j - 1] == '*':
+                    dp[i][j] = dp[i][j - 1] or (i > 0 and dp[i - 1][j])
+                elif i > 0 and (p[j - 1] == '?' or s[i - 1] == p[j - 1]):
+                    dp[i][j] = dp[i - 1][j - 1]
+        return dp[m][n]
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        m, n = len(s), len(p)
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[0][0] = True
+        for i in range(m + 1):
+            for j in range(1, n + 1):
+                if p[j - 1] == '*':
+                    dp[i][j] = dp[i][j - 1] or (i > 0 and dp[i - 1][j])
+                else:
+                    dp[i][j] = i > 0 and dp[i - 1][j - 1] and (p[j - 1] == '?' or s[i - 1] == p[j - 1])
+        return dp[-1][-1]
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        m, n = len(s), len(p)
+        dp = [[False] * (n+1) for _ in range(m+1)]
+        dp[0][0] = True
+        for i in range(1, n+1):
+            if p[i-1] == '*':
+                dp[0][i] = dp[0][i-1]
+        for i in range(1, m+1):
+            for j in range(1, n+1):
+                if p[j-1] == '*':
+                    dp[i][j] = dp[i-1][j] or dp[i][j-1]
+                else:
+                    dp[i][j] = dp[i-1][j-1] and (p[j-1] == s[i-1] or p[j-1] == '?')
+        return dp[-1][-1]
+
+=======
+
+class Solution:
+    def isMatch(self, s: str, p: str) -> bool:
+        # s = "aa", p = "a"
+        # s = "aa", p = "*"
+        # s = "cb", p = "?a"
+        # s = "adceb", p = "*a*b"
+        # s = "acdcb", p = "a*c?b"
+        # s = "abefcdgiescdfimde", p = "ab*cd?i*de"
+        # s = "ho", p = "**ho"
+        # s = "ho", p = "ho**"
+        # s = "ho", p = "**ho**"
+        # s = "ho", p = "*ho**"
+        # s = "ho", p = "**ho*"
+        # s = "ho", p = "ho*"
+        # s = "ho", p = "*ho"
+        # s = "ho", p = "h*o"
+        # s = "ho", p = "*h*o*"
+        # s = "ho", p = "*h*o"
+        # s = "ho", p = "h*o*"
+        # s = "ho", p = "h*o"
+        # s = "ho", p = "h**"
+        # s = "ho", p = "**h"
+        # s = "ho", p = "h**o"
+        # s = "ho", p = "h*o*"
+        # s = "ho", p = "h*o"
+        # s = "ho", p = "h**"
+        # s = "ho", p = "**h"
+        # s = "ho", p = "h**o"
+        # s = "ho", p = "h*o*"
+        # s = "ho", p = "h*o"
+        # s = "ho", p = "h**"
+        # s = "ho", p = "**h"
+        # s = "ho", p = "h**o"
+        # s = "ho", p = "h*o*"
+        # s = "ho", p = "h*o"
+        # s = "ho", p = "h**"
+        # s = "ho", p = "**h"
+        # s = "ho", p = "h**o"
+        # s = "ho
+
+=======
+
+class Solution:
+    def isMatch(self, s: str, p: str) -> bool:
+        # s = "aa", p = "a"
+        # s = "aa", p = "*"
+        # s = "cb", p = "?a"
+        # s = "adceb", p = "*a*b"
+        # s = "acdcb", p = "a*c?b"
+        # s = "aaabbbaabaaaaababaabaaabbabbbbbbbbaabababbabbbaaaaba", p = "a*******b"
+        # s = "aa", p = "a*"
+        # s = "ab", p = "?*"
+        # s = "aab", p = "c*a*b"
+        # s = "abefcdgiescdfimde", p = "ab*cd?i*de"
+        # s = "mississippi", p = "m??*ss*?i*pi"
+        # s = "ho", p = "ho**"
+        # s = "ho", p = "**ho"
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        i = 0
+        j = 0
+        last_star = -1
+        match = 0
+        while i < len(s):
+            if j < len(p) and (s[i] == p[j] or p[j] == '?'):
+                i += 1
+                j += 1
+            elif j < len(p) and p[j] == '*':
+                last_star = j
+                match = i
+                j += 1
+            elif last_star != -1:
+                j = last_star + 1
+                match += 1
+                i = match
+            else:
+                return False
+        while j < len(p) and p[j] == '*':
+            j += 1
+        return j == len(p)
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        def match(s, p):
+            if not p:
+                return not s
+            if not s:
+                return all(c == '*' for c in p)
+            if p[0] == '*':
+                return match(s, p[1:]) or match(s[1:], p)
+            if p[0] == '?' or s[0] == p[0]:
+                return match(s[1:], p[1:])
+            return False
+        return match(s, p)
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        if not p:
+            return not s
+        if not s and p == '*':
+            return True
+        if not s:
+            return False
+        if p[0] == '*':
+            return self.isMatch(s, p[1:]) or self.isMatch(s[1:], p)
+        else:
+            return (p[0] == '?' or p[0] == s[0]) and self.isMatch(s[1:], p[1:])
+
+=======
+
+def isMatch(self, s: str, p: str) -> bool:
+        # dp[i][j] represents whether the first i characters in s match the first j characters in p
+        dp = [[False] * (len(p) + 1) for _ in range(len(s) + 1)]
+        dp[0][0] = True
+        for j in range(1, len(p) + 1):
+            if p[j - 1] == '*':
+                dp[0][j] = True
+            else:
+                break
+        for i in range(1, len(s) + 1):
+            for j in range(1, len(p) + 1):
+                if p[j - 1] == '*':
+                    dp[i][j] = dp[i - 1][j] or dp[i][j - 1]
+                elif p[j - 1] == '?' or s[i - 1] == p[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]
+        return dp[-1][-1]

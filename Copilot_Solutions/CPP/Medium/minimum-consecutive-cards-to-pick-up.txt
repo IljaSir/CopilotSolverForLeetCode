@@ -1,0 +1,165 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = cards.size();
+        if (n < 2) return -1;
+        if (n == 2) {
+            if (cards[0] == cards[1]) return 2;
+            return -1;
+        }
+        unordered_map<int, int> cardMap;
+        for (int i = 0; i < n; i++) {
+            cardMap[cards[i]]++;
+        }
+        int maxCount = 0;
+        for (auto it = cardMap.begin(); it != cardMap.end(); it++) {
+            maxCount = max(maxCount, it->second);
+        }
+        return maxCount == 1 ? -1 : maxCount * 2;
+
+=======
+
+        unordered_map<int, int> m;
+        int n = cards.size();
+        for (int i = 0; i < n; i++) {
+            m[cards[i]]++;
+        }
+        int ans = INT_MAX;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            if (it->second >= 2) {
+                ans = min(ans, it->second);
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = cards.size();
+        sort(cards.begin(), cards.end());
+        int ans = n;
+        int count = 1;
+        for (int i = 1; i < n; i++) {
+            if (cards[i] == cards[i - 1]) {
+                count++;
+            } else {
+                ans = min(ans, n - count);
+                count = 1;
+            }
+        }
+        ans = min(ans, n - count);
+        return ans == n ? -1 : ans;
+
+=======
+
+        int n = cards.size();
+        if (n == 1) return -1;
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; i++) {
+            m[cards[i]]++;
+        }
+        int res = INT_MAX;
+        for (auto& p : m) {
+            if (p.second >= 2) {
+                int start = 0;
+                int end = n - 1;
+                int count = 0;
+                while (start <= end) {
+                    if (cards[start] == p.first) {
+                        count++;
+                        start++;
+                    } else if (cards[end] == p.first) {
+                        count++;
+                        end--;
+                    } else {
+                        count += 2;
+                        start++;
+                        end--;
+                    }
+                }
+                res = min(res, count);
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int n = cards.size();
+        if (n <= 1) return -1;
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; i++) {
+            if (m.find(cards[i]) == m.end()) {
+                m[cards[i]] = i;
+            }
+            else {
+                int j = m[cards[i]];
+                if (i - j >= 2) return i - j + 1;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = cards.size();
+        unordered_map<int, int> um;
+        for (int i = 0; i < n; i++) {
+            um[cards[i]]++;
+        }
+        int min = INT_MAX;
+        for (auto it = um.begin(); it != um.end(); it++) {
+            if (it->second < 2) {
+                continue;
+            }
+            int count = 0;
+            for (int i = 0; i < n; i++) {
+                if (cards[i] == it->first) {
+                    count++;
+                }
+                if (count == 2) {
+                    break;
+                }
+                min = std::min(min, n - i - 1);
+            }
+        }
+        return min == INT_MAX ? -1 : min;
+
+=======
+
+        int n = cards.size();
+        if(n == 1) return -1;
+        unordered_map<int, int> mp;
+        int ans = n;
+        for(int i = 0; i < n; i++) {
+            if(mp.find(cards[i]) != mp.end()) {
+                ans = min(ans, i - mp[cards[i]] + 1);
+            }
+            mp[cards[i]] = i;
+        }
+        if(ans == n) return -1;
+        return ans;
+
+=======
+
+        unordered_map<int, int> count;
+        for (int card : cards) {
+            count[card]++;
+        }
+        int minPickup = INT_MAX;
+        for (auto& p : count) {
+            if (p.second >= 2) {
+                minPickup = min(minPickup, p.second);
+            }
+        }
+        return minPickup == INT_MAX ? -1 : minPickup;
+
+=======
+
+        int n = cards.size();
+        int res = n+1;
+        unordered_map<int,int> m;
+        for(int i=0;i<n;i++) m[cards[i]] = i;
+        for(int i=0;i<n;i++){
+            int j = m[cards[i]];
+            if(i!=j) res = min(res, j-i+1);
+        }
+        return res==n+1?-1:res;

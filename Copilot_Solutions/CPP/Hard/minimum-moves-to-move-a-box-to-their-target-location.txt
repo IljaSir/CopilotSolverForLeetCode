@@ -1,0 +1,209 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int sx = 0, sy = 0, bx = 0, by = 0, tx = 0, ty = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 'S') {
+                    sx = i;
+                    sy = j;
+                } else if (grid[i][j] == 'B') {
+                    bx = i;
+                    by = j;
+                } else if (grid[i][j] == 'T') {
+                    tx = i;
+                    ty = j;
+                }
+            }
+        }
+        queue<tuple<int, int, int, int>> q;
+        q.push({sx, sy, bx, by});
+        int ans = 0;
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto [x, y, bx, by] = q.front();
+                q.pop();
+                if (bx == tx && by == ty) {
+                    return ans;
+                }
+                for (int k = 0; k < 4; ++k) {
+                    int nx = x + dir[k][0];
+                    int ny = y + dir[k][1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n || grid[nx][ny] == '#') {
+                        continue;
+                    }
+                    int nbx = bx + dir[k][0];
+                    int nby = by + dir[k][1];
+                    if (nbx < 0 || nbx >= m || nby < 0 || nby >= n || grid[nbx][nby] == '#') {
+                        continue;
+                    }
+                    if (nx == bx && ny == by) {
+                        q.push({nbx, nby, bx, by});
+                    } else {
+                        q.push({nx, ny, bx, by});
+                    }
+                }
+            }
+            ++ans;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int sx, sy, bx, by, tx, ty;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 'S') {
+                    sx = i;
+                    sy = j;
+                } else if (grid[i][j] == 'B') {
+                    bx = i;
+                    by = j;
+                } else if (grid[i][j] == 'T') {
+                    tx = i;
+                    ty = j;
+                }
+            }
+        }
+        vector<vector<int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        vector<vector<vector<int>>> dist(m, vector<vector<int>>(n, vector<int>(4, -1)));
+        queue<vector<int>> q;
+        for (int i = 0; i < 4; ++i) {
+            int x = bx + dirs[i][0];
+            int y = by + dirs[i][1];
+            if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] != '#') {
+                dist[bx][by][i] = 0;
+                q.push({bx, by, i});
+            }
+        }
+        while (!q.empty()) {
+            auto t = q.front();
+            q.pop();
+            int x = t[0];
+            int y = t[1];
+            int d = t[2];
+            int step = dist[x][y][d];
+            if (x == tx && y == ty) {
+                return step;
+            }
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dirs[i][0];
+                int ny = y + dirs[i][1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] != '#') {
+                    if (i == d) {
+                        if (dist[nx][ny][d] == -1) {
+                            dist[nx][ny][d] = step + 1;
+                            q.push({nx, ny, d});
+                        }
+                    } else
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        int si = -1, sj = -1, bi = -1, bj = -1, ti = -1, tj = -1;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 'S') {
+                    si = i;
+                    sj = j;
+                }
+                if (grid[i][j] == 'B') {
+                    bi = i;
+                    bj = j;
+                }
+                if (grid[i][j] == 'T') {
+                    ti = i;
+                    tj = j;
+                }
+            }
+        }
+        vector<vector<bool>> visited(m, vector<bool>(n));
+        queue<vector<int>> q;
+        q.push({bi, bj, si, sj});
+        visited[bi][bj] = true;
+        int ans = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            while (size--) {
+                auto cur = q.front();
+                q.pop();
+                int bi = cur[0], bj = cur[1], si = cur[2], sj = cur[3];
+                if (bi == ti && bj == tj) {
+                    return ans;
+                }
+                for (int k = 0; k < 4; ++k) {
+                    int ni = bi + dirs[k][0], nj = bj + dirs[k][1];
+                    int nsi = bi - dirs[k][0], nsj = bj - dirs[k][1];
+                    if (ni < 0 || ni >= m || nj < 0 || nj >= n || grid[ni][nj] == '#') {
+                        continue;
+                    }
+                    if (ni == si && nj == sj) {
+                        if (nsi < 0 || nsi >= m || nsj < 0 || nsj >= n || grid[nsi][nsj] == '#') {
+                            continue;
+                        }
+                        if (!visited[ni][nj]) {
+                            visited[ni][nj] = true;
+                            q.push({ni, nj, bi, bj});
+                        }
+                    }
+                    else {
+                        if (!visited[ni][nj]) {
+                            visited[ni][nj] = true;
+                            q.push({ni,
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int sx, sy, bx, by, tx, ty;
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 'S') {
+                    sx = i;
+                    sy = j;
+                }
+                if (grid[i][j] == 'B') {
+                    bx = i;
+                    by = j;
+                }
+                if (grid[i][j] == 'T') {
+                    tx = i;
+                    ty = j;
+                }
+            }
+        }
+        vector<vector<vector<int>>> dist(m, vector<vector<int>>(n, vector<int>(m * n + 1, -1)));
+        queue<tuple<int, int, int>> q;
+        q.push({bx, by, 0});
+        dist[bx][by][0] = 0;
+        while (!q.empty()) {
+            auto [x, y, d] = q.front();
+            q.pop();
+            if (x == tx && y == ty) {
+                return d;
+            }
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dir[i][0];
+                int ny = y + dir[i][1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] != '#') {
+                    int nd = d + 1;
+                    if (nx == sx && ny == sy) {
+                        int px = x - dir[i][0];
+                        int py = y - dir[i][1];
+                        if (px >= 0 && px < m && py >= 0 && py < n && grid[px][py] != '#') {
+                            if (dist[px][py][nd] == -1) {
+                                dist[px][py][nd] = d;
+                                q.push({px, py, nd});
+                            }
+                        }
+                    } else {
+                        if (dist[nx][ny][d] == -1) {
+                            dist[nx][ny][d] = d;

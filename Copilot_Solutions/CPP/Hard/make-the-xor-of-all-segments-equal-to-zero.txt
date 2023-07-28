@@ -1,0 +1,106 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        vector<int> f(1024, n);
+        f[0] = 0;
+        for (int i = 0; i < k; ++i) {
+            int cnt[1024] = {0};
+            int size = 0;
+            for (int j = i; j < n; j += k) {
+                ++cnt[nums[j]];
+                ++size;
+            }
+            int t2min = *min_element(f.begin(), f.end());
+            vector<int> g(1024, t2min);
+            for (int mask = 0; mask < 1024; ++mask) {
+                for (int x = 0; x < 1024; ++x) {
+                    g[mask] = min(g[mask], f[x] + size - cnt[x ^ mask]);
+                }
+            }
+            f = g;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.size();
+        vector<int> f(1 << 10, n);
+        f[0] = 0;
+        for (int i = 0; i < k; ++i) {
+            unordered_map<int, int> cnt;
+            int size = 0;
+            for (int j = i; j < n; j += k) {
+                ++cnt[nums[j]];
+                ++size;
+            }
+            int t2min = *min_element(f.begin(), f.end());
+            vector<int> g(1 << 10, t2min);
+            for (int mask = 0; mask < (1 << 10); ++mask) {
+                for (auto& [x, countx]: cnt) {
+                    g[mask] = min(g[mask], f[mask ^ x] - countx);
+                }
+            }
+            for (auto& x: g) {
+                x += size;
+            }
+            f = g;
+        }
+        return f[0];
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> f(k+1, vector<int>(1024, n));
+        f[0][0] = 0;
+        for (int i = 0; i < k; ++i) {
+            vector<int> cnt(1024, 0);
+            int size = 0;
+            for (int j = i; j < n; j += k) {
+                ++cnt[nums[j]];
+                ++size;
+            }
+            int tot = accumulate(cnt.begin(), cnt.end(), 0);
+            vector<int> g(1024, n);
+            for (int mask = 0; mask < 1024; ++mask) {
+                for (int x = 0; x < 1024; ++x) {
+                    g[mask] = min(g[mask], f[i][x] + tot - cnt[x ^ mask]);
+                }
+            }
+            f[i + 1] = g;
+        }
+        return f[k][0];
+
+=======
+
+        const int N = 2000;
+        const int K = 2000;
+        const int M = 1024;
+        int dp[N+1][M];
+        memset(dp, 0x3f, sizeof(dp));
+        dp[0][0] = 0;
+        for (int i = 0; i < k; ++i) {
+            unordered_map<int, int> count;
+            int size = 0;
+            for (int j = i; j < nums.size(); j += k) {
+                ++count[nums[j]];
+                ++size;
+            }
+            int t2min = *min_element(dp[i], dp[i] + M);
+            vector<int> f(M);
+            for (int j = 0; j < M; ++j) {
+                f[j] = dp[i][j] - t2min;
+            }
+            vector<int> g(M);
+            for (int mask = 0; mask < M; ++mask) {
+                for (auto& p : count) {
+                    int x = mask ^ p.first;
+                    g[x] = max(g[x], f[mask] + p.second);
+                }
+            }
+            for (int j = 0; j < M; ++j) {
+                dp[i+1][j] = t2min + size - g[j];
+            }
+        }
+        return dp[k][0];

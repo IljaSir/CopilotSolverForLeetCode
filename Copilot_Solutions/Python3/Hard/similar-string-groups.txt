@@ -1,0 +1,282 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def similar(a, b):
+            diff = 0
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    diff += 1
+                if diff > 2:
+                    return False
+            return True
+        def dfs(i):
+            for j in range(len(strs)):
+                if similar(strs[i], strs[j]) and not visited[j]:
+                    visited[j] = 1
+                    dfs(j)
+        visited = [0]*len(strs)
+        res = 0
+        for i in range(len(strs)):
+            if not visited[i]:
+                dfs(i)
+                res += 1
+        return res
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def isSimilar(a, b):
+            diff = 0
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    diff += 1
+                    if diff > 2:
+                        return False
+            return True
+        def dfs(i):
+            for j in range(len(strs)):
+                if isSimilar(strs[i], strs[j]) and not visited[j]:
+                    visited[j] = True
+                    dfs(j)
+        visited = [False] * len(strs)
+        ans = 0
+        for i in range(len(strs)):
+            if not visited[i]:
+                ans += 1
+                dfs(i)
+        return ans
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def find(x):
+            if p[x] != x:
+                p[x] = find(p[x])
+            return p[x]
+        
+        def union(x, y):
+            x = find(x)
+            y = find(y)
+            if x != y:
+                p[x] = y
+        
+        def isSimilar(x, y):
+            count = 0
+            for i in range(len(x)):
+                if x[i] != y[i]:
+                    count += 1
+                    if count > 2:
+                        return False
+            return True
+        
+        p = [i for i in range(len(strs))]
+        for i in range(len(strs)):
+            for j in range(i+1, len(strs)):
+                if isSimilar(strs[i], strs[j]):
+                    union(i, j)
+        return len(set([find(i) for i in range(len(strs))]))
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def find(x):
+            if x != parent[x]:
+                parent[x] = find(parent[x])
+            return parent[x]
+        
+        def union(x, y):
+            x, y = find(x), find(y)
+            if x == y:
+                return
+            if rank[x] > rank[y]:
+                x, y = y, x
+            parent[x] = y
+            if rank[x] == rank[y]:
+                rank[y] += 1
+        
+        def similar(x, y):
+            count = 0
+            for i in range(len(x)):
+                if x[i] != y[i]:
+                    count += 1
+                    if count > 2:
+                        return False
+            return True
+        
+        parent = list(range(len(strs)))
+        rank = [0] * len(strs)
+        for i in range(len(strs)):
+            for j in range(i + 1, len(strs)):
+                if similar(strs[i], strs[j]):
+                    union(i, j)
+        return sum(1 if i == parent[i] else 0 for i in range(len(parent)))
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def similar(a, b):
+            if len(a) != len(b):
+                return False
+            if a == b:
+                return True
+            cnt = 0
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    cnt += 1
+                    if cnt > 2:
+                        return False
+            return True
+        
+        def find(x):
+            if x != parents[x]:
+                parents[x] = find(parents[x])
+            return parents[x]
+        
+        def union(x, y):
+            x, y = find(x), find(y)
+            if x != y:
+                parents[x] = y
+                size[y] += size[x]
+        
+        n = len(strs)
+        parents = list(range(n))
+        size = [1] * n
+        for i in range(n):
+            for j in range(i + 1, n):
+                if similar(strs[i], strs[j]):
+                    union(i, j)
+        return len({find(i) for i in range(n)})
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def isSimilar(s1, s2) -> bool:
+            count = 0
+            for i in range(len(s1)):
+                if s1[i] != s2[i]:
+                    count += 1
+                    if count > 2:
+                        return False
+            return True
+        n = len(strs)
+        uf = [i for i in range(n)]
+        def find(x):
+            if uf[x] != x:
+                uf[x] = find(uf[x])
+            return uf[x]
+        def union(x, y):
+            uf[find(x)] = find(y)
+        for i in range(n):
+            for j in range(i+1, n):
+                if isSimilar(strs[i], strs[j]):
+                    union(i, j)
+        res = set()
+        for i in range(n):
+            res.add(find(i))
+        return len(res)
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def similar(s1, s2):
+            if s1 == s2:
+                return True
+            if len(s1) != len(s2):
+                return False
+            diff = 0
+            for i in range(len(s1)):
+                if s1[i] != s2[i]:
+                    diff += 1
+            return diff == 2
+        
+        def dfs(i):
+            for j in range(len(strs)):
+                if similar(strs[i], strs[j]) and not visited[j]:
+                    visited[j] = True
+                    dfs(j)
+        
+        visited = [False] * len(strs)
+        ans = 0
+        for i in range(len(strs)):
+            if not visited[i]:
+                ans += 1
+                dfs(i)
+        return ans
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        n = len(strs)
+        if n < 2:
+            return n
+        parent = [i for i in range(n)]
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])
+            return parent[x]
+        def union(x, y):
+            parent[find(x)] = find(y)
+        def similar(a, b):
+            diff = 0
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    diff += 1
+                    if diff > 2:
+                        return False
+            return True
+        for i in range(n):
+            for j in range(i+1, n):
+                if similar(strs[i], strs[j]):
+                    union(i, j)
+        return len(set([find(x) for x in range(n)]))
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def similar(a, b):
+            if a == b:
+                return True
+            if len(a) != len(b):
+                return False
+            if a[0] != b[0] or a[-1] != b[-1]:
+                return False
+            diff = 0
+            for i in range(len(a)):
+                if a[i] != b[i]:
+                    diff += 1
+                if diff > 2:
+                    return False
+            return True
+        def dfs(i):
+            for j in range(len(strs)):
+                if similar(strs[i], strs[j]) and j not in visited:
+                    visited.add(j)
+                    dfs(j)
+        visited = set()
+        ans = 0
+        for i in range(len(strs)):
+            if i not in visited:
+                ans += 1
+                dfs(i)
+        return ans
+
+=======
+
+def numSimilarGroups(self, strs: List[str]) -> int:
+        def similar(a, b):
+            return sum(1 for i in range(len(a)) if a[i] != b[i]) <= 2
+        def dfs(i):
+            for j in range(len(strs)):
+                if not seen[j] and similar(strs[i], strs[j]):
+                    seen[j] = True
+                    dfs(j)
+        seen = [False] * len(strs)
+        ans = 0
+        for i in range(len(strs)):
+            if not seen[i]:
+                ans += 1
+                seen[i] = True
+                dfs(i)
+        return ans

@@ -1,0 +1,134 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        vector<int> dp(target + 1, INT_MAX);
+        dp[1] = 0;
+        for (int i = 2; i <= target; ++i) {
+            dp[i] = dp[i - 1] + 1;
+            for (int j = 0; j < maxDoubles; ++j) {
+                if (i < (1 << j)) {
+                    break;
+                }
+                dp[i] = min(dp[i], dp[i - (1 << j)] + 1);
+            }
+        }
+        return dp[target];
+
+=======
+
+        int ans = 0;
+        while (target > 1) {
+            ans++;
+            target = (target + 1) / 2;
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        while (target > 1) {
+            if (target & 1) {
+                target--;
+                ans++;
+            } else {
+                if (maxDoubles > 0) {
+                    maxDoubles--;
+                    target >>= 1;
+                    ans++;
+                } else {
+                    target--;
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> dp(target+1, INT_MAX);
+        dp[1] = 1;
+        for (int i = 1; i < target; ++i) {
+            for (int j = 1, k = 1; j <= maxDoubles && k <= target; ++j, k *= 2) {
+                if (i + k > target) break;
+                dp[i+k] = min(dp[i+k], dp[i] + j);
+            }
+        }
+        return dp[target];
+
+=======
+
+        unordered_map<int, int> mp;
+        mp[1] = 0;
+        queue<int> q;
+        q.push(1);
+        while (!q.empty()) {
+            int cur = q.front(); q.pop();
+            int steps = mp[cur];
+            if (cur == target) return steps;
+            if (cur * 2 <= target && mp.count(cur * 2) == 0) {
+                mp[cur * 2] = steps + 1;
+                q.push(cur * 2);
+            }
+            if (cur + 1 <= target && mp.count(cur + 1) == 0) {
+                mp[cur + 1] = steps + 1;
+                q.push(cur + 1);
+            }
+        }
+        return -1;
+
+=======
+
+        vector<int> dp(maxDoubles + 1, INT_MAX);
+        dp[0] = 0;
+        for (int i = 1; i <= maxDoubles; i++) {
+            dp[i] = min(dp[i], dp[i - 1] + 1);
+            for (int j = 1; j < i; j++) {
+                dp[i] = min(dp[i], dp[j] + i - j + 1);
+            }
+        }
+        int ans = 0;
+        while (target > 0) {
+            ans += dp[target % (maxDoubles + 1)];
+            target /= (maxDoubles + 1);
+        }
+        return ans;
+
+=======
+
+        int move = 0;
+        while (target > 1) {
+            if (target % 2 == 0) {
+                target /= 2;
+                move++;
+                maxDoubles--;
+            } else {
+                target = (target + 1) / 2;
+                move += 2;
+                maxDoubles--;
+            }
+        }
+        return move;
+
+=======
+
+        int dp[1000050] = {0};
+        int i = 1;
+        int j = 1;
+        int inc = 1;
+        int dou = 1;
+        int ans = 0;
+        while (i < target) {
+            while (j < i) {
+                j *= 2;
+                dou++;
+            }
+            if (j == i) {
+                dp[i] = dou;
+            } else {
+                dp[i] = min(inc + dp[i - 1], dou + dp[j - i]);
+            }
+            i++;
+            inc++;
+        }
+        return dp[target];

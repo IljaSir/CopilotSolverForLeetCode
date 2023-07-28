@@ -1,0 +1,349 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 0) {
+                left[i] = 0;
+            } else {
+                left[i] = i == 0 ? 0 : left[i-1];
+                left[i] += forts[i] == 1 ? 1 : 0;
+            }
+        }
+        for (int i = n-1; i >= 0; i--) {
+            if (forts[i] == 0) {
+                right[i] = 0;
+            } else {
+                right[i] = i == n-1 ? 0 : right[i+1];
+                right[i] += forts[i] == 1 ? 1 : 0;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 1) {
+                ans = Math.max(ans, left[i] + right[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                left[i] = forts[i] == 1 ? 1 : 0;
+            } else {
+                left[i] = forts[i] == 1 ? left[i - 1] + 1 : left[i - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == n - 1) {
+                right[i] = forts[i] == 1 ? 1 : 0;
+            } else {
+                right[i] = forts[i] == 1 ? right[i + 1] + 1 : right[i + 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 1) {
+                continue;
+            }
+            int l = i == 0 ? 0 : left[i - 1];
+            int r = i == n - 1 ? 0 : right[i + 1];
+            ans = Math.max(ans, l + r);
+        }
+        return ans;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = forts[i];
+            if (i > 0 && left[i] != -1 && left[i - 1] != -1) {
+                left[i] += left[i - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = forts[i];
+            if (i < n - 1 && right[i] != -1 && right[i + 1] != -1) {
+                right[i] += right[i + 1];
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == -1) {
+                int cur = 0;
+                if (i > 0 && left[i - 1] != -1) {
+                    cur += left[i - 1];
+                }
+                if (i < n - 1 && right[i + 1] != -1) {
+                    cur += right[i + 1];
+                }
+                res = Math.max(res, cur);
+            }
+        }
+        return res;
+
+=======
+
+        int n = forts.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 0) {
+                dp[i] = 1;
+                continue;
+            }
+            if (i > 0 && forts[i - 1] == 0) {
+                dp[i] = dp[i - 1] + 1;
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for(int i = 0; i < n; i++) {
+            left[i] = i;
+            right[i] = i;
+        }
+        for(int i = 1; i < n; i++) {
+            if(forts[i] == 0) {
+                left[i] = left[i - 1];
+            }
+        }
+        for(int i = n - 2; i >= 0; i--) {
+            if(forts[i] == 0) {
+                right[i] = right[i + 1];
+            }
+        }
+        int ans = 0;
+        for(int i = 0; i < n; i++) {
+            if(forts[i] == 0) {
+                continue;
+            }
+            int l = left[i];
+            int r = right[i];
+            int cur = 0;
+            while(l < i) {
+                if(forts[l] == 0) {
+                    cur++;
+                }
+                l++;
+            }
+            while(r > i) {
+                if(forts[r] == 0) {
+                    cur++;
+                }
+                r--;
+            }
+            ans = Math.max(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int[] left = new int[forts.length];
+        int[] right = new int[forts.length];
+        int[] pre = new int[forts.length];
+        int[] suf = new int[forts.length];
+        for (int i = 0; i < forts.length; i++) {
+            if (forts[i] == 0) {
+                pre[i] = 1;
+            }
+            if (i > 0) {
+                pre[i] += pre[i - 1];
+            }
+        }
+        for (int i = forts.length - 1; i >= 0; i--) {
+            if (forts[i] == 0) {
+                suf[i] = 1;
+            }
+            if (i < forts.length - 1) {
+                suf[i] += suf[i + 1];
+            }
+        }
+        for (int i = 0; i < forts.length; i++) {
+            if (forts[i] == 1) {
+                left[i] = 1;
+            }
+            if (i > 0) {
+                left[i] += left[i - 1];
+            }
+        }
+        for (int i = forts.length - 1; i >= 0; i--) {
+            if (forts[i] == 1) {
+                right[i] = 1;
+            }
+            if (i < forts.length - 1) {
+                right[i] += right[i + 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < forts.length; i++) {
+            if (forts[i] == 0) {
+                int leftSum = 0;
+                if (i > 0) {
+                    leftSum = pre[i - 1] + left[i - 1];
+                }
+                int rightSum = 0;
+                if (i < forts.length - 1) {
+                    rightSum = suf[i + 1] + right[i + 1];
+                }
+                ans = Math.max(ans, leftSum + rightSum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] leftSum = new int[n];
+        int[] rightSum = new int[n];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 1) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 0) {
+                sum++;
+            }
+            left[i] = sum;
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (forts[i] == 0) {
+                sum++;
+            }
+            right[i] = sum;
+        }
+        sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] == 0) {
+                sum++;
+            }
+            leftSum[i] = sum;
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (forts[i] == 0) {
+                sum++;
+            }
+            rightSum[i] = sum;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (forts[i] != 1) {
+                continue;
+            }
+            int l = left[i];
+            int r = right[i];
+            int lSum = leftSum[i];
+            int rSum = rightSum[i];
+            if (l == 0 && r == 0) {
+                continue;
+            }
+            if (l == 0) {
+                ans = Math.max(ans, rSum);
+                continue;
+            }
+            if (r == 0) {
+                ans = Math.max(ans, lSum);
+                continue;
+            }
+            ans = Math.max(ans, lSum + rSum);
+        }
+        return ans;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] leftCount = new int[n];
+        int[] rightCount = new int[n];
+        int i = 0;
+        int j = n - 1;
+        int count = 0;
+        while (i < n) {
+            if (forts[i] == 0) {
+                count++;
+            }
+            left[i] = count;
+            leftCount[i] = i - count;
+            i++;
+        }
+        count = 0;
+        while (j >= 0) {
+            if (forts[j] == 0) {
+                count++;
+            }
+            right[j] = count;
+            rightCount[j] = n - 1 - j - count;
+            j--;
+        }
+        int max = 0;
+        for (i = 0; i < n; i++) {
+            if (forts[i] == 1) {
+                max = Math.max(max, leftCount[i] + right[i]);
+                max = Math.max(max, left[i] + rightCount[i]);
+            }
+        }
+        return max;
+
+=======
+
+        int n = forts.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] sum = new int[n];
+        int[] enemy = new int[n];
+        int[] friend = new int[n];
+        for (int i = 0; i < n; i++) {
+            enemy[i] = forts[i] == 0 ? 1 : 0;
+            friend[i] = forts[i] == 1 ? 1 : 0;
+        }
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + enemy[i];
+        }
+        for (int i = 1; i < n; i++) {
+            if (friend[i] == 1) {
+                left[i] = sum[i - 1];
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            if (friend[i] == 1) {
+                right[i] = sum[n - 1] - sum[i];
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = left[i] + right[i];
+            if (friend[i] == 1) {
+                cur--;
+            }
+            res = Math.max(res, cur);
+        }
+        return res;

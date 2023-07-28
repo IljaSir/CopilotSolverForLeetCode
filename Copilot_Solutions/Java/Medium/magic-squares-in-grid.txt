@@ -1,0 +1,365 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < grid.length - 2; i++) {
+            for (int j = 0; j < grid[0].length - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) continue;
+                if (magic(grid[i][j], grid[i][j + 1], grid[i][j + 2],
+                          grid[i + 1][j], grid[i + 1][j + 1], grid[i + 1][j + 2],
+                          grid[i + 2][j], grid[i + 2][j + 1], grid[i + 2][j + 2])) {
+                    count++;
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < grid.length - 2; i++) {
+            for (int j = 0; j < grid[0].length - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) {
+                    continue;
+                }
+                if (isMagic(grid, i, j)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private boolean isMagic(int[][] grid, int x, int y) {
+        int[] nums = new int[16];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                nums[grid[x + i][y + j]]++;
+            }
+        }
+        for (int i = 1; i <= 9; i++) {
+            if (nums[i] != 1) {
+                return false;
+            }
+        }
+        int sum = grid[x][y] + grid[x][y + 1] + grid[x][y + 2];
+        for (int i = 0; i < 3; i++) {
+            if (grid[x + i][y] + grid[x + i][y + 1] + grid[x + i][y + 2] != sum) {
+                return false;
+            }
+            if (grid[x][y + i] + grid[x + 1][y + i] + grid[x + 2][y + i] != sum) {
+                return false;
+            }
+        }
+        if (grid[x][y] + grid[x + 1][y + 1] + grid[x + 2][y + 2] != sum) {
+            return false;
+        }
+        if (grid[x + 2][y] + grid[x + 1][y + 1] + grid[x][y + 2] != sum) {
+            return false;
+        }
+        return true;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < grid.length - 2; i++) {
+            for (int j = 0; j < grid[i].length - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) continue;
+                if (grid[i][j] + grid[i][j + 1] + grid[i][j + 2] != 15) continue;
+                if (grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2] != 15) continue;
+                if (grid[i][j] + grid[i + 1][j] + grid[i + 2][j] != 15) continue;
+                if (grid[i][j + 2] + grid[i + 1][j + 2] + grid[i + 2][j + 2] != 15) continue;
+                if (grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] != 15) continue;
+                if (grid[i][j + 2] + grid[i + 1][j + 1] + grid[i + 2][j] != 15) continue;
+                boolean[] flags = new boolean[10];
+                flags[0] = true;
+                for (int k = 0; k < 3; k++) {
+                    for (int l = 0; l < 3; l++) {
+                        if (grid[i + k][j + l] < 1 || grid[i + k][j + l] > 9 || flags[grid[i + k][j + l]]) {
+                            continue;
+                        }
+                        flags[grid[i + k][j + l]] = true;
+                    }
+                }
+                boolean flag = true;
+                for (int k = 1; k < 10; k++) {
+                    if (!flags[k]) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) count++;
+            }
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < grid.length - 2; i++) {
+            for (int j = 0; j < grid[i].length - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) {
+                    continue;
+                }
+                if (magic(grid[i][j], grid[i][j + 1], grid[i][j + 2], grid[i + 1][j], grid[i + 1][j + 1], grid[i + 1][j + 2], grid[i + 2][j], grid[i + 2][j + 1], grid[i + 2][j + 2])) {
+                    count ++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    public boolean magic(int... vals) {
+        int[] count = new int[16];
+        for (int v : vals) {
+            count[v]++;
+        }
+        for (int i = 1; i <= 9; i++) {
+            if (count[i] != 1) {
+                return false;
+            }
+        }
+        return (vals[0] + vals[1] + vals[2] == 15 &&
+                vals[3] + vals[4] + vals[5] == 15 &&
+                vals[6] + vals[7] + vals[8] == 15 &&
+                vals[0] + vals[3] + vals[6] == 15 &&
+                vals[1] + vals[4] + vals[7] == 15 &&
+                vals[2] + vals[5] + vals[8] == 15 &&
+                vals[0] + vals[4] + vals[8] == 15 &&
+                vals[2] + vals[4] + vals[6] == 15);
+
+=======
+
+        int count = 0;
+        for (int i = 0; i <= grid.length - 3; i++) {
+            for (int j = 0; j <= grid[0].length - 3; j++) {
+                if (grid[i + 1][j + 1] != 5) continue;
+                if (magic(grid, i, j)) count++;
+            }
+        }
+        return count;
+    }
+    public boolean magic(int[][] grid, int i, int j) {
+        int[] count = new int[16];
+        for (int r = i; r < i + 3; r++) {
+            for (int c = j; c < j + 3; c++) {
+                if (grid[r][c] < 1 || grid[r][c] > 9) return false;
+                count[grid[r][c]]++;
+            }
+        }
+        for (int v = 1; v <= 9; v++) {
+            if (count[v] != 1) return false;
+        }
+        if ((grid[i][j] + grid[i][j + 1] + grid[i][j + 2]) != 15) return false;
+        if ((grid[i + 1][j] + grid[i + 1][j + 1] + grid[i + 1][j + 2]) != 15) return false;
+        if ((grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2]) != 15) return false;
+        if ((grid[i][j] + grid[i + 1][j] + grid[i + 2][j]) != 15) return false;
+        if ((grid[i][j + 1] + grid[i + 1][j + 1] + grid[i + 2][j + 1]) != 15) return false;
+        if ((grid[i][j + 2] + grid[i + 1][j + 2] + grid[i + 2][j + 2]) != 15) return false;
+        if ((grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2]) != 15) return false;
+        if ((grid
+
+=======
+
+        int row = grid.length;
+        int col = grid[0].length;
+        int count = 0;
+        for (int i = 0; i < row - 2; i++) {
+            for (int j = 0; j < col - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) {
+                    continue;
+                }
+                if (magic(grid, i, j)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    private boolean magic(int[][] grid, int i, int j) {
+        boolean[] used = new boolean[16];
+        for (int r = i; r < i + 3; r++) {
+            int sum = 0;
+            for (int c = j; c < j + 3; c++) {
+                int v = grid[r][c];
+                if (v < 1 || v > 9 || used[v]) {
+                    return false;
+                }
+                used[v] = true;
+                sum += v;
+            }
+            if (sum != 15) {
+                return false;
+            }
+        }
+        for (int c = j; c < j + 3; c++) {
+            int sum = 0;
+            for (int r = i; r < i + 3; r++) {
+                sum += grid[r][c];
+            }
+            if (sum != 15) {
+                return false;
+            }
+        }
+        if (grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] != 15) {
+            return false;
+        }
+        if (grid[i][j + 2] + grid[i + 1][j + 1] + grid[i + 2][j] != 15) {
+            return false;
+        }
+        return true;
+
+=======
+
+        int r = grid.length;
+        if (r < 3) {
+            return 0;
+        }
+        int c = grid[0].length;
+        if (c < 3) {
+            return 0;
+        }
+        int count = 0;
+        for (int i = 0; i < r - 2; i++) {
+            for (int j = 0; j < c - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) {
+                    continue;
+                }
+                if (grid[i][j] + grid[i][j + 1] + grid[i][j + 2] != 15) {
+                    continue;
+                }
+                if (grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2] != 15) {
+                    continue;
+                }
+                if (grid[i][j] + grid[i + 1][j] + grid[i + 2][j] != 15) {
+                    continue;
+                }
+                if (grid[i][j + 2] + grid[i + 1][j + 2] + grid[i + 2][j + 2] != 15) {
+                    continue;
+                }
+                if (grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] != 15) {
+                    continue;
+                }
+                if (grid[i][j + 2] + grid[i + 1][j + 1] + grid[i + 2][j] != 15) {
+                    continue;
+                }
+                int[] temp = new int[10];
+                for (int k = i; k < i + 3; k++) {
+                    for (int l = j; l < j + 3; l++) {
+                        if (grid[k][l] < 1 || grid[k][l] > 9) {
+                            continue;
+                        }
+                        temp[grid[k][l]]++;
+                    }
+                }
+                boolean flag = true;
+                for (int k = 1; k < 10; k++) {
+                    if (temp[k] != 1) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (
+
+=======
+
+        int row = grid.length;
+        int col = grid[0].length;
+        int res = 0;
+        for (int i = 0; i < row - 2; i++) {
+            for (int j = 0; j < col - 2; j++) {
+                if (grid[i + 1][j + 1] != 5) {
+                    continue;
+                }
+                if (magic(grid[i][j], grid[i][j + 1], grid[i][j + 2],
+                          grid[i + 1][j], grid[i + 1][j + 1], grid[i + 1][j + 2],
+                          grid[i + 2][j], grid[i + 2][j + 1], grid[i + 2][j + 2])) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+    
+    private boolean magic(int... vals) {
+        Set<Integer> set = new HashSet<>();
+        for (int v : vals) {
+            set.add(v);
+        }
+        if (set.size() != 9) {
+            return false;
+        }
+        for (int i = 1; i <= 9; i++) {
+            if (!set.contains(i)) {
+                return false;
+            }
+        }
+        return (vals[0] + vals[1] + vals[2] == 15 &&
+                vals[3] + vals[4] + vals[5] == 15 &&
+                vals[6] + vals[7] + vals[8] == 15 &&
+                vals[0] + vals[3] + vals[6] == 15 &&
+                vals[1] + vals[4] + vals[7] == 15 &&
+                vals[2] + vals[5] + vals[8] == 15 &&
+                vals[0] + vals[4] + vals[8] == 15 &&
+                vals[2] + vals[4] + vals[6] == 15);
+
+=======
+
+        int count = 0;
+        for(int i = 0; i < grid.length - 2; i++){
+            for(int j = 0; j < grid[0].length - 2; j++){
+                if(grid[i + 1][j + 1] != 5) continue;
+                if(isMagic(grid, i, j)) count++;
+            }
+        }
+        return count;
+    }
+    
+    private boolean isMagic(int[][] grid, int i, int j){
+        int[] count = new int[10];
+        for(int m = i; m < i + 3; m++){
+            for(int n = j; n < j + 3; n++){
+                if(grid[m][n] < 1 || grid[m][n] > 9 || count[grid[m][n]] == 1) return false;
+                count[grid[m][n]] = 1;
+            }
+        }
+        return (grid[i][j] + grid[i][j + 1] + grid[i][j + 2] == 15
+                && grid[i + 1][j] + grid[i + 1][j + 1] + grid[i + 1][j + 2] == 15
+                && grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2] == 15
+                && grid[i][j] + grid[i + 1][j] + grid[i + 2][j] == 15
+                && grid[i][j + 1] + grid[i + 1][j + 1] + grid[i + 2][j + 1] == 15
+                && grid[i][j + 2] + grid[i + 1][j + 2] + grid[i + 2][j + 2] == 15
+                && grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] == 15
+                && grid[i][j + 2] + grid[i + 1][j + 1] + grid[i + 2][j] == 15);
+
+=======
+
+        int res = 0;
+        int row = grid.length;
+        int col = grid[0].length;
+        for(int i = 0; i < row - 2; i++){
+            for(int j = 0; j < col - 2; j++){
+                if(grid[i + 1][j + 1] != 5) continue;
+                if(isMagic(grid, i, j)) res++;
+            }
+        }
+        return res;
+    }
+    private boolean isMagic(int[][] grid, int i, int j){
+        int[] nums = new int[16];
+        for(int r = i; r < i + 3; r++){
+            for(int c = j; c < j + 3; c++){
+                if(grid[r][c] < 1 || grid[r][c] > 9) return false;
+                if(nums[grid[r][c]] > 0) return false;
+                nums[grid[r][c]]++;
+            }
+        }
+        if(grid[i][j] + grid[i][j + 1] + grid[i][j + 2] != 15) return false;
+        if(grid[i + 1][j] + grid[i + 1][j + 1] + grid[i + 1][j + 2] != 15) return false;
+        if(grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2] != 15) return false;
+        if(grid[i][j] + grid[i + 1][j] + grid[i + 2][j] != 15) return false;
+        if(grid[i][j + 1] + grid[i + 1][j + 1] + grid[i + 2][j + 1] != 15) return false;
+        if(grid[i][j + 2] + grid[i + 1][j + 2] + grid[i + 2][j + 2] != 15) return false;
+        if(grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2] != 15) return false;
+        if(grid[i][j + 2] + grid[i + 1][j + 1] + grid[i

@@ -1,0 +1,183 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = balls.size();
+        int m = 0;
+        for (int i = 0; i < n; i++) {
+            m += balls[i];
+        }
+        m /= 2;
+        vector<vector<double>> dp(m + 1, vector<double>(1 << n, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = m; j >= 0; j--) {
+                for (int mask = (1 << n) - 1; mask >= 0; mask--) {
+                    if (dp[j][mask] == 0) continue;
+                    for (int k = 0; k < balls[i]; k++) {
+                        int newMask = mask | (1 << i);
+                        dp[j + 1][newMask] += dp[j][mask] / C(balls[i], k + 1);
+                    }
+                }
+            }
+        }
+        double ans = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            if (__builtin_popcount(mask) != n / 2) continue;
+            ans += dp[m][mask] * dp[m][mask ^ ((1 << n) - 1)];
+        }
+        return ans;
+
+=======
+
+        int n = balls.size();
+        int sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += balls[i];
+        }
+        sum /= 2;
+        vector<vector<double>> dp(sum + 1, vector<double>(sum + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = sum; j >= 0; --j) {
+                for (int k = sum; k >= 0; --k) {
+                    double p = dp[j][k] / C(balls[i] + j + k, balls[i]);
+                    for (int l = 0; l <= balls[i] && j + l <= sum; ++l) {
+                        dp[j + l][k + balls[i] - l] += p * C(balls[i], l);
+                    }
+                }
+            }
+        }
+        double ans = 0;
+        for (int i = 1; i <= sum; ++i) {
+            ans += dp[i][i];
+        }
+        return ans;
+
+=======
+
+        int n = balls.size();
+        int m = balls.size() / 2;
+        int sum = accumulate(balls.begin(), balls.end(), 0);
+        vector<vector<double>> dp(sum + 1, vector<double>(sum + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = sum; j >= balls[i]; --j) {
+                for (int k = sum; k >= balls[i]; --k) {
+                    dp[j][k] += dp[j - balls[i]][k];
+                    dp[j][k] += dp[j][k - balls[i]];
+                }
+            }
+        }
+        double ans = 0;
+        for (int i = 1; i <= sum / 2; ++i) {
+            ans += dp[i][i];
+        }
+        return ans / pow(2, sum);
+
+=======
+
+        int n = balls.size();
+        int m = balls[0];
+        for (int i = 1; i < n; i++) {
+            m = max(m, balls[i]);
+        }
+        vector<vector<long long>> dp(1 << n, vector<long long>(m + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j <= m; j++) {
+                if (dp[i][j] == 0) {
+                    continue;
+                }
+                for (int k = 0; k < n; k++) {
+                    if (i & (1 << k)) {
+                        continue;
+                    }
+                    for (int t = 1; t <= balls[k]; t++) {
+                        if (j + t > m) {
+                            break;
+                        }
+                        dp[i | (1 << k)][j + t] += dp[i][j];
+                    }
+                }
+            }
+        }
+        long long total = 0;
+        for (int i = 0; i <= m; i++) {
+            total += dp[(1 << n) - 1][i];
+        }
+        long long ans = 0;
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i == j) {
+                    ans += dp[(1 << n) - 1][i] * dp[(1 << n) - 1][j];
+                }
+            }
+        }
+        return (double)ans / total;
+
+=======
+
+        int n = balls.size();
+        int m = balls.size() / 2;
+        vector<int> cnt(1 << n);
+        vector<int> sum(1 << n);
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    cnt[i]++;
+                    sum[i] += balls[j];
+                }
+            }
+        }
+        vector<vector<double>> dp(1 << n, vector<double>(m + 1));
+        dp[0][0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j <= m; j++) {
+                for (int k = i + 1; k < (1 << n); k++) {
+                    if ((i & k) == 0 && cnt[i] == cnt[k] && sum[i] == sum[k]) {
+                        dp[k][j + 1] += dp[i][j] / __builtin_popcount(k);
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1][m];
+
+=======
+
+        int n = balls.size();
+        int total = 0;
+        vector<int> cnt(1 << n, 0);
+        for(int mask = 0; mask < (1 << n); mask++) {
+            for(int i = 0; i < n; i++) {
+                if(mask & (1 << i)) {
+                    cnt[mask] += balls[i];
+                }
+            }
+            if(cnt[mask] == total) {
+                cnt[mask] = 0;
+            }
+            total = max(total, cnt[mask]);
+        }
+        vector<vector<double>> dp(1 << n, vector<double>(total + 1, 0.0));
+        dp[0][0] = 1.0;
+        for(int mask = 0; mask < (1 << n); mask++) {
+            for(int i = 0; i <= total; i++) {
+                if(dp[mask][i] == 0.0) {
+                    continue;
+                }
+                for(int j = 0; j < n; j++) {
+                    if(mask & (1 << j)) {
+                        continue;
+                    }
+                    int nextMask = mask | (1 << j);
+                    int nextCnt = i + balls[j];
+                    dp[nextMask][nextCnt] += dp[mask][i] / __builtin_popcount(nextMask);
+                }
+            }
+        }
+        double ans = 0.0;
+        for(int mask = 0; mask < (1 << n); mask++) {
+            ans += dp[mask][cnt[mask]] * dp[(1 << n) - 1 - mask][cnt[(1 << n) - 1 - mask]];
+        }
+        return ans;

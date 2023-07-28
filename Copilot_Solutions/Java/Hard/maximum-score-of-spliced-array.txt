@@ -1,0 +1,274 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums1.length;
+        int[] prefix1 = new int[n];
+        int[] prefix2 = new int[n];
+        prefix1[0] = nums1[0];
+        prefix2[0] = nums2[0];
+        for (int i = 1; i < n; i++) {
+            prefix1[i] = prefix1[i - 1] + nums1[i];
+            prefix2[i] = prefix2[i - 1] + nums2[i];
+        }
+        int[] max1 = new int[n];
+        int[] max2 = new int[n];
+        max1[0] = nums1[0];
+        max2[0] = nums2[0];
+        for (int i = 1; i < n; i++) {
+            max1[i] = Math.max(max1[i - 1], nums1[i]);
+            max2[i] = Math.max(max2[i - 1], nums2[i]);
+        }
+        int[] max = new int[n];
+        for (int i = 0; i < n; i++) {
+            max[i] = Math.max(prefix1[i], prefix2[i]);
+        }
+        int ans = max[n - 1];
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, max1[i] + prefix2[n - 1] - prefix2[i]);
+            ans = Math.max(ans, max2[i] + prefix1[n - 1] - prefix1[i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int[] sum1 = new int[n + 1];
+        int[] sum2 = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        int[] dp = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            dp[i + 1] = Math.max(dp[i + 1], dp[i]);
+            if (nums1[i] < nums2[i]) {
+                int j = Arrays.binarySearch(nums1, i + 1, n, nums2[i]);
+                if (j < 0) {
+                    j = -j - 1;
+                }
+                dp[j] = Math.max(dp[j], dp[i] + sum1[i] + sum2[n] - sum2[j]);
+            } else if (nums1[i] > nums2[i]) {
+                int j = Arrays.binarySearch(nums2, i + 1, n, nums1[i]);
+                if (j < 0) {
+                    j = -j - 1;
+                }
+                dp[j] = Math.max(dp[j], dp[i] + sum2[i] + sum1[n] - sum1[j]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[n];
+        dp[0] = Math.max(nums1[0], nums2[0]);
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], Math.max(nums1[i], nums2[i]));
+            if (nums1[i] > nums2[i]) {
+                nums1[i] = nums2[i];
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            nums1[i] += nums1[i - 1];
+        }
+        int res = nums1[n - 1];
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i] + nums1[n - 1] - nums1[i]);
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        int[] diff = new int[n];
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums2[i] - nums1[i];
+        }
+        long[] prefix = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + diff[i - 1];
+        }
+        long res = 0;
+        for (int i = 0; i <= n; i++) {
+            res = Math.max(res, prefix[i] + prefix[n] - prefix[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (diff[i] < 0) {
+                int j = i;
+                while (j < n && diff[j] < 0) {
+                    j++;
+                }
+                res = Math.max(res, prefix[i] + prefix[n] - prefix[j]);
+                i = j;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (diff[i] > 0) {
+                int j = i;
+                while (j < n && diff[j] > 0) {
+                    j++;
+                }
+                res = Math.max(res, prefix[i] + prefix[n] - prefix[j]);
+                i = j;
+            }
+        }
+        return (int) (res + Arrays.stream(nums1).sum());
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][n];
+        int[] sum1 = new int[n];
+        int[] sum2 = new int[n];
+        sum1[0] = nums1[0];
+        sum2[0] = nums2[0];
+        for (int i = 1; i < n; i++) {
+            sum1[i] = sum1[i - 1] + nums1[i];
+            sum2[i] = sum2[i - 1] + nums2[i];
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = Math.max(nums1[i], nums2[i]);
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i + 1][j]);
+                if (nums1[i] < nums1[j]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i + 1][j] + sum1[i] - (i > 0 ? sum1[i - 1] : 0));
+                }
+                if (nums2[i] < nums2[j]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j - 1] + sum2[j] - (j > 0 ? sum2[j - 1] : 0));
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[n + 1];
+        int[] ps1 = new int[n + 1];
+        int[] ps2 = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            ps1[i] = ps1[i - 1] + nums1[i - 1];
+            ps2[i] = ps2[i - 1] + nums2[i - 1];
+        }
+        int[] max = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            max[i] = Math.max(max[i - 1], ps1[i]);
+        }
+        for (int i = 1; i <= n; i++) {
+            int l = 0, r = i;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (ps1[i] - ps1[mid] > ps2[i] - ps2[mid]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            if (l == 0) {
+                dp[i] = Math.max(dp[i - 1], ps1[i]);
+            } else {
+                dp[i] = Math.max(dp[i - 1], max[l - 1] + ps2[i] - ps2[l - 1]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = nums1.length;
+        long[] max1 = new long[n + 1];
+        long[] max2 = new long[n + 1];
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums1[i];
+            max1[i + 1] = Math.max(sum, max1[i]);
+        }
+        sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums2[i];
+            max2[i + 1] = Math.max(sum, max2[i]);
+        }
+        int i = 0, j = n;
+        long res = 0;
+        while (i <= n && j >= 0) {
+            res = Math.max(res, max1[i] + max2[j]);
+            if (i == n || j == 0) {
+                break;
+            }
+            if (nums1[i] < nums2[j - 1]) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return (int) (res % 1000000007);
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[n];
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            nums[i] = Math.max(nums1[i], nums2[i]);
+        }
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            dp[i] = sum;
+        }
+        int ans = sum;
+        for (int i = 0; i < n; i++) {
+            if (nums1[i] < nums2[i]) {
+                ans = Math.max(ans, dp[i] - nums1[i] + nums2[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[n + 1];
+        int[] sum = new int[n + 1];
+        int[] dp2 = new int[n + 1];
+        int[] sum2 = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums1[i];
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        for (int i = 1; i <= n; i++) {
+            dp[i] = Math.max(dp[i - 1], sum[i]);
+            dp2[i] = Math.max(dp2[i - 1], sum2[i]);
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            int j = n - i;
+            ans = Math.max(ans, Math.max(dp[i] + sum2[j], dp2[i] + sum[j]));
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[n + 1];
+        int[][] dp2 = new int[n + 1][2];
+        int[] dp3 = new int[n + 1];
+        int[] dp4 = new int[n + 1];
+        dp[0] = nums1[0];
+        dp2[0][0] = nums1[0];
+        dp4[0] = nums1[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] + nums1[i];
+            dp2[i][0] = Math.max(dp2[i - 1][0], dp[i]);
+            dp4[i] = dp4[i - 1] + nums1[i];
+        }
+        dp3[0] = nums2[0];
+        dp2[0][1] = nums2[0];
+        for (int i = 1; i < n; i++) {
+            dp3[i] = dp3[i - 1] + nums2[i];
+            dp2[i][1] = Math.max(dp2[i - 1][1], dp3[i]);
+        }
+        int max = dp2[n - 1][0] + dp3[n - 1];
+        for (int i = 0; i < n - 1; i++) {
+            max = Math.max(max, dp4[i] + dp2[n - 1][1] - dp2[i][1]);
+        }
+        return max;

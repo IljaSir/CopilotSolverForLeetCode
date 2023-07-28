@@ -1,0 +1,240 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 1; i < (1 << n); i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    cnt++;
+                }
+            }
+            dp[i] = cnt;
+        }
+        int ans = 0;
+        for (int i = 1; i < (1 << n); i++) {
+            boolean flag = true;
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    for (int l = j + 1; l < n; l++) {
+                        if (((i >> l) & 1) == 1) {
+                            if (Math.abs(nums[j] - nums[l]) == k) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (flag) {
+                ans += dp[i];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    int mask = i ^ (1 << j);
+                    if (dp[mask] == 1) {
+                        boolean ok = true;
+                        for (int l = 0; l < n; l++) {
+                            if (((mask >> l) & 1) == 1) {
+                                if (Math.abs(nums[j] - nums[l]) == k) {
+                                    ok = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (ok) {
+                            dp[i] += dp[mask];
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 0) {
+                    boolean ok = true;
+                    for (int l = 0; l < n; l++) {
+                        if (((i >> l) & 1) == 1 && Math.abs(nums[j] - nums[l]) == k) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok) {
+                        dp[i | (1 << j)] += dp[i];
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    boolean valid = true;
+                    for (int m = 0; m < n; m++) {
+                        if ((i & (1 << m)) != 0 && Math.abs(nums[j] - nums[m]) == k) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (valid) {
+                        dp[i | (1 << j)] += dp[i];
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 0; i < (1 << n); i++) {
+            int max = 0, min = 1001;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) > 0) {
+                    max = Math.max(max, nums[j]);
+                    min = Math.min(min, nums[j]);
+                }
+            }
+            if (max - min >= k) {
+                continue;
+            }
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] += dp[i];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        dp[0] = 1;
+        for (int i = 0; i < 1 << n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 1) {
+                    continue;
+                }
+                boolean ok = true;
+                for (int l = 0; l < n; l++) {
+                    if (((i >> l) & 1) == 1) {
+                        if (Math.abs(nums[j] - nums[l]) == k) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+                if (ok) {
+                    dp[i | (1 << j)] += dp[i];
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, nums[i]);
+        }
+        int[] dp = new int[max + 1];
+        for (int i = 0; i < n; i++) {
+            dp[nums[i]]++;
+        }
+        int[] dp2 = new int[max + 1];
+        for (int i = 1; i <= max; i++) {
+            dp2[i] = dp[i] + dp2[i - 1];
+        }
+        int ans = 0;
+        for (int i = 1; i <= max; i++) {
+            ans += dp[i] * (dp2[max] - dp2[Math.max(0, i - k - 1)]);
+            if (k != 0) {
+                ans += dp[i] * (dp2[Math.min(max, i + k - 1)] - dp2[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] cnt = new int[1001];
+        for (int x : nums) {
+            cnt[x]++;
+        }
+        int[] dp = new int[1001];
+        dp[0] = 1;
+        for (int i = 1; i <= 1000; i++) {
+            if (cnt[i] > 0) {
+                for (int j = 0; j <= 1000; j++) {
+                    if (dp[j] > 0 && j + i - k > 0) {
+                        dp[j + i] += dp[j] * cnt[i];
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= 1000; i++) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int mod = 1000000007;
+        int[] dp = new int[1024];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            int[] temp = Arrays.copyOf(dp, dp.length);
+            for (int j = 0; j < 1024; j++) {
+                if ((j & (1 << num)) == 0) {
+                    temp[j | (1 << num)] = (temp[j | (1 << num)] + dp[j]) % mod;
+                }
+                if ((j & (1 << (num + k))) == 0) {
+                    temp[j | (1 << (num + k))] = (temp[j | (1 << (num + k))] + dp[j]) % mod;
+                }
+                if ((j & (1 << (num - k))) == 0) {
+                    temp[j | (1 << (num - k))] = (temp[j | (1 << (num - k))] + dp[j]) % mod;
+                }
+            }
+            dp = temp;
+        }
+        int ans = 0;
+        for (int i = 1; i < 1024; i++) {
+            ans = (ans + dp[i]) % mod;
+        }
+        return ans;

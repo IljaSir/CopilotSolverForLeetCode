@@ -1,0 +1,225 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut cnt = [0; 26];
+        let mut fact = [1; 3001];
+        for i in 1..3001 {
+            fact[i] = (fact[i - 1] * i as i64) % 1000000007;
+        }
+        let mut ans = 0;
+        for i in (0..s.len()).rev() {
+            let c = s[i..i + 1].chars().nth(0).unwrap() as usize - 'a' as usize;
+            let mut sum = 0;
+            for j in 0..c {
+                sum = (sum + cnt[j]) % 1000000007;
+            }
+            ans = (ans + sum * fact[s.len() - i - 1]) % 1000000007;
+            cnt[c] += 1;
+        }
+        ans as i32
+
+=======
+
+        let mut count = vec![0; 26];
+        let mut fact = vec![1; s.len() + 1];
+        let mut inv = vec![1; s.len() + 1];
+        let mut res = 0;
+        for i in 1..=s.len() {
+            fact[i] = (fact[i - 1] * i as i64) % 1_000_000_007;
+            inv[i] = Self::pow_mod(fact[i], 1_000_000_005, 1_000_000_007);
+        }
+        for ch in s.bytes() {
+            count[(ch - b'a') as usize] += 1;
+        }
+        for i in 0..s.len() {
+            let mut sum = 0;
+            for j in 0..(s.bytes().nth(i).unwrap() - b'a') as usize {
+                sum += count[j];
+            }
+            for j in 0..26 {
+                count[j] = (count[j] * inv[s.len() - i]) % 1_000_000_007;
+            }
+            res = (res + (sum * fact[s.len() - i - 1]) % 1_000_000_007) % 1_000_000_007;
+            count[(s.bytes().nth(i).unwrap() - b'a') as usize] -= 1;
+        }
+        res as i32
+    }
+    fn pow_mod(mut x: i64, mut n: i64, m: i64) -> i64 {
+        let mut res = 1;
+        while n > 0 {
+            if n & 1 == 1 {
+                res = (res * x) % m;
+            }
+            x = (x * x) % m;
+            n >>= 1;
+        }
+        res
+
+=======
+
+        let mut cnt = vec![0; 26];
+        let mut ans = 0;
+        let mut fac = vec![1; s.len() + 1];
+        let mut inv = vec![1; s.len() + 1];
+        let mut inv_fac = vec![1; s.len() + 1];
+        let mut mod_inv = vec![1; s.len() + 1];
+        let mut f = 1;
+        for i in 1..=s.len() {
+            f = (f * i) % 1000000007;
+            fac[i] = f;
+            inv[i] = mod_pow(f, 1000000007 - 2, 1000000007);
+            inv_fac[i] = (inv_fac[i - 1] * inv[i]) % 1000000007;
+            mod_inv[i] = (mod_inv[i - 1] * inv[i]) % 1000000007;
+        }
+        let mut s = s.into_bytes();
+        for i in 0..s.len() {
+            for j in 0..s[i] - b'a' {
+                ans = (ans + cnt[j as usize] * fac[s.len() - i - 1]) % 1000000007;
+            }
+            cnt[(s[i] - b'a') as usize] += 1;
+        }
+        for i in 0..26 {
+            ans = (ans * inv_fac[cnt[i]]) % 1000000007;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut a = vec![0; 26];
+        let mut ans = 0;
+        let mut fact = vec![1; s.len() + 1];
+        for i in 1..fact.len() {
+            fact[i] = (fact[i - 1] * i) % 1000000007;
+        }
+        for c in s.chars() {
+            let c = c as usize - 'a' as usize;
+            for i in 0..c {
+                ans = (ans + a[i] * fact[s.len() - a.iter().sum::<i32>() as usize - 1]) % 1000000007;
+            }
+            a[c] += 1;
+        }
+        ans
+
+=======
+
+        let mut a: Vec<u8> = s.into_bytes();
+        let n = a.len();
+        let mut cnt = vec![0; 26];
+        let mut fac = vec![1; n];
+        for i in 1..n {
+            fac[i] = fac[i - 1] * i as i32 % 1000000007;
+        }
+        let mut ans = 0;
+        for i in (0..n).rev() {
+            let c = a[i] - b'a';
+            let mut sum = 0;
+            for j in 0..c {
+                sum = (sum + cnt[j]) % 1000000007;
+            }
+            ans = (ans + sum * fac[n - i - 1]) % 1000000007;
+            cnt[c] += 1;
+        }
+        ans
+
+=======
+
+        let mut a = vec![0; 26];
+        let mut f = vec![1; 3001];
+        let mut r = 0;
+        for i in 1..3001 {
+            f[i] = f[i - 1] * i as i64 % 1000000007;
+        }
+        for c in s.bytes() {
+            a[(c - b'a') as usize] += 1;
+        }
+        for i in 0..s.len() {
+            let mut c = 0;
+            for j in 0..26 {
+                if a[j] == 0 {
+                    continue;
+                }
+                a[j] -= 1;
+                let mut t = f[s.len() - i - 1];
+                for k in 0..26 {
+                    t = t * f[a[k] as usize] % 1000000007;
+                }
+                r = (r + t) % 1000000007;
+                a[j] += 1;
+                if s.as_bytes()[i] == b'a' + j as u8 {
+                    break;
+                }
+                c += 1;
+            }
+            a[(s.as_bytes()[i] - b'a') as usize] -= 1;
+        }
+        r as i32
+
+=======
+
+        let mut s = s.as_bytes();
+        let mut fact = vec![1; s.len() + 1];
+        let mut count = vec![0; 26];
+        let mut ans = 0;
+        let mut modd = 1000000007;
+        for i in 1..=s.len() {
+            fact[i] = (fact[i - 1] * i) % modd;
+        }
+        for i in (0..s.len()).rev() {
+            let idx = (s[i] - b'a') as usize;
+            count[idx] += 1;
+            let mut sum = 0;
+            for j in 0..idx {
+                sum += count[j];
+            }
+            ans = (ans + (sum * fact[s.len() - i - 1]) % modd) % modd;
+            for j in idx + 1..26 {
+                ans = (ans + (count[j] * fact[s.len() - i - 1]) % modd) % modd;
+            }
+        }
+        ans
+
+=======
+
+        let mut count = [0; 26];
+        let mut fact = [1; 3001];
+        let mut inv = [1; 3001];
+        let mut ans = 0;
+        let modu = 1_000_000_007;
+        for i in 1..3001 {
+            fact[i] = (fact[i - 1] * i as i64) % modu as i64;
+            inv[i] = Self::pow(fact[i], modu as i64 - 2, modu as i64) as i32;
+        }
+        for &c in s.as_bytes() {
+            let c = c - b'a';
+            let mut sum = 0;
+            for i in 0..c {
+                sum += count[i];
+            }
+            ans = (ans + sum * fact[s.len() - 1]) % modu as i64;
+            for i in c..26 {
+                count[i] += 1;
+            }
+        }
+        for i in 1..s.len() {
+            let mut sum = 0;
+            for j in 0..26 {
+                sum = (sum + count[j]) % modu as i64;
+                ans = (ans - fact[s.len() - i] * sum * inv[count[j]]) % modu as i64;
+            }
+            count[s.as_bytes()[i - 1] - b'a'] -= 1;
+        }
+        (ans + modu as i64) as i32
+    }
+    fn pow(mut a: i64, mut b: i64, modu: i64) -> i64 {
+        let mut ans = 1;
+        while b > 0 {
+            if b & 1 == 1 {
+                ans = (ans * a) % modu;
+            }
+            a = (a * a) % modu;
+            b >>= 1;
+        }
+        ans

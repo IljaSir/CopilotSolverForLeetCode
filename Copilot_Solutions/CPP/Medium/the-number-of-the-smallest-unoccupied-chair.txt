@@ -1,0 +1,324 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<pair<int, int>> events;
+        for (int i = 0; i < times.size(); ++i) {
+            events.emplace_back(times[i][0], i);
+            events.emplace_back(times[i][1], i);
+        }
+        sort(events.begin(), events.end());
+        set<int> chairs;
+        for (int i = 0; i < times.size(); ++i) {
+            chairs.insert(i);
+        }
+        unordered_map<int, int> occupied;
+        for (auto& e : events) {
+            int t = e.first;
+            int i = e.second;
+            if (times[i][0] == t) {
+                int chair = *chairs.begin();
+                chairs.erase(chairs.begin());
+                occupied[chair] = i;
+            } else {
+                for (auto it = occupied.begin(); it != occupied.end(); ++it) {
+                    if (it->second == i) {
+                        chairs.insert(it->first);
+                        occupied.erase(it);
+                        break;
+                    }
+                }
+            }
+            if (i == targetFriend) {
+                for (auto& p : occupied) {
+                    if (p.second == i) {
+                        return p.first;
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        vector<int> chairs(n);
+        for (int i = 0; i < n; ++i) {
+            chairs[i] = i;
+        }
+        sort(chairs.begin(), chairs.end(), [&](int a, int b) {
+            return times[a][0] < times[b][0];
+        });
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0;
+        for (int j = 0; j < n; ++j) {
+            while (!pq.empty() && pq.top().first <= times[j][0]) {
+                chairs[i++] = pq.top().second;
+                pq.pop();
+            }
+            if (j == targetFriend) {
+                return chairs[i];
+            }
+            pq.emplace(times[j][1], chairs[i++]);
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        map<int, int> arrive;
+        map<int, int> leave;
+        for (int i = 0; i < n; i++) {
+            arrive[times[i][0]] = i;
+            leave[times[i][1]] = i;
+        }
+        map<int, int> chair;
+        int count = 0;
+        for (auto& [time, idx]: arrive) {
+            if (idx == targetFriend) {
+                for (auto& [t, i]: chair) {
+                    if (i == 0) {
+                        return t;
+                    }
+                }
+            }
+            chair[count] = 1;
+            count++;
+            while (leave.count(time)) {
+                int i = leave[time];
+                for (auto& [t, c]: chair) {
+                    if (c == i + 1) {
+                        c = 0;
+                    }
+                }
+                leave.erase(time);
+            }
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        vector<int> chairs(n);
+        for (int i = 0; i < n; ++i) {
+            chairs[i] = i;
+        }
+        vector<int> order(n);
+        for (int i = 0; i < n; ++i) {
+            order[i] = i;
+        }
+        sort(order.begin(), order.end(), [&](int a, int b) {
+            return times[a][0] < times[b][0];
+        });
+        set<pair<int, int>> st;
+        for (int i = 0; i < n; ++i) {
+            auto& t = times[order[i]];
+            while (!st.empty() && st.begin()->first <= t[0]) {
+                chairs.push_back(st.begin()->second);
+                st.erase(st.begin());
+            }
+            if (order[i] == targetFriend) {
+                return chairs.back();
+            }
+            st.insert({t[1], chairs.back()});
+            chairs.pop_back();
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        vector<int> chairs(n);
+        for (int i = 0; i < n; ++i) {
+            chairs[i] = i;
+        }
+        vector<pair<int, int>> events;
+        for (int i = 0; i < n; ++i) {
+            events.emplace_back(times[i][0], i);
+            events.emplace_back(times[i][1], i);
+        }
+        sort(events.begin(), events.end());
+        set<int> occupied;
+        for (auto& event : events) {
+            int time = event.first;
+            int idx = event.second;
+            if (time < times[idx][1]) {
+                occupied.insert(chairs[idx]);
+            } else {
+                occupied.erase(chairs[idx]);
+                chairs[idx] = *occupied.begin();
+                if (idx == targetFriend) {
+                    return chairs[idx];
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        vector<int> chairs(n, -1);
+        vector<int> friends(n, -1);
+        for (int i = 0; i < n; ++i) {
+            friends[i] = i;
+        }
+        sort(friends.begin(), friends.end(), [&](int a, int b) { return times[a][0] < times[b][0]; });
+        sort(times.begin(), times.end());
+        int i = 0;
+        for (int t = 0; i < n; ++t) {
+            while (i < n && times[friends[i]][0] <= t) {
+                int f = friends[i];
+                int j = 0;
+                while (chairs[j] != -1 && chairs[j] <= t) {
+                    ++j;
+                }
+                chairs[j] = times[f][1];
+                if (f == targetFriend) {
+                    return j;
+                }
+                ++i;
+            }
+        }
+        return -1;
+
+=======
+
+        // sort by arrival time
+        sort(times.begin(), times.end(), [](const auto& a, const auto& b) {
+            return a[0] < b[0];
+        });
+        // sort by leaving time
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minHeap;
+        // all chairs are available
+        for (int i = 0; i < times.size(); i++) {
+            minHeap.push({times[i][1], i});
+        }
+        // chair 0 is occupied
+        vector<int> chairs(times.size(), 0);
+        chairs[0] = 1;
+        int chair = 0;
+        for (int i = 0; i < times.size(); i++) {
+            // free the chairs
+            while (!minHeap.empty() && minHeap.top().first <= times[i][0]) {
+                auto [leaving, index] = minHeap.top();
+                minHeap.pop();
+                chairs[index] = 0;
+            }
+            // find the smallest unoccupied chair
+            for (int j = 0; j < chairs.size(); j++) {
+                if (chairs[j] == 0) {
+                    chair = j;
+                    chairs[j] = 1;
+                    break;
+                }
+            }
+            if (i == targetFriend) {
+                break;
+            }
+        }
+        return chair;
+
+=======
+
+        int n = times.size();
+        vector<int> chair(n, -1);
+        vector<int> target(n, -1);
+        vector<int> arrive(n, -1);
+        vector<int> leave(n, -1);
+        for(int i = 0; i < n; i++){
+            arrive[i] = times[i][0];
+            leave[i] = times[i][1];
+            target[i] = i;
+        }
+        sort(target.begin(), target.end(), [&](int a, int b){
+            return arrive[a] < arrive[b];
+        });
+        sort(arrive.begin(), arrive.end());
+        sort(leave.begin(), leave.end());
+        int i = 0;
+        int j = 0;
+        set<int> s;
+        for(int k = 0; k < n; k++){
+            while(j < n && arrive[target[k]] >= leave[j]){
+                s.insert(chair[j]);
+                j++;
+            }
+            if(s.empty()){
+                chair[target[k]] = i;
+                i++;
+            }else{
+                chair[target[k]] = *s.begin();
+                s.erase(s.begin());
+            }
+        }
+        return chair[targetFriend];
+
+=======
+
+        // sort by arrival time
+        sort(times.begin(), times.end(), [](const auto& a, const auto& b) {
+            return a[0] < b[0];
+        });
+        
+        // min heap of leaving time
+        priority_queue<int, vector<int>, greater<int>> pq;
+        // all chairs are empty
+        for (int i = 0; i < times.size(); i++) {
+            pq.push(i);
+        }
+        
+        // map of leaving time to chair number
+        map<int, int> m;
+        for (auto& time : times) {
+            // get the chair number
+            int chair = pq.top();
+            pq.pop();
+            
+            // record the chair number
+            m[time[1]] = chair;
+            if (time[0] == times[targetFriend][0]) {
+                return chair;
+            }
+            
+            // free the chair when leaving
+            while (!m.empty() && m.begin()->first <= time[0]) {
+                pq.push(m.begin()->second);
+                m.erase(m.begin());
+            }
+        }
+        return -1;
+
+=======
+
+        int n = times.size();
+        vector<int> chair(n, -1);
+        vector<int> friendId(n, -1);
+        vector<int> arrival(n, 0);
+        vector<int> leave(n, 0);
+        for (int i = 0; i < n; i++) {
+            arrival[i] = times[i][0];
+            leave[i] = times[i][1];
+            friendId[i] = i;
+        }
+        sort(friendId.begin(), friendId.end(), [&](int a, int b) {
+            return arrival[a] < arrival[b];
+        });
+        sort(arrival.begin(), arrival.end());
+        sort(leave.begin(), leave.end());
+        multiset<int> chairs;
+        for (int i = 0; i < n; i++) {
+            chairs.insert(i);
+        }
+        for (int i = 0, j = 0; i < n; i++) {
+            int id = friendId[i];
+            while (j < n && leave[j] <= arrival[id]) {
+                chairs.insert(chair[j]);
+                j++;
+            }
+            chair[id] = *chairs.begin();
+            chairs.erase(chairs.begin());
+            if (id == targetFriend) {
+                return chair[id];
+            }
+        }
+        return -1;

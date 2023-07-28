@@ -1,0 +1,234 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(banned);
+        int sum = 0;
+        int count = 0;
+        for (int i = 0; i < banned.length; i++) {
+            if (sum + banned[i] > maxSum) {
+                break;
+            }
+            sum += banned[i];
+            count++;
+        }
+        int remain = maxSum - sum;
+        int maxCount = Math.min(remain / (n - banned.length), n - banned.length);
+        return count + maxCount;
+
+=======
+
+        Arrays.sort(banned);
+        int sum = 0;
+        int count = 0;
+        int i = 0;
+        while (i < banned.length && sum + banned[i] <= maxSum) {
+            sum += banned[i];
+            i++;
+        }
+        count = i;
+        for (int j = i; j < banned.length; j++) {
+            sum += banned[j];
+            while (i < banned.length && sum - banned[i] + banned[j] > maxSum) {
+                sum -= banned[i];
+                i++;
+            }
+            count = Math.max(count, j - i + 1);
+        }
+        return Math.min(count + maxSum - sum, n);
+
+=======
+
+        Arrays.sort(banned);
+        int count = 0;
+        for (int i = 0; i < banned.length; i++) {
+            if (banned[i] > maxSum) {
+                break;
+            }
+            int j = i;
+            while (j + 1 < banned.length && banned[j + 1] == banned[i]) {
+                j++;
+            }
+            int x = banned[i];
+            int y = j + 1 < banned.length ? banned[j + 1] : n + 1;
+            int cnt = Math.max(0, Math.min(y - 1, maxSum - x) - x + 1);
+            count += cnt;
+            maxSum -= cnt;
+            i = j;
+        }
+        return count;
+
+=======
+
+        int[] dp = new int[maxSum + 1];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int i = 1; i <= maxSum; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i - j >= 0 && dp[i - j] != -1) {
+                    boolean found = false;
+                    for (int k = 0; k < banned.length; k++) {
+                        if (banned[k] == j) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        dp[i] = Math.max(dp[i], dp[i - j] + 1);
+                    }
+                }
+            }
+        }
+        return dp[maxSum];
+
+=======
+
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < banned.length; i++) {
+            sum[banned[i]] = -1;
+        }
+        sum[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            if (sum[i] == -1) {
+                continue;
+            }
+            sum[i] = sum[i - 1];
+            if (i - 1 - maxSum >= 0 && sum[i - 1 - maxSum] > 0) {
+                sum[i] -= sum[i - 1 - maxSum];
+            }
+            if (i - maxSum >= 0 && sum[i - maxSum] > 0) {
+                sum[i] += sum[i - maxSum];
+            }
+        }
+        return sum[n];
+
+=======
+
+        Arrays.sort(banned);
+        int res = 0;
+        int sum = 0;
+        for (int i = 0; i < banned.length; i++) {
+            if (banned[i] > n) {
+                break;
+            }
+            if (banned[i] - 1 - i > 0) {
+                sum += banned[i] - 1 - i;
+                res += banned[i] - 1 - i;
+            }
+            if (sum >= maxSum) {
+                return res;
+            }
+        }
+        if (n - banned.length > 0) {
+            sum += n - banned.length;
+            res += n - banned.length;
+        }
+        if (sum >= maxSum) {
+            return res;
+        }
+        return res;
+
+=======
+
+        int count = 0;
+        Arrays.sort(banned);
+        for (int i = 0; i < banned.length; i++) {
+            if (i == 0) {
+                if (banned[i] - 1 <= maxSum) {
+                    int tmp = Math.min(banned[i] - 1, n);
+                    count += tmp;
+                    maxSum -= tmp;
+                } else {
+                    break;
+                }
+            } else {
+                if (banned[i] - banned[i - 1] - 1 <= maxSum) {
+                    int tmp = Math.min(banned[i] - banned[i - 1] - 1, n - banned[i - 1]);
+                    count += tmp;
+                    maxSum -= tmp;
+                } else {
+                    break;
+                }
+            }
+        }
+        if (banned.length == 0) {
+            count = Math.min(maxSum, n);
+        } else {
+            if (n - banned[banned.length - 1] <= maxSum) {
+                count += n - banned[banned.length - 1];
+            }
+        }
+        return count;
+
+=======
+
+        int[] dp = new int[maxSum+1];
+        Arrays.fill(dp, 1);
+        for (int b : banned) {
+            dp[b] = -1;
+        }
+        for (int i = 1; i <= maxSum; i++) {
+            if (dp[i] == -1) {
+                dp[i] = 0;
+            } else {
+                dp[i] += dp[i-1];
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            int sum = maxSum - i;
+            if (sum < 0) {
+                break;
+            }
+            if (dp[sum] == -1) {
+                continue;
+            }
+            res += dp[sum];
+        }
+        return res;
+
+=======
+
+        int[] sums = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sums[i] = sums[i - 1] + i;
+        }
+        int[] bannedSums = new int[banned.length + 1];
+        bannedSums[0] = 0;
+        for (int i = 0; i < banned.length; i++) {
+            bannedSums[i + 1] = bannedSums[i] + banned[i];
+        }
+        int min = 0;
+        int max = n;
+        while (min < max) {
+            int mid = (min + max + 1) / 2;
+            if (sums[mid] - bannedSums[mid] <= maxSum) {
+                min = mid;
+            } else {
+                max = mid - 1;
+            }
+        }
+        return min;
+
+=======
+
+        Arrays.sort(banned);
+        int i = 0;
+        int j = 1;
+        int sum = 0;
+        int ans = 0;
+        while (i < banned.length) {
+            while (j <= banned[i] && sum + j <= maxSum) {
+                sum += j;
+                j++;
+            }
+            ans += j - 1;
+            sum -= banned[i];
+            i++;
+        }
+        while (j <= n && sum + j <= maxSum) {
+            sum += j;
+            j++;
+        }
+        ans += j - 1;
+        return ans;

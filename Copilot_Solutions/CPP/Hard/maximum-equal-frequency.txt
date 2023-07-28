@@ -1,0 +1,242 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        unordered_map<int, int> freq;
+        unordered_map<int, int> count;
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            int f = freq[num];
+            if (f > 0) {
+                count[f]--;
+                if (count[f] == 0) {
+                    count.erase(f);
+                }
+            }
+            freq[num]++;
+            f = freq[num];
+            count[f]++;
+            if (count.size() == 1) {
+                if (count.begin()->first == 1 || count.begin()->second == 1) {
+                    ans = i + 1;
+                }
+            } else if (count.size() == 2) {
+                auto it = count.begin();
+                auto it2 = it;
+                it2++;
+                if (it->first == 1 && it->second == 1) {
+                    ans = i + 1;
+                } else if (it2->first - it->first == 1 && it2->second == 1) {
+                    ans = i + 1;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> count;
+        unordered_map<int, int> freq;
+        int ans = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (count[nums[i]] == 0) {
+                count[nums[i]] = 1;
+                freq[1]++;
+            } else {
+                freq[count[nums[i]]]--;
+                count[nums[i]]++;
+                freq[count[nums[i]]]++;
+            }
+            if (freq[1] == i+1 || freq[i+1] == 1 || (freq[1] == 1 && freq[i+2] == i+1)) {
+                ans = i+1;
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> freq;
+        unordered_map<int, int> cnt;
+        int res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            int num = nums[i];
+            if (freq[num] > 0) {
+                cnt[freq[num]]--;
+            }
+            freq[num]++;
+            cnt[freq[num]]++;
+            if (cnt[1] == i + 1 || cnt[i + 1] == 1 || (cnt[1] == 1 && i + 1 - cnt[1] == cnt[i + 1])) {
+                res = i + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        unordered_map<int, int> count;
+        unordered_map<int, int> freq;
+        for (int i = 0; i < n; i++) {
+            int c = ++count[nums[i]];
+            freq[c]++;
+            if (c * freq[c] == i + 1 && i < n - 1) {
+                ans = max(ans, i + 2);
+            }
+            if (c * freq[c] == i && i < n - 1) {
+                ans = max(ans, i + 1);
+            }
+            if ((c - 1) * freq[c - 1] == i - 1) {
+                ans = max(ans, i);
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> freq;
+        unordered_map<int, int> count;
+        int maxLen = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            int num = nums[i];
+            int f = freq[num];
+            freq[num]++;
+            if (f > 0) {
+                count[f]--;
+                if (count[f] == 0) {
+                    count.erase(f);
+                }
+            }
+            count[f + 1]++;
+            if (count.size() == 1) {
+                int k = count.begin()->first;
+                if (k == 1 || k * count[k] == i + 1) {
+                    maxLen = i + 1;
+                }
+            }
+            if (count.size() == 2) {
+                auto it = count.begin();
+                int k1 = it->first;
+                it++;
+                int k2 = it->first;
+                if (k1 == 1 && it->second == 1) {
+                    maxLen = i + 1;
+                }
+                if (k2 == k1 + 1 && count[k1] == 1) {
+                    maxLen = i + 1;
+                }
+            }
+        }
+        return maxLen;
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(n+1, 0);
+        unordered_map<int, int> mp;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            mp[nums[i]]++;
+            cnt[mp[nums[i]]]++;
+            if (cnt[mp[nums[i]]] * mp[nums[i]] == i+1) {
+                ans = i+1;
+            }
+            if (cnt[mp[nums[i]]] * mp[nums[i]] == i) {
+                ans = i;
+            }
+            if (i > 0 && cnt[1] == i) {
+                ans = i;
+            }
+            if (i > 0 && cnt[i+1] == 1 && cnt[1] * (i+1) == i) {
+                ans = i+1;
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> freq;
+        unordered_map<int, int> count;
+        int max_len = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            int n = nums[i];
+            int c = freq[n];
+            if (c > 0) {
+                if (count[c] == 1) {
+                    count.erase(c);
+                } else {
+                    count[c]--;
+                }
+            }
+            count[c + 1]++;
+            freq[n]++;
+            if (count.size() == 1) {
+                auto it = count.begin();
+                if (it->first == 1) {
+                    max_len = i + 1;
+                } else if (it->second == 1 && it->first == i + 1) {
+                    max_len = i + 1;
+                }
+            } else if (count.size() == 2) {
+                auto it = count.begin();
+                auto jt = it;
+                jt++;
+                if (it->first == 1 && it->second == 1) {
+                    max_len = i + 1;
+                } else if (jt->first == it->first + 1 && jt->second == 1) {
+                    max_len = i + 1;
+                }
+            }
+        }
+        return max_len;
+
+=======
+
+        int n = nums.size();
+        vector<int> freq(100001, 0);
+        unordered_map<int, int> count;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            count[freq[num]]--;
+            freq[num]++;
+            count[freq[num]]++;
+            if (count[1] == i + 1) {
+                res = i + 1;
+            } else if (count[i + 1] == 1) {
+                res = i + 1;
+            } else if (count[1] == 1) {
+                res = i + 1;
+            } else if (count[freq[num]] * freq[num] == i) {
+                res = i + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int i = 0;
+        int j = 0;
+        int ans = 0;
+        unordered_map<int, int> m;
+        unordered_map<int, int> freq;
+        int maxFreq = 0;
+        while (j < n) {
+            m[nums[j]]++;
+            freq[m[nums[j]]]++;
+            maxFreq = max(maxFreq, m[nums[j]]);
+            if (freq[maxFreq] * maxFreq == j - i + 1) {
+                ans = max(ans, j - i + 1);
+            } else if (freq[maxFreq] * maxFreq == j - i) {
+                ans = max(ans, j - i);
+            } else if (freq[maxFreq] * maxFreq == j - i - 1) {
+                ans = max(ans, j - i - 1);
+            } else if (freq[maxFreq] * maxFreq == j - i - 2) {
+                ans = max(ans, j - i - 2);
+            }
+            j++;
+        }
+        return ans;

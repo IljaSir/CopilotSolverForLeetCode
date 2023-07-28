@@ -1,0 +1,212 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut sum = 0;
+        let mut max = 0;
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            sum = (sum + diff) % 1000000007;
+            let mut min = diff;
+            for j in 0..nums1.len() {
+                min = min.min((nums1[j] - nums2[i]).abs());
+            }
+            max = max.max(diff - min);
+        }
+        (sum + 1000000007 - max) % 1000000007
+    }
+}
+
+=======
+
+        let mut sum = 0;
+        let mut max_diff = 0;
+        let mut sorted_nums1 = nums1.clone();
+        sorted_nums1.sort();
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            sum += diff;
+            let j = sorted_nums1.binary_search(&nums2[i]).unwrap_or_else(|x| x);
+            if j > 0 {
+                max_diff = max_diff.max(diff - (sorted_nums1[j - 1] - nums2[i]).abs());
+            }
+            if j < nums1.len() {
+                max_diff = max_diff.max(diff - (sorted_nums1[j] - nums2[i]).abs());
+            }
+        }
+        ((sum - max_diff) % 1_000_000_007) as i32
+
+=======
+
+        let mut nums1 = nums1;
+        let mut max_diff = 0;
+        let mut sum = 0;
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            if diff > max_diff {
+                max_diff = diff;
+            }
+            sum += diff;
+        }
+        let mut min_diff = max_diff;
+        nums1.sort();
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            if diff < min_diff {
+                min_diff = diff;
+            }
+            sum += diff;
+        }
+        sum as i32
+
+=======
+
+        let mut nums3 = nums1.clone();
+        nums3.sort();
+        let mut max = 0;
+        let mut sum = 0;
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            sum = (sum + diff) % 1000000007;
+            let j = Solution::search(&nums3, nums2[i]);
+            if j < nums3.len() {
+                max = max.max(diff - (nums3[j] - nums2[i]).abs());
+            }
+            if j > 0 {
+                max = max.max(diff - (nums3[j-1] - nums2[i]).abs());
+            }
+        }
+        (sum as i64 - max as i64).rem_euclid(1000000007) as i32
+    }
+    fn search(nums: &Vec<i32>, target: i32) -> usize {
+        let mut low = 0;
+        let mut high = nums.len();
+        while low < high {
+            let mid = low + (high - low) / 2;
+            if nums[mid] < target {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        low
+
+=======
+
+        let mut nums1 = nums1;
+        let mut nums2 = nums2;
+        let mut diff = 0;
+        for i in 0..nums1.len() {
+            diff += (nums1[i] - nums2[i]).abs();
+            nums1[i] -= nums2[i];
+        }
+        let mut max_diff = 0;
+        for i in 0..nums1.len() {
+            let mut tmp_max_diff = 0;
+            for j in 0..nums1.len() {
+                if (nums1[i] - nums1[j]).abs() > tmp_max_diff {
+                    tmp_max_diff = (nums1[i] - nums1[j]).abs();
+                }
+            }
+            if tmp_max_diff > max_diff {
+                max_diff = tmp_max_diff;
+            }
+        }
+        (diff - max_diff) % 1000000007
+    }
+}
+
+=======
+
+        let mut nums1 = nums1;
+        let mut nums2 = nums2;
+        let mut total = 0;
+        for i in 0..nums1.len() {
+            let diff = (nums1[i] - nums2[i]).abs();
+            total += diff;
+            nums1[i] = diff;
+            nums2[i] = i as i32;
+        }
+        nums1.sort();
+        nums2.sort();
+        let mut i = 0;
+        let mut j = 0;
+        let mut best = 0;
+        while i < nums1.len() && j < nums2.len() {
+            let diff = (nums1[i] - nums2[j]).abs();
+            if diff > best {
+                best = diff;
+            }
+            if nums1[i] < nums2[j] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        (total - best) as i32 % 1_000_000_007
+
+=======
+
+        let mut diff = 0;
+        let mut max_diff = 0;
+        let mut nums1 = nums1.clone();
+        let n = nums1.len();
+        nums1.sort();
+        for i in 0..n {
+            let d = (nums1[i] - nums2[i]).abs();
+            diff = (diff + d) % 1000000007;
+            let j = nums1.binary_search(&(nums2[i])).unwrap_or_else(|x| x);
+            if j < n {
+                max_diff = max_diff.max(d - (nums1[j] - nums2[i]).abs());
+            }
+            if j > 0 {
+                max_diff = max_diff.max(d - (nums1[j - 1] - nums2[i]).abs());
+            }
+        }
+        (diff as i64 - max_diff as i64).rem_euclid(1000000007) as i32
+    }
+}
+
+=======
+
+        let mut nums1 = nums1;
+        let mut nums2 = nums2;
+        let mut diff = 0;
+        let mut max = 0;
+        for i in 0..nums1.len() {
+            let abs = (nums1[i] - nums2[i]).abs();
+            diff += abs;
+            let mut min = abs;
+            for j in 0..nums1.len() {
+                let abs = (nums1[j] - nums2[i]).abs();
+                if abs < min {
+                    min = abs;
+                }
+            }
+            if min < abs {
+                max = max.max(abs - min);
+            }
+        }
+        (diff - max) % 1_000_000_007
+
+=======
+
+        let modu = 1000000007;
+        let mut nums1 = nums1;
+        let mut ans = 0;
+        let mut maxn = 0;
+        let mut index = 0;
+        for i in 0..nums1.len() {
+            let mut minn = 100000;
+            ans = (ans + (nums1[i] - nums2[i]).abs()) % modu;
+            for j in 0..nums1.len() {
+                if (nums1[j] - nums2[i]).abs() < minn {
+                    minn = (nums1[j] - nums2[i]).abs();
+                    index = j;
+                }
+            }
+            if (nums1[index] - nums2[i]).abs() > maxn {
+                maxn = (nums1[index] - nums2[i]).abs();
+            }
+        }
+        (ans - maxn + modu) % modu

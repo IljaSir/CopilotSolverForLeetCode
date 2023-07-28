@@ -1,0 +1,214 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        map.put(0, 0);
+        int max = 0;
+        for (int[] pos : positions) {
+            int left = pos[0], len = pos[1], right = left + len;
+            Integer start = map.floorKey(left), end = map.floorKey(right);
+            if (start == null) start = 0;
+            int h = 0;
+            for (int key : map.subMap(start, false, end, true).keySet()) {
+                h = Math.max(h, map.get(key));
+            }
+            h += len;
+            map.put(left, h);
+            map.put(right, map.get(start));
+            max = Math.max(max, h);
+            res.add(max);
+        }
+        return res;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        int max = 0;
+        int[] height = new int[positions.length];
+        for (int i = 0; i < positions.length; i++) {
+            int left = positions[i][0];
+            int right = left + positions[i][1];
+            int h = positions[i][1];
+            for (int j = 0; j < i; j++) {
+                int l = positions[j][0];
+                int r = l + positions[j][1];
+                if (left < r && l < right) {
+                    h = Math.max(h, height[j] + positions[i][1]);
+                }
+            }
+            height[i] = h;
+            max = Math.max(max, h);
+            ans.add(max);
+        }
+        return ans;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        int[] h = new int[positions.length];
+        for (int i = 0; i < positions.length; i++) {
+            int left = positions[i][0];
+            int size = positions[i][1];
+            int right = left + size;
+            h[i] += size;
+            for (int j = i + 1; j < positions.length; j++) {
+                int left2 = positions[j][0];
+                int size2 = positions[j][1];
+                int right2 = left2 + size2;
+                if (left < right2 && right > left2) {
+                    h[j] = Math.max(h[j], h[i]);
+                }
+            }
+            int cur = 0;
+            for (int k = 0; k <= i; k++) {
+                cur = Math.max(cur, h[k]);
+            }
+            ans.add(cur);
+        }
+        return ans;
+
+=======
+
+        List<Integer> list = new ArrayList<>();
+        int[] height = new int[positions.length];
+        int maxHeight = 0;
+        for (int i = 0; i < positions.length; i++) {
+            int left = positions[i][0];
+            int size = positions[i][1];
+            int right = left + size;
+            height[i] += size;
+            for (int j = 0; j < i; j++) {
+                int left2 = positions[j][0];
+                int size2 = positions[j][1];
+                int right2 = left2 + size2;
+                if (left < right2 && right > left2) {
+                    height[i] = Math.max(height[i], height[j] + size);
+                }
+            }
+            maxHeight = Math.max(maxHeight, height[i]);
+            list.add(maxHeight);
+        }
+        return list;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        List<int[]> list = new ArrayList<>();
+        int max = 0;
+        for (int[] pos : positions) {
+            int left = pos[0];
+            int right = left + pos[1];
+            int height = pos[1];
+            for (int[] item : list) {
+                if (right > item[0] && left < item[1]) {
+                    height = Math.max(height, item[2] + pos[1]);
+                }
+            }
+            list.add(new int[] {left, right, height});
+            max = Math.max(max, height);
+            ans.add(max);
+        }
+        return ans;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        List<int[]> list = new ArrayList<>();
+        int max = 0;
+        for (int[] pos : positions) {
+            int left = pos[0], len = pos[1], right = left + len;
+            int h = 0;
+            for (int[] l : list) {
+                if (l[1] <= left || l[0] >= right) {
+                    continue;
+                }
+                h = Math.max(h, l[2]);
+            }
+            h += len;
+            max = Math.max(max, h);
+            res.add(max);
+            list.add(new int[]{left, right, h});
+        }
+        return res;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        List<int[]> intervals = new ArrayList<>();
+        int maxHeight = 0;
+        for (int[] pos : positions) {
+            int left = pos[0], side = pos[1], right = left + side;
+            int h = 0;
+            for (int[] itv : intervals) {
+                if (itv[0] < right && itv[1] > left) {
+                    h = Math.max(h, itv[2]);
+                }
+            }
+            h += side;
+            intervals.add(new int[]{left, right, h});
+            maxHeight = Math.max(maxHeight, h);
+            ans.add(maxHeight);
+        }
+        return ans;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        List<int[]> intervals = new ArrayList<>();
+        for (int[] pos : positions) {
+            int left = pos[0];
+            int right = left + pos[1];
+            int height = pos[1];
+            int maxHeight = 0;
+            for (int[] interval : intervals) {
+                if (interval[0] >= right || interval[1] <= left) {
+                    continue;
+                }
+                maxHeight = Math.max(maxHeight, interval[2]);
+            }
+            height += maxHeight;
+            intervals.add(new int[] {left, right, height});
+            result.add(Math.max(result.isEmpty() ? 0 : result.get(result.size() - 1), height));
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<Integer>();
+        List<int[]> list = new ArrayList<int[]>();
+        int maxHeight = 0;
+        for (int[] pos : positions) {
+            int left = pos[0], right = left + pos[1];
+            int height = 0;
+            for (int[] l : list) {
+                if (left < l[1] && right > l[0]) {
+                    height = Math.max(height, l[2]);
+                }
+            }
+            height += pos[1];
+            list.add(new int[]{left, right, height});
+            maxHeight = Math.max(maxHeight, height);
+            result.add(maxHeight);
+        }
+        return result;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        List<int[]> list = new ArrayList<>();
+        int max = 0;
+        for(int[] pos: positions){
+            int left = pos[0], right = left+pos[1];
+            int h = 0;
+            for(int[] l: list){
+                if(l[0]>right || l[1]<left) continue;
+                h = Math.max(h, l[2]);
+            }
+            h += pos[1];
+            max = Math.max(max, h);
+            list.add(new int[]{left, right, h});
+            ans.add(max);
+        }
+        return ans;

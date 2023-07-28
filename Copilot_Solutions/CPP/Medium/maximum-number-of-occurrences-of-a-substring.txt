@@ -1,0 +1,199 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int res = 0;
+        unordered_map<string, int> m;
+        for (int i = 0; i + minSize <= s.size(); ++i) {
+            string t = s.substr(i, minSize);
+            unordered_set<char> st(t.begin(), t.end());
+            if (st.size() <= maxLetters) {
+                ++m[t];
+                res = max(res, m[t]);
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> m;
+        for (int i = 0; i < s.size() - minSize + 1; i++) {
+            string sub = s.substr(i, minSize);
+            unordered_set<char> st;
+            for (char c : sub) {
+                st.insert(c);
+            }
+            if (st.size() <= maxLetters) {
+                m[sub]++;
+            }
+        }
+        int res = 0;
+        for (auto [k, v] : m) {
+            res = max(res, v);
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        unordered_map<string, int> mp;
+        for (int i = 0; i < n - minSize + 1; ++i) {
+            string sub = s.substr(i, minSize);
+            unordered_set<char> st;
+            for (auto c: sub) {
+                st.insert(c);
+            }
+            if (st.size() <= maxLetters) {
+                mp[sub]++;
+            }
+        }
+        int ans = 0;
+        for (auto [k, v]: mp) {
+            ans = max(ans, v);
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        unordered_map<string, int> m;
+        for (int i = 0; i + minSize <= n; i++) {
+            string t = s.substr(i, minSize);
+            if (set<char>(t.begin(), t.end()).size() <= maxLetters) {
+                m[t]++;
+            }
+        }
+        int ans = 0;
+        for (auto [k, v]: m) {
+            ans = max(ans, v);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> m;
+        unordered_map<char, int> m1;
+        for (int i = 0; i < minSize; ++i) {
+            ++m1[s[i]];
+        }
+        if (m1.size() <= maxLetters) {
+            ++m[s.substr(0, minSize)];
+        }
+        for (int i = minSize; i < s.size(); ++i) {
+            --m1[s[i - minSize]];
+            if (m1[s[i - minSize]] == 0) {
+                m1.erase(s[i - minSize]);
+            }
+            ++m1[s[i]];
+            if (m1.size() <= maxLetters) {
+                ++m[s.substr(i - minSize + 1, minSize)];
+            }
+        }
+        int res = 0;
+        for (auto& p : m) {
+            res = max(res, p.second);
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        unordered_map<string, int> mp;
+        for(int i = 0; i < n - minSize + 1; ++i){
+            string t = s.substr(i, minSize);
+            if(count(t) <= maxLetters){
+                mp[t]++;
+            }
+        }
+        int ans = 0;
+        for(auto &p : mp){
+            ans = max(ans, p.second);
+        }
+        return ans;
+    }
+    int count(string s){
+        unordered_set<char> st;
+        for(char c : s){
+            st.insert(c);
+        }
+        return st.size();
+
+=======
+
+        int n = s.size();
+        int res = 0;
+        unordered_map<string, int> m;
+        for (int i = 0; i < n; ++i) {
+            unordered_set<char> c;
+            for (int j = i; j < n && j < i + maxSize; ++j) {
+                c.insert(s[j]);
+                if (c.size() > maxLetters) break;
+                if (j - i + 1 >= minSize) {
+                    ++m[s.substr(i, j - i + 1)];
+                    res = max(res, m[s.substr(i, j - i + 1)]);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        map<string, int> m;
+        int n = s.size();
+        for (int i = 0; i < n; i++) {
+            if (i + minSize > n) break;
+            set<char> st;
+            for (int j = i; j < i + minSize; j++) st.insert(s[j]);
+            if (st.size() > maxLetters) continue;
+            m[s.substr(i, minSize)]++;
+        }
+        int ans = 0;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            ans = max(ans, it->second);
+        }
+        return ans;
+
+=======
+
+        if (s.empty()) return 0;
+        if (maxSize > s.size()) maxSize = s.size();
+        if (minSize > maxSize) return 0;
+        unordered_map<string, int> m;
+        for (int i = 0; i <= s.size() - minSize; ++i) {
+            string sub = s.substr(i, minSize);
+            unordered_set<char> st(sub.begin(), sub.end());
+            if (st.size() > maxLetters) continue;
+            m[sub]++;
+        }
+        int res = 0;
+        for (auto& [k, v]: m) {
+            res = max(res, v);
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        if (n == 0) return 0;
+        if (minSize > n) return 0;
+        if (minSize == n) return 1;
+        if (maxSize == n) return 1;
+        if (maxSize < minSize) return 0;
+        unordered_map<string, int> count;
+        for (int i = 0; i <= n - minSize; ++i) {
+            string sub = s.substr(i, minSize);
+            unordered_set<char> letters;
+            for (auto c : sub) {
+                letters.insert(c);
+            }
+            if (letters.size() <= maxLetters) {
+                ++count[sub];
+            }
+        }
+        int maxCount = 0;
+        for (auto p : count) {
+            if (p.second > maxCount) {
+                maxCount = p.second;
+            }
+        }
+        return maxCount;

@@ -1,0 +1,187 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; ++i) {
+            children[parent[i]].push_back(i);
+        }
+        int ans = 0;
+        function<int(int, int)> dfs = [&](int u, int p) {
+            int max1 = 0, max2 = 0;
+            for (int v : children[u]) {
+                if (v == p) continue;
+                int len = dfs(v, u);
+                if (s[u] != s[v]) {
+                    if (max1 < len) {
+                        max2 = max1;
+                        max1 = len;
+                    } else if (max2 < len) {
+                        max2 = len;
+                    }
+                }
+            }
+            ans = max(ans, max1 + max2 + 1);
+            return max1 + 1;
+        };
+        dfs(0, -1);
+        return ans;
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; ++i) {
+            children[parent[i]].push_back(i);
+        }
+        int ans = 0;
+        function<int(int, int)> dfs = [&](int u, int c) {
+            int res = 0;
+            for (int v: children[u]) {
+                if (s[v] == c) continue;
+                res = max(res, dfs(v, s[v]));
+            }
+            ans = max(ans, res + 1);
+            return res + 1;
+        };
+        dfs(0, s[0]);
+        return ans - 1;
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; ++i) {
+            children[parent[i]].push_back(i);
+        }
+        int res = 0;
+        function<int(int, int)> dfs = [&](int u, int p) {
+            int mx1 = 0, mx2 = 0;
+            for (int v : children[u]) {
+                if (v == p) continue;
+                int len = dfs(v, u);
+                if (s[v] != s[u]) len++;
+                if (len > mx1) {
+                    mx2 = mx1;
+                    mx1 = len;
+                } else if (len > mx2) {
+                    mx2 = len;
+                }
+            }
+            res = max(res, mx1 + mx2);
+            return mx1;
+        };
+        dfs(0, -1);
+        return res;
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> adj(n);
+        for (int i = 1; i < n; ++i) {
+            adj[parent[i]].push_back(i);
+        }
+        vector<int> dp(n, 0);
+        int res = 0;
+        function<void(int)> dfs = [&](int u) {
+            for (int v : adj[u]) {
+                dfs(v);
+                if (s[u] != s[v]) {
+                    dp[u] = max(dp[u], dp[v] + 1);
+                }
+            }
+            res = max(res, dp[u]);
+        };
+        dfs(0);
+        return res;
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> g(n);
+        for (int i = 1; i < n; ++i)
+            g[parent[i]].push_back(i);
+        int ans = 0;
+        function<void(int)> dfs = [&](int u) {
+            int a = 0, b = 0;
+            for (int v : g[u]) {
+                dfs(v);
+                if (s[v] == s[u])
+                    a = max(a, dp[v]);
+                else
+                    b = max(b, dp[v]);
+            }
+            dp[u] = max(a, b) + 1;
+            ans = max(ans, dp[u] + b);
+        };
+        vector<int> dp(n);
+        dfs(0);
+        return ans;
+
+=======
+
+        int n = parent.size();
+        vector<vector<int>> child(n);
+        for (int i = 1; i < n; i++) {
+            child[parent[i]].push_back(i);
+        }
+        vector<int> dp(26);
+        function<int(int)> dfs = [&](int u) {
+            int ans = 0;
+            int c = s[u] - 'a';
+            int old = dp[c];
+            dp[c] = 0;
+            for (int v : child[u]) {
+                ans = max(ans, dfs(v));
+            }
+            dp[c] = old + 1;
+            return ans + dp[c];
+        };
+        return dfs(0);
+
+=======
+
+        int n = s.size();
+        vector<vector<int>> adj(n);
+        for (int i = 1; i < n; ++i) {
+            adj[parent[i]].push_back(i);
+        }
+        return dfs(adj, 0, s);
+    }
+    int dfs(vector<vector<int>>& adj, int u, string& s) {
+        int res = 0;
+        int mx1 = 0, mx2 = 0;
+        for (int v : adj[u]) {
+            int len = dfs(adj, v, s);
+            if (s[v] != s[u]) {
+                if (len >= mx1) {
+                    mx2 = mx1;
+                    mx1 = len;
+                } else if (len > mx2) {
+                    mx2 = len;
+                }
+            }
+        }
+        return mx1 + mx2 + 1;
+
+=======
+
+        int n = s.size();
+        vector<vector<int>> graph(n);
+        vector<int> dp(n, 0);
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            graph[parent[i]].push_back(i);
+        }
+        function<void(int)> dfs = [&](int u) {
+            for (auto v : graph[u]) {
+                dfs(v);
+                if (s[v] != s[u]) {
+                    dp[u] = max(dp[u], dp[v] + 1);
+                }
+            }
+            ans = max(ans, dp[u]);
+        };
+        dfs(0);
+        return ans;

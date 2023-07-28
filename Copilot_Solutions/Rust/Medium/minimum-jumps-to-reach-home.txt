@@ -1,0 +1,276 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        for i in &forbidden {
+            visited.insert(*i);
+        }
+        q.push_back((0, true));
+        let mut ans = 0;
+        while !q.is_empty() {
+            let mut next = std::collections::VecDeque::new();
+            while let Some((pos, forward)) = q.pop_front() {
+                if pos == x {
+                    return ans;
+                }
+                if !visited.contains(&pos) {
+                    visited.insert(pos);
+                    if pos + a <= 6000 {
+                        next.push_back((pos + a, true));
+                    }
+                    if pos - b >= 0 && !forward {
+                        next.push_back((pos - b, false));
+                    }
+                }
+            }
+            q = next;
+            ans += 1;
+        }
+        -1
+
+=======
+
+        let mut visited = vec![false; 6000];
+        for f in forbidden {
+            visited[f as usize] = true;
+        }
+        let a = a as usize;
+        let b = b as usize;
+        let x = x as usize;
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, false));
+        visited[0] = true;
+        let mut d = 0;
+        while !q.is_empty() {
+            let n = q.len();
+            for _ in 0..n {
+                let (pos, back) = q.pop_front().unwrap();
+                if pos == x {
+                    return d;
+                }
+                let pos = pos as usize;
+                if pos + a < visited.len() && !visited[pos + a] {
+                    visited[pos + a] = true;
+                    q.push_back((pos + a, false));
+                }
+                if !back && pos >= b && !visited[pos - b] {
+                    visited[pos - b] = true;
+                    q.push_back((pos - b, true));
+                }
+            }
+            d += 1;
+        }
+        -1
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut seen = std::collections::HashSet::new();
+        q.push_back((0, false));
+        let mut step = 0;
+        while !q.is_empty() {
+            let mut size = q.len();
+            while size > 0 {
+                let (pos, back) = q.pop_front().unwrap();
+                if pos == x as i64 {
+                    return step;
+                }
+                if pos < 0 || pos > 6000 || forbidden.contains(&(pos as i32)) || seen.contains(&(pos, back)) {
+                    size -= 1;
+                    continue;
+                }
+                seen.insert((pos, back));
+                q.push_back((pos + a as i64, false));
+                if !back {
+                    q.push_back((pos - b as i64, true));
+                }
+                size -= 1;
+            }
+            step += 1;
+        }
+        -1
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        let mut ans = 0;
+        q.push_back((0, false));
+        while !q.is_empty() {
+            let mut size = q.len();
+            while size > 0 {
+                let (pos, back) = q.pop_front().unwrap();
+                if pos == x {
+                    return ans;
+                }
+                if pos < 0 || pos > 6000 || forbidden.contains(&(pos as i32)) || visited.contains(&(pos, back)) {
+                    size -= 1;
+                    continue;
+                }
+                visited.insert((pos, back));
+                q.push_back((pos + a, false));
+                if !back {
+                    q.push_back((pos - b, true));
+                }
+                size -= 1;
+            }
+            ans += 1;
+        }
+        -1
+
+=======
+
+        let mut forbidden = forbidden;
+        forbidden.sort_unstable();
+        let mut q = std::collections::VecDeque::new();
+        let mut seen = std::collections::HashSet::new();
+        q.push_back((0, 0));
+        seen.insert((0, 0));
+        while !q.is_empty() {
+            let (p, d) = q.pop_front().unwrap();
+            if p == x {
+                return d;
+            }
+            if p + a <= 6000 && !forbidden.contains(&(p + a)) && !seen.contains(&(p + a, 0)) {
+                seen.insert((p + a, 0));
+                q.push_back((p + a, d + 1));
+            }
+            if p - b >= 0 && !forbidden.contains(&(p - b)) && d > 0 && !seen.contains(&(p - b, 1)) {
+                seen.insert((p - b, 1));
+                q.push_back((p - b, d + 1));
+            }
+        }
+        -1
+
+=======
+
+        let mut queue = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        let mut forbidden = forbidden;
+        forbidden.sort();
+        queue.push_back((0, false));
+        visited.insert((0, false));
+        let mut steps = 0;
+        while !queue.is_empty() {
+            let mut size = queue.len();
+            while size > 0 {
+                let (pos, is_back) = queue.pop_front().unwrap();
+                if pos == x {
+                    return steps;
+                }
+                if !is_back && pos + a <= 6000 && !forbidden.contains(&(pos + a)) {
+                    let next = (pos + a, false);
+                    if !visited.contains(&next) {
+                        queue.push_back(next);
+                        visited.insert(next);
+                    }
+                }
+                if pos - b >= 0 && !forbidden.contains(&(pos - b)) {
+                    let next = (pos - b, true);
+                    if !visited.contains(&next) {
+                        queue.push_back(next);
+                        visited.insert(next);
+                    }
+                }
+                size -= 1;
+            }
+            steps += 1;
+        }
+        -1
+
+=======
+
+        let mut forbidden = forbidden;
+        forbidden.sort();
+        let mut dp = vec![vec![std::i32::MAX; 2]; x as usize + 1];
+        dp[0][0] = 0;
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, 0));
+        while let Some((pos, dir)) = q.pop_front() {
+            let pos = pos as usize;
+            let mut next = pos + a as usize;
+            if next <= x as usize && dp[next][0] == std::i32::MAX {
+                if !forbidden.contains(&(next as i32)) {
+                    dp[next][0] = dp[pos][dir] + 1;
+                    q.push_back((next as i32, 0));
+                }
+            }
+            if dir == 0 && pos >= b as usize {
+                next = pos - b as usize;
+                if dp[next][1] == std::i32::MAX {
+                    if !forbidden.contains(&(next as i32)) {
+                        dp[next][1] = dp[pos][dir] + 1;
+                        q.push_back((next as i32, 1));
+                    }
+                }
+            }
+        }
+        let mut ans = std::i32::MAX;
+        for i in 0..2 {
+            ans = ans.min(dp[x as usize][i]);
+        }
+        if ans == std::i32::MAX {
+            -1
+        } else {
+            ans
+        }
+
+=======
+
+        let mut forbidden = forbidden;
+        forbidden.sort();
+        let mut visited = vec![false; 6000];
+        for &v in forbidden.iter() {
+            visited[v as usize] = true;
+        }
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, false));
+        let mut ans = 0;
+        while !q.is_empty() {
+            let size = q.len();
+            for _ in 0..size {
+                let (pos, back) = q.pop_front().unwrap();
+                if pos == x {
+                    return ans;
+                }
+                if pos + a < 6000 && !visited[(pos + a) as usize] {
+                    visited[(pos + a) as usize] = true;
+                    q.push_back((pos + a, false));
+                }
+                if !back && pos - b >= 0 && !visited[(pos - b) as usize] {
+                    visited[(pos - b) as usize] = true;
+                    q.push_back((pos - b, true));
+                }
+            }
+            ans += 1;
+        }
+        -1
+
+=======
+
+        let mut dp = vec![vec![-1; 4001]; 2];
+        let mut forbidden = forbidden;
+        forbidden.sort();
+        dp[0][0] = 0;
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, 0));
+        while !queue.is_empty() {
+            let (i, j) = queue.pop_front().unwrap();
+            let mut next = j + a;
+            if next < 4001 && dp[i][next] == -1 && forbidden.binary_search(&next).is_err() {
+                dp[i][next] = dp[i][j] + 1;
+                queue.push_back((i, next));
+            }
+            if i == 0 && j >= b {
+                next = j - b;
+                if next < 4001 && dp[1][next] == -1 && forbidden.binary_search(&next).is_err() {
+                    dp[1][next] = dp[i][j] + 1;
+                    queue.push_back((1, next));
+                }
+            }
+        }
+        dp.iter().flatten().filter(|&&v| v != -1).min().unwrap_or(-1)
+    }
+}

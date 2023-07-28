@@ -1,0 +1,131 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        let m = m as usize;
+        let n = n as usize;
+        let target = target as usize;
+        let mut dp = vec![vec![vec![std::i32::MAX; target + 1]; n + 1]; m + 1];
+        for i in 0..=n {
+            dp[0][i][0] = 0;
+        }
+        for i in 1..=m {
+            for j in 1..=n {
+                for k in 1..=target {
+                    if houses[i - 1] != 0 && houses[i - 1] != j as i32 {
+                        continue;
+                    }
+                    for p in 1..=n {
+                        if p == j {
+                            dp[i][j][k] = dp[i][j][k].min(dp[i - 1][p][k]);
+                        } else {
+                            dp[i][j][k] = dp[i][j][k].min(dp[i - 1][p][k - 1]);
+                        }
+                    }
+                    if dp[i][j][k] != std::i32::MAX {
+                        dp[i][j][k] += if houses[i - 1] != 0 { 0 } else { cost[i - 1][j - 1] };
+                    }
+                }
+            }
+        }
+        let mut res = std::i32::MAX;
+        for i in 1..=n {
+            res = res.min(dp[m][i][target]);
+        }
+        if res == std::i32::MAX {
+            -1
+        } else {
+            res
+        }
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let m = m as usize;
+        let n = n as usize;
+        let target = target as usize;
+        let mut dp = vec![vec![vec![vec![i32::MAX; n]; target + 1]; m + 1]; m + 1];
+        for i in 1..=m {
+            let c = houses[i - 1] as usize;
+            for j in 1..=n {
+                if c == 0 || c == j {
+                    dp[i][1][i][j - 1] = if c == 0 { cost[i - 1][j - 1] } else { 0 };
+                }
+            }
+        }
+        for i in 1..=m {
+            for j in 1..=i {
+                for k in 1..=target {
+                    for l in 1..=n {
+                        for p in 1..=n {
+                            if l != p {
+                                dp[i][k][j][l - 1] = dp[i][k][j][l - 1].min(dp[i - 1][k - 1][j][p - 1]);
+                            }
+                            dp[i][k][j][l - 1] = dp[i][k][j][l - 1].min(dp[i - 1][k][j][p - 1]);
+                        }
+                    }
+                }
+            }
+        }
+        let mut res = i32::MAX;
+        for i in 1..=n {
+            res = res.min(dp[m][target][1][i - 1]);
+        }
+        if res >= i32::MAX {
+            return -1;
+        }
+        res
+    }
+}
+
+=======
+
+        let m = m as usize;
+        let n = n as usize;
+        let target = target as usize;
+        let mut dp = vec![vec![vec![1_000_000_000; n]; target + 1]; m + 1];
+        if houses[0] > 0 {
+            dp[0][0][houses[0] as usize - 1] = 0;
+        } else {
+            (0..n).for_each(|i| dp[0][0][i] = cost[0][i]);
+        }
+        for i in 1..m {
+            if houses[i] > 0 {
+                let h = houses[i] as usize - 1;
+                for j in 0..n {
+                    if j == h {
+                        dp[i][1][j] = dp[i - 1][0][j];
+                    } else {
+                        dp[i][1][j] = dp[i - 1][1][j];
+                    }
+                }
+            } else {
+                for j in 0..n {
+                    for k in 1..target + 1 {
+                        for l in 0..n {
+                            if j != l {
+                                dp[i][k][j] = dp[i][k][j].min(dp[i - 1][k - 1][l]);
+                            } else {
+                                dp[i][k][j] = dp[i][k][j].min(dp[i - 1][k][l]);
+                            }
+                        }
+                        dp[i][k][j] += cost[i][j];
+                    }
+                }
+            }
+        }
+        let mut res = 1_000_000_000;
+        for i in 0..n {
+            res = res.min(dp[m - 1][target][i]);
+        }
+        if res >= 1_000_000_000 {
+            return -1;
+        }
+        res as i32

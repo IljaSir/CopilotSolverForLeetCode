@@ -1,0 +1,445 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = board.length, rowSum = 0, colSum = 0, rowSwap = 0, colSwap = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if ((board[0][0] ^ board[i][0] ^ board[0][j] ^ board[i][j]) == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            rowSum += board[0][i];
+            colSum += board[i][0];
+            rowSwap += board[i][0] == i % 2 ? 1 : 0;
+            colSwap += board[0][i] == i % 2 ? 1 : 0;
+        }
+        if (rowSum < n / 2 || rowSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (colSum < n / 2 || colSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (n % 2 == 1) {
+            if (colSwap % 2 == 1) {
+                colSwap = n - colSwap;
+            }
+            if (rowSwap % 2 == 1) {
+                rowSwap = n - rowSwap;
+            }
+        } else {
+            colSwap = Math.min(n - colSwap, colSwap);
+            rowSwap = Math.min(n - rowSwap, rowSwap);
+        }
+        return (colSwap + rowSwap) / 2;
+
+=======
+
+        int n = board.length;
+        int[] row = new int[n];
+        int[] col = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                row[i] = (row[i] << 1) | board[i][j];
+                col[j] = (col[j] << 1) | board[i][j];
+            }
+        }
+        return helper(row) + helper(col);
+    }
+
+    private int helper(int[] arr) {
+        int n = arr.length;
+        int mask = (1 << n) - 1;
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                int num = arr[j] ^ arr[(j + i) % n];
+                while (num > 0) {
+                    count += num & 1;
+                    num >>= 1;
+                }
+            }
+            if (count < res) {
+                res = count;
+                if (count == 0) {
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = board.length;
+        int[] row = new int[n];
+        int[] col = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                row[i] = (row[i] << 1) + board[i][j];
+                col[j] = (col[j] << 1) + board[i][j];
+            }
+        }
+        int r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (row[0] != row[i]) {
+                r1++;
+            }
+            if (col[0] != col[i]) {
+                c1++;
+            }
+            if (row[0] != row[i] ^ (i % 2 == 0)) {
+                r2++;
+            }
+            if (col[0] != col[i] ^ (i % 2 == 0)) {
+                c2++;
+            }
+        }
+        if (r1 != c1 || r1 != 0 && r1 != n - 1 || r2 != c2 || r2 != 0 && r2 != n - 1) {
+            return -1;
+        }
+        if (n % 2 == 1) {
+            if (r1 % 2 == 1) {
+                r1 = n - r1;
+            }
+            if (r2 % 2 == 1) {
+                r2 = n - r2;
+            }
+        } else {
+            r1 = Math.min(n - r1, r1);
+            r2 = Math.min(n - r2, r2);
+        }
+        return (r1 + r2) / 2;
+
+=======
+
+        int n = board.length;
+        int[] row = new int[n];
+        int[] col = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                row[i] = (row[i] << 1) | board[i][j];
+                col[j] = (col[j] << 1) | board[i][j];
+            }
+        }
+        return check(row, n) && check(col, n) ? Math.max(count(row[0]), count(row[n - 1])) : -1;
+    }
+
+    private boolean check(int[] row, int n) {
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += row[i];
+        }
+        int target = n / 2;
+        if (n % 2 == 0) {
+            if (sum != target * n && sum != (target + 1) * n) return false;
+            for (int i = 0; i < n; i++) {
+                if (row[i] == row[0]) continue;
+                if (i % 2 == 0) {
+                    if (row[i] != row[0] + 1) return false;
+                } else {
+                    if (row[i] != row[0] - 1) return false;
+                }
+            }
+        } else {
+            if (sum != target * (n - 1) + n) return false;
+            for (int i = 0; i < n; i++) {
+                if (row[i] == row[0]) continue;
+                if (i % 2 == 0) {
+                    if (row[i] != row[0] - 1) return false;
+                } else {
+                    if (row[i] != row[0] + 1) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private int count(int num) {
+        int res = 0;
+        while (num > 0) {
+            res += num & 1;
+            num >>= 1;
+        }
+        return res;
+
+=======
+
+        int n = board.length;
+        int rowSum = 0;
+        int colSum = 0;
+        int rowSwap = 0;
+        int colSwap = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if ((board[0][0] ^ board[i][0] ^ board[0][j] ^ board[i][j]) == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            rowSum += board[0][i];
+            colSum += board[i][0];
+            if (board[i][0] == i % 2) {
+                rowSwap++;
+            }
+            if (board[0][i] == i % 2) {
+                colSwap++;
+            }
+        }
+        if (n / 2 > rowSum || rowSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (n / 2 > colSum || colSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (n % 2 == 1) {
+            if (colSwap % 2 == 1) {
+                colSwap = n - colSwap;
+            }
+            if (rowSwap % 2 == 1) {
+                rowSwap = n - rowSwap;
+            }
+        } else {
+            colSwap = Math.min(n - colSwap, colSwap);
+            rowSwap = Math.min(n - rowSwap, rowSwap);
+        }
+        return (colSwap + rowSwap) / 2;
+
+=======
+
+        int n = board.length;
+        int[] rowSum = new int[n];
+        int[] colSum = new int[n];
+        int[] rowSwap = new int[n];
+        int[] colSwap = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[0][0] ^ board[i][0] ^ board[0][j] ^ board[i][j] == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                rowSum[i] += board[i][j];
+                colSum[j] += board[i][j];
+                if (board[i][j] == i % 2) {
+                    rowSwap[i]++;
+                }
+                if (board[j][i] == i % 2) {
+                    colSwap[i]++;
+                }
+            }
+            if (rowSum[i] < n / 2 || rowSum[i] > (n + 1) / 2) {
+                return -1;
+            }
+            if (colSum[i] < n / 2 || colSum[i] > (n + 1) / 2) {
+                return -1;
+            }
+        }
+        int rowSwapCount = 0;
+        int colSwapCount = 0;
+        for (int i = 0; i < n; i++) {
+            if (n % 2 == 1) {
+                if (rowSwap[i] % 2 == 1) {
+                    rowSwapCount += Math.min(rowSwap[i], n - rowSwap[i]);
+                }
+                if (colSwap[i] % 2 == 1) {
+                    colSwapCount += Math.min(colSwap[i], n - colSwap[i]);
+                }
+            } else {
+                rowSwapCount += Math.min(rowSwap[i], n - rowSwap[i]);
+                colSwapCount += Math.min(colSwap[i], n - colSwap[i]);
+            }
+        }
+        return (rowSwapCount + colSwapCount) / 2;
+
+=======
+
+        int n = board.length;
+        int[][] expected = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if ((i + j) % 2 == 0) {
+                    expected[i][j] = 1;
+                }
+            }
+        }
+        int[] rowDiff = new int[n];
+        int[] colDiff = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] != expected[i][j]) {
+                    rowDiff[i]++;
+                }
+                if (board[j][i] != expected[j][i]) {
+                    colDiff[i]++;
+                }
+            }
+        }
+        int rowSwap = check(rowDiff);
+        int colSwap = check(colDiff);
+        if (rowSwap == -1 || colSwap == -1) {
+            return -1;
+        }
+        return (rowSwap + colSwap) / 2;
+    }
+
+    private int check(int[] diff) {
+        int n = diff.length;
+        int count1 = 0;
+        int count2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (diff[i] % 2 == 1) {
+                count1++;
+            } else {
+                count2++;
+            }
+        }
+        if (n % 2 == 0) {
+            if (count1 != count2 || count1 != n / 2 || count2 != n / 2) {
+                return -1;
+            }
+        } else {
+            if (count1 != count2 || count1 != n / 2 + 1 || count2 != n / 2) {
+                return -1;
+            }
+        }
+        int rowSwap1 = 0;
+        int rowSwap2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                rowSwap1 += diff[i] / 2;
+                rowSwap2 += (diff[i] + 1) / 2;
+            } else {
+                rowSwap1 += (diff[i] + 1) / 2;
+
+=======
+
+        int n = board.length;
+        int[] rows = new int[n];
+        int[] cols = new int[n];
+        int rowDiff = 0;
+        int colDiff = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if ((board[0][0] ^ board[i][0] ^ board[0][j] ^ board[i][j]) == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            rows[i] = board[0][i];
+            cols[i] = board[i][0];
+            rowDiff += rows[i] == i % 2 ? 1 : -1;
+            colDiff += cols[i] == i % 2 ? 1 : -1;
+        }
+        if (Math.abs(rowDiff) > 1 || Math.abs(colDiff) > 1) {
+            return -1;
+        }
+        if (n % 2 == 1) {
+            if (rowDiff == 1) {
+                rowDiff = -1;
+            }
+            if (colDiff == 1) {
+                colDiff = -1;
+            }
+        } else {
+            rowDiff = Math.max(rowDiff, -rowDiff);
+            colDiff = Math.max(colDiff, -colDiff);
+        }
+        return (rowDiff + colDiff) / 2;
+
+=======
+
+        int n = board.length;
+        int[] row = new int[n], col = new int[n];
+        int rowSum = 0, colSum = 0, rowSwap = 0, colSwap = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[0][0] ^ board[i][0] ^ board[0][j] ^ board[i][j] == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            rowSum += board[0][i];
+            colSum += board[i][0];
+            rowSwap += board[i][0] == i % 2 ? 0 : 1;
+            colSwap += board[0][i] == i % 2 ? 0 : 1;
+        }
+        if (rowSum < n / 2 || rowSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (colSum < n / 2 || colSum > (n + 1) / 2) {
+            return -1;
+        }
+        if (n % 2 == 1) {
+            if (colSwap % 2 == 1) {
+                colSwap = n - colSwap;
+            }
+            if (rowSwap % 2 == 1) {
+                rowSwap = n - rowSwap;
+            }
+        } else {
+            colSwap = Math.min(n - colSwap, colSwap);
+            rowSwap = Math.min(n - rowSwap, rowSwap);
+        }
+        return (colSwap + rowSwap) / 2;
+
+=======
+
+        int n = board.length;
+        int[][] board1 = new int[n][n];
+        int[][] board2 = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board1[i][j] = (i + j) % 2;
+                board2[i][j] = (i + j + 1) % 2;
+            }
+        }
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        int count4 = 0;
+        int count5 = 0;
+        int count6 = 0;
+        int count7 = 0;
+        int count8 = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] != board1[i][j]) {
+                    count1++;
+                }
+                if (board[i][j] != board2[i][j]) {
+                    count2++;
+                }
+                if (board[j][i] != board1[j][i]) {
+                    count3++;
+                }
+                if (board[j][i] != board2[j][i]) {
+                    count4++;
+                }
+                if (board[i][j] != board1[j][i]) {
+                    count5++;
+                }
+                if (board[i][j] != board2[j][i]) {
+                    count6++;
+                }
+                if (board[j][i] != board1[i][j]) {
+                    count7++;
+                }
+                if (board[j][i] != board2[i][j]) {
+                    count8++;
+                }
+            }
+        }
+        if (count1 % 2 == 1 || count2 % 2 == 1 || count3 % 2 == 1 || count4 % 2 == 1 || count5 % 2 == 1 || count6 % 2 == 1 || count7 % 2 == 1 || count8 % 2 == 1) {
+            return -1;
+        }
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n;

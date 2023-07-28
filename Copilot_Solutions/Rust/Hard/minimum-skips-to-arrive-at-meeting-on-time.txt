@@ -1,0 +1,220 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![std::i32::MAX; n + 1]; n + 1];
+        dp[0][0] = 0;
+        for i in 0..n {
+            let t = (dist[i] + speed - 1) / speed;
+            for j in 0..=i {
+                if dp[i][j] < std::i32::MAX {
+                    dp[i + 1][j] = dp[i + 1][j].min(dp[i][j] + t);
+                    if dp[i][j] + t - 1 < hours_before {
+                        dp[i + 1][j + 1] = dp[i + 1][j + 1].min(dp[i][j]);
+                    }
+                }
+            }
+        }
+        for i in 0..=n {
+            if dp[n][i] <= hours_before {
+                return i as i32;
+            }
+        }
+        -1
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![std::i32::MAX; n + 1]; n + 1];
+        dp[0][0] = 0;
+        for i in 0..n {
+            let d = dist[i];
+            for j in 0..=i {
+                if dp[i][j] < std::i32::MAX {
+                    let t = (d + dp[i][j] * speed - 1) / speed;
+                    dp[i + 1][j] = dp[i + 1][j].min(dp[i][j] + t);
+                    let t = ((d + speed - 1) / speed + dp[i][j] * speed - 1) / speed;
+                    dp[i + 1][j + 1] = dp[i + 1][j + 1].min(dp[i][j] + t);
+                }
+            }
+        }
+        for i in 0..=n {
+            if dp[n][i] <= hours_before {
+                return i as i32;
+            }
+        }
+        -1
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![std::i32::MAX; n + 1]; n + 1];
+        dp[0][0] = 0;
+        for i in 0..n {
+            let d = dist[i];
+            for j in 0..=i {
+                if dp[i][j] < std::i32::MAX {
+                    let t = (d + dp[i][j] * speed - 1) / speed;
+                    dp[i + 1][j] = dp[i + 1][j].min(dp[i][j] + t);
+                    if j + 1 <= n {
+                        dp[i + 1][j + 1] = dp[i + 1][j + 1].min(dp[i][j] + t - 1);
+                    }
+                }
+            }
+        }
+        for i in 0..=n {
+            if dp[n][i] <= hours_before {
+                return i as i32;
+            }
+        }
+        -1
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![std::i32::MAX; n + 1]; n + 1];
+        dp[0][0] = 0;
+        for i in 0..n {
+            let t = (dist[i] + speed - 1) / speed;
+            for j in 0..=i {
+                if dp[i][j] < std::i32::MAX {
+                    dp[i + 1][j] = dp[i + 1][j].min(dp[i][j] + t);
+                    if j < n {
+                        dp[i + 1][j + 1] = dp[i + 1][j + 1].min((dp[i][j] + t - 1) / t * t + t - 1);
+                    }
+                }
+            }
+        }
+        for i in 0..=n {
+            if dp[n][i] <= hours_before * speed {
+                return i as i32;
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![i32::MAX; n+1]; n+1];
+        dp[0][0] = 0;
+        for i in 0..n {
+            let d = dist[i];
+            for j in 0..=i {
+                if dp[i][j] < i32::MAX {
+                    let t = (dp[i][j] * speed + d - 1) / speed;
+                    dp[i+1][j] = dp[i+1][j].min(dp[i][j] + t);
+                    if j < n {
+                        dp[i+1][j+1] = dp[i+1][j+1].min(dp[i][j] + (t-1));
+                    }
+                }
+            }
+        }
+        let mut ans = i32::MAX;
+        for i in 0..=n {
+            if dp[n][i] <= hours_before {
+                ans = i as i32;
+                break;
+            }
+        }
+        if ans == i32::MAX {
+            -1
+        } else {
+            ans
+        }
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![std::i32::MAX; n]; n];
+        dp[0][0] = (dist[0] + speed - 1) / speed;
+        for i in 1..n {
+            dp[i][0] = dp[i - 1][0] + (dist[i] + speed - 1) / speed;
+        }
+        for i in 1..n {
+            for j in 1..=i {
+                dp[i][j] = dp[i - 1][j].min(dp[i - 1][j - 1] + (dist[i] + speed - 1) / speed);
+                if dist[i] % speed == 0 {
+                    dp[i][j] = dp[i][j].min(dp[i - 1][j - 1] + dist[i] / speed - 1);
+                }
+            }
+        }
+        for i in 0..n {
+            if dp[n - 1][i] <= hours_before {
+                return i as i32;
+            }
+        }
+        -1
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![0; n+1]; n+1];
+        dp[0][0] = 0;
+        for i in 1..=n {
+            dp[i][0] = (dp[i-1][0] + dist[i-1] + speed - 1) / speed;
+        }
+        for i in 1..=n {
+            for j in 1..=n {
+                dp[i][j] = (dp[i-1][j] + dist[i-1] + speed - 1) / speed;
+                if dp[i-1][j-1] * speed >= dist[i-1] {
+                    dp[i][j] = dp[i][j].min(dp[i-1][j-1]);
+                } else {
+                    dp[i][j] = dp[i][j].min(dp[i-1][j-1] + 1);
+                }
+            }
+        }
+        for i in 0..=n {
+            if dp[n][i] <= hours_before {
+                return i as i32;
+            }
+        }
+        -1
+
+=======
+
+        let n = dist.len();
+        let mut dp = vec![vec![vec![0; n+1]; n+1]; 2];
+        for i in 0..n+1 {
+            for j in 0..n+1 {
+                dp[0][i][j] = i32::MAX;
+                dp[1][i][j] = i32::MAX;
+            }
+        }
+        dp[0][0][0] = 0;
+        for i in 0..n {
+            for j in 0..n+1 {
+                for k in 0..n+1 {
+                    if dp[0][j][k] == i32::MAX {
+                        continue;
+                    }
+                    let t = dist[i] * speed - dp[0][j][k];
+                    let t = if t % speed == 0 { t / speed } else { t / speed + 1 };
+                    if t + j <= i {
+                        dp[0][j+t][k] = 0;
+                    }
+                    if t + j + 1 <= i {
+                        dp[1][j+t+1][k] = 0;
+                    }
+                    if k > 0 {
+                        dp[0][j+1][k-1] = if dp[0][j+1][k-1] == i32::MAX { dist[i] * speed } else { dp[0][j+1][k-1].min(dist[i] * speed) };
+                    }
+                }
+            }
+            for j in 0..n+1 {
+                for k in 0..n+1 {
+                    if dp[1][j][k] == i32::MAX {
+                        continue;
+                    }
+                    let t = dist[i] * speed - dp[1][j][k];
+                    let t = if t % speed == 0 { t / speed } else { t / speed + 1 };
+                    if t + j <= i {
+                        dp[1][j+t][k] = 0;
+                    }
+                    if t + j + 1 <= i {
+                        dp[0][j+t+1][k] = 0;
+                    }
+                    if k > 0 {
+                        dp[1][j+1][k-1] = if dp[1][j+1][k-1] == i32::

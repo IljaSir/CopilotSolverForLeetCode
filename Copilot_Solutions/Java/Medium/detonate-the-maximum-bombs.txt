@@ -1,0 +1,230 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = bombs.length;
+        int[] x = new int[n];
+        int[] y = new int[n];
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            x[i] = bombs[i][0];
+            y[i] = bombs[i][1];
+            r[i] = bombs[i][2];
+        }
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (Math.pow(x[i] - x[j], 2) + Math.pow(y[i] - y[j], 2) > Math.pow(r[i] + r[j], 2)) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = bombs.length;
+        int[] x = new int[n];
+        int[] y = new int[n];
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            x[i] = bombs[i][0];
+            y[i] = bombs[i][1];
+            r[i] = bombs[i][2];
+        }
+        
+        int[] max = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                if (Math.sqrt(Math.pow(x[i] - x[j], 2) + Math.pow(y[i] - y[j], 2)) <= r[i] + r[j]) {
+                    cnt++;
+                }
+            }
+            max[i] = cnt;
+            ans = Math.max(ans, cnt);
+        }
+        return ans + 1;
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < bombs.length; i++) {
+            int count = 1;
+            for (int j = 0; j < bombs.length; j++) {
+                if (i == j) continue;
+                if (inRange(bombs[i], bombs[j])) count++;
+            }
+            max = Math.max(max, count);
+        }
+        return max;
+
+=======
+
+        int n = bombs.length;
+        int[] x = new int[n];
+        int[] y = new int[n];
+        int[] r = new int[n];
+        for(int i=0;i<n;i++){
+            x[i] = bombs[i][0];
+            y[i] = bombs[i][1];
+            r[i] = bombs[i][2];
+        }
+        int ans = 0;
+        for(int i=0;i<n;i++){
+            int cnt = 0;
+            for(int j=0;j<n;j++){
+                if(i==j) continue;
+                if((x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])<=r[i]*r[i]){
+                    cnt++;
+                }
+            }
+            ans = Math.max(ans, cnt+1);
+        }
+        return ans;
+
+=======
+
+        int n = bombs.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        Arrays.sort(bombs, (a, b) -> a[2] - b[2]);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (Math.sqrt(Math.pow(bombs[i][0] - bombs[j][0], 2) + Math.pow(bombs[i][1] - bombs[j][1], 2)) <= bombs[j][2]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return Arrays.stream(dp).max().getAsInt();
+
+=======
+
+        int n = bombs.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (Math.sqrt(Math.pow(bombs[i][0] - bombs[j][0], 2) + Math.pow(bombs[i][1] - bombs[j][1], 2)) <= bombs[j][2] - bombs[i][2]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = bombs.length;
+        int[] dp = new int[n];
+        Arrays.sort(bombs, (a, b) -> a[2] - b[2]);
+        for (int i = 0; i < n; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                int dist = (bombs[i][0] - bombs[j][0]) * (bombs[i][0] - bombs[j][0]) + (bombs[i][1] - bombs[j][1]) * (bombs[i][1] - bombs[j][1]);
+                if (dist <= bombs[i][2] * bombs[i][2]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        int n = bombs.length;
+        int[][] events = new int[2*n][];
+        for (int i = 0; i < n; i++) {
+            events[2*i] = new int[]{bombs[i][0] - bombs[i][2], 1, i};
+            events[2*i + 1] = new int[]{bombs[i][0] + bombs[i][2], -1, i};
+        }
+        Arrays.sort(events, (a, b) -> {
+            if (a[0] == b[0]) {
+                return a[1] - b[1];
+            } else {
+                return a[0] - b[0];
+            }
+        });
+        int[] count = new int[n];
+        int[] max = new int[n];
+        int result = 0;
+        for (int[] event : events) {
+            int x = event[0];
+            int type = event[1];
+            int id = event[2];
+            if (type == 1) {
+                int r = bombs[id][2];
+                int y = bombs[id][1];
+                int best = 0;
+                for (int i = 0; i < n; i++) {
+                    if (count[i] > 0) {
+                        int dx = x - bombs[i][0];
+                        int dy = y - bombs[i][1];
+                        if (dx * dx + dy * dy <= r * r) {
+                            best = Math.max(best, max[i]);
+                        }
+                    }
+                }
+                max[id] = best + 1;
+                result = Math.max(result, max[id]);
+            } else {
+                count[id] = 1;
+            }
+        }
+        return result;
+
+=======
+
+        int n = bombs.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (isOverlap(bombs[i], bombs[j])) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        // 1. init
+        int[] max = new int[1];
+        max[0] = 0;
+        // 2. sort
+        Arrays.sort(bombs, (a, b) -> (a[2] - b[2]));
+        // 3. dfs
+        dfs(bombs, 0, 0, max);
+        return max[0];
+    }
+    private void dfs(int[][] bombs, int index, int count, int[] max) {
+        // 1. base case
+        if (index == bombs.length) {
+            max[0] = Math.max(max[0], count);
+            return;
+        }
+        // 2. skip
+        dfs(bombs, index + 1, count, max);
+        // 3. dfs
+        boolean isDetonate = true;
+        for (int i = 0; i < index; i++) {
+            if (isDetonate(bombs[i], bombs[index])) {
+                isDetonate = false;
+                break;
+            }
+        }
+        if (isDetonate) {
+            dfs(bombs, index + 1, count + 1, max);
+        }

@@ -1,0 +1,247 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<int, int>> robots;
+        for (int i = 0; i < n; i++) {
+            robots.push_back({chargeTimes[i], runningCosts[i]});
+        }
+        sort(robots.begin(), robots.end());
+        vector<long long> sum(n + 1);
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + robots[i - 1].second;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            long long cost = budget - robots[i].first;
+            if (cost < 0) {
+                break;
+            }
+            int l = i + 1, r = n;
+            while (l < r) {
+                int m = (l + r + 1) >> 1;
+                if (robots[m - 1].second <= robots[i].second) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            int num = l - i;
+            ans = max(ans, num);
+            int k = upper_bound(robots.begin() + i + 1, robots.end(), make_pair(robots[i].first, robots[i].second)) - robots.begin() - i - 1;
+            cost -= sum[k + 1] - sum[i + 1];
+            if (cost < 0) {
+                continue;
+            }
+            int left = n - k - 1;
+            ans = max(ans, k + 1 + min(left, (int) (cost / robots[i].second)));
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<int, int>> robots;
+        for (int i = 0; i < n; i++) {
+            robots.push_back({chargeTimes[i], runningCosts[i]});
+        }
+        sort(robots.begin(), robots.end());
+        long long sum = 0;
+        int ans = 0;
+        for (int i = 0, j = 0; i < n; i++) {
+            sum += robots[i].second;
+            budget -= robots[i].first;
+            while (j <= i && budget < sum) {
+                budget += robots[j].first;
+                sum -= robots[j].second;
+                j++;
+            }
+            ans = max(ans, i - j + 1);
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<int, int>> v;
+        for (int i = 0; i < n; i++) {
+            v.push_back(make_pair(chargeTimes[i], runningCosts[i]));
+        }
+        sort(v.begin(), v.end());
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            long long cost = 0;
+            int j = i;
+            while (j < n && cost + (long long)v[j].first + (long long)(j - i) * (long long)v[j].second <= budget) {
+                cost += (long long)v[j].first + (long long)(j - i) * (long long)v[j].second;
+                j++;
+            }
+            ans = max(ans, j - i);
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<int, int>> robots(n);
+        for (int i = 0; i < n; ++i) {
+            robots[i].first = chargeTimes[i];
+            robots[i].second = runningCosts[i];
+        }
+        sort(robots.begin(), robots.end());
+        
+        long long sum = 0, maxCharge = 0;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += robots[i].second;
+            maxCharge = max(maxCharge, (long long)robots[i].first);
+            if (sum + (i + 1) * maxCharge <= budget) {
+                ans = i + 1;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<int, int>> robots;
+        for (int i = 0; i < n; i++)
+            robots.push_back({chargeTimes[i], runningCosts[i]});
+        sort(robots.begin(), robots.end());
+        long long sum = 0;
+        int i = 0, j = 0;
+        int ans = 0;
+        while (i < n) {
+            while (j < n && sum + robots[j].first + (j - i + 1) * robots[j].second <= budget) {
+                sum += robots[j].first + robots[j].second;
+                j++;
+            }
+            ans = max(ans, j - i);
+            sum -= robots[i].first;
+            i++;
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<pair<long long, long long>> v;
+        for (int i = 0; i < n; ++i) {
+            v.emplace_back(chargeTimes[i], runningCosts[i]);
+        }
+        sort(v.begin(), v.end());
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            long long cost = v[i].first;
+            long long sum = v[i].second;
+            int cnt = 1;
+            for (int j = i - 1; j >= 0; --j) {
+                if (cost + sum + v[j].second <= budget) {
+                    ++cnt;
+                    cost += v[j].first;
+                    sum += v[j].second;
+                }
+            }
+            ans = max(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(n + 1, 0));
+        vector<long long> sum(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + runningCosts[i - 1];
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i == j) {
+                    dp[i][j] = chargeTimes[i - 1] + sum[i];
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], chargeTimes[i - 1] + (j - i + 1) * sum[i] + sum[j] - sum[i]);
+                }
+                if (dp[i][j] <= budget) {
+                    ans = max(ans, j - i + 1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        long long sum = 0;
+        for (int i = 0; i < n; i++) sum += runningCosts[i];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (chargeTimes[i] > budget) continue;
+            int cnt = 1;
+            long long cost = chargeTimes[i];
+            for (int j = i + 1; j < n; j++) {
+                if (cost + sum > budget) break;
+                cost += runningCosts[j];
+                cnt++;
+            }
+            ans = max(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        vector<int> maxCharge(n, 0);
+        for (int i = 0; i < n; ++i) {
+            maxCharge[i] = chargeTimes[i];
+            if (i > 0) {
+                maxCharge[i] = max(maxCharge[i], maxCharge[i-1]);
+            }
+        }
+        vector<int> sum(n, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = runningCosts[i];
+            if (i > 0) {
+                sum[i] += sum[i-1];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            long long cost = maxCharge[i] + sum[i];
+            if (cost > budget) {
+                break;
+            }
+            int l = i, r = n - 1, m;
+            while (l < r) {
+                m = (l + r + 1) / 2;
+                cost = maxCharge[i] + (sum[m] - sum[i]);
+                if (cost <= budget) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            ans = max(ans, l - i + 1);
+        }
+        return ans;
+
+=======
+
+        int n = chargeTimes.size();
+        auto cmp = [](auto& a, auto& b) { return a[1] > b[1]; };
+        priority_queue<vector<int>, vector<vector<int>>, decltype(cmp)> q(cmp);
+        for (int i = 0; i < n; ++i) {
+            q.push({chargeTimes[i], runningCosts[i]});
+        }
+        long long sum = 0;
+        int ans = 0;
+        while (!q.empty()) {
+            auto [c, r] = q.top();
+            q.pop();
+            if (sum + c + r * ans <= budget) {
+                sum += r;
+                ++ans;
+            }
+        }
+        return ans;

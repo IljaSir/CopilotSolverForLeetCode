@@ -1,0 +1,381 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = expression.length();
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = expression.charAt(i) - '0';
+        }
+        for (int len = 2; len <= n; len += 2) {
+            for (int i = 0; i + len - 1 < n; i += 2) {
+                int j = i + len - 1;
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = i + 1; k < j; k += 2) {
+                    int left = dp[i][k - 1];
+                    int right = dp[k + 1][j];
+                    if (expression.charAt(k) == '+') {
+                        dp[i][j] = Math.min(dp[i][j], left + right);
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j], left * right);
+                    }
+                }
+            }
+        }
+        return dfs(expression, dp, 0, n - 1);
+    }
+
+    private String dfs(String expression, int[][] dp, int i, int j) {
+        if (i == j) {
+            return String.valueOf(expression.charAt(i));
+        }
+        for (int k = i + 1; k < j; k += 2) {
+            int left = dp[i][k - 1];
+            int right = dp[k + 1][j];
+            if (expression.charAt(k) == '+') {
+                if (left + right == dp[i][j]) {
+                    String leftStr = dfs(expression, dp, i, k - 1);
+                    String rightStr = dfs(expression, dp, k + 1, j);
+                    return leftStr + "+" + rightStr;
+                }
+            } else {
+                if (left * right == dp[i][j]) {
+                    String leftStr = dfs(expression, dp, i, k - 1);
+                    String rightStr = dfs(expression, dp, k + 1, j);
+                    return "(" + leftStr + ")*(" + rightStr + ")";
+                }
+            }
+        }
+        return "";
+
+=======
+
+        String[] nums = expression.split("\\+");
+        int[] numsInt = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            numsInt[i] = Integer.parseInt(nums[i]);
+        }
+        int[][] dp = new int[numsInt.length][numsInt.length];
+        for (int i = 0; i < numsInt.length; i++) {
+            dp[i][i] = numsInt[i];
+        }
+        for (int i = 1; i < numsInt.length; i++) {
+            for (int j = 0; j < numsInt.length - i; j++) {
+                dp[j][j + i] = Integer.MAX_VALUE;
+                for (int k = j; k < j + i; k++) {
+                    dp[j][j + i] = Math.min(dp[j][j + i], dp[j][k] + dp[k + 1][j + i]);
+                }
+            }
+        }
+        return dfs(numsInt, dp, 0, numsInt.length - 1);
+    }
+
+    private String dfs(int[] nums, int[][] dp, int i, int j) {
+        if (i == j) {
+            return String.valueOf(nums[i]);
+        }
+        if (dp[i][j] == dp[i][j - 1] + nums[j]) {
+            return dfs(nums, dp, i, j - 1) + "+" + nums[j];
+        }
+        for (int k = i; k < j; k++) {
+            if (dp[i][j] == dp[i][k] + dp[k + 1][j]) {
+                return "(" + dfs(nums, dp, i, k) + ")" + "+" + dfs(nums, dp, k + 1, j);
+            }
+        }
+        return "";
+
+=======
+
+        String[] nums = expression.split("\\+");
+        int n = nums.length;
+        int[] num = new int[n];
+        for (int i = 0; i < n; i++) {
+            num[i] = Integer.parseInt(nums[i]);
+        }
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = num[i];
+        }
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i < n - len + 1; i++) {
+                int j = i + len - 1;
+                for (int k = i; k < j; k++) {
+                    int left = dp[i][k];
+                    int right = dp[k + 1][j];
+                    dp[i][j] = Math.min(dp[i][j], left + right);
+                    dp[i][j] = Math.min(dp[i][j], left * right);
+                }
+            }
+        }
+        int[][] par = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                par[i][j] = -1;
+            }
+        }
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i < n - len + 1; i++) {
+                int j = i + len - 1;
+                for (int k = i; k < j; k++) {
+                    int left = dp[i][k];
+                    int right = dp[k + 1][j];
+                    if (left + right == dp[i][j]) {
+                        par[i][j] = k;
+                    } else if (left * right == dp[i][j]) {
+                        par[i][j] = k;
+                    }
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        dfs(sb, 0, n - 1, par, num);
+        return sb.toString();
+
+=======
+
+        String[] nums = expression.split("\\+");
+        int n = nums.length;
+        int[] num = new int[n];
+        for (int i = 0; i < n; i++) {
+            num[i] = Integer.parseInt(nums[i]);
+        }
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = num[i];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j + i < n; j++) {
+                for (int k = j; k < j + i; k++) {
+                    dp[j][j + i] = Math.min(dp[j][j + i], dp[j][k] + dp[k + 1][j + i]);
+                    dp[j][j + i] = Math.min(dp[j][j + i], dp[j][k] * dp[k + 1][j + i]);
+                }
+            }
+        }
+        int[][] min = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                min[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            min[i][i] = num[i];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j + i < n; j++) {
+                for (int k = j; k < j + i; k++) {
+                    if (dp[j][k] + dp[k + 1][j + i] == dp[j][j + i]) {
+                        min[j][j + i] = Math.min(min[j][j + i], min[j][k] + min[k + 1][j + i]);
+                    }
+                    if (dp[j][k] * dp[k + 1][j + i] == dp[j][j + i]) {
+                        min[j][j +
+
+=======
+
+        int n = expression.length();
+        int[][] min = new int[n][n];
+        int[][] max = new int[n][n];
+        for (int i = 0; i < n; ++i) {
+            if (i % 2 == 0) {
+                min[i][i] = max[i][i] = expression.charAt(i) - '0';
+            }
+        }
+        for (int i = 3; i <= n; i += 2) {
+            for (int j = 0; j <= n - i; ++j) {
+                int k = j + i - 1;
+                min[j][k] = Integer.MAX_VALUE;
+                max[j][k] = Integer.MIN_VALUE;
+                for (int l = j + 1; l < k; l += 2) {
+                    int a = min[j][l - 1];
+                    int b = min[l + 1][k];
+                    int c = max[j][l - 1];
+                    int d = max[l + 1][k];
+                    if (expression.charAt(l) == '+') {
+                        min[j][k] = Math.min(min[j][k], a + b);
+                        max[j][k] = Math.max(max[j][k], c + d);
+                    } else {
+                        min[j][k] = Math.min(min[j][k], a * b);
+                        max[j][k] = Math.max(max[j][k], c * d);
+                    }
+                }
+            }
+        }
+        return dfs(expression, 0, n - 1, min, max);
+    }
+    
+    private String dfs(String expression, int i, int j, int[][] min, int[][] max) {
+        if (i == j) {
+            return expression.substring(i, i + 1);
+        }
+        if (min[i][j] == max[i][j]) {
+            return Integer.toString(min[i][j]);
+        }
+        for (int l = i + 1; l < j; l += 2) {
+            if (min[i][l - 1] + min[l + 1][j] == min[i][j]) {
+                return "(" + dfs(expression, i, l - 1, min, max) + expression.charAt(l) + dfs(expression, l + 1, j, min, max) + ")";
+            }
+            if
+
+=======
+
+        int n = expression.length();
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+            dp[i][i] = expression.charAt(i) - '0';
+        }
+        for (int len = 1; len < n; len += 2) {
+            for (int i = 0; i + len < n; i++) {
+                int j = i + len;
+                for (int k = i; k < j; k += 2) {
+                    int left = dp[i][k];
+                    int right = dp[k + 2][j];
+                    int val = expression.charAt(k + 1) == '+' ? left + right : left * right;
+                    if (val < dp[i][j]) {
+                        dp[i][j] = val;
+                    }
+                }
+            }
+        }
+        String[][] ans = new String[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(ans[i], "");
+        }
+        for (int i = 0; i < n; i++) {
+            ans[i][i] = String.valueOf(expression.charAt(i));
+        }
+        for (int len = 1; len < n; len += 2) {
+            for (int i = 0; i + len < n; i++) {
+                int j = i + len;
+                for (int k = i; k < j; k += 2) {
+                    int left = dp[i][k];
+                    int right = dp[k + 2][j];
+                    int val = expression.charAt(k + 1) == '+' ? left + right : left * right;
+                    if (val == dp[i][j]) {
+                        String l = ans[i][k];
+                        String r = ans[k + 2][j];
+                        String s = expression.charAt(k + 1) == '+' ? l + "+" + r : l + "*" + r;
+                        if (expression.charAt(k + 1) == '+' && (l.length() > 1 || r.length() > 1)) {
+                            s = "(" + s + ")";
+                        }
+                        if (s.length() < ans[i][j].length() || ans[i][j].length() == 0) {
+                            ans[i][j] =
+
+=======
+
+        int n = expression.length();
+        int[][][] dp = new int[n][n][2];
+        for (int i = 0; i < n; i++) {
+            char c = expression.charAt(i);
+            if (c == '+') {
+                continue;
+            }
+            dp[i][i][0] = dp[i][i][1] = c - '0';
+        }
+        for (int l = 2; l <= n; l += 2) {
+            for (int i = 0; i + l <= n; i++) {
+                int j = i + l - 1;
+                dp[i][j][0] = Integer.MAX_VALUE;
+                dp[i][j][1] = Integer.MIN_VALUE;
+                for (int k = i + 1; k < j; k += 2) {
+                    int a = dp[i][k - 1][0], b = dp[i][k - 1][1];
+                    int c = dp[k + 1][j][0], d = dp[k + 1][j][1];
+                    if (expression.charAt(k) == '+') {
+                        dp[i][j][0] = Math.min(dp[i][j][0], a + c);
+                        dp[i][j][0] = Math.min(dp[i][j][0], a + d);
+                        dp[i][j][0] = Math.min(dp[i][j][0], b + c);
+                        dp[i][j][0] = Math.min(dp[i][j][0], b + d);
+                        dp[i][j][1] = Math.max(dp[i][j][1], a + c);
+                        dp[i][j][1] = Math.max(dp[i][j][1], a + d);
+                        dp[i][j][1] = Math.max(dp[i][j][1], b + c);
+                        dp[i][j][1] = Math.max(dp[i][j][1], b + d);
+                    } else {
+                        dp[i][j][0] = Math.min(dp[i][j][0], a - c);
+                        dp[i][j][0] = Math.min(dp[i][j][0], a - d);
+                        dp[i][j][0] = Math.min(dp[i][j][0], b - c);
+                        dp[i][j][0] = Math.min(dp[i
+
+=======
+
+        String[] vals = expression.split("\\+");
+        int[] nums = new int[vals.length];
+        for (int i = 0; i < vals.length; i++) {
+            nums[i] = Integer.parseInt(vals[i]);
+        }
+        int[][][] dp = new int[vals.length][vals.length][2];
+        for (int i = 0; i < vals.length; i++) {
+            dp[i][i][0] = nums[i];
+            dp[i][i][1] = 0;
+        }
+        for (int len = 2; len <= vals.length; len++) {
+            for (int i = 0; i <= vals.length - len; i++) {
+                int j = i + len - 1;
+                dp[i][j][0] = Integer.MAX_VALUE;
+                dp[i][j][1] = Integer.MAX_VALUE;
+                for (int k = i; k < j; k++) {
+                    int a = dp[i][k][0] + dp[k + 1][j][0];
+                    int b = dp[i][k][0] + dp[k + 1][j][1];
+                    int c = dp[i][k][1] + dp[k + 1][j][0];
+                    int d = dp[i][k][1] + dp[k + 1][j][1];
+                    if (a < dp[i][j][0]) {
+                        dp[i][j][0] = a;
+                        dp[i][j][1] = 0;
+                    }
+                    if (b < dp[i][j][0]) {
+                        dp[i][j][0] = b;
+                        dp[i][j][1] = 1;
+                    }
+                    if (c < dp[i][j][0]) {
+                        dp[i][j][0] = c;
+                        dp[i][j][1] = 0;
+                    }
+                    if (d < dp[i][j][0]) {
+                        dp[i][j][0] = d;
+                        dp[i][j][1] = 1;
+                    }
+                }
+            }
+        }
+        String result = "";
+        int i = 0;
+        int j = vals.length - 1;
+        while (i < j) {
+            if (dp[i][j][1] == 0) {
+                result += "(";
+                while (i < j
+
+=======
+
+        int i = expression.indexOf('+');
+        int a = Integer.parseInt(expression.substring(0, i));
+        int b = Integer.parseInt(expression.substring(i + 1));
+        int c = a + b;
+
+        String ans = String.valueOf(c);
+        int len = ans.length();
+
+        for (int j = 1; j < len; ++j) {
+            int x = Integer.parseInt(ans.substring(0, j));
+            int y = Integer.parseInt(ans.substring(j));
+            int z = x + y;
+
+            if (z < c) {
+                c = z;
+                ans = String.valueOf(x) + "(" + ans.substring(j) + ")";
+            }
+        }
+
+        return ans;
+
+=======
+
+        return "";

@@ -1,0 +1,187 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9 + 7;
+        vector<int> count(1e5 + 1, 0);
+        for (int i = 0; i < n; i++) {
+            count[nums[i]]++;
+        }
+        vector<int> sum(1e5 + 1, 0);
+        for (int i = 1; i <= 1e5; i++) {
+            sum[i] = (sum[i - 1] + count[i]) % mod;
+        }
+        int ans = 0;
+        for (int i = 1; i <= 1e5; i++) {
+            for (int j = i; j <= 1e5; j += i) {
+                ans = (ans + (long long)count[i] * (sum[min(j + i - 1, 1e5)] - sum[j - 1])) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        const int MOD = 1e9 + 7;
+        sort(nums.begin(), nums.end());
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int j = i, k = i;
+            while (k < n && nums[i] == nums[k]) {
+                ++k;
+            }
+            while (j < n) {
+                int l = j, r = n;
+                while (l < r) {
+                    int m = (l + r) / 2;
+                    if (nums[m] < nums[i] * 2) {
+                        l = m + 1;
+                    } else {
+                        r = m;
+                    }
+                }
+                int t = l - j;
+                res = (res + (long long)nums[i] * t % MOD) % MOD;
+                res = (res + (long long)(t - k + j) * (k - j) / 2 % MOD) % MOD;
+                j = l;
+            }
+            i = k - 1;
+        }
+        return res;
+
+=======
+
+        const int MOD = 1e9 + 7;
+        int maxNum = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(maxNum + 1);
+        for (int num: nums) {
+            ++cnt[num];
+        }
+        for (int i = 1; i <= maxNum; ++i) {
+            cnt[i] += cnt[i - 1];
+        }
+        long long ans = 0;
+        for (int i = 1; i <= maxNum; ++i) {
+            long long sum = 0;
+            for (int j = i; j <= maxNum; j += i) {
+                sum += (long long) (cnt[min(j + i - 1, maxNum)] - cnt[j - 1]) * j;
+            }
+            ans += sum * i;
+        }
+        return ans % MOD;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int mod = 1e9+7;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < n; ++i) {
+            int j = i+1;
+            while (j < n && nums[j] == nums[i]) ++j;
+            int cnt = j-i;
+            ans = (ans + (long long)cnt * (nums[i] - (i > 0 ? nums[i-1] : 0)) % mod) % mod;
+            i = j-1;
+        }
+        for (int i = 1; i < n; ++i) {
+            ans = (ans + (long long)(nums[i] - nums[i-1]) * (i + 1) % mod * (n - i) % mod) % mod;
+        }
+        return ans;
+
+=======
+
+        const int MOD = 1000000007;
+        int n = nums.size();
+        int maxVal = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(maxVal + 1);
+        for (int x: nums) {
+            cnt[x]++;
+        }
+        for (int i = 1; i <= maxVal; i++) {
+            cnt[i] += cnt[i - 1];
+        }
+        long long ans = 0;
+        for (int i = 1; i <= maxVal; i++) {
+            if (cnt[i] == n) {
+                break;
+            }
+            int total = 0;
+            for (int j = 1; j * i <= maxVal; j++) {
+                int l = j * i, r = min((j + 1) * i - 1, maxVal);
+                ans += (long long) (cnt[r] - cnt[l - 1]) * j % MOD;
+                total += cnt[r] - cnt[l - 1];
+            }
+            ans += (long long) (n - total) * maxVal / i;
+        }
+        return ans % MOD;
+
+=======
+
+        int n = nums.size();
+        int max = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(max + 1, 0);
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        for (int i = 1; i <= max; i++) {
+            cnt[i] += cnt[i - 1];
+        }
+        int res = 0;
+        int mod = 1000000007;
+        for (int i = 1; i <= max; i++) {
+            if (cnt[i] == n) {
+                break;
+            }
+            int sum = 0;
+            for (int j = 1; j * i <= max; j++) {
+                int l = (j - 1) * i + 1;
+                int r = j * i;
+                sum = (sum + (long long)(cnt[r] - cnt[l - 1]) * j) % mod;
+            }
+            res = (res + (long long)(n - cnt[i]) * sum) % mod;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int m = 1000000007;
+        vector<int> cnt(100001, 0);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[nums[i]];
+        }
+        vector<int> sum(100001, 0);
+        for (int i = 1; i <= 100000; ++i) {
+            sum[i] = (sum[i - 1] + cnt[i]) % m;
+        }
+        int ans = 0;
+        for (int i = 1; i <= 100000; ++i) {
+            for (int j = i; j <= 100000; j += i) {
+                int k = j / i;
+                ans += (long long)cnt[j] * (sum[min(100000, k * i + i - 1)] - sum[k * i - 1]) % m;
+                ans %= m;
+            }
+        }
+        return ans;
+
+=======
+
+        int mod = 1e9+7;
+        int max = 0;
+        for (auto n : nums) {
+            if (n > max) max = n;
+        }
+        vector<int> count(max+1, 0);
+        for (auto n : nums) {
+            ++count[n];
+        }
+        int sum = 0;
+        for (int i = 1; i <= max; ++i) {
+            int total = 0;
+            for (int j = i; j <= max; j += i) {
+                total += count[j];
+                sum = (sum + (long long)total * (j / i) % mod) % mod;
+            }
+        }
+        return sum;

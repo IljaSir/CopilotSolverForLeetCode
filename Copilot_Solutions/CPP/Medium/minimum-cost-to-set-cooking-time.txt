@@ -1,0 +1,189 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int ans = INT_MAX;
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                if (i * 60 + j == targetSeconds) {
+                    int cost = 0;
+                    int t = i;
+                    while (t) {
+                        cost += moveCost;
+                        t /= 10;
+                    }
+                    cost += pushCost * (i == 0 ? 1 : 2);
+                    t = j;
+                    while (t) {
+                        cost += moveCost;
+                        t /= 10;
+                    }
+                    cost += pushCost * (j == 0 ? 1 : 2);
+                    ans = min(ans, cost);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int minutes = targetSeconds / 60;
+        int seconds = targetSeconds % 60;
+        int minCost = INT_MAX;
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 100; j++) {
+                if (i * 60 + j == targetSeconds) {
+                    int cost = 0;
+                    int temp = i;
+                    while (temp > 0) {
+                        cost += abs(temp % 10 - startAt) * pushCost;
+                        temp /= 10;
+                    }
+                    temp = j;
+                    while (temp > 0) {
+                        cost += abs(temp % 10 - startAt) * pushCost;
+                        temp /= 10;
+                    }
+                    minCost = min(minCost, cost);
+                }
+            }
+        }
+        return minCost;
+
+=======
+
+        int res = INT_MAX;
+        for (int i = 0; i < 100; ++i) {
+            int a = i / 10, b = i % 10;
+            int c = targetSeconds / 60, d = targetSeconds % 60;
+            res = min(res, abs(a - startAt) * moveCost + abs(a - c) * pushCost + abs(b - d) * pushCost);
+        }
+        return res;
+
+=======
+
+        int minCost = INT_MAX;
+        vector<int> digit = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    for (int l = 0; l < 10; l++) {
+                        int seconds = digit[i] * 600 + digit[j] * 60 + digit[k] * 10 + digit[l];
+                        if (seconds > targetSeconds) {
+                            continue;
+                        }
+                        int cost = 0;
+                        cost += abs(startAt - digit[i]) * moveCost;
+                        cost += digit[i] * pushCost;
+                        cost += abs(digit[i] - digit[j]) * moveCost;
+                        cost += digit[j] * pushCost;
+                        cost += abs(digit[j] - digit[k]) * moveCost;
+                        cost += digit[k] * pushCost;
+                        cost += abs(digit[k] - digit[l]) * moveCost;
+                        cost += digit[l] * pushCost;
+                        minCost = min(minCost, cost);
+                    }
+                }
+            }
+        }
+        return minCost;
+
+=======
+
+        int targetMinutes = targetSeconds / 60;
+        int targetSeconds = targetSeconds % 60;
+        int res = 0;
+        while (targetMinutes > 0) {
+            int digit = targetMinutes % 10;
+            res += min(abs(digit - startAt) * moveCost, (10 - abs(digit - startAt)) * moveCost);
+            res += pushCost;
+            targetMinutes /= 10;
+        }
+        while (targetSeconds > 0) {
+            int digit = targetSeconds % 10;
+            res += min(abs(digit - startAt) * moveCost, (10 - abs(digit - startAt)) * moveCost);
+            res += pushCost;
+            targetSeconds /= 10;
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        int minCost = 1000000;
+        for (int i = 0; i < 4; i++) {
+            int digit = (targetSeconds % 10);
+            targetSeconds /= 10;
+            int cost = abs(digit - startAt) * moveCost;
+            if (cost < minCost) {
+                ans += cost;
+                minCost = cost;
+            } else {
+                ans += minCost;
+            }
+            ans += pushCost;
+            startAt = digit;
+        }
+        return ans;
+
+=======
+
+        int minCost = INT_MAX;
+        int minPushCost = pushCost * 2;
+        int minMoveCost = moveCost * 2;
+        for (int i = 0; i < 100; ++i) {
+            int cost = 0;
+            int seconds = i * 60;
+            int diff = targetSeconds - seconds;
+            if (diff < 0) {
+                break;
+            }
+            int minutes = diff / 60;
+            int sec = diff % 60;
+            int m1 = minutes / 10;
+            int m2 = minutes % 10;
+            int s1 = sec / 10;
+            int s2 = sec % 10;
+            if (m1 != 0) {
+                cost += minPushCost + (abs(startAt - m1) * minMoveCost);
+            } else {
+                cost += minPushCost + (abs(startAt - m2) * minMoveCost);
+            }
+            cost += minPushCost + (abs(m1 - m2) * minMoveCost);
+            cost += minPushCost + (abs(m2 - s1) * minMoveCost);
+            cost += minPushCost + (abs(s1 - s2) * minMoveCost);
+            minCost = min(minCost, cost);
+        }
+        return minCost;
+
+=======
+
+        int ans = INT_MAX;
+        auto [min, sec] = getMinSec(targetSeconds);
+        auto [minStart, secStart] = getMinSec(startAt);
+        int cost = 0;
+        int minCost = min * pushCost;
+        int secCost = sec * pushCost;
+        int minStartCost = minStart * moveCost;
+        int secStartCost = secStart * moveCost;
+        int minMoveCost = 9 * moveCost;
+        int secMoveCost = 9 * moveCost;
+        for (int i = 0; i < 2; ++i) {
+            int minCost = min * pushCost;
+            int secCost = sec * pushCost;
+            int minStartCost = minStart * moveCost;
+            int secStartCost = secStart * moveCost;
+            int minMoveCost = 9 * moveCost;
+            int secMoveCost = 9 * moveCost;
+            if (i == 1) {
+                minCost += minStartCost;
+                minStartCost = 0;
+                minMoveCost = 0;
+            }
+            cost = minCost + secCost + minStartCost + secStartCost + minMoveCost + secMoveCost;
+            ans = min(ans, cost);
+            swap(min, sec);
+            swap(minStart, secStart);
+            swap(minMoveCost, secMoveCost);
+        }
+        return ans;

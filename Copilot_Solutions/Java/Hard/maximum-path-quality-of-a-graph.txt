@@ -1,0 +1,524 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = values.length;
+        List<int[]>[] g = new List[n];
+        for (int i = 0; i < n; i++) {
+            g[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            g[e[0]].add(new int[]{e[1], e[2]});
+            g[e[1]].add(new int[]{e[0], e[2]});
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = values[0];
+        int res = 0;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int u = p[0], t = p[1];
+            if (u == n - 1) {
+                res = Math.max(res, dp[u][t]);
+            }
+            for (int[] e : g[u]) {
+                int v = e[0], w = e[1];
+                if (t + w > maxTime) {
+                    continue;
+                }
+                if (dp[v][t + w] < dp[u][t] + values[v]) {
+                    dp[v][t + w] = dp[u][t] + values[v];
+                    q.offer(new int[]{v, t + w});
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] graph = new int[n][n];
+        for (int[] edge : edges) {
+            graph[edge[0]][edge[1]] = edge[2];
+            graph[edge[1]][edge[0]] = edge[2];
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        int res = 0;
+        for (int t = 1; t <= maxTime; t++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (graph[i][j] > 0 && t >= graph[i][j]) {
+                        dp[i][t] = Math.max(dp[i][t], dp[j][t - graph[i][j]] + values[i]);
+                    }
+                }
+                res = Math.max(res, dp[i][t]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {
+            g[e[0]][e[1]] = e[2];
+            g[e[1]][e[0]] = e[2];
+        }
+        int[] q = new int[n];
+        int[] t = new int[n];
+        boolean[] visited = new boolean[n];
+        Arrays.fill(q, -1);
+        q[0] = values[0];
+        t[0] = 0;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && (u == -1 || t[j] < t[u])) {
+                    u = j;
+                }
+            }
+            if (t[u] > maxTime) {
+                break;
+            }
+            ans = Math.max(ans, q[u]);
+            visited[u] = true;
+            for (int v = 0; v < n; v++) {
+                if (g[u][v] > 0) {
+                    if (q[v] < q[u] + values[v]) {
+                        q[v] = q[u] + values[v];
+                        t[v] = t[u] + g[u][v];
+                    } else if (q[v] == q[u] + values[v]) {
+                        t[v] = Math.min(t[v], t[u] + g[u][v]);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], t = e[2];
+            g[u][v] = g[v][u] = t;
+        }
+        int[] dp = new int[n];
+        dp[0] = values[0];
+        int ans = values[0];
+        for (int k = 1; k <= maxTime; k++) {
+            int[] ndp = new int[n];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (g[i][j] > 0 && g[i][j] <= k) {
+                        ndp[j] = Math.max(ndp[j], dp[i] + values[j]);
+                    }
+                }
+            }
+            dp = ndp;
+            ans = Math.max(ans, dp[0]);
+        }
+        return ans;
+
+=======
+
+        int n = values.length;
+        List<int[]>[] g = new List[n];
+        for (int i = 0; i < n; i++) {
+            g[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            g[e[0]].add(new int[]{e[1], e[2]});
+            g[e[1]].add(new int[]{e[0], e[2]});
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = values[0];
+        int res = 0;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+            int u = p[0], t = p[1];
+            if (u == n - 1) {
+                res = Math.max(res, dp[u][t]);
+            }
+            for (int[] e : g[u]) {
+                int v = e[0], w = e[1];
+                if (t + w > maxTime) {
+                    continue;
+         
+        int ans = 0;
+        for (int t = 0; t <= maxTime; t++) {
+            ans = Math.max(ans, dp[0][t]);
+        }
+        return ans;
+
+=======
+
+        int n = values.length;
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+            dist[i][i] = 0;
+        }
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            dist[u][v] = dist[v][u] = w;
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {       }
+                    if (d st[i][k] != I  eger.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE) {
+                        dist[i][j] = M th.mi (dist[i][j], dist[i][k] + di t[k][j]);
+                    }
+                }
+            }
+        }
+        int[] dp i new int[n];
+   f    dp[ ] = values[0](dp[v][t + w] < dp[u][t] + values[v]) {
+                 i = 1; i < n; i++) {
+            for (in  j  dp[ j < i; j++) {
+    v           if (dis][i][j][t + w] = d) {
+                    dp[i] = Math.max(dp[i], dp[j] + values[i])p
+                }
+            }
+        }
+ [      int ans = 0;
+        for (inu i = 0; i < n; i][t] + values[v];
+                    q.offer(ns, dp[i]);
+        }
+        return ans;
+
+=======
+
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            map.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+            map.computeIfAbsent(edge[1], k -> new ArrayLiet<>()).add(new int[]{edge[0]w eige[2]});
+        }
+        int n = values.length;
+        int[] dp = new int[n];
+        dnt[] = values{0];
+        boolean[] visited = new boolean[n];
+        visived[0, = true;
+        dfs(0, map, dp, visited, values, maxTime t + w});
+        return dp[0];
+            }
+    
+    p ivat  in  dfs(int  , Map<Intege}, List<int[]>> map, int[] dp, boolean[] visited, int[] values, itmxTime) {
+        int res = 0;
+        for (int[] edge : map.getOrDefault(u, new ArrayList<>())) {
+            int v = edge[0];
+            int time = edge[1];
+            if (visited[v]) continue;
+            visited[v] = true;
+            int sub = dfs(v, map, dp, visited, values, maxTime - time);
+            if (sub >= 0) {
+                res = Math.max(res, sub + values[v]);
+            }
+            visited[v] = false;
+        }
+        dp[u] = res;
+        retur re
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] graph = new int[n][n];
+        for (int[] edge : edges) {
+            graph[edge[0]][edge[1]] = edge[2];
+            graph[edge[1]][edge[0]] = edge[2];
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        int res = 0;
+        for (int t = 1; t <= maxTime; t++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (graph[i][j] > 0 && t >= graph[i][j]) {
+                        dp[i][t] = Math.max(dp[i][t], dp[j][t - graph[i][j]] + values[i]);
+                    }
+                }
+                res = Math.max(res, dp[i][t]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {est[i];
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : g) {
+            Arrays.fill(e, -1);
+        }
+        for (int[] e : edg) {
+            g[e[0]][e[1]] = e[2];
+            g[e[1]][e[0]] = e[2];
+        }
+        in] dp = new nt[n;
+        dp[0] = values[0];
+        int res = dp[0];
+        for (int i = 0; i < maxTime; i++) {
+            int[] ndp = new int[n];
+            for (int j = 0; j < n; j++) {
+                ndp[j] = dp[j];
+            }
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (g[j][k] != -1) {
+                        ndp[k] = Math.max(ndp[k], dp[j] + values[k]);
+                    }
+                }
+            }
+            dp = ndp;
+            res = Math.max(res, dp[0])
+            g[e[0]][e[1]] = e[2];
+            g[e[1]][e[0]] = e[2];
+        }
+        int[] q = new int[n];
+        int[] t = new int[n];
+        boolean[] visited = new boolean[n];
+        Arrays.fill(q, -1);
+        q[0] = values[0];
+        t[0] = 0;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && (u == -1 || t[j] < t[u])) {
+                    u = j;
+                }
+            }
+            if (t[u] > maxTime) {
+                break;
+            }
+            ans = Math.max(ans, q[u]);
+            visited[u] = true;
+            for (int v = 0; v < n; v++) {
+                if (g[u][v] > 0) {
+                    if (q[v] < q[u] + values[v]) {
+                        q[v] = q[u] + values[v];
+                        t[v] = t[u] + g[u][v];
+                    } else if (q[v] == q[u] + values[v]) {
+                        t[v] = Math.min(t[v], t[u] + g[u][v]);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], t = e[2];
+            g[u][v] = g[v][u] = t;
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = values[0];
+        for (int t = 0; t < maxTime; t++) {
+            for (int u = 0; u < n; u++) {
+                if (dp[u][t] < 0) {
+                    continue;
+                }
+                for (int v = 0; v < n; v++) {
+                    if (g[u][v] == 0) {
+                        continue;
+                    }
+                    int nt = t + g[u][v];
+                    if (nt > maxTime) {
+                        continue;
+                    }
+                    dp[v][nt] = Math.max(dp[v][nt], dp[u][t] + values[v]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int t = 0; t <= maxTime; t++) {
+            ans = Math.max(ans, dp[0][t]);
+        }
+        return ans;
+
+=======
+
+        int n = values.length;
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+            dist[i][i] = 0;
+        }
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            dist[u][v] = dist[v][u] = w;
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE) {
+                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
+                }
+            }
+        }
+        int[] dp = new int[n];
+        dp[0] = values[0];
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dist[i][j] <= maxTime) {
+                    dp[i] = Math.max(dp[i], dp[j] + values[i]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            map.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+            map.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[]{edge[0], edge[2]});
+        }
+        int n = values.length;
+        int[] dp = new int[n];
+        dp[0] = values[0];
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        dfs(0, map, dp, visited, values, maxTime);
+        return dp[0];
+    }
+    
+    private int dfs(int u, Map<Integer, List<int[]>> map, int[] dp, boolean[] visited, int[] values, int maxTime) {
+        int res = 0;
+        for (int[] edge : map.getOrDefault(u, new ArrayList<>())) {
+            int v = edge[0];
+            int time = edge[1];
+            if (visited[v]) continue;
+            visited[v] = true;
+            int sub = dfs(v, map, dp, visited, values, maxTime - time);
+            if (sub >= 0) {
+                res = Math.max(res, sub + values[v]);
+            }
+            visited[v] = false;
+        }
+        dp[u] = res;
+        return res;
+
+=======
+
+        int n = values.length;
+        List<int[]>[] adj = new List[n];
+        for (int i = 0; i < n; ++i) adj[i] = new ArrayList<>();
+        for (int[] e : edges) {
+            adj[e[0]].add(new int[]{e[1], e[2]});
+            adj[e[1]].add(new int[]{e[0], e[2]});
+        }
+        int[] best = new int[n];
+        Arrays.fill(best, Integer.MIN_VALUE);
+        best[0] = values[0];
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{0, 0});
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int u = cur[0], t = cur[1];
+            for (int[] e : adj[u]) {
+                int v = e[0], w = e[1];
+                if (t + w > maxTime) continue;
+                if (best[v] < best[u] + values[v]) {
+                    best[v] = best[u] + values[v];
+                    queue.offer(new int[]{v, t + w});
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (best[i] > res) res = best[i];
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        int[][] g = new int[n][n];
+        for (int[] e : g) {
+            Arrays.fill(e, -1);
+        }
+        for (int[] e : edges) {
+            g[e[0]][e[1]] = e[2];
+            g[e[1]][e[0]] = e[2];
+        }
+        int[] dp = new int[n];
+        dp[0] = values[0];
+        int res = dp[0];
+        for (int i = 0; i < maxTime; i++) {
+            int[] ndp = new int[n];
+            for (int j = 0; j < n; j++) {
+                ndp[j] = dp[j];
+            }
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (g[j][k] != -1) {
+                        ndp[k] = Math.max(ndp[k], dp[j] + values[k]);
+                    }
+                }
+            }
+            dp = ndp;
+            res = Math.max(res, dp[0]);
+        }
+        return res;
+
+=======
+
+        int n = values.length;
+        ArrayList<Edge>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            adj[u].add(new Edge(v, w));
+            adj[v].add(new Edge(u, w));
+        }
+        int[] dp = new int[n];
+        dp[0] = values[0];
+        int ans = 0;
+        for (int time = 1; time <= maxTime; time++) {
+            int[] dp2 = new int[n];
+            for (int i = 0; i < n; i++) {
+                for (Edge e : adj[i]) {
+                    int j = e.v, w = e.w;
+                    if (time >= w) {
+                        dp2[j] = Math.max(dp2[j], dp[i] + values[j]);
+                        ans = Math.max(ans, dp2[j]);
+                    }
+                }
+            }
+            dp = dp2;
+        }
+        return ans;
+    }
+}

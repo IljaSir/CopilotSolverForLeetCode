@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        Arrays.sort(arr);
+        for (int i : arr) {
+            if (map.get(i) == 0) continue;
+            if (map.containsKey(2 * i) && map.get(2 * i) > 0) {
+                map.put(i, map.get(i) - 1);
+                map.put(2 * i, map.get(2 * i) - 1);
+            } else if (i % 2 == 0 && map.containsKey(i / 2) && map.get(i / 2) > 0) {
+                map.put(i, map.get(i) - 1);
+                map.put(i / 2, map.get(i / 2) - 1);
+            } else {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        List<Integer> list = new ArrayList<>(map.keySet());
+        Collections.sort(list, (a, b) -> Math.abs(a) - Math.abs(b));
+        for (int i : list) {
+            if (map.get(i) == 0) continue;
+            if (map.getOrDefault(i * 2, 0) == 0) return false;
+            map.put(i, map.get(i) - 1);
+            map.put(i * 2, map.get(i * 2) - 1);
+        }
+        return true;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        int[] keys = map.keySet().stream().mapToInt(i -> i).toArray();
+        Arrays.sort(keys);
+        for (int i : keys) {
+            if (map.get(i) == 0) {
+                continue;
+            }
+            int target = i < 0 ? i / 2 : i * 2;
+            if (i < 0 && i % 2 != 0 || map.getOrDefault(target, 0) < map.get(i)) {
+                return false;
+            }
+            map.put(target, map.get(target) - map.get(i));
+        }
+        return true;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        List<Integer> keys = new ArrayList<>(map.keySet());
+        Collections.sort(keys, (a, b) -> Integer.compare(Math.abs(a), Math.abs(b)));
+        for (int i : keys) {
+            if (map.get(i) == 0) {
+                continue;
+            }
+            if (map.getOrDefault(2 * i, 0) <= 0) {
+                return false;
+            }
+            map.put(2 * i, map.get(2 * i) - map.get(i));
+            map.put(i, 0);
+        }
+        return true;
+
+=======
+
+        if (arr.length % 2 != 0) {
+            return false;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        Integer[] nums = new Integer[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            nums[i] = arr[i];
+        }
+        Arrays.sort(nums, (a, b) -> Integer.compare(Math.abs(a), Math.abs(b)));
+        for (int i : nums) {
+            if (map.get(i) == 0) {
+                continue;
+            }
+            if (!map.containsKey(2 * i) || map.get(2 * i) == 0) {
+                return false;
+            }
+            map.put(i, map.get(i) - 1);
+            map.put(2 * i, map.get(2 * i) - 1);
+        }
+        return true;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : arr) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        Integer[] keys = map.keySet().toArray(new Integer[0]);
+        Arrays.sort(keys, (a, b) -> Math.abs(a) - Math.abs(b));
+        for (int i : keys) {
+            if (map.get(i) == 0) {
+                continue;
+            }
+            if (map.getOrDefault(2 * i, 0) < map.get(i)) {
+                return false;
+            }
+            map.put(2 * i, map.get(2 * i) - map.get(i));
+        }
+        return true;
+
+=======
+
+        int[] count = new int[200001];
+        for (int i : arr) {
+            count[i + 100000]++;
+        }
+        for (int i = 0; i < 100000; i++) {
+            if (count[i] > count[200000 - i]) {
+                return false;
+            }
+            count[200000 - i] -= count[i];
+        }
+        return true;
+
+=======
+
+        int[] count = new int[200001];
+        for (int x : arr) {
+            count[x + 100000]++;
+        }
+        for (int x = 0; x <= 100000; x++) {
+            if (count[x + 100000] > count[2 * x + 100000]) {
+                return false;
+            }
+            count[2 * x + 100000] -= count[x + 100000];
+        }
+        return true;
+
+=======
+
+        if (arr.length % 2 != 0) {
+            return false;
+        }
+        int[] neg = new int[200001];
+        int[] pos = new int[200001];
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] < 0) {
+                neg[-arr[i]]++;
+            } else {
+                pos[arr[i]]++;
+            }
+        }
+        for (int i = 0; i < neg.length; i++) {
+            if (neg[i] > 0) {
+                if (i % 2 == 1) {
+                    return false;
+                }
+                int j = i / 2;
+                if (neg[j] < neg[i]) {
+                    return false;
+                }
+                neg[j] -= neg[i];
+            }
+        }
+        for (int i = 0; i < pos.length; i++) {
+            if (pos[i] > 0) {
+                if (i % 2 == 1) {
+                    return false;
+                }
+                int j = i / 2;
+                if (pos[j] < pos[i]) {
+                    return false;
+                }
+                pos[j] -= pos[i];
+            }
+        }
+        return true;
+
+=======
+
+        int n = arr.length;
+        if (n % 2 != 0) return false;
+        int[] a = new int[200001];
+        for (int i = 0; i < n; ++i) {
+            if (arr[i] < 0) {
+                a[-arr[i] + 100000]++;
+            } else {
+                a[arr[i]]++;
+            }
+        }
+        for (int i = 0; i < 100000; ++i) {
+            if (a[i] > a[2 * i]) return false;
+            a[2 * i] -= a[i];
+        }
+        return true;

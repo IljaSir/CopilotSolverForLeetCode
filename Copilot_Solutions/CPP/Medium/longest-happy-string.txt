@@ -1,0 +1,272 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        priority_queue<pair<int, char>> pq;
+        if (a) pq.push({a, 'a'});
+        if (b) pq.push({b, 'b'});
+        if (c) pq.push({c, 'c'});
+        string res;
+        while (!pq.empty()) {
+            auto t = pq.top(); pq.pop();
+            if (res.size() >= 2 && res.back() == res[res.size() - 2] && res.back() == t.second) {
+                if (pq.empty()) break;
+                auto t2 = pq.top(); pq.pop();
+                res.push_back(t2.second);
+                if (--t2.first > 0) pq.push(t2);
+                pq.push(t);
+            } else {
+                res.push_back(t.second);
+                if (--t.first > 0) pq.push(t);
+            }
+        }
+        return res;
+
+=======
+
+        string res = "";
+        priority_queue<pair<int, char>> pq;
+        if (a > 0) pq.push({a, 'a'});
+        if (b > 0) pq.push({b, 'b'});
+        if (c > 0) pq.push({c, 'c'});
+        while (pq.size() > 1) {
+            auto p1 = pq.top(); pq.pop();
+            auto p2 = pq.top(); pq.pop();
+            if (p1.first > 0) {
+                res += p1.second;
+                --p1.first;
+            }
+            if (p2.first > 0) {
+                res += p2.second;
+                --p2.first;
+            }
+            pq.push(p1);
+            pq.push(p2);
+        }
+        if (pq.size() == 1) {
+            auto p = pq.top(); pq.pop();
+            if (p.first > 1) {
+                res += p.second;
+                --p.first;
+            }
+            if (p.first > 0) {
+                res += p.second;
+                --p.first;
+            }
+        }
+        return res;
+
+=======
+
+        string ans;
+        priority_queue<pair<int, char>> pq;
+        if (a) pq.push({a, 'a'});
+        if (b) pq.push({b, 'b'});
+        if (c) pq.push({c, 'c'});
+        while (pq.size() > 1) {
+            auto [cnt1, ch1] = pq.top(); pq.pop();
+            auto [cnt2, ch2] = pq.top(); pq.pop();
+            if (cnt1 >= 2) {
+                ans += ch1;
+                ans += ch1;
+                cnt1 -= 2;
+            } else {
+                ans += ch1;
+                --cnt1;
+            }
+            if (cnt2 >= 2) {
+                ans += ch2;
+                ans += ch2;
+                cnt2 -= 2;
+            } else {
+                ans += ch2;
+                --cnt2;
+            }
+            if (cnt1) pq.push({cnt1, ch1});
+            if (cnt2) pq.push({cnt2, ch2});
+        }
+        if (pq.empty()) return ans;
+        auto [cnt, ch] = pq.top(); pq.pop();
+        if (cnt >= 2 && ans.back() != ch) {
+            ans += ch;
+            ans += ch;
+            --cnt;
+        }
+        if (cnt) ans += ch;
+        return ans;
+
+=======
+
+        string res;
+        priority_queue<pair<int, char>> q;
+        if (a > 0) {
+            q.push({a, 'a'});
+        }
+        if (b > 0) {
+            q.push({b, 'b'});
+        }
+        if (c > 0) {
+            q.push({c, 'c'});
+        }
+        while (!q.empty()) {
+            auto [count1, ch1] = q.top();
+            q.pop();
+            if (res.size() >= 2 && res[res.size() - 1] == ch1 && res[res.size() - 2] == ch1) {
+                if (q.empty()) {
+                    break;
+                }
+                auto [count2, ch2] = q.top();
+                q.pop();
+                res.push_back(ch2);
+                if (--count2 > 0) {
+                    q.push({count2, ch2});
+                }
+                q.push({count1, ch1});
+            } else {
+                res.push_back(ch1);
+                if (--count1 > 0) {
+                    q.push({count1, ch1});
+                }
+            }
+        }
+        return res;
+
+=======
+
+        string res;
+        while (a || b || c) {
+            int n = res.size();
+            if (n >= 2 && res[n - 1] == res[n - 2]) {
+                if (res[n - 1] == 'a' && b >= c) {
+                    res += 'b';
+                    b--;
+                } else if (res[n - 1] == 'b' && a >= c) {
+                    res += 'a';
+                    a--;
+                } else {
+                    res += 'c';
+                    c--;
+                }
+            } else {
+                if (a >= b && a >= c && a) {
+                    res += 'a';
+                    a--;
+                } else if (b >= a && b >= c && b) {
+                    res += 'b';
+                    b--;
+                } else if (c >= a && c >= b && c) {
+                    res += 'c';
+                    c--;
+                } else {
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        string res = "";
+        vector<pair<int, char>> v;
+        v.push_back(make_pair(a, 'a'));
+        v.push_back(make_pair(b, 'b'));
+        v.push_back(make_pair(c, 'c'));
+        while (true) {
+            sort(v.begin(), v.end());
+            if (v[2].first == 0) break;
+            if (v[2].first >= 2 && v[1].first == 0) {
+                res += string(2, v[2].second);
+                v[2].first -= 2;
+            } else if (v[2].first >= 1 && v[1].first >= 1) {
+                res += v[2].second;
+                res += v[1].second;
+                v[2].first -= 1;
+                v[1].first -= 1;
+            } else if (v[2].first >= 1 && v[1].first == 0) {
+                res += v[2].second;
+                v[2].first -= 1;
+            }
+        }
+        return res;
+
+=======
+
+        string res;
+        vector<pair<int, char>> v = {{a, 'a'}, {b, 'b'}, {c, 'c'}};
+        while (true) {
+            sort(v.rbegin(), v.rend());
+            if (v[0].first == 0) break;
+            if (v[0].first >= 2 && v[1].first >= 1 && (res.empty() || res.back() != v[0].second || res[res.size() - 2] != v[0].second)) {
+                res.push_back(v[0].second);
+                res.push_back(v[0].second);
+                v[0].first -= 2;
+            } else {
+                res.push_back(v[0].second);
+                v[0].first -= 1;
+            }
+        }
+        return res;
+
+=======
+
+        vector<pair<int, char>> v = {{a, 'a'}, {b, 'b'}, {c, 'c'}};
+        string ans;
+        while (true) {
+            sort(v.begin(), v.end(), greater<pair<int, char>>());
+            if (v[0].first == 0) break;
+            if (v[0].first >= 2 && v[1].first >= 1 && v[0].second != ans.back()) {
+                ans.push_back(v[0].second);
+                ans.push_back(v[0].second);
+                ans.push_back(v[1].second);
+                v[0].first -= 2;
+                v[1].first -= 1;
+            } else {
+                ans.push_back(v[0].second);
+                v[0].first -= 1;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<pair<int, char>> A = {{a, 'a'}, {b, 'b'}, {c, 'c'}};
+        string res;
+        while (true) {
+            sort(A.begin(), A.end());
+            if (A[2].first == 0) break;
+            if (A[2].first >= A[1].first + A[0].first) {
+                res += A[2].second;
+                res += A[2].second;
+                A[2].first -= 2;
+            } else {
+                res += A[2].second;
+                --A[2].first;
+                if (A[1].first > 0) {
+                    res += A[1].second;
+                    --A[1].first;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        string result = "";
+        int n = a+b+c;
+        vector<pair<int, char>> v = {{a, 'a'}, {b, 'b'}, {c, 'c'}};
+        for (int i = 0; i < n; ++i) {
+            sort(v.begin(), v.end());
+            if (v[2].first > 0 && (result.empty() || result.back() != v[2].second)) {
+                result += v[2].second;
+                --v[2].first;
+            } else if (v[1].first > 0 && (result.empty() || result.back() != v[1].second)) {
+                result += v[1].second;
+                --v[1].first;
+            } else if (v[0].first > 0 && (result.empty() || result.back() != v[0].second)) {
+                result += v[0].second;
+                --v[0].first;
+            } else {
+                break;
+            }
+        }
+        return result;

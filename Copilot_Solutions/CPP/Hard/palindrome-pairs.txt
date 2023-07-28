@@ -1,0 +1,370 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> res;
+        unordered_map<string, int> m;
+        for (int i = 0; i < words.size(); ++i) {
+            m[words[i]] = i;
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            for (int j = 0; j <= words[i].size(); ++j) {
+                string s1 = words[i].substr(0, j);
+                string s2 = words[i].substr(j);
+                if (isPalindrome(s1)) {
+                    string s2_rev = s2;
+                    reverse(s2_rev.begin(), s2_rev.end());
+                    if (m.count(s2_rev) && m[s2_rev] != i) {
+                        res.push_back({m[s2_rev], i});
+                    }
+                }
+                if (isPalindrome(s2)) {
+                    string s1_rev = s1;
+                    reverse(s1_rev.begin(), s1_rev.end());
+                    if (m.count(s1_rev) && m[s1_rev] != i && s2.size() != 0) {
+                        res.push_back({i, m[s1_rev]});
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    
+    bool isPalindrome(string s) {
+        int i = 0, j = s.size() - 1;
+        while (i < j) {
+            if (s[i++] != s[j--]) return false;
+        }
+        return true;
+
+=======
+
+        unordered_map<string, int> mp;
+        int n = words.size();
+        for (int i = 0; i < n; ++i) {
+            mp[words[i]] = i;
+        }
+        vector<vector<int>> ans;
+        for (int i = 0; i < n; ++i) {
+            string word = words[i];
+            int m = word.size();
+            for (int j = 0; j <= m; ++j) {
+                if (isPalindrome(word, j, m - 1)) {
+                    string left = word.substr(0, j);
+                    reverse(left.begin(), left.end());
+                    if (mp.count(left) && mp[left] != i) {
+                        ans.push_back({i, mp[left]});
+                    }
+                }
+                if (j != 0 && isPalindrome(word, 0, j - 1)) {
+                    string right = word.substr(j);
+                    reverse(right.begin(), right.end());
+                    if (mp.count(right) && mp[right] != i) {
+                        ans.push_back({mp[right], i});
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    bool isPalindrome(const string& s, int left, int right) {
+        while (left < right) {
+            if (s[left++] != s[right--]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        unordered_map<string, int> mp;
+        for (int i = 0; i < words.size(); i++) {
+            string t = words[i];
+            reverse(t.begin(), t.end());
+            mp[t] = i;
+        }
+        vector<vector<int>> res;
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j <= words[i].size(); j++) {
+                string left = words[i].substr(0, j);
+                string right = words[i].substr(j);
+                if (mp.count(left) && mp[left] != i && isPalindrome(right)) {
+                    res.push_back({i, mp[left]});
+                }
+                if (mp.count(right) && mp[right] != i && isPalindrome(left)) {
+                    res.push_back({mp[right], i});
+                }
+            }
+        }
+        return res;
+    }
+    bool isPalindrome(string s) {
+        int l = 0;
+        int r = s.size() - 1;
+        while (l < r) {
+            if (s[l] != s[r]) {
+                return false;
+            }
+            l++;
+            r--;
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> res;
+        unordered_map<string, int> mp;
+        for (int i = 0; i < words.size(); ++i) {
+            mp[words[i]] = i;
+        }
+        if (mp.count("")) {
+            int blank = mp[""];
+            for (int i = 0; i < words.size(); ++i) {
+                if (i == blank) continue;
+                if (isPalindrome(words[i])) {
+                    res.push_back({blank, i});
+                    res.push_back({i, blank});
+                }
+            }
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            string t = words[i];
+            reverse(t.begin(), t.end());
+            if (mp.count(t) && mp[t] != i) {
+                res.push_back({i, mp[t]});
+            }
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            string t = words[i];
+            for (int j = 0; j < t.size(); ++j) {
+                string left = t.substr(0, j);
+                string right = t.substr(j);
+                if (isPalindrome(left)) {
+                    string r = right;
+                    reverse(r.begin(), r.end());
+                    if (mp.count(r) && mp[r] != i) {
+                        res.push_back({mp[r], i});
+                    }
+                }
+                if (isPalindrome(right)) {
+                    string l = left;
+                    reverse(l.begin(), l.end());
+                    if (mp.count(l) && mp[l] != i) {
+                        res.push_back({i, mp[l]});
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    
+    bool isPalindrome(string& s) {
+        int i = 0;
+        int j = s.size() - 1;
+        while (i < j) {
+            if (s[i] != s[j]) return false;
+            ++i;
+            --j;
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> ans;
+        unordered_map<string, int> mp;
+        for (int i = 0; i < words.size(); i++) {
+            mp[words[i]] = i;
+        }
+        for (int i = 0; i < words.size(); i++) {
+            string s = words[i];
+            for (int j = 0; j <= s.size(); j++) {
+                string pre = s.substr(0, j);
+                string suf = s.substr(j);
+                if (isPalindrome(pre)) {
+                    string revSuf = suf;
+                    reverse(revSuf.begin(), revSuf.end());
+                    if (mp.count(revSuf) && mp[revSuf] != i) {
+                        ans.push_back({mp[revSuf], i});
+                    }
+                }
+                if (isPalindrome(suf)) {
+                    string revPre = pre;
+                    reverse(revPre.begin(), revPre.end());
+                    if (mp.count(revPre) && mp[revPre] != i && suf.size() != 0) {
+                        ans.push_back({i, mp[revPre]});
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+    bool isPalindrome(string s) {
+        for (int i = 0; i < s.size() / 2; i++) {
+            if (s[i] != s[s.size() - 1 - i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        unordered_map<string, int> m;
+        vector<vector<int>> res;
+        for (int i = 0; i < words.size(); ++i)
+            m[words[i]] = i;
+        for (int i = 0; i < words.size(); ++i) {
+            string s = words[i];
+            reverse(s.begin(), s.end());
+            if (m.count(s) && m[s] != i) {
+                res.push_back({i, m[s]});
+            }
+            for (int j = 0; j < s.size(); ++j) {
+                if (isPalindrome(s, 0, j)) {
+                    string left = s.substr(j + 1);
+                    if (m.count(left)) {
+                        res.push_back({i, m[left]});
+                    }
+                }
+                if (isPalindrome(s, j, s.size() - 1)) {
+                    string right = s.substr(0, j);
+                    if (m.count(right)) {
+                        res.push_back({m[right], i});
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> result;
+        unordered_map<string, int> hash;
+        for (int i = 0; i < words.size(); i++) {
+            hash[words[i]] = i;
+        }
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j <= words[i].size(); j++) {
+                string str1 = words[i].substr(0, j);
+                string str2 = words[i].substr(j);
+                if (isPalindrome(str1)) {
+                    string str2rvs = str2;
+                    reverse(str2rvs.begin(), str2rvs.end());
+                    if (hash.count(str2rvs) && hash[str2rvs] != i) {
+                        result.push_back({hash[str2rvs], i});
+                    }
+                }
+                if (isPalindrome(str2)) {
+                    string str1rvs = str1;
+                    reverse(str1rvs.begin(), str1rvs.end());
+                    if (hash.count(str1rvs) && hash[str1rvs] != i && str2.size() != 0) {
+                        result.push_back({i, hash[str1rvs]});
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        map<string, int> mp;
+        vector<vector<int>> ans;
+        for (int i = 0; i < words.size(); i++) {
+            mp[words[i]] = i;
+        }
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j <= words[i].size(); j++) {
+                string left = words[i].substr(0, j);
+                string right = words[i].substr(j);
+                if (isPalindrome(left)) {
+                    string rightRev = right;
+                    reverse(rightRev.begin(), rightRev.end());
+                    if (mp.count(rightRev) && mp[rightRev] != i) {
+                        ans.push_back({mp[rightRev], i});
+                    }
+                }
+                if (isPalindrome(right)) {
+                    string leftRev = left;
+                    reverse(leftRev.begin(), leftRev.end());
+                    if (mp.count(leftRev) && mp[leftRev] != i && right.size() != 0) {
+                        ans.push_back({i, mp[leftRev]});
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+    bool isPalindrome(string s) {
+        int l = 0, r = s.size() - 1;
+        while (l < r) {
+            if (s[l] != s[r]) {
+                return false;
+            }
+            l++;
+            r--;
+        }
+        return true;
+
+=======
+
+        vector<vector<int>> ans;
+        unordered_map<string, int> m;
+        for (int i = 0; i < words.size(); ++i) {
+            string t = words[i];
+            reverse(t.begin(), t.end());
+            m[t] = i;
+        }
+        if (m.count("")) {
+            for (int i = 0; i < words.size(); ++i) {
+                if (i != m[""] && isPalindrome(words[i])) {
+                    ans.push_back({m[""], i});
+                    ans.push_back({i, m[""]});
+                }
+            }
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            for (int j = 0; j < words[i].size(); ++j) {
+                string left = words[i].substr(0, j);
+                string right = words[i].substr(j);
+                if (m.count(left) && m[left] != i && isPalindrome(right)) {
+                    ans.push_back({i, m[left]});
+                }
+                if (m.count(right) && m[right] != i && isPalindrome(left)) {
+                    ans.push_back({m[right], i});
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> res;
+        unordered_map<string, int> dict;
+        for (int i = 0; i < words.size(); i++) {
+            string t = words[i];
+            reverse(t.begin(), t.end());
+            dict[t] = i;
+        }
+        if (dict.count("")) {
+            int blank = dict[""];
+            for (int i = 0; i < words.size(); i++) {
+                if (i == blank) continue;
+                if (isPalindrome(words[i])) {
+                    res.push_back({blank, i});
+                    res.push_back({i, blank});
+                }
+            }
+        }
+        for (int i = 0; i < words.size(); i++) {
+            for (int j = 0; j < words[i].size(); j++) {
+                string left = words[i].substr(0, j);
+                string right = words[i].substr(j);
+                if (dict.count(left) && isPalindrome(right) && dict[left] != i) {
+                    res.push_back({i, dict[left]});
+                }
+                if (dict.count(right) && isPalindrome(left) && dict[right] != i) {
+                    res.push_back({dict[right], i});
+                }
+            }
+        }
+        return res;

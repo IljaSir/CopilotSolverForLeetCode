@@ -1,0 +1,157 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let (x0, y0) = (coordinates[0][0], coordinates[0][1]);
+        let (x1, y1) = (coordinates[1][0], coordinates[1][1]);
+        let (dx, dy) = (x1 - x0, y1 - y0);
+        for i in 2..coordinates.len() {
+            let (x, y) = (coordinates[i][0], coordinates[i][1]);
+            if dx * (y - y0) != dy * (x - x0) {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let (x1, y1) = (coordinates[0][0], coordinates[0][1]);
+        let (x2, y2) = (coordinates[1][0], coordinates[1][1]);
+        for i in 2..coordinates.len() {
+            let (x3, y3) = (coordinates[i][0], coordinates[i][1]);
+            if (y2 - y1) * (x3 - x2) != (y3 - y2) * (x2 - x1) {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let (x1, y1) = (coordinates[0][0], coordinates[0][1]);
+        let (x2, y2) = (coordinates[1][0], coordinates[1][1]);
+        for i in 2..coordinates.len() {
+            let (x, y) = (coordinates[i][0], coordinates[i][1]);
+            if (x - x1) * (y2 - y1) != (y - y1) * (x2 - x1) {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let x1 = coordinates[0][0];
+        let y1 = coordinates[0][1];
+        let x2 = coordinates[1][0];
+        let y2 = coordinates[1][1];
+        for i in 2..coordinates.len() {
+            let x = coordinates[i][0];
+            let y = coordinates[i][1];
+            if (x - x1) * (y2 - y1) != (x2 - x1) * (y - y1) {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let (x1, y1) = (coordinates[0][0], coordinates[0][1]);
+        let (x2, y2) = (coordinates[1][0], coordinates[1][1]);
+        let a = y2 - y1;
+        let b = x1 - x2;
+        let c = x2 * y1 - x1 * y2;
+        coordinates[2..].iter().all(|p| a * p[0] + b * p[1] + c == 0)
+
+=======
+
+        let (x1, y1) = (coordinates[0][0], coordinates[0][1]);
+        let (x2, y2) = (coordinates[1][0], coordinates[1][1]);
+        let mut slope = 0.0;
+        if x1 != x2 {
+            slope = (y1 - y2) as f64 / (x1 - x2) as f64;
+        }
+        for i in 2..coordinates.len() {
+            let (x, y) = (coordinates[i][0], coordinates[i][1]);
+            if x == x1 {
+                if x != x2 {
+                    return false;
+                }
+            } else if (y - y1) as f64 / (x - x1) as f64 != slope {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let (x, y) = (coordinates[0][0], coordinates[0][1]);
+        let (dx, dy) = (coordinates[1][0] - x, coordinates[1][1] - y);
+        for i in 2..coordinates.len() {
+            let (x, y) = (coordinates[i][0], coordinates[i][1]);
+            if dx * (y - coordinates[0][1]) != dy * (x - coordinates[0][0]) {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let len = coordinates.len();
+        let (x0, y0) = (coordinates[0][0], coordinates[0][1]);
+        let (x1, y1) = (coordinates[1][0], coordinates[1][1]);
+        for i in 2..len {
+            let (x, y) = (coordinates[i][0], coordinates[i][1]);
+            if (y - y0) * (x1 - x0) != (x - x0) * (y1 - y0) {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut slope = None;
+        for i in 0..coordinates.len() - 1 {
+            let x1 = coordinates[i][0];
+            let y1 = coordinates[i][1];
+            let x2 = coordinates[i + 1][0];
+            let y2 = coordinates[i + 1][1];
+            let s = if x2 == x1 { 0 } else { (y2 - y1) as f64 / (x2 - x1) as f64 };
+            if let Some(slope) = slope {
+                if s != slope {
+                    return false;
+                }
+            } else {
+                slope = Some(s);
+            }
+        }
+        true
+
+=======
+
+        let mut pre_slope = None;
+        for i in 1..coordinates.len() {
+            let x1 = coordinates[i-1][0];
+            let x2 = coordinates[i][0];
+            let y1 = coordinates[i-1][1];
+            let y2 = coordinates[i][1];
+            if x1 == x2 {
+                if pre_slope.is_some() && pre_slope.unwrap() != f64::INFINITY {
+                    return false;
+                }
+                pre_slope = Some(f64::INFINITY);
+            } else {
+                let slope = (y2 - y1) as f64 / (x2 - x1) as f64;
+                if pre_slope.is_some() && pre_slope.unwrap() != slope {
+                    return false;
+                }
+                pre_slope = Some(slope);
+            }
+        }
+        true
+    }
+}

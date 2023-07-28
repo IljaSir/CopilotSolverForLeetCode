@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int numDupDigitsAtMostN(int n) {
+        
+        int ans = 0;
+        int len = 0;
+        int x = n;
+        while (x) {
+            x /= 10;
+            len++;
+        }
+        for (int i = 1; i < len; i++) {
+            ans += 9 * A(9, i - 1);
+        }
+        bool used[10] = {false};
+        for (int i = len; i >= 1; i--) {
+            int p = pow(10, i - 1);
+            int d = n / p;
+            for (int j = (i == len); j < d; j++) {
+                if (!used[j]) {
+                    ans += A(10 - i - (i == len), len - i);
+                }
+            }
+            if (used[d]) {
+                break;
+            }
+            used[d] = true;
+            n %= p;
+        }
+        return n - ans;
+    }
+};

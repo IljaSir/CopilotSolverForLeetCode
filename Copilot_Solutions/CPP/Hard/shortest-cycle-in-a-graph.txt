@@ -1,0 +1,272 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        vector<vector<int>> g(n);
+        for (auto e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dist(n, n + 1);
+        vector<int> pre(n, -1);
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            dist[i] = 0;
+            q.push(i);
+            while (!q.empty()) {
+                int x = q.front();
+                q.pop();
+                for (int y : g[x]) {
+                    if (y == pre[x]) continue;
+                    if (dist[y] == n + 1) {
+                        dist[y] = dist[x] + 1;
+                        pre[y] = x;
+                        q.push(y);
+                    } else {
+                        return dist[x] + dist[y] + 1;
+                    }
+                }
+            }
+            dist[i] = n + 1;
+        }
+        return -1;
+
+=======
+
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> dist(n, INT_MAX);
+        int res = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            queue<int> q;
+            q.push(i);
+            dist[i] = 0;
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int v : adj[u]) {
+                    if (dist[v] == INT_MAX) {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    } else if (v != i && dist[v] >= dist[u]) {
+                        res = min(res, dist[v] + dist[u] + 1);
+                    }
+                }
+            }
+            fill(begin(dist), end(dist), INT_MAX);
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> dist(n, INT_MAX);
+        int res = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            dist[i] = 0;
+            queue<int> q;
+            q.push(i);
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int v : graph[u]) {
+                    if (dist[v] == INT_MAX) {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    } else if (v != i) {
+                        res = min(res, dist[u] + dist[v] + 1);
+                    }
+                }
+            }
+            fill(dist.begin(), dist.end(), INT_MAX);
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        int ans = INT_MAX;
+        for (auto& e : edges) {
+            vector<int> dist(n, INT_MAX);
+            queue<int> q;
+            q.push(e[0]);
+            dist[e[0]] = 0;
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int v : graph[u]) {
+                    if (dist[v] == INT_MAX) {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    } else if (v == e[1]) {
+                        ans = min(ans, dist[u] + 1);
+                    }
+                }
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        int res = n + 1;
+        vector<int> dist(n, n + 1);
+        for (int i = 0; i < n; ++i) {
+            queue<int> q;
+            q.push(i);
+            dist[i] = 0;
+            while (!q.empty()) {
+                int node = q.front();
+                q.pop();
+                for (int neighbor : graph[node]) {
+                    if (dist[neighbor] == n + 1) {
+                        dist[neighbor] = dist[node] + 1;
+                        q.push(neighbor);
+                    } else if (dist[neighbor] >= dist[node]) {
+                        res = min(res, dist[neighbor] + dist[node] + 1);
+                    }
+                }
+            }
+            fill(dist.begin(), dist.end(), n + 1);
+        }
+        return res == n + 1 ? -1 : res;
+
+=======
+
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        int res = n + 1;
+        for (int i = 0; i < n; i++) {
+            vector<int> dist(n, n + 1), pre(n, -1);
+            dist[i] = 0;
+            queue<int> q;
+            q.push(i);
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int v : adj[u]) {
+                    if (v == pre[u]) continue;
+                    if (dist[v] < n + 1) {
+                        res = min(res, dist[u] + dist[v] + 1);
+                    } else {
+                        dist[v] = dist[u] + 1;
+                        pre[v] = u;
+                        q.push(v);
+                    }
+                }
+            }
+        }
+        return res == n + 1 ? -1 : res;
+
+=======
+
+        vector<vector<int>> adj(n);
+        for (auto& e: edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        int ans = n + 1;
+        for (int i = 0; i < n; ++i) {
+            queue<pair<int, int>> q;
+            vector<int> dist(n, n + 1);
+            q.emplace(i, -1);
+            dist[i] = 0;
+            while (!q.empty()) {
+                auto [u, p] = q.front();
+                q.pop();
+                for (auto v: adj[u]) {
+                    if (v == p) continue;
+                    if (dist[v] == n + 1) {
+                        dist[v] = dist[u] + 1;
+                        q.emplace(v, u);
+                    } else {
+                        ans = min(ans, dist[u] + dist[v] + 1);
+                    }
+                }
+            }
+        }
+        return ans == n + 1 ? -1 : ans;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto &edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        int res = n + 1;
+        for (int i = 0; i < n; ++i) {
+            vector<int> dist(n, n + 1);
+            dist[i] = 0;
+            queue<int> q;
+            q.push(i);
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int v : graph[u]) {
+                    if (dist[v] != n + 1) {
+                        if (v != i) {
+                            res = min(res, dist[u] + dist[v] + 1);
+                        }
+                    } else {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    }
+                }
+            }
+        }
+        return res == n + 1 ? -1 : res;
+
+=======
+
+        int m = edges.size();
+        vector<vector<int>> adj(n);
+        for(auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> dist(n, -1);
+        vector<int> vis(n, 0);
+        vector<int> par(n, -1);
+        int ans = INT_MAX;
+        for(int i = 0; i < n; i++) {
+            if(vis[i]) continue;
+            queue<int> q;
+            q.push(i);
+            dist[i] = 0;
+            vis[i] = 1;
+            while(!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for(int v : adj[u]) {
+                    if(!vis[v]) {
+                        dist[v] = dist[u] + 1;
+                        vis[v] = 1;
+                        par[v] = u;
+                        q.push(v);
+                    }
+                    else if(v != par[u]) {
+                        ans = min(ans, dist[u] + dist[v] + 1);
+                    }
+                }
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;

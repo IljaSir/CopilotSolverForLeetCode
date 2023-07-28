@@ -1,0 +1,207 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = candidates.size();
+        int ans = 0;
+        for(int i = 0; i < n; i++){
+            for(int j = i + 1; j < n; j++){
+                ans = max(ans, candidates[i] & candidates[j]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = candidates.size();
+        vector<int> bits(30, 0);
+        for (int c : candidates) {
+            for (int i = 0; i < 30; ++i) {
+                if (c & (1 << i)) {
+                    bits[i]++;
+                }
+            }
+        }
+        
+        int ans = 0;
+        for (int i = 29; i >= 0; --i) {
+            if (bits[i] > 0) {
+                ans |= (1 << i);
+            }
+        }
+        return ans;
+
+=======
+
+        sort(candidates.begin(), candidates.end(), greater<int>());
+        int n = candidates.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (candidates[i] == 0) break;
+            if ((ans & candidates[i]) == 0) {
+                ans |= candidates[i];
+            }
+        }
+        int cnt = 0;
+        while (ans) {
+            cnt++;
+            ans >>= 1;
+        }
+        return cnt;
+
+=======
+
+        sort(candidates.begin(), candidates.end());
+        int n = candidates.size();
+        int res = 0;
+        for (int i = n - 1; i > 0; i--) {
+            if (candidates[i] == candidates[i - 1]) {
+                continue;
+            }
+            int temp = 0;
+            for (int j = i; j < n; j++) {
+                if ((temp & candidates[j]) > 0) {
+                    continue;
+                }
+                temp |= candidates[j];
+                res = max(res, temp);
+            }
+        }
+        return res;
+
+=======
+
+        sort(candidates.begin(), candidates.end());
+        int n = candidates.size();
+        int res = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            int tmp = candidates[i];
+            for (int j = i - 1; j >= 0; j--) {
+                if ((tmp & candidates[j]) > 0) {
+                    tmp &= candidates[j];
+                    if (tmp == 1) {
+                        break;
+                    }
+                }
+            }
+            res = max(res, tmp);
+        }
+        return res;
+
+=======
+
+        sort(candidates.begin(), candidates.end(), greater<int>());
+        int n = candidates.size();
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int num = candidates[i];
+            for (int j = 0; j < n; ++j) {
+                if (i == j) continue;
+                int num2 = candidates[j];
+                if ((num & num2) > 0) {
+                    res = max(res, __builtin_popcount(num & num2));
+                }
+            }
+        }
+        return res;
+
+=======
+
+        sort(candidates.begin(), candidates.end(), greater<int>());
+        int n = candidates.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int mask = 1 << 30;
+            int j = i;
+            int cur = 0;
+            while (j < n && mask > 0) {
+                if (candidates[j] & mask) {
+                    cur += mask;
+                    mask >>= 1;
+                } else {
+                    j++;
+                }
+            }
+            ans = max(ans, __builtin_popcount(cur));
+        }
+        return ans;
+
+=======
+
+        sort(candidates.begin(), candidates.end());
+        int n = candidates.size();
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int j = i;
+            while (j + 1 < n && candidates[j + 1] == candidates[i]) {
+                ++j;
+            }
+            if (candidates[i] == 1) {
+                res = max(res, j - i + 1);
+            } else {
+                int k = 30;
+                while (k >= 0 && (candidates[i] & (1 << k)) == 0) {
+                    --k;
+                }
+                int mask = (1 << (k + 1)) - 1;
+                int x = candidates[i] & mask;
+                int y = (1 << (k + 1)) - 1 - x;
+                int cnt = 0;
+                int p = n - 1;
+                while (p >= 0 && cnt < y) {
+                    if (candidates[p] & (1 << k)) {
+                        ++cnt;
+                    }
+                    --p;
+                }
+                if (cnt == y) {
+                    res = max(res, j - i + 1 + n - 1 - p);
+                }
+            }
+            i = j;
+        }
+        return res;
+
+=======
+
+        sort(candidates.begin(), candidates.end(), greater<int>());
+        int n = candidates.size();
+        int m = 1 << n;
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            int tmp = 0;
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    tmp &= candidates[j];
+                    cnt++;
+                }
+            }
+            if (tmp > 0) {
+                res = max(res, cnt);
+            }
+        }
+        return res;
+
+=======
+
+        sort(candidates.begin(), candidates.end());
+        int n = candidates.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (ans >= candidates[i]) {
+                continue;
+            }
+            int max = candidates[i];
+            for (int j = i + 1; j < n; ++j) {
+                if (max >= candidates[j]) {
+                    continue;
+                }
+                int tmp = max & candidates[j];
+                if (tmp > ans) {
+                    ans = tmp;
+                    max = tmp;
+                }
+            }
+        }
+        return ans;

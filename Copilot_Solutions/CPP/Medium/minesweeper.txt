@@ -1,0 +1,430 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = board.size(), n = board[0].size();
+        int x = click[0], y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        vector<vector<int>> dirs = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        queue<pair<int, int>> q;
+        q.push({x, y});
+        visited[x][y] = true;
+        while (!q.empty()) {
+            auto p = q.front();
+            q.pop();
+            int cnt = 0;
+            for (auto dir : dirs) {
+                int i = p.first + dir[0], j = p.second + dir[1];
+                if (i >= 0 && i < m && j >= 0 && j < n) {
+                    if (board[i][j] == 'M') {
+                        cnt++;
+                    }
+                }
+            }
+            if (cnt > 0) {
+                board[p.first][p.second] = cnt + '0';
+            } else {
+                board[p.first][p.second] = 'B';
+                for (auto dir : dirs) {
+                    int i = p.first + dir[0], j = p.second + dir[1];
+                    if (i >= 0 && i < m && j >= 0 && j < n && board[i][j] == 'E' && !visited[i][j]) {
+                        q.push({i, j});
+                        visited[i][j] = true;
+                    }
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+        } else {
+            int count = 0;
+            if (x > 0 && y > 0 && board[x - 1][y - 1] == 'M') {
+                count++;
+            }
+            if (x > 0 && board[x - 1][y] == 'M') {
+                count++;
+            }
+            if (x > 0 && y < n - 1 && board[x - 1][y + 1] == 'M') {
+                count++;
+            }
+            if (y > 0 && board[x][y - 1] == 'M') {
+                count++;
+            }
+            if (y < n - 1 && board[x][y + 1] == 'M') {
+                count++;
+            }
+            if (x < m - 1 && y > 0 && board[x + 1][y - 1] == 'M') {
+                count++;
+            }
+            if (x < m - 1 && board[x + 1][y] == 'M') {
+                count++;
+            }
+            if (x < m - 1 && y < n - 1 && board[x + 1][y + 1] == 'M') {
+                count++;
+            }
+            if (count == 0) {
+                board[x][y] = 'B';
+                if (x > 0 && y > 0 && board[x - 1][y - 1] == 'E') {
+                    updateBoard(board, vector<int>{x - 1, y - 1});
+                }
+                if (x > 0 && board[x - 1][y] == 'E') {
+                    updateBoard(board, vector<int>{x - 1, y});
+                }
+                if (x > 0 && y < n - 1 && board[x - 1][y + 1] == 'E') {
+                    updateBoard(board, vector<int>{x - 1, y + 1});
+                }
+                if (y > 0 && board[x][y - 1] == 'E') {
+                    update
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        queue<vector<int>> q;
+        q.push(click);
+        while (!q.empty()) {
+            int x = q.front()[0];
+            int y = q.front()[1];
+            q.pop();
+            if (board[x][y] != 'E') {
+                continue;
+            }
+            int cnt = 0;
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    int nx = x + i;
+                    int ny = y + j;
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                        continue;
+                    }
+                    if (board[nx][ny] == 'M') {
+                        ++cnt;
+                    }
+                }
+            }
+            if (cnt > 0) {
+                board[x][y] = cnt + '0';
+            } else {
+                board[x][y] = 'B';
+                for (int i = -1; i <= 1; ++i) {
+                    for (int j = -1; j <= 1; ++j) {
+                        if (i == 0 && j == 0) {
+                            continue;
+                        }
+                        int nx = x + i;
+                        int ny = y + j;
+                        if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                            continue;
+                        }
+                        if (board[nx][ny] == 'E') {
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+        } else {
+            queue<pair<int, int>> q;
+            q.push({x, y});
+            while (!q.empty()) {
+                auto [x, y] = q.front();
+                q.pop();
+                if (board[x][y] != 'E') {
+                    continue;
+                }
+                int cnt = 0;
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        int nx = x + i;
+                        int ny = y + j;
+                        if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                            continue;
+                        }
+                        if (board[nx][ny] == 'M') {
+                            cnt++;
+                        }
+                    }
+                }
+                if (cnt > 0) {
+                    board[x][y] = cnt + '0';
+                } else {
+                    board[x][y] = 'B';
+                    for (int i = -1; i <= 1; i++) {
+                        for (int j = -1; j <= 1; j++) {
+                            int nx = x + i;
+                            int ny = y + j;
+                            if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                                continue;
+                            }
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+        } else {
+            int cnt = 0;
+            for (int i = -1; i <= 1; ++i) {
+                for (int j = -1; j <= 1; ++j) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    int nx = x + i;
+                    int ny = y + j;
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && board[nx][ny] == 'M') {
+                        ++cnt;
+                    }
+                }
+            }
+            if (cnt > 0) {
+                board[x][y] = '0' + cnt;
+            } else {
+                board[x][y] = 'B';
+                for (int i = -1; i <= 1; ++i) {
+                    for (int j = -1; j <= 1; ++j) {
+                        if (i == 0 && j == 0) {
+                            continue;
+                        }
+                        int nx = x + i;
+                        int ny = y + j;
+                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && board[nx][ny] == 'E') {
+                            vector<int> nextClick = {nx, ny};
+                            updateBoard(board, nextClick);
+                        }
+                    }
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int dy[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+        vector<vector<int>> visited(m, vector<int>(n));
+        queue<pair<int, int>> q;
+        q.push({x, y});
+        while (!q.empty()) {
+            int x = q.front().first;
+            int y = q.front().second;
+            q.pop();
+            if (board[x][y] == 'E') {
+                int mine = 0;
+                for (int i = 0; i < 8; i++) {
+                    int nx = x + dx[i];
+                    int ny = y + dy[i];
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && board[nx][ny] == 'M') {
+                        mine++;
+                    }
+                }
+                if (mine > 0) {
+                    board[x][y] = mine + '0';
+                } else {
+                    board[x][y] = 'B';
+                    for (int i = 0; i < 8; i++) {
+                        int nx = x + dx[i];
+                        int ny = y + dy[i];
+                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny]) {
+                            visited[nx][ny] = 1;
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int m = board.size();
+        int n = board[0].size();
+        int x = click[0];
+        int y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+        queue<vector<int>> q;
+        q.push(click);
+        while (!q.empty()) {
+            vector<int> cur = q.front();
+            q.pop();
+            int i = cur[0];
+            int j = cur[1];
+            if (board[i][j] == 'E') {
+                int count = 0;
+                for (auto dir : dirs) {
+                    int r = i + dir[0];
+                    int c = j + dir[1];
+                    if (r >= 0 && r < m && c >= 0 && c < n && board[r][c] == 'M') {
+                        count++;
+                    }
+                }
+                if (count == 0) {
+                    board[i][j] = 'B';
+                    for (auto dir : dirs) {
+                        int r = i + dir[0];
+                        int c = j + dir[1];
+                        if (r >= 0 && r < m && c >= 0 && c < n && board[r][c] == 'E') {
+                            q.push({r, c});
+                        }
+                    }
+                } else {
+                    board[i][j] = count + '0';
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int x = click[0], y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+        int m = board.size(), n = board[0].size();
+        int cnt = 0;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int xx = x + i, yy = y + j;
+                if (xx >= 0 && xx < m && yy >= 0 && yy < n && (board[xx][yy] == 'M' || board[xx][yy] == 'X')) cnt++;
+            }
+        }
+        if (cnt > 0) {
+            board[x][y] = cnt + '0';
+            return board;
+        }
+        board[x][y] = 'B';
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int xx = x + i, yy = y + j;
+                if (xx >= 0 && xx < m && yy >= 0 && yy < n && board[xx][yy] == 'E') {
+                    vector<int> v = {xx, yy};
+                    updateBoard(board, v);
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int row = click[0], col = click[1];
+        if (board[row][col] == 'M') {
+            board[row][col] = 'X';
+            return board;
+        }
+        int m = board.size(), n = board[0].size();
+        vector<vector<int>> dir = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        queue<pair<int, int>> q;
+        q.push({row, col});
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            if (board[x][y] != 'E') continue;
+            int cnt = 0;
+            for (auto [dx, dy] : dir) {
+                int nx = x + dx, ny = y + dy;
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && board[nx][ny] == 'M') cnt++;
+            }
+            if (cnt > 0) {
+                board[x][y] = cnt + '0';
+            } else {
+                board[x][y] = 'B';
+                for (auto [dx, dy] : dir) {
+                    int nx = x + dx, ny = y + dy;
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && board[nx][ny] == 'E') q.push({nx, ny});
+                }
+            }
+        }
+        return board;
+
+=======
+
+        int n = board.size();
+        int m = board[0].size();
+        int i = click[0];
+        int j = click[1];
+        if(board[i][j] == 'M'){
+            board[i][j] = 'X';
+            return board;
+        }
+        if(board[i][j] == 'E'){
+            int cnt = 0;
+            for(int x = max(0, i-1); x <= min(n-1, i+1); x++){
+                for(int y = max(0, j-1); y <= min(m-1, j+1); y++){
+                    if(x == i && y == j) continue;
+                    if(board[x][y] == 'M' || board[x][y] == 'X'){
+                        cnt++;
+                    }
+                }
+            }
+            if(cnt == 0){
+                board[i][j] = 'B';
+                for(int x = max(0, i-1); x <= min(n-1, i+1); x++){
+                    for(int y = max(0, j-1); y <= min(m-1, j+1); y++){
+                        if(x == i && y == j) continue;
+                        if(board[x][y] == 'E'){
+                            vector<int> click = {x, y};
+                            updateBoard(board, click);
+                        }
+                    }
+                }
+            }
+            else{
+                board[i][j] = '0' + cnt;
+            }
+        }
+        return board;

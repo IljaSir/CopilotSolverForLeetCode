@@ -1,0 +1,147 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        if (total < cost1 && total < cost2) {
+            return 0;
+        }
+        if (cost1 > cost2) {
+            int tmp = cost1;
+            cost1 = cost2;
+            cost2 = tmp;
+        }
+        long ans = 0;
+        for (int i = 0; i <= total / cost1; i++) {
+            int tmp = total - i * cost1;
+            if (tmp % cost2 == 0) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        long[][] dp = new long[total+1][total+1];
+        for (int i = 0; i <= total; i++) {
+            for (int j = 0; j <= total; j++) {
+                if (i == 0 && j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    long ways = 0;
+                    if (i >= cost1) {
+                        ways += dp[i-cost1][j];
+                    }
+                    if (j >= cost2) {
+                        ways += dp[i][j-cost2];
+                    }
+                    dp[i][j] = ways;
+                }
+            }
+        }
+        return dp[total][total];
+
+=======
+
+        long res = 0;
+        for (int i = 0; i <= total / cost1; i++) {
+            int j = (total - i * cost1) / cost2;
+            res += j + 1;
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        for (int i = 0; i <= total; i++) {
+            int j = total - i * cost1;
+            if (j >= 0 && j % cost2 == 0) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        int maxPens = total / cost1;
+        for (int pens = 0; pens <= maxPens; pens++) {
+            int pencils = (total - pens * cost1) / cost2;
+            if (pens * cost1 + pencils * cost2 == total) {
+                res += getCombinations(pens + pencils, pens);
+            }
+        }
+        return res;
+    }
+    
+    private long getCombinations(int n, int k) {
+        long res = 1;
+        for (int i = 1; i <= k; i++) {
+            res = res * (n - i + 1) / i;
+        }
+        return res;
+
+=======
+
+        if (cost1 > cost2) {
+            int tmp = cost1;
+            cost1 = cost2;
+            cost2 = tmp;
+        }
+        int max = total / cost1;
+        long res = 0;
+        for (int i = 0; i <= max; i++) {
+            int left = total - cost1 * i;
+            if (left % cost2 == 0) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int[] cost = {cost1, cost2};
+        long[][] dp = new long[2][total + 1];
+        for (int i = 0; i <= total; i++) {
+            dp[0][i] = i % cost[0] == 0 ? 1 : 0;
+        }
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j <= total; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j >= cost[i]) {
+                    dp[i][j] += dp[i][j - cost[i]];
+                }
+            }
+        }
+        return dp[1][total];
+
+=======
+
+        long res = 0;
+        for (int i = 0; i <= total; i++) {
+            int pen = i;
+            int pencil = total - pen;
+            if (pencil >= 0 && pencil % cost2 == 0) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        final int max = 1000000;
+        long[][] dp = new long[max+1][2];
+        for (int i = 1; i <= max; i++) {
+            int p = i - cost1;
+            if (p >= 0) {
+                dp[i][0] = dp[p][0] + dp[p][1] + 1;
+            }
+            int q = i - cost2;
+            if (q >= 0) {
+                dp[i][1] = dp[q][0] + dp[q][1] + 1;
+            }
+        }
+        long ans = 0;
+        for (int i = 0; i <= total; i++) {
+            ans += dp[i][0] + dp[i][1];
+        }
+        return ans;

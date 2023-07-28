@@ -1,0 +1,171 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (nums[i] > 2 * (long long)nums[j]) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (nums[i] > 2 * (long long)nums[j]) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (nums[i] > 2 * (long long)nums[j]) {
+                    ++res;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> tmp(n);
+        return mergeSort(nums, tmp, 0, n-1);
+    }
+    
+    int mergeSort(vector<int>& nums, vector<int>& tmp, int l, int r) {
+        if (l >= r) return 0;
+        int m = l + (r - l) / 2;
+        int cnt = mergeSort(nums, tmp, l, m) + mergeSort(nums, tmp, m+1, r);
+        for (int i = l, j = m+1, k = l; i <= m; ++i) {
+            while (j <= r && nums[i] > 2ll * nums[j]) ++j;
+            cnt += j - (m+1);
+            while (k <= r && nums[i] >= nums[k]) tmp[k++] = nums[i++];
+            tmp[k++] = nums[i];
+        }
+        copy(tmp.begin()+l, tmp.begin()+r+1, nums.begin()+l);
+        return cnt;
+
+=======
+
+        int n = nums.size();
+        vector<int> temp(n);
+        return mergeSort(nums, temp, 0, n-1);
+    }
+    int mergeSort(vector<int>& nums, vector<int>& temp, int start, int end){
+        if(start >= end) return 0;
+        int mid = (start + end) / 2;
+        int count = mergeSort(nums, temp, start, mid) + mergeSort(nums, temp, mid+1, end);
+        int i = start, j = mid+1, k = start;
+        while(i <= mid && j <= end){
+            if(nums[i] <= nums[j] * 2) i++;
+            else{
+                count += mid - i + 1;
+                j++;
+            }
+        }
+        i = start, j = mid+1;
+        while(i <= mid && j <= end){
+            if(nums[i] <= nums[j]) temp[k++] = nums[i++];
+            else temp[k++] = nums[j++];
+        }
+        while(i <= mid) temp[k++] = nums[i++];
+        while(j <= end) temp[k++] = nums[j++];
+        for(int i = start; i <= end; i++) nums[i] = temp[i];
+        return count;
+
+=======
+
+        int len = nums.size();
+        int res = 0;
+        for(int i = 0; i < len; i++){
+            for(int j = i+1; j < len; j++){
+                if(nums[i] > nums[j]*2){
+                    res++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        vector<int> sorted;
+        for (int i = n - 1; i >= 0; i--) {
+            res += distance(sorted.begin(), lower_bound(sorted.begin(), sorted.end(), nums[i]));
+            sorted.insert(upper_bound(sorted.begin(), sorted.end(), 2 * (long)nums[i]), nums[i]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        if (n == 0) return 0;
+        vector<int> sorted;
+        sorted.push_back(nums[n - 1]);
+        int ans = 0;
+        for (int i = n - 2; i >= 0; i--) {
+            int left = 0, right = sorted.size() - 1;
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (sorted[mid] < nums[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            ans += left;
+            if (sorted[left] < nums[i] * 2) ans++;
+            sorted.insert(sorted.begin() + left, nums[i]);
+        }
+        return ans;
+
+=======
+
+        int size = nums.size();
+        if (size < 2) return 0;
+        vector<int> tmp(size, 0);
+        return reversePairs(nums, tmp, 0, size - 1);
+
+=======
+
+        int n = nums.size();
+        if (n <= 1) return 0;
+        int res = 0;
+        vector<int> temp(n);
+        mergeSort(nums, temp, 0, n-1, res);
+        return res;
+    }
+    void mergeSort(vector<int>& nums, vector<int>& temp, int left, int right, int& res) {
+        if (left >= right) return;
+        int mid = left + (right - left) / 2;
+        mergeSort(nums, temp, left, mid, res);
+        mergeSort(nums, temp, mid+1, right, res);
+        merge(nums, temp, left, mid, right, res);
+    }
+    void merge(vector<int>& nums, vector<int>& temp, int left, int mid, int right, int& res) {
+        for (int i = left; i <= right; i++) temp[i] = nums[i];
+        int i = left, j = mid+1, k = left;
+        while (i <= mid && j <= right) {
+            if (temp[i] > temp[j]) {
+                res += mid - i + 1;
+                nums[k++] = temp[j++];
+            }
+            else nums[k++] = temp[i++];
+        }
+        while (i <= mid) nums[k++] = temp[i++];
+        while (j <= right) nums[k++] = temp[j++];

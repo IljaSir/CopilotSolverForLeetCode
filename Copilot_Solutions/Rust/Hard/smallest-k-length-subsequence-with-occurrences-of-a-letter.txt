@@ -1,0 +1,99 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut k = k;
+        let mut repetition = repetition;
+        let mut stack: Vec<char> = Vec::new();
+        let mut count = 0;
+        for c in s.chars() {
+            if c == letter {
+                count += 1;
+            }
+            while !stack.is_empty() && stack[stack.len() - 1] > c && (stack.len() - 1 + s.len() - c as usize) as i32 >= k {
+                if stack[stack.len() - 1] == letter {
+                    count -= 1;
+                }
+                stack.pop();
+            }
+            if stack.len() < k as usize {
+                stack.push(c);
+            }
+        }
+        let mut res = String::new();
+        for c in stack {
+            if c == letter {
+                repetition -= 1;
+            }
+            if repetition == 0 {
+                break;
+            }
+            res.push(c);
+        }
+        res
+
+=======
+
+        let mut stack: Vec<char> = vec![];
+        let mut cnt = vec![0;26];
+        let mut used = vec![false;26];
+        let mut k = k as usize;
+        let repetition = repetition as usize;
+        let mut letter = letter as usize - 'a' as usize;
+        for c in s.chars() {
+            let c = c as usize - 'a' as usize;
+            cnt[c] += 1;
+        }
+        for c in s.chars() {
+            let c = c as usize - 'a' as usize;
+            cnt[c] -= 1;
+            if used[c] { continue; }
+            while let Some(&v) = stack.last() {
+                if v > c && cnt[v] > 0 {
+                    used[stack.pop().unwrap()] = false;
+                } else {
+                    break;
+                }
+            }
+            if c == letter {
+                if repetition > stack.len() {
+                    stack.push(c as u8 as char);
+                    used[c] = true;
+                }
+            } else {
+                stack.push(c as u8 as char);
+                used[c] = true;
+            }
+        }
+        stack.into_iter().take(k).collect()
+
+=======
+
+        let s = s.as_bytes();
+        let mut stack: Vec<u8> = Vec::new();
+        let mut k = k as usize;
+        let mut repetition = repetition as usize;
+        let mut letter_cnt = 0;
+        for i in 0..s.len() {
+            while !stack.is_empty() && stack[stack.len() - 1] > s[i] && (stack.len() - 1 + s.len() - i >= k) {
+                if stack[stack.len() - 1] == letter as u8 {
+                    letter_cnt -= 1;
+                }
+                stack.pop();
+            }
+            if s[i] == letter as u8 {
+                letter_cnt += 1;
+            }
+            if letter_cnt >= repetition {
+                stack.push(s[i]);
+            }
+        }
+        unsafe { String::from_utf8_unchecked(stack) }
+    }
+}

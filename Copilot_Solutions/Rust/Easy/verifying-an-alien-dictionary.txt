@@ -1,0 +1,273 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut map = [0; 26];
+        for (i, c) in order.chars().enumerate() {
+            map[c as usize - 'a' as usize] = i;
+        }
+        for i in 1..words.len() {
+            let mut a = words[i - 1].chars();
+            let mut b = words[i].chars();
+            loop {
+                match (a.next(), b.next()) {
+                    (Some(x), Some(y)) => {
+                        if x != y {
+                            if map[x as usize - 'a' as usize] > map[y as usize - 'a' as usize] {
+                                return false;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    (Some(_), None) => return false,
+                    (None, _) => break,
+                }
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut order_map = std::collections::HashMap::new();
+        let mut i = 0;
+        for c in order.chars() {
+            order_map.insert(c, i);
+            i += 1;
+        }
+        let mut prev = &words[0];
+        for w in words.iter().skip(1) {
+            if !Self::is_sorted(prev, w, &order_map) {
+                return false;
+            }
+            prev = w;
+        }
+        true
+    }
+    fn is_sorted(a: &str, b: &str, order_map: &std::collections::HashMap<char, usize>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            let ca = a.chars().nth(i).unwrap();
+            let cb = b.chars().nth(j).unwrap();
+            if ca != cb {
+                return order_map.get(&ca).unwrap() < order_map.get(&cb).unwrap();
+            }
+            i += 1;
+            j += 1;
+        }
+        a.len() <= b.len()
+
+=======
+
+        let mut order_map = std::collections::HashMap::new();
+        for (i, ch) in order.chars().enumerate() {
+            order_map.insert(ch, i);
+        }
+        for i in 1..words.len() {
+            let mut j = 0;
+            while j < words[i].len() && j < words[i - 1].len() {
+                let c1 = words[i].chars().nth(j).unwrap();
+                let c2 = words[i - 1].chars().nth(j).unwrap();
+                if c1 != c2 {
+                    if order_map[&c1] < order_map[&c2] {
+                        return false;
+                    }
+                    break;
+                }
+                j += 1;
+            }
+            if j < words[i - 1].len() && j == words[i].len() {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut index = [0; 26];
+        for (i, c) in order.chars().enumerate() {
+            index[c as usize - 'a' as usize] = i;
+        }
+        let mut words = words;
+        words.sort_by(|a, b| {
+            let a = a.as_bytes();
+            let b = b.as_bytes();
+            let mut i = 0;
+            while i < a.len() && i < b.len() {
+                let x = index[a[i] as usize - 'a' as usize];
+                let y = index[b[i] as usize - 'a' as usize];
+                if x < y {
+                    return std::cmp::Ordering::Less;
+                } else if x > y {
+                    return std::cmp::Ordering::Greater;
+                }
+                i += 1;
+            }
+            if i < a.len() {
+                std::cmp::Ordering::Greater
+            } else if i < b.len() {
+                std::cmp::Ordering::Less
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+        words == words
+    }
+}
+
+=======
+
+        let mut map = [0;26];
+        for (i, c) in order.chars().enumerate() {
+            map[c as usize - 'a' as usize] = i;
+        }
+        for i in 0..words.len()-1 {
+            let mut j = 0;
+            while j < words[i].len() && j < words[i+1].len() {
+                if words[i].chars().nth(j).unwrap() != words[i+1].chars().nth(j).unwrap() {
+                    if map[words[i].chars().nth(j).unwrap() as usize - 'a' as usize] > map[words[i+1].chars().nth(j).unwrap() as usize - 'a' as usize] {
+                        return false;
+                    }
+                    break;
+                }
+                j += 1;
+            }
+            if j == words[i].len() && j < words[i+1].len() {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let order = order.chars().collect::<Vec<char>>();
+        let mut words = words.into_iter().map(|w| w.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+        for i in 0..words.len() {
+            for j in i+1..words.len() {
+                let mut i = 0;
+                let mut j = 0;
+                while i < words[i].len() && j < words[j].len() {
+                    let a = words[i][i];
+                    let b = words[j][j];
+                    if a != b {
+                        let a = order.iter().position(|&x| x == a).unwrap();
+                        let b = order.iter().position(|&x| x == b).unwrap();
+                        if a > b {
+                            return false;
+                        } else {
+                            break;
+                        }
+                    }
+                    i += 1;
+                    j += 1;
+                }
+                if i < words[i].len() {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let order = order.chars().enumerate().map(|(i, c)| (c, i)).collect::<std::collections::HashMap<char, usize>>();
+        let mut words = words.into_iter().map(|s| s.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
+        for i in 0..words.len() - 1 {
+            let mut j = 0;
+            while j < words[i].len() && j < words[i + 1].len() && words[i][j] == words[i + 1][j] {
+                j += 1;
+            }
+            if j == words[i].len() {
+                continue;
+            }
+            if j == words[i + 1].len() {
+                return false;
+            }
+            if order[&words[i][j]] > order[&words[i + 1][j]] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let order = order.into_bytes();
+        let mut map = vec![0; 26];
+        for (i, c) in order.iter().enumerate() {
+            map[*c as usize - 97] = i;
+        }
+        let mut words = words.iter().map(|w| {
+            w.as_bytes().iter().map(|c| {
+                map[*c as usize - 97]
+            }).collect::<Vec<usize>>()
+        }).collect::<Vec<Vec<usize>>>();
+        for i in 1..words.len() {
+            if words[i] < words[i - 1] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut order = order.chars().collect::<Vec<char>>();
+        let mut words = words;
+        words.sort_by(|a, b| {
+            let mut i = 0;
+            let mut j = 0;
+            while i < a.len() && j < b.len() {
+                if order.iter().position(|x| *x == a.chars().nth(i).unwrap()).unwrap() < order.iter().position(|x| *x == b.chars().nth(j).unwrap()).unwrap() {
+                    return Ordering::Less;
+                }
+                if order.iter().position(|x| *x == a.chars().nth(i).unwrap()).unwrap() > order.iter().position(|x| *x == b.chars().nth(j).unwrap()).unwrap() {
+                    return Ordering::Greater;
+                }
+                i += 1;
+                j += 1;
+            }
+            if i == a.len() && j == b.len() {
+                return Ordering::Equal;
+            }
+            if i == a.len() {
+                return Ordering::Less;
+            }
+            return Ordering::Greater;
+        });
+        for i in 0..words.len() - 1 {
+            if words[i] > words[i + 1] {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        let mut order_vec = vec![0; 26];
+        for (i, c) in order.chars().enumerate() {
+            order_vec[c as usize - 97] = i;
+        }
+        let mut prev = words[0].clone();
+        for word in words.iter().skip(1) {
+            let mut i = 0;
+            while i < word.len() && i < prev.len() && word[i..i+1] == prev[i..i+1] {
+                i += 1;
+            }
+            if i < word.len() && i < prev.len() {
+                if order_vec[word[i..i+1].chars().next().unwrap() as usize - 97] < order_vec[prev[i..i+1].chars().next().unwrap() as usize - 97] {
+                    return false;
+                }
+            } else if i < prev.len() && i == word.len() {
+                return false;
+            }
+            prev = word.clone();
+        }
+        true
+    }
+}

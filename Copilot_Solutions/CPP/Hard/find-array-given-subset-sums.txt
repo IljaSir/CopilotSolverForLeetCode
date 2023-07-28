@@ -1,0 +1,93 @@
+Synthesizing 4/10 solutions
+
+=======
+
+        vector<int> ans(n, 0);
+        sort(sums.begin(), sums.end());
+        for (int i = 1; i < sums.size(); ++i) {
+            ans[0] ^= sums[i] ^ sums[i-1];
+        }
+        ans[0] /= pow(2, n-1);
+        for (int i = 1; i < n; ++i) {
+            ans[i] = sums[0] ^ ans[0];
+            for (int j = 0; j < sums.size(); ++j) {
+                if (sums[j] == ans[i]) {
+                    sums.erase(sums.begin() + j);
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans(n, 0);
+        int m = sums.size();
+        vector<int> a(m, 0);
+        for (int i = 0; i < m; ++i) {
+            a[i] = sums[i];
+        }
+        sort(a.begin(), a.end());
+        for (int i = 0; i < m; ++i) {
+            if (i > 0 && a[i] == a[i-1]) {
+                continue;
+            }
+            vector<int> b(m, 0);
+            for (int j = 0; j < m; ++j) {
+                b[j] = a[j] - a[i];
+            }
+            sort(b.begin(), b.end());
+            if (b == a) {
+                int x = a[i];
+                for (int j = 0; j < n; ++j) {
+                    ans[j] = x;
+                    x = (x - a[i]) / 2;
+                }
+                break;
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> m;
+        for (auto &s : sums) m[s]++;
+        vector<int> ans;
+        for (int i = 0; i < n; ++i) {
+            int x = 0;
+            for (auto &a : ans) x += a;
+            for (auto &a : ans) m[x - a]--;
+            for (auto &a : ans) m[x - a]++;
+            for (auto &p : m) {
+                if (p.second > 0) {
+                    ans.push_back(p.first - x);
+                    m[p.first]--;
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int sz = sums.size();
+        vector<int> ans(n, 0);
+        if (sz == 0) return ans;
+        sort(sums.begin(), sums.end());
+        vector<int> dp(sz, 0);
+        int i, j;
+        for (i = 0; i < sz; i++) {
+            for (j = i - 1; j >= 0; j--) {
+                if (sums[i] - sums[j] == dp[j]) {
+                    dp[i] = sums[i] - dp[j];
+                    break;
+                }
+            }
+            if (j == -1) {
+                dp[i] = sums[i];
+            }
+        }
+        for (i = 0; i < n; i++) {
+            ans[i] = dp[sz - 1] - dp[sz - 1 - (1 << i)];
+        }
+        return ans;

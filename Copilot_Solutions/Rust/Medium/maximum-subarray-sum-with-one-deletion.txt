@@ -1,0 +1,171 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = arr.len();
+        if n == 1 {
+            return arr[0];
+        }
+        let mut dp1 = vec![0; n];
+        let mut dp2 = vec![0; n];
+        dp1[0] = arr[0];
+        dp2[n-1] = arr[n-1];
+        let mut res = arr[0];
+        for i in 1..n {
+            dp1[i] = std::cmp::max(dp1[i-1] + arr[i], arr[i]);
+            res = std::cmp::max(res, dp1[i]);
+        }
+        for i in (0..n-1).rev() {
+            dp2[i] = std::cmp::max(dp2[i+1] + arr[i], arr[i]);
+            res = std::cmp::max(res, dp2[i]);
+        }
+        for i in 1..n-1 {
+            res = std::cmp::max(res, dp1[i-1] + dp2[i+1]);
+        }
+        res
+
+=======
+
+        let mut dp = vec![0; arr.len()];
+        let mut dp2 = vec![0; arr.len()];
+        dp[0] = arr[0];
+        dp2[0] = arr[0];
+        for i in 1..arr.len() {
+            dp[i] = arr[i] + dp[i-1].max(0);
+            dp2[i] = arr[i] + dp2[i-1].max(0);
+            if arr[i] > dp2[i] {
+                dp2[i] = arr[i];
+            }
+        }
+        dp.iter().cloned().max().unwrap().max(dp2.iter().cloned().max().unwrap())
+
+=======
+
+        let mut max = arr[0];
+        let mut dp = vec![0; arr.len()];
+        dp[0] = arr[0];
+        for i in 1..arr.len() {
+            dp[i] = arr[i] + dp[i - 1].max(0);
+            max = max.max(dp[i]);
+        }
+        let mut sum = 0;
+        for i in (1..arr.len()).rev() {
+            sum += arr[i];
+            max = max.max(sum + dp[i - 1].max(0));
+        }
+        max
+
+=======
+
+        let mut dp = vec![0; arr.len()];
+        let mut max = arr[0];
+        dp[0] = arr[0];
+        for i in 1..arr.len() {
+            dp[i] = std::cmp::max(arr[i], dp[i-1] + arr[i]);
+            max = std::cmp::max(max, dp[i]);
+        }
+        let mut dp2 = vec![0; arr.len()];
+        dp2[arr.len()-1] = arr[arr.len()-1];
+        for i in (0..arr.len()-1).rev() {
+            dp2[i] = std::cmp::max(arr[i], dp2[i+1] + arr[i]);
+        }
+        for i in 1..arr.len()-1 {
+            max = std::cmp::max(max, dp[i-1] + dp2[i+1]);
+        }
+        max
+
+=======
+
+        let mut dp = vec![0; arr.len()];
+        let mut max = arr[0];
+        dp[0] = arr[0];
+        for i in 1..arr.len() {
+            dp[i] = if dp[i-1] > 0 { dp[i-1] + arr[i] } else { arr[i] };
+            max = max.max(dp[i]);
+        }
+        let mut dp2 = vec![0; arr.len()];
+        dp2[arr.len()-1] = arr[arr.len()-1];
+        for i in (0..arr.len()-1).rev() {
+            dp2[i] = if dp2[i+1] > 0 { dp2[i+1] + arr[i] } else { arr[i] };
+            max = max.max(dp2[i]);
+        }
+        for i in 1..arr.len()-1 {
+            max = max.max(dp[i-1] + dp2[i+1]);
+        }
+        max
+
+=======
+
+        let mut sum = 0;
+        let mut max = arr[0];
+        let mut dp = vec![0; arr.len()];
+        for i in 0..arr.len() {
+            sum += arr[i];
+            max = max.max(sum);
+            if sum < 0 {
+                sum = 0;
+            }
+            dp[i] = max;
+        }
+        sum = 0;
+        max = arr[arr.len() - 1];
+        let mut result = max;
+        for i in (1..arr.len()).rev() {
+            sum += arr[i];
+            max = max.max(sum);
+            if sum < 0 {
+                sum = 0;
+            }
+            result = result.max(max + dp[i - 1]);
+        }
+        result
+
+=======
+
+        let mut max = arr[0];
+        let mut max_ending_here = arr[0];
+        let mut max_ending_here_dropped = arr[0];
+        for i in 1..arr.len() {
+            max_ending_here = std::cmp::max(max_ending_here + arr[i], arr[i]);
+            max_ending_here_dropped = std::cmp::max(max_ending_here_dropped + arr[i], max_ending_here);
+            max = std::cmp::max(max, std::cmp::max(max_ending_here, max_ending_here_dropped));
+        }
+        max
+
+=======
+
+        let mut dp: Vec<(i32, i32)> = vec![(arr[0], arr[0]); arr.len()]; // (with, without)
+        let mut max = arr[0];
+        for i in 1..arr.len() {
+            dp[i] = (
+                arr[i] + dp[i-1].1.max(0),
+                dp[i-1].0.max(dp[i-1].1),
+            );
+            max = max.max(dp[i].0).max(dp[i].1);
+        }
+        max
+
+=======
+
+        let mut max = i32::min_value();
+        let mut dp = (0, 0);
+        for n in arr {
+            if dp.0 <= 0 {
+                dp.0 = n;
+            } else {
+                dp.0 += n;
+            }
+            if dp.1 <= 0 {
+                dp.1 = n;
+            } else {
+                dp.1 += n;
+            }
+            max = max.max(dp.0).max(dp.1);
+        }
+        max
+
+=======
+
+        
+    }
+}

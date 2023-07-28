@@ -1,0 +1,239 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums1.length == 0 || nums2.length == 0 || k == 0) {
+            return res;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] + a[1] - b[0] - b[1]);
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                pq.offer(new int[]{nums1[i], nums2[j]});
+            }
+        }
+        for (int i = 0; i < k && !pq.isEmpty(); i++) {
+            int[] pair = pq.poll();
+            List<Integer> list = new ArrayList<>();
+            list.add(pair[0]);
+            list.add(pair[1]);
+            res.add(list);
+        }
+        return res;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        if (len1 == 0 || len2 == 0) {
+            return result;
+        }
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int i = 0; i < Math.min(len1, k); i++) {
+            queue.offer(new int[]{nums1[i] + nums2[0], i, 0});
+        }
+        while (k-- > 0 && !queue.isEmpty()) {
+            int[] pair = queue.poll();
+            int i = pair[1];
+            int j = pair[2];
+            result.add(Arrays.asList(nums1[i], nums2[j]));
+            if (j + 1 < len2) {
+                queue.offer(new int[]{nums1[i] + nums2[j + 1], i, j + 1});
+            }
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        int n1 = nums1.length;
+        int n2 = nums2.length;
+        if (n1 == 0 || n2 == 0) {
+            return result;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] + a[1] - b[0] - b[1]));
+        for (int i = 0; i < n1; i++) {
+            pq.add(new int[]{nums1[i], nums2[0], 0});
+        }
+        while (k-- > 0 && !pq.isEmpty()) {
+            int[] pair = pq.poll();
+            result.add(Arrays.asList(pair[0], pair[1]));
+            if (pair[2] == n2 - 1) {
+                continue;
+            }
+            pq.add(new int[]{pair[0], nums2[pair[2] + 1], pair[2] + 1});
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums1.length == 0 || nums2.length == 0) {
+            return result;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] + a[1]) - (b[0] + b[1]));
+        for (int i = 0; i < nums1.length && i < k; i++) {
+            pq.add(new int[] {nums1[i], nums2[0], 0});
+        }
+        while (k-- > 0 && !pq.isEmpty()) {
+            int[] curr = pq.poll();
+            result.add(Arrays.asList(curr[0], curr[1]));
+            if (curr[2] == nums2.length - 1) {
+                continue;
+            }
+            pq.add(new int[] {curr[0], nums2[curr[2] + 1], curr[2] + 1});
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> ans = new ArrayList<>();
+        if (nums1.length == 0 || nums2.length == 0 || k == 0) {
+            return ans;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> {
+            return (nums1[a[0]] + nums2[a[1]]) - (nums1[b[0]] + nums2[b[1]]);
+        });
+        pq.add(new int[]{0, 0});
+        while (k > 0 && !pq.isEmpty()) {
+            int[] cur = pq.poll();
+            ans.add(Arrays.asList(nums1[cur[0]], nums2[cur[1]]));
+            if (cur[0] == nums1.length - 1) {
+                continue;
+            }
+            pq.add(new int[]{cur[0] + 1, cur[1]});
+            if (cur[1] == nums2.length - 1) {
+                continue;
+            }
+            pq.add(new int[]{cur[0], cur[1] + 1});
+            k--;
+        }
+        return ans;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums1.length == 0 || nums2.length == 0 || k == 0) {
+            return result;
+        }
+        PriorityQueue<List<Integer>> queue = new PriorityQueue<>(new Comparator<List<Integer>>() {
+            @Override
+            public int compare(List<Integer> o1, List<Integer> o2) {
+                return o2.get(0) + o2.get(1) - o1.get(0) - o1.get(1);
+            }
+        });
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                queue.offer(Arrays.asList(nums1[i], nums2[j]));
+                if (queue.size() > k) {
+                    queue.poll();
+                }
+            }
+        }
+        while (!queue.isEmpty()) {
+            result.add(queue.poll());
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums1 == null || nums1.length == 0 || nums2 == null || nums2.length == 0) {
+            return result;
+        }
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> a[0] + a[1] - b[0] - b[1]);
+        for (int i = 0; i < nums1.length; i++) {
+            queue.offer(new int[]{nums1[i], nums2[0], 0});
+        }
+        while (k > 0 && !queue.isEmpty()) {
+            int[] curr = queue.poll();
+            List<Integer> pair = new ArrayList<>();
+            pair.add(curr[0]);
+            pair.add(curr[1]);
+            result.add(pair);
+            if (curr[2] == nums2.length - 1) {
+                continue;
+            }
+            queue.offer(new int[]{curr[0], nums2[curr[2] + 1], curr[2] + 1});
+            k--;
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] + a[1] - b[0] - b[1]));
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                if (pq.size() < k) {
+                    pq.offer(new int[] {nums1[i], nums2[j]});
+                } else if (nums1[i] + nums2[j] < pq.peek()[0] + pq.peek()[1]) {
+                    pq.poll();
+                    pq.offer(new int[] {nums1[i], nums2[j]});
+                }
+            }
+        }
+        while (!pq.isEmpty()) {
+            int[] pair = pq.poll();
+            List<Integer> list = new ArrayList<>();
+            list.add(pair[0]);
+            list.add(pair[1]);
+            result.add(list);
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums1 == null || nums1.length == 0 || nums2 == null || nums2.length == 0) {
+            return result;
+        }
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> a.sum - b.sum);
+        pq.offer(new Pair(0, 0, nums1[0] + nums2[0]));
+        while (!pq.isEmpty() && k > 0) {
+            Pair pair = pq.poll();
+            result.add(Arrays.asList(nums1[pair.i], nums2[pair.j]));
+            if (pair.i + 1 < nums1.length) {
+                pq.offer(new Pair(pair.i + 1, pair.j, nums1[pair.i + 1] + nums2[pair.j]));
+            }
+            if (pair.i == 0 && pair.j + 1 < nums2.length) {
+                pq.offer(new Pair(pair.i, pair.j + 1, nums1[pair.i] + nums2[pair.j + 1]));
+            }
+            k--;
+        }
+        return result;
+    }
+
+    class Pair {
+        int i;
+        int j;
+        int sum;
+        public Pair(int i, int j, int sum) {
+            this.i = i;
+            this.j = j;
+            this.sum = sum;
+        }
+
+=======
+
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        PriorityQueue<int[]> queue = new PriorityQueue<int[]>(new Comparator<int[]>(){
+            public int compare(int[] a, int[] b) {
+                return (a[0] + a[1]) - (b[0] + b[1]);
+            }
+        });
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
+                queue.offer(new int[]{nums1[i], nums2[j]});
+            }
+        }
+        while (k > 0 && !queue.isEmpty()) {
+            int[] pair = queue.poll();
+            List<Integer> list = new ArrayList<Integer>();
+            list.add(pair[0]);
+            list.add(pair[1]);
+            result.add(list);
+            k--;
+        }
+        return result;

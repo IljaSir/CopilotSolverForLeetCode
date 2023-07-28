@@ -1,0 +1,276 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] bobArrows = new int[aliceArrows.length];
+        for (int i = 0; i < aliceArrows.length; i++) {
+            bobArrows[i] = numArrows - aliceArrows[i];
+        }
+        bobArrows[11] -= numArrows / 2;
+        return bobArrows;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int total = 0;
+        for (int i = 0; i < 12; i++) {
+            bobArrows[i] = numArrows - aliceArrows[i];
+            total += bobArrows[i] * i;
+        }
+        int max = total;
+        int[] res = bobArrows.clone();
+        for (int i = 11; i >= 0; i--) {
+            for (int j = 0; j < 12; j++) {
+                if (i == j) continue;
+                int diff = (i - j) * (aliceArrows[j] - bobArrows[j]);
+                if (diff > 0) {
+                    total -= diff;
+                    bobArrows[i]--;
+                    bobArrows[j]++;
+                }
+            }
+            if (total > max) {
+                max = total;
+                res = bobArrows.clone();
+            }
+        }
+        return res;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] alicePoints = new int[12];
+        int[] bobPoints = new int[12];
+        int aliceTotal = 0;
+        int bobTotal = 0;
+        for (int i = 0; i < 12; i++) {
+            alicePoints[i] = aliceArrows[i] * i;
+            aliceTotal += alicePoints[i];
+        }
+        int max = 0;
+        int[] result = new int[12];
+        for (int i = 0; i < 12; i++) {
+            int total = aliceTotal - alicePoints[i];
+            int bobPointsI = Math.min(numArrows, aliceArrows[i] + 1) * i;
+            total += bobPointsI;
+            if (total > max) {
+                max = total;
+                result[i] = Math.min(numArrows, aliceArrows[i] + 1);
+                for (int j = 0; j < 12; j++) {
+                    if (j == i) {
+                        continue;
+                    }
+                    result[j] = aliceArrows[j];
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] bobArrows = new int[aliceArrows.length];
+        int[] alicePoints = new int[aliceArrows.length];
+        int[] bobPoints = new int[aliceArrows.length];
+        int aliceTotal = 0;
+        int bobTotal = 0;
+        for(int i = 0; i < aliceArrows.length; i++) {
+            alicePoints[i] = aliceArrows[i] * i;
+            aliceTotal += alicePoints[i];
+        }
+        for(int i = 0; i < aliceArrows.length; i++) {
+            bobArrows[i] = Math.min(numArrows, aliceArrows[i] + 1);
+            bobPoints[i] = bobArrows[i] * i;
+            bobTotal += bobPoints[i];
+            numArrows -= bobArrows[i];
+        }
+        if(bobTotal > aliceTotal) return bobArrows;
+        for(int i = aliceArrows.length - 1; i >= 0; i--) {
+            if(bobArrows[i] > 0) {
+                bobArrows[i]--;
+                bobPoints[i] -= i;
+                bobTotal -= i;
+                numArrows++;
+                if(bobTotal > aliceTotal) return bobArrows;
+            }
+        }
+        return bobArrows;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] alicePoints = new int[12];
+        int aliceTotal = 0;
+        int bobTotal = 0;
+        for (int i = 0; i < aliceArrows.length; i++) {
+            aliceTotal += aliceArrows[i] * i;
+            alicePoints[i] = aliceArrows[i] * i;
+        }
+        int max = 0;
+        int[] maxArr = new int[12];
+        for (int i = 0; i < alicePoints.length; i++) {
+            for (int j = 0; j < alicePoints.length; j++) {
+                if (i == j) continue;
+                int temp = alicePoints[i] + alicePoints[j];
+                int[] tempArr = new int[12];
+                tempArr[i] = aliceArrows[i];
+                tempArr[j] = aliceArrows[j];
+                for (int k = 0; k < aliceArrows.length; k++) {
+                    if (k == i || k == j) continue;
+                    tempArr[k] = numArrows - aliceArrows[i] - aliceArrows[j];
+                }
+                if (temp > max) {
+                    max = temp;
+                    maxArr = tempArr;
+                }
+            }
+        }
+        return maxArr;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] target = new int[12];
+        for (int i = 0; i < 12; i++) {
+            target[i] = i;
+        }
+        int[] alicePoints = new int[12];
+        int[] bobPoints = new int[12];
+        for (int i = 0; i < 12; i++) {
+            alicePoints[i] = target[i] * aliceArrows[i];
+            bobPoints[i] = target[i] * (numArrows - aliceArrows[i]);
+        }
+        int total = 0;
+        for (int i = 0; i < 12; i++) {
+            total += alicePoints[i];
+        }
+        int max = 0;
+        for (int i = 0; i < 12; i++) {
+            if (alicePoints[i] < bobPoints[i]) {
+                max += bobPoints[i];
+                bobArrows[i] = numArrows - aliceArrows[i];
+            }
+        }
+        if (max < total) {
+            return aliceArrows;
+        }
+        return bobArrows;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] alicePoints = new int[12];
+        int[] bobPoints = new int[12];
+        int sum = 0;
+        for (int i = 0; i < 12; i++) {
+            sum += aliceArrows[i];
+            alicePoints[i] = aliceArrows[i] * i;
+        }
+        for (int i = 0; i < 12; i++) {
+            int a = alicePoints[i];
+            int b = (sum - aliceArrows[i]) * i;
+            if (a > b) {
+                bobArrows[i] = aliceArrows[i];
+                numArrows -= aliceArrows[i];
+            } else {
+                bobArrows[i] = 0;
+            }
+        }
+        int i = 0;
+        while (numArrows > 0) {
+            if (bobArrows[i] < aliceArrows[i]) {
+                bobArrows[i]++;
+                numArrows--;
+            }
+            i++;
+        }
+        return bobArrows;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] aliceArrowsCopy = aliceArrows.clone();
+        int total = 0;
+        for (int i = 11; i >= 0; i--) {
+            total += aliceArrows[i];
+            if (total > numArrows) {
+                aliceArrowsCopy[i] -= total - numArrows;
+                total = numArrows;
+            }
+        }
+        for (int i = 0; i < 12; i++) {
+            bobArrows[i] = aliceArrowsCopy[i] + (total - aliceArrows[i]) / 2;
+        }
+        return bobArrows;
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] aliceScore = new int[12];
+        int[] bobScore = new int[12];
+        int[] aliceTotal = new int[12];
+        int[] bobTotal = new int[12];
+        int[] aliceSum = new int[12];
+        int[] bobSum = new int[12];
+        int[] aliceSumTotal = new int[12];
+        int[] bobSumTotal = new int[12];
+        int[] aliceSumTotal2 = new int[12];
+        int[] bobSumTotal2 = new int[12];
+        int[] aliceSumTotal3 = new int[12];
+        int[] bobSumTotal3 = new int[12];
+        int[] aliceSumTotal4 = new int[12];
+        int[] bobSumTotal4 = new int[12];
+        int[] aliceSumTotal5 = new int[12];
+        int[] bobSumTotal5 = new int[12];
+        int[] aliceSumTotal6 = new int[12];
+        int[] bobSumTotal6 = new int[12];
+        int[] aliceSumTotal7 = new int[12];
+        int[] bobSumTotal7 = new int[12];
+        int[] aliceSumTotal8 = new int[12];
+        int[] bobSumTotal8 = new int[12];
+        int[] aliceSumTotal9 = new int[12];
+        int[] bobSumTotal9 = new int[12];
+        int[] aliceSumTotal10 = new int[12];
+        int[] bobSumTotal10 = new int[12];
+        int[] aliceSumTotal11 = new int[12];
+        int[] bobSumTotal11 = new int[12];
+        int[] aliceSumTotal12 = new int[12];
+        int[] bobSumTotal12 = new int[12];
+        int[] aliceSumTotal13 = new int[12];
+        int[] bobSumTotal13 = new int[12];
+        int[] aliceSumTotal14 = new int[12];
+        int[] bobSumTotal14 = new int[12];
+        int[] aliceSumTotal15 = new int[12];
+        int[] bobSumTotal15 = new int[12];
+        int[] aliceSumTotal16 = new int[12];
+        int[] bobSumTotal16 = new int[12];
+        int[] aliceSumTotal17
+
+=======
+
+        int[] bobArrows = new int[12];
+        int[] aliceArrowsCopy = aliceArrows.clone();
+        Arrays.sort(aliceArrowsCopy);
+        int[] bobArrowsCopy = new int[12];
+        int[] aliceArrowsCopy2 = aliceArrows.clone();
+        int[] bobArrowsCopy2 = new int[12];
+        for (int i = 11; i >= 0; i--) {
+            bobArrowsCopy[i] = numArrows - aliceArrowsCopy[i];
+            numArrows = aliceArrowsCopy[i];
+        }
+        numArrows = aliceArrowsCopy2[0];
+        for (int i = 1; i < 12; i++) {
+            bobArrowsCopy2[i] = numArrows - aliceArrowsCopy2[i];
+            numArrows = aliceArrowsCopy2[i];
+        }
+        int alicePoints = 0;
+        int bobPoints = 0;
+        for (int i = 0; i < 12; i++) {
+            alicePoints += aliceArrows[i] * i;
+            bobPoints += bobArrowsCopy[i] * i;
+        }
+        if (alicePoints > bobPoints) {
+            return bobArrowsCopy;
+        }
+        else {
+            return bobArrowsCopy2;
+        }

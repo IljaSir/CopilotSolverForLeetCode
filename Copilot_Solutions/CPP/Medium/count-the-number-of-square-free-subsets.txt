@@ -1,0 +1,356 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9 + 7;
+        vector<int> cnt(31, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<int> dp(1 << 30, 0);
+        dp[0] = 1;
+        for (int i = 1; i <= 30; i++) {
+            for (int j = (1 << 30) - 1; j >= 0; j--) {
+                for (int k = 1; k <= cnt[i]; k++) {
+                    int mask = (1 << i) - 1;
+                    if ((j & mask) == 0) {
+                        dp[j | mask] = (dp[j | mask] + dp[j]) % mod;
+                    }
+                    mask <<= i;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << 30); i++) {
+            if (__builtin_popcount(i) & 1) {
+                ans = (ans - dp[i] + mod) % mod;
+            } else {
+                ans = (ans + dp[i]) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9 + 7;
+        vector<int> cnt(31, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<int> prime(31, 0);
+        for (int i = 2; i <= 30; i++) {
+            if (prime[i] == 0) {
+                for (int j = i; j <= 30; j += i) {
+                    if (prime[j] == 0) {
+                        prime[j] = i;
+                    }
+                }
+            }
+        }
+        vector<int> dp(1 << 16, 0);
+        dp[0] = 1;
+        for (int i = 2; i <= 30; i++) {
+            int cur = 0;
+            for (int j = i; j <= 30; j += i) {
+                cur |= (1 << (j / i - 1));
+            }
+            for (int j = 0; j < (1 << 16); j++) {
+                if (j & cur) {
+                    dp[j] = (dp[j] + dp[j ^ cur]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < (1 << 16); i++) {
+            int num = 0;
+            int x = i;
+            while (x) {
+                x &= (x - 1);
+                num++;
+            }
+            int total = 1;
+            int y = i;
+            while (y) {
+                int k = y & -y;
+                int t = 0;
+                while (k > 1) {
+                    k /= prime[i];
+                    t++;
+                }
+                total *= cnt[t];
+                y ^= (y & -y);
+            }
+            if (num % 2 == 1) {
+                ans += total * dp[i];
+                ans %= mod;
+            } else {
+                ans -= total * dp[i];
+                ans = (ans % mod + mod) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(31, 0);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[nums[i]];
+        }
+        int mod = 1e9 + 7;
+        int res = 0;
+        for (int i = 1; i < 1 << 30; ++i) {
+            int prod = 1;
+            int num = 0;
+            for (int j = 0; j < 30; ++j) {
+                if (i & (1 << j)) {
+                    prod *= j + 1;
+                    num += cnt[j + 1];
+                }
+            }
+            if (prod > 30) {
+                continue;
+            }
+            int tmp = 1;
+            for (int j = 0; j < cnt[prod]; ++j) {
+                tmp *= 2;
+                tmp %= mod;
+            }
+            if (num % 2 == 0) {
+                res -= tmp;
+            } else {
+                res += tmp;
+            }
+            res = (res + mod) % mod;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9+7;
+        vector<int> cnt(31, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        int res = 0;
+        for (int i = 1; i < (1<<n); i++) {
+            int tmp = 1;
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (i & (1<<j)) {
+                    cnt++;
+                    tmp *= nums[j];
+                }
+            }
+            int num = 0;
+            for (int j = 2; j*j <= tmp; j++) {
+                if (tmp % (j*j) == 0) {
+                    num++;
+                    break;
+                }
+            }
+            if (num == 0) {
+                if (cnt % 2 == 0) {
+                    res -= (1<<cnt);
+                } else {
+                    res += (1<<cnt);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> count(31, 0);
+        for (int i = 0; i < n; i++) {
+            count[nums[i]]++;
+        }
+        int mod = 1e9 + 7;
+        vector<int> dp(1 << 30, 0);
+        dp[0] = 1;
+        for (int i = 1; i < (1 << 30); i++) {
+            int j = 0;
+            while ((i & (1 << j)) == 0) {
+                j++;
+            }
+            dp[i] = dp[i ^ (1 << j)] * (count[j] + 1) % mod;
+        }
+        vector<int> prime;
+        vector<bool> isPrime(31, true);
+        for (int i = 2; i <= 30; i++) {
+            if (isPrime[i]) {
+                prime.push_back(i);
+                for (int j = i * i; j <= 30; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < (1 << 30); i++) {
+            int cnt = 0;
+            int j = 0;
+            while ((i & (1 << j)) == 0) {
+                j++;
+            }
+            int x = j;
+            while (x <= 30) {
+                if (i & (1 << x)) {
+                    cnt++;
+                }
+                x += j;
+            }
+            if (cnt % 2 == 0) {
+                ans += dp[i];
+            } else {
+                ans -= dp[i];
+            }
+            ans = (ans % mod + mod) % mod;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(31);
+        for (auto x : nums) {
+            cnt[x]++;
+        }
+        int ans = 0;
+        for (int mask = 1; mask < (1 << 30); mask++) {
+            int prod = 1;
+            int sign = 1;
+            for (int i = 1; i <= 30; i++) {
+                if ((mask >> (i - 1)) & 1) {
+                    prod *= i;
+                    sign *= -1;
+                }
+            }
+            if (prod <= 30) {
+                ans += sign * cnt[prod];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9 + 7;
+        vector<int> count(31);
+        for (int x : nums) {
+            count[x]++;
+        }
+        vector<int> dp(1 << 31);
+        dp[0] = 1;
+        for (int i = 1; i < (1 << 31); i++) {
+            int j = __builtin_ctz(i);
+            dp[i] = dp[i ^ (1 << j)] * (count[j] + 1) % mod;
+        }
+        int ans = 0;
+        for (int i = 1; i < (1 << 31); i++) {
+            int j = __builtin_ctz(i);
+            int cnt = 0;
+            for (int k = j; k < 31; k += j) {
+                cnt += count[k];
+            }
+            if (cnt % 2 == 1) {
+                ans = (ans - dp[i] + mod) % mod;
+            } else {
+                ans = (ans + dp[i]) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = 30;
+        int mod = 1e9 + 7;
+        vector<int> cnt(m);
+        for(int i = 0; i < n; i++)
+            cnt[nums[i] - 1]++;
+        vector<int> sq(m);
+        for(int i = 0; i < m; i++)
+            sq[i] = i * i;
+        vector<int> dp(1 << m);
+        dp[0] = 1;
+        for(int i = 0; i < m; i++){
+            int mask = 0;
+            for(int j = 0; j < m; j++){
+                if(sq[i] % (j + 1) == 0)
+                    mask |= (1 << j);
+            }
+            for(int j = 0; j < (1 << m); j++){
+                if((j & mask) == 0){
+                    dp[j | (1 << i)] = (dp[j | (1 << i)] + (long long)dp[j] * cnt[i]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for(int i = 0; i < (1 << m); i++){
+            int cnt = 0;
+            for(int j = 0; j < m; j++){
+                if((i >> j) & 1)
+                    cnt++;
+            }
+            if(cnt % 2 == 0)
+                ans = (ans + mod - dp[i]) % mod;
+            else
+                ans = (ans + dp[i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int MOD = 1e9 + 7;
+        vector<int> cnt(31);
+        for (int num : nums) {
+            cnt[num]++;
+        }
+
+        vector<int> prime;
+        vector<bool> isPrime(31, true);
+        isPrime[0] = isPrime[1] = false;
+        for (int i = 2; i < 31; ++i) {
+            if (isPrime[i]) {
+                prime.push_back(i);
+                for (int j = i * i; j < 31; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+
+        vector<int> dp(1 << prime.size(), 0);
+        dp[0] = 1;
+        for (int i = 1; i < 31; ++i) {
+            int mask = 0;
+            for (int j = 0; j < prime.size(); ++j) {
+                if (i % prime[j] == 0) {
+                    mask |= (1 << j);
+                }
+            }
+
+            for (int j = (1 << prime.size()) - 1; j >= 0; --j) {
+                for (int k = 1; k <= cnt[i]; ++k) {
+                    int nj = j ^ (mask * k);
+                    dp[nj] = (dp[nj] + dp[j]) % MOD;
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int i = 0; i < (1 << prime.size()); ++i) {
+            int c = __builtin_popcount(i);
+            if (c % 2 == 0) {
+                ans = (ans + dp[i]) % MOD;
+            }
+            else {
+                ans = (ans - dp[i] + MOD) % MOD;
+            }
+        }
+
+        return ans;

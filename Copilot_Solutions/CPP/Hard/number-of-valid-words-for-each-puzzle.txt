@@ -1,0 +1,171 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        unordered_map<int, int> wordMap;
+        for (string word : words) {
+            int mask = 0;
+            for (char c : word) {
+                mask |= 1 << (c - 'a');
+            }
+            if (__builtin_popcount(mask) <= 7) {
+                wordMap[mask]++;
+            }
+        }
+        vector<int> ans;
+        for (string puzzle : puzzles) {
+            int total = 0;
+            int mask = 0;
+            for (int i = 1; i < 7; i++) {
+                mask |= 1 << (puzzle[i] - 'a');
+            }
+            int subset = mask;
+            do {
+                int s = subset | (1 << (puzzle[0] - 'a'));
+                if (wordMap.count(s)) {
+                    total += wordMap[s];
+                }
+                subset = (subset - 1) & mask;
+            } while (subset != mask);
+            ans.push_back(total);
+        }
+        return ans;
+
+=======
+
+        map<int, int> m;
+        for (string& w: words) {
+            int mask = 0;
+            for (char c: w) {
+                mask |= 1 << (c - 'a');
+            }
+            if (__builtin_popcount(mask) <= 7) {
+                m[mask]++;
+            }
+        }
+        vector<int> res;
+        for (string& p: puzzles) {
+            int total = 0;
+            int mask = 0;
+            for (int i = 1; i < 7; i++) {
+                mask |= 1 << (p[i] - 'a');
+            }
+            int subset = mask;
+            do {
+                int s = subset | (1 << (p[0] - 'a'));
+                if (m.count(s)) {
+                    total += m[s];
+                }
+                subset = (subset - 1) & mask;
+            } while (subset != mask);
+            res.push_back(total);
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        map<int, int> wordMap;
+        for (auto word : words) {
+            int mask = 0;
+            for (auto c : word) {
+                mask |= 1 << (c - 'a');
+            }
+            if (__builtin_popcount(mask) <= 7) {
+                wordMap[mask]++;
+            }
+        }
+        for (auto puzzle : puzzles) {
+            int total = 0;
+            int mask = 0;
+            for (auto c : puzzle) {
+                mask |= 1 << (c - 'a');
+            }
+            int subset = mask;
+            do {
+                int s = subset | (1 << (puzzle[0] - 'a'));
+                if (wordMap.find(s) != wordMap.end()) {
+                    total += wordMap[s];
+                }
+                subset = (subset - 1) & mask;
+            } while (subset != mask);
+            result.push_back(total);
+        }
+        return result;
+
+=======
+
+        vector<int> ans(puzzles.size(), 0);
+        unordered_map<int, int> m;
+        for (auto &w : words) {
+            int mask = 0;
+            for (auto &c : w) mask |= 1 << (c - 'a');
+            if (__builtin_popcount(mask) <= 7) ++m[mask];
+        }
+        for (int i = 0; i < puzzles.size(); ++i) {
+            int mask = 0;
+            for (auto &c : puzzles[i]) mask |= 1 << (c - 'a');
+            int sub = mask;
+            do {
+                int s = sub | (1 << (puzzles[i][0] - 'a'));
+                if (m.count(s)) ans[i] += m[s];
+                sub = (sub - 1) & mask;
+            } while (sub != mask);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans(puzzles.size(), 0);
+        vector<int> mask(words.size(), 0);
+        vector<int> count(1 << 26, 0);
+        for (int i = 0; i < words.size(); i++) {
+            for (char c : words[i]) {
+                mask[i] |= (1 << (c - 'a'));
+            }
+            count[mask[i]]++;
+        }
+        for (int i = 0; i < puzzles.size(); i++) {
+            int first = 1 << (puzzles[i][0] - 'a');
+            for (int j = 0; j < (1 << 6); j++) {
+                int mask = first;
+                for (int k = 0; k < 6; k++) {
+                    if (j & (1 << k)) {
+                        mask |= (1 << (puzzles[i][k + 1] - 'a'));
+                    }
+                }
+                ans[i] += count[mask];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        unordered_map<int, int> cnt;
+        for (auto w:words) {
+            int mask = 0;
+            for (auto c:w) {
+                mask |= 1 << (c - 'a');
+            }
+            if (__builtin_popcount(mask) <= 7) {
+                cnt[mask]++;
+            }
+        }
+        for (auto p:puzzles) {
+            int total = 0;
+            for (int choose = 0; choose < (1 << 6); ++choose) {
+                int mask = 0;
+                for (int i = 0; i < 6; ++i) {
+                    if (choose & (1 << i)) {
+                        mask |= 1 << (p[i + 1] - 'a');
+                    }
+                }
+                mask |= 1 << (p[0] - 'a');
+                if (cnt.count(mask)) {
+                    total += cnt[mask];
+                }
+            }
+            res.push_back(total);
+        }
+        return res;

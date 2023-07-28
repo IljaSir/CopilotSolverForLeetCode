@@ -1,0 +1,320 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer>[] graph = new ArrayList[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] prerequisite : prerequisites) {
+            graph[prerequisite[1]].add(prerequisite[0]);
+        }
+        boolean[] visited = new boolean[numCourses];
+        boolean[] recStack = new boolean[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            if (isCyclic(i, graph, visited, recStack)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isCyclic(int i, List<Integer>[] graph, boolean[] visited, boolean[] recStack) {
+        if (recStack[i]) {
+            return true;
+        }
+        if (visited[i]) {
+            return false;
+        }
+        visited[i] = true;
+        recStack[i] = true;
+        for (int next : graph[i]) {
+            if (isCyclic(next, graph, visited, recStack)) {
+                return true;
+            }
+        }
+        recStack[i] = false;
+        return false;
+
+=======
+
+        int[] inDegree = new int[numCourses];
+        for (int[] prerequisite : prerequisites) {
+            inDegree[prerequisite[0]]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            for (int[] prerequisite : prerequisites) {
+                if (prerequisite[1] == course) {
+                    inDegree[prerequisite[0]]--;
+                    if (inDegree[prerequisite[0]] == 0) {
+                        queue.add(prerequisite[0]);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] p : prerequisites) {
+            graph.get(p[1]).add(p[0]);
+        }
+        int[] visited = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            if (visited[i] == 0 && !dfs(graph, i, visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean dfs(Map<Integer, List<Integer>> graph, int course, int[] visited) {
+        visited[course] = 1;
+        for (int next : graph.get(course)) {
+            if (visited[next] == 1 || !dfs(graph, next, visited)) {
+                return false;
+            }
+        }
+        visited[course] = 2;
+        return true;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < prerequisites.length; i++) {
+            if (!map.containsKey(prerequisites[i][1])) {
+                map.put(prerequisites[i][1], new ArrayList<>());
+            }
+            map.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+        int[] visited = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            if (dfs(map, visited, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean dfs(Map<Integer, List<Integer>> map, int[] visited, int i) {
+        if (visited[i] == 1) {
+            return true;
+        }
+        if (visited[i] == 2) {
+            return false;
+        }
+        visited[i] = 1;
+        if (map.containsKey(i)) {
+            for (int j : map.get(i)) {
+                if (dfs(map, visited, j)) {
+                    return true;
+                }
+            }
+        }
+        visited[i] = 2;
+        return false;
+
+=======
+
+        // Build graph
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] pre : prerequisites) {
+            graph.get(pre[1]).add(pre[0]);
+        }
+        // Check for cycle
+        Set<Integer> visited = new HashSet<>();
+        Set<Integer> path = new HashSet<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (hasCycle(graph, i, visited, path)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean hasCycle(Map<Integer, List<Integer>> graph, int course, Set<Integer> visited, Set<Integer> path) {
+        if (path.contains(course)) {
+            return true;
+        }
+        if (visited.contains(course)) {
+            return false;
+        }
+        visited.add(course);
+        path.add(course);
+        for (int nextCourse : graph.get(course)) {
+            if (hasCycle(graph, nextCourse, visited, path)) {
+                return true;
+            }
+        }
+        path.remove(course);
+        return false;
+
+=======
+
+        int[] inDegree = new int[numCourses];
+        for (int[] edge : prerequisites) {
+            inDegree[edge[0]]++;
+        }
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int from = queue.poll();
+            numCourses--;
+            for (int[] edge : prerequisites) {
+                if (edge[1] != from) {
+                    continue;
+                }
+                if (--inDegree[edge[0]] == 0) {
+                    queue.offer(edge[0]);
+                }
+            }
+        }
+        return numCourses == 0;
+
+=======
+
+        int[] inDegree = new int[numCourses];
+        int[][] adjacency = new int[numCourses][numCourses];
+        Queue<Integer> queue = new LinkedList<>();
+        for (int[] cp : prerequisites) {
+            inDegree[cp[0]]++;
+            adjacency[cp[1]][cp[0]] = 1;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int pre = queue.poll();
+            numCourses--;
+            for (int i = 0; i < adjacency.length; i++) {
+                if (adjacency[pre][i] == 1) {
+                    if (--inDegree[i] == 0) {
+                        queue.add(i);
+                    }
+                }
+            }
+        }
+        return numCourses == 0;
+
+=======
+
+        // Create a graph
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < numCourses; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : prerequisites) {
+            graph.get(edge[1]).add(edge[0]);
+        }
+        // Create visited array
+        int[] visited = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            if (visited[i] == 0 && !dfs(graph, visited, i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean dfs(Map<Integer, List<Integer>> graph, int[] visited, int node) {
+        if (visited[node] == 1) {
+            return false;
+        }
+        if (visited[node] == 2) {
+            return true;
+        }
+        visited[node] = 1;
+        for (int next : graph.get(node)) {
+            if (!dfs(graph, visited, next)) {
+                return false;
+            }
+        }
+        visited[node] = 2;
+        return true;
+
+=======
+
+        // build graph
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] p : prerequisites) {
+            graph.computeIfAbsent(p[1], x -> new ArrayList<>()).add(p[0]);
+        }
+        // build indegree
+        int[] indegree = new int[numCourses];
+        for (int[] p : prerequisites) {
+            indegree[p[0]]++;
+        }
+        // bfs
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            if (graph.containsKey(cur)) {
+                for (int next : graph.get(cur)) {
+                    indegree[next]--;
+                    if (indegree[next] == 0) {
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        if (prerequisites.length == 0) return true;
+        int[] inDegree = new int[numCourses];
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] p : prerequisites) {
+            inDegree[p[0]]++;
+            graph.computeIfAbsent(p[1], x -> new ArrayList<>()).add(p[0]);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) q.offer(i);
+        }
+        int count = 0;
+        while (!q.isEmpty()) {
+            int curr = q.poll();
+            count++;
+            if (graph.containsKey(curr)) {
+                for (int i : graph.get(curr)) {
+                    inDegree[i]--;
+                    if (inDegree[i] == 0) q.offer(i);
+                }
+            }
+        }
+        return count == numCourses;

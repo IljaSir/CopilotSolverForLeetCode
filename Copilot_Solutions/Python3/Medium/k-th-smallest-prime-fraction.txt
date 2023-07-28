@@ -1,0 +1,244 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def count(x):
+            res, j = 0, 0
+            for i in range(len(arr)):
+                while j < len(arr) and arr[i] > x * arr[j]:
+                    j += 1
+                res += len(arr) - j
+            return res
+        lo, hi = 0, 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            if count(mid) < k:
+                lo = mid
+            else:
+                hi = mid
+        p = q = 0
+        for i in range(len(arr)):
+            j = bisect.bisect_left(arr, lo * arr[i])
+            if j < len(arr) and arr[i] > lo * arr[j] and (p == 0 or arr[i] * q < p * arr[j]):
+                p, q = arr[i], arr[j]
+        return [p, q]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def count(x):
+            count, j = 0, 1
+            for i in range(len(arr) - 1):
+                while j < len(arr) and arr[i] > x * arr[j]:
+                    j += 1
+                count += len(arr) - j
+            return count
+        l, r = 0, 1
+        while l < r:
+            mid = (l + r) / 2
+            if count(mid) >= k:
+                r = mid
+            else:
+                l = mid + 1e-9
+        p = 0
+        for i in range(len(arr) - 1):
+            j = bisect.bisect_right(arr, l * arr[i])
+            p += j
+            if p >= k:
+                return [arr[i], arr[j - (p - k) - 1]]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def check(x):
+            count = 0
+            j = 1
+            for i in range(n-1):
+                while j < n and arr[i] > x * arr[j]:
+                    j += 1
+                count += n - j
+            return count >= k
+        n = len(arr)
+        lo, hi = 0, 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            if check(mid):
+                hi = mid
+            else:
+                lo = mid + 1e-9
+        p = 0
+        for i in range(n-1):
+            j = bisect.bisect_right(arr, lo * arr[i])
+            p += j
+            if p >= k:
+                return [arr[i], arr[j - (p - k) - 1]]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        n = len(arr)
+        lo = 0
+        hi = 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            count = 0
+            p = 0
+            q = 1
+            for i in range(n):
+                j = bisect.bisect(arr, mid * arr[i])
+                count += n - j
+                if j < n and p * arr[j] < q * arr[i]:
+                    p = arr[i]
+                    q = arr[j]
+            if count < k:
+                lo = mid
+            else:
+                hi = mid
+        return [p, q]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        n = len(arr)
+        l, r = 0, 1
+        while l < r:
+            mid = (l + r) / 2
+            cnt = 0
+            j = 1
+            for i in range(n):
+                while j < n and arr[i] > mid * arr[j]:
+                    j += 1
+                cnt += n - j
+            if cnt < k:
+                l = mid
+            else:
+                r = mid
+        return [arr[i], arr[j]] if cnt == k else [arr[i], arr[j - 1]]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        n = len(arr)
+        def count(x):
+            j = 1
+            ans = 0
+            for i in range(n-1):
+                while j < n and arr[i] > x * arr[j]:
+                    j += 1
+                ans += n - j
+            return ans
+        l, r = 0, 1
+        while l < r:
+            mid = (l + r) / 2
+            if count(mid) >= k:
+                r = mid
+            else:
+                l = mid + 1e-9
+        p = 0
+        for i in range(n-1):
+            j = n - 1
+            while j > i and arr[i] > l * arr[j]:
+                j -= 1
+            if j > i and (p == 0 or arr[i] * arr[p[1]] > arr[p[0]] * arr[j]):
+                p = (i, j)
+        return [arr[p[0]], arr[p[1]]]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        n = len(arr)
+        lo, hi = 0, 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            count, best = 0, 0
+            j = 1
+            for i in range(n-1):
+                while j < n and arr[i] > mid * arr[j]:
+                    j += 1
+                count += n - j
+                if j < n and best < arr[i] / arr[j]:
+                    best = arr[i] / arr[j]
+                    p, q = i, j
+            if count == k:
+                return [arr[p], arr[q]]
+            elif count < k:
+                lo = mid
+            else:
+                hi = mid
+        return []
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def check(target):
+            count, i = 0, 0
+            for j in range(1, n):
+                while arr[i] < target * arr[j]:
+                    i += 1
+                count += i
+            return count >= k
+        n = len(arr)
+        lo, hi = 0, 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            if check(mid):
+                hi = mid
+            else:
+                lo = mid + 1e-9
+        p = 0
+        for i in range(1, n):
+            if arr[p] < lo * arr[i]:
+                p = i
+        return [arr[p], int(lo * arr[p])]
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def count_less_than(arr, val):
+            count = 0
+            for i in range(len(arr)):
+                j = bisect.bisect_right(arr, val * arr[i])
+                count += j - i - 1
+            return count
+        
+        lo, hi = 0, 1
+        while lo < hi:
+            mid = (lo + hi) / 2
+            if count_less_than(arr, mid) >= k:
+                hi = mid
+            else:
+                lo = mid + 1e-9
+        p = 0
+        for i in range(len(arr)):
+            j = bisect.bisect_right(arr, lo * arr[i])
+            p += j - i - 1
+            if p >= k:
+                return [arr[i], arr[j - 1]]
+            i = j
+
+=======
+
+def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:
+        def countLessThan(arr, num):
+            count = 0
+            for i in range(len(arr)):
+                j = bisect.bisect_right(arr, num * arr[i])
+                count += j - i - 1
+            return count
+        
+        left, right = 0.0, 1.0
+        while left < right:
+            mid = (left + right) / 2
+            if countLessThan(arr, mid) < k:
+                left = mid
+            else:
+                right = mid
+            if left + 1e-9 >= right:
+                break
+        count = countLessThan(arr, left)
+        for i in range(len(arr)):
+            j = bisect.bisect_right(arr, left * arr[i])
+            count += j - i - 1
+            if count == k:
+                return [arr[i], arr[j - 1]]

@@ -1,0 +1,172 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let s = s.as_bytes();
+        let mut dp = vec![0; 26];
+        let mut len = 0;
+        for i in 0..s.len() {
+            if i > 0 && (s[i] as i32 - s[i - 1] as i32 == 1 || s[i - 1] as i32 - s[i] as i32 == 25) {
+                len += 1;
+            } else {
+                len = 1;
+            }
+            let idx = (s[i] - b'a') as usize;
+            dp[idx] = dp[idx].max(len);
+        }
+        dp.iter().sum()
+
+=======
+Suggestion 2
+
+        let mut dp = vec![0; 26];
+        let mut count = 0;
+        let s = s.as_bytes();
+        for i in 0..s.len() {
+            if i > 0 && (s[i] as i32 - s[i - 1] as i32 == 1 || s[i - 1] as i32 - s[i] as i32 == 25) {
+                count += 1;
+            } else {
+                count = 1;
+            }
+            let index = (s[i] - b'a') as usize;
+            dp[index] = dp[index].max(count);
+        }
+        dp.iter().sum()
+
+=======
+Suggestion 3
+
+        let mut res = 0;
+        let mut dp = vec![0; 26];
+        let mut cur = 0;
+        let s = s.as_bytes();
+        for i in 0..s.len() {
+            if i > 0 && (s[i] - s[i - 1] == 1 || s[i - 1] - s[i] == 25) {
+                cur += 1;
+            } else {
+                cur = 1;
+            }
+            let index = (s[i] - b'a') as usize;
+            dp[index] = dp[index].max(cur);
+        }
+        for i in 0..26 {
+            res += dp[i];
+        }
+        res
+
+=======
+Suggestion 4
+
+        let mut count = vec![0; 26];
+        let mut max = 0;
+        let s = s.as_bytes();
+        for i in 0..s.len() {
+            let c = s[i] - b'a';
+            if i > 0 && (s[i-1] + 1) % 26 != c {
+                max = 0;
+            }
+            max += 1;
+            count[c as usize] = count[c as usize].max(max);
+        }
+        count.iter().sum()
+
+=======
+Suggestion 5
+
+        let mut cnt = vec![0; 26];
+        let mut max_len = 0;
+        for (i, c) in s.chars().enumerate() {
+            let n = c as usize - 'a' as usize;
+            if i > 0 && (s.as_bytes()[i] as i32 - s.as_bytes()[i - 1] as i32).abs() != 1 {
+                max_len = 0;
+            }
+            max_len += 1;
+            cnt[n] = cnt[n].max(max_len);
+        }
+        cnt.iter().sum()
+
+=======
+Suggestion 6
+
+        let mut dp = vec![0; 26];
+        let mut max = 0;
+        for (i, ch) in s.chars().enumerate() {
+            let cur = ch as u8 - 'a' as u8;
+            if i > 0 && (cur + 1) % 26 != (s[i - 1] as u8 - 'a' as u8) {
+                max = 0;
+            }
+            max += 1;
+            dp[cur as usize] = dp[cur as usize].max(max);
+        }
+        dp.iter().sum()
+    }
+}
+
+=======
+Suggestion 7
+
+        let mut count = [0; 26];
+        let mut max_len = 0;
+        s.chars().for_each(|c| {
+            let i = c as usize - 'a' as usize;
+            max_len = if i == (count[i] + 1) % 26 { max_len + 1 } else { 1 };
+            count[i] = std::cmp::max(count[i], max_len);
+        });
+        count.iter().sum::<i32>()
+    }
+}
+
+=======
+Suggestion 8
+
+        let mut v = vec![0; 26];
+        let mut cnt = 0;
+        let mut s = s.chars().map(|c| (c as u8 - b'a') as usize).collect::<Vec<_>>();
+        s.push(26);
+        for i in 0..s.len() - 1 {
+            if s[i] + 1 == s[i + 1] {
+                cnt += 1;
+            } else {
+                cnt = 1;
+            }
+            v[s[i]] = v[s[i]].max(cnt);
+        }
+        v.into_iter().sum()
+
+=======
+Suggestion 9
+
+        let mut s = s.into_bytes();
+        let mut cnt = vec![0; 26];
+        let mut max = 0;
+        for i in 0..s.len() {
+            let c = s[i];
+            if i > 0 && (c as i8 - s[i-1] as i8).abs() != 1 && c != b'a' || i == 0 && c != b'a' {
+                max = 0;
+            }
+            max += 1;
+            let idx = (c - b'a') as usize;
+            cnt[idx] = cnt[idx].max(max);
+        }
+        cnt.iter().sum()
+    }
+}
+
+=======
+Suggestion 10
+
+        let mut dp = vec![0; 26];
+        let mut count = 0;
+        let mut prev = -1;
+        for ch in s.chars() {
+            let ch = ch as usize - 'a' as usize;
+            if prev + 1 == ch || (prev == 25 && ch == 0) {
+                count += 1;
+            } else {
+                count = 1;
+            }
+            dp[ch] = dp[ch].max(count);
+            prev = ch as i32;
+        }
+        dp.iter().sum()

@@ -1,0 +1,216 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = arr.len();
+        let mut odd = vec![false; n];
+        let mut even = vec![false; n];
+        odd[n - 1] = true;
+        even[n - 1] = true;
+        let mut map = std::collections::BTreeMap::new();
+        map.insert(arr[n - 1], n - 1);
+        let mut res = 1;
+        for i in (0..n - 1).rev() {
+            if let Some(&x) = map.range(arr[i]..).next() {
+                odd[i] = even[x];
+            }
+            if let Some(&x) = map.range(..=arr[i]).rev().next() {
+                even[i] = odd[x];
+            }
+            if odd[i] {
+                res += 1;
+            }
+            map.insert(arr[i], i);
+        }
+        res
+    }
+}
+
+=======
+
+        let n = arr.len();
+        let mut odd = vec![false; n];
+        let mut even = vec![false; n];
+        odd[n - 1] = true;
+        even[n - 1] = true;
+        let mut res = 1;
+        let mut map = std::collections::BTreeMap::new();
+        map.insert(arr[n - 1], n - 1);
+        for i in (0..n - 1).rev() {
+            let (&k1, _) = map.range(arr[i]..).next().unwrap();
+            let (&k2, _) = map.range(..=arr[i]).next_back().unwrap();
+            if let Some(&j) = map.get(&k1) {
+                odd[i] = even[j];
+            }
+            if let Some(&j) = map.get(&k2) {
+                even[i] = odd[j];
+            }
+            if odd[i] {
+                res += 1;
+            }
+            map.insert(arr[i], i);
+        }
+        res
+
+=======
+
+        let n = arr.len();
+        let mut dp_odd = vec![false; n];
+        let mut dp_even = vec![false; n];
+        dp_odd[n-1] = true;
+        dp_even[n-1] = true;
+        let mut ans = 1;
+        let mut tree = std::collections::BTreeMap::new();
+        tree.insert(arr[n-1], n-1);
+        for i in (0..n-1).rev() {
+            let (&next_odd, _) = tree.range(arr[i]..).next().unwrap_or((&0, &0));
+            let (&next_even, _) = tree.range(..=arr[i]).next_back().unwrap_or((&0, &0));
+            dp_odd[i] = dp_even[next_odd as usize];
+            dp_even[i] = dp_odd[next_even as usize];
+            if dp_odd[i] {
+                ans += 1;
+            }
+            tree.insert(arr[i], i);
+        }
+        ans
+
+=======
+
+        let mut odd = vec![false; arr.len()];
+        let mut even = vec![false; arr.len()];
+        let mut map = std::collections::BTreeMap::new();
+        odd[arr.len() - 1] = true;
+        even[arr.len() - 1] = true;
+        map.insert(arr[arr.len() - 1], arr.len() - 1);
+        let mut res = 1;
+        for i in (0..arr.len() - 1).rev() {
+            if let Some(&j) = map.range(arr[i]..).next() {
+                odd[i] = even[j];
+            }
+            if let Some(&j) = map.range(..=arr[i]).rev().next() {
+                even[i] = odd[j];
+            }
+            if odd[i] {
+                res += 1;
+            }
+            map.insert(arr[i], i);
+        }
+        res
+
+=======
+
+        let n = arr.len();
+        let mut next_higher = vec![n; n];
+        let mut next_lower = vec![n; n];
+        let mut stack = vec![];
+        for i in (0..n).rev() {
+            while !stack.is_empty() && arr[stack[stack.len() - 1]] <= arr[i] {
+                stack.pop();
+            }
+            if !stack.is_empty() {
+                next_higher[i] = stack[stack.len() - 1];
+            }
+            stack.push(i);
+        }
+        stack.clear();
+        for i in (0..n).rev() {
+            while !stack.is_empty() && arr[stack[stack.len() - 1]] >= arr[i] {
+                stack.pop();
+            }
+            if !stack.is_empty() {
+                next_lower[i] = stack[stack.len() - 1];
+            }
+            stack.push(i);
+        }
+        let mut higher = vec![false; n];
+        let mut lower = vec![false; n];
+        higher[n - 1] = true;
+        lower[n - 1] = true;
+        let mut ans = 1;
+        for i in (0..n - 1).rev() {
+            higher[i] = lower[next_higher[i]];
+            lower[i] = higher[next_lower[i]];
+            if higher[i] {
+                ans += 1;
+            }
+        }
+        ans
+
+=======
+
+        let n = arr.len();
+        let mut next_higher = vec![0; n];
+        let mut next_lower = vec![0; n];
+        let mut stack = vec![];
+        for &a in arr.iter().rev() {
+            while !stack.is_empty() && a > arr[*stack.last().unwrap()] {
+                next_higher[*stack.last().unwrap()] = a;
+                stack.pop();
+            }
+            stack.push(a);
+        }
+        stack.clear();
+        for &a in arr.iter().rev() {
+            while !stack.is_empty() && a < arr[*stack.last().unwrap()] {
+                next_lower[*stack.last().unwrap()] = a;
+                stack.pop();
+            }
+            stack.push(a);
+        }
+        let mut higher = vec![false; n];
+        let mut lower = vec![false; n];
+        higher[n - 1] = true;
+        lower[n - 1] = true;
+        for i in (0..n - 1).rev() {
+            if next_higher[i] > 0 {
+                higher[i] = lower[next_higher[i] as usize];
+            }
+            if next_lower[i] > 0 {
+                lower[i] = higher[next_lower[i] as usize];
+            }
+        }
+        higher.iter().filter(|v| **v).count() as i32
+
+=======
+
+        let n = arr.len();
+        let mut next = vec![vec![-1; 2]; n];
+        let mut stack = vec![];
+        let mut res = 0;
+        for i in (0..n).rev() {
+            while !stack.is_empty() && arr[stack[stack.len() - 1]] <= arr[i] {
+                next[stack.pop().unwrap()][0] = i as i32;
+            }
+            while !stack.is_empty() && arr[stack[stack.len() - 1]] >= arr[i] {
+                next[stack.pop().unwrap()][1] = i as i32;
+            }
+            stack.push(i);
+        }
+        let mut dp = vec![vec![false; 2]; n];
+        dp[n - 1] = vec![true; 2];
+        for i in (0..n - 1).rev() {
+            for j in 0..2 {
+                let ni = next[i][j] as usize;
+                if ni < n {
+                    dp[i][j] = dp[ni][1 - j];
+                }
+            }
+            if dp[i][0] {
+                res += 1;
+            }
+        }
+        res + 1
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        // TODO
+    }
+}

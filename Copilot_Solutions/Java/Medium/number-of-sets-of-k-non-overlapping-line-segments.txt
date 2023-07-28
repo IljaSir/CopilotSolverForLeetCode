@@ -1,0 +1,151 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        long[][] dp = new long[k + 1][n + 1];
+        for (int i = 1; i <= k; i++) {
+            for (int j = i * 2; j <= n; j++) {
+                if (i == 1) {
+                    dp[i][j] = (j * (j - 1L)) / 2;
+                } else {
+                    dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1];
+                }
+                dp[i][j] %= mod;
+            }
+        }
+        return (int) dp[k][n];
+
+=======
+
+        long[][] dp = new long[k + 1][n + 1];
+        int mod = 1000000007;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = (dp[i][j - 1] + dp[i - 1][j - 1]) % mod;
+                if (j >= 2) {
+                    dp[i][j] = (dp[i][j] + dp[i][j - 2] * (j - 1)) % mod;
+                }
+            }
+        }
+        return (int)dp[k][n];
+
+=======
+
+        int mod = 1000000007;
+        long[][] dp = new long[n+1][k+1];
+        dp[2][1] = 1;
+        for (int i = 3; i <= n; i++) {
+            for (int j = 1; j <= k; j++) {
+                dp[i][j] = (dp[i-1][j] * (i-1) + dp[i-1][j-1]) % mod;
+            }
+        }
+        return (int)dp[n][k];
+
+=======
+
+        int mod = 1000000007;
+        long[][] dp = new long[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return (int) dfs(n - 1, k, dp);
+    }
+    private long dfs(int n, int k, long[][] dp) {
+        if (k == 0) {
+            return 1;
+        }
+        if (n < 2 * k - 1) {
+            return 0;
+        }
+        if (dp[n][k] != -1) {
+            return dp[n][k];
+        }
+        long res = (dfs(n - 1, k, dp) + dfs(n - 1, k - 1, dp)) % 1000000007;
+        res = (res + (n - 1) * dfs(n - 2, k - 1, dp)) % 1000000007;
+        dp[n][k] = res;
+        return res;
+
+=======
+
+        int MOD = 1_000_000_007;
+        int[][] dp = new int[k + 1][n + 1];
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= n; j++) {
+                if (i == j) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = (dp[i][j - 1] + dp[i - 1][j - 1]) % MOD;
+                    dp[i][j] = (dp[i][j] + (int)((1L * j * dp[i][j - 1]) % MOD)) % MOD;
+                }
+            }
+        }
+        return dp[k][n];
+
+=======
+
+        int[][] dp = new int[n + 1][k + 1];
+        int mod = 1_000_000_007;
+        for (int i = 1; i <= n; i++) {
+            dp[i][1] = i * (i - 1) / 2;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 2; j <= k; j++) {
+                dp[i][j] = (dp[i - 1][j] + dp[i - 1][j - 1]) % mod;
+                if (i >= 2) {
+                    dp[i][j] = (dp[i][j] + dp[i - 2][j - 1]) % mod;
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int mod = 1000000007;
+        long[][] dp = new long[k+1][n+1];
+        for(int i=1;i<=k;i++){
+            for(int j=i*2;j<=n;j++){
+                if(i==1){
+                    dp[i][j] = 1;
+                }else{
+                    dp[i][j] = (dp[i][j-1] + dp[i-1][j-1])%mod;
+                }
+            }
+        }
+        long ans = 0;
+        for(int i=1;i<=n;i++){
+            ans = (ans + dp[k][i])%mod;
+        }
+        return (int)ans;
+
+=======
+
+        long[][][] dp = new long[n][k+1][2];
+        int mod = 1000000007;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=k;j++){
+                dp[i][j][0] = -1;
+                dp[i][j][1] = -1;
+            }
+        }
+        return (int) solve(0,0,k,dp,mod);
+    }
+    public long solve(int i,int j,int k,long[][][] dp,int mod){
+        if(j==k){
+            return 1;
+        }
+        if(i>=dp.length){
+            return 0;
+        }
+        if(dp[i][j][0]!=-1){
+            return dp[i][j][0];
+        }
+        long ans = 0;
+        ans = (ans+solve(i+1,j,k,dp,mod))%mod;
+        if(i+1<dp.length){
+            ans = (ans+solve(i+2,j+1,k,dp,mod))%mod;
+        }
+        dp[i][j][0] = ans;
+        return ans;
+    }
+}

@@ -1,0 +1,125 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        sort(clips.begin(), clips.end(), [](vector<int> a, vector<int> b) {
+            if (a[0] == b[0]) return a[1] > b[1];
+            return a[0] < b[0];
+        });
+        int res = 0, end = 0, pre = 0;
+        for (auto clip : clips) {
+            if (clip[0] > end) return -1;
+            if (clip[0] > pre) {
+                res++;
+                pre = end;
+            }
+            end = max(end, clip[1]);
+            if (end >= time) return res + 1;
+        }
+        return -1;
+
+=======
+
+        sort(clips.begin(), clips.end());
+        int res = 0, last = 0, cur = 0;
+        for (int i = 0; i < clips.size() && last < time; ++i) {
+            if (clips[i][0] > last) return -1;
+            while (i < clips.size() && clips[i][0] <= last) {
+                cur = max(cur, clips[i][1]);
+                ++i;
+            }
+            --i;
+            last = cur;
+            ++res;
+        }
+        return last < time ? -1 : res;
+
+=======
+
+        sort(clips.begin(), clips.end(), [](const vector<int> &a, const vector<int> &b) {
+            return a[0] < b[0];
+        });
+        int n = clips.size();
+        if (clips[0][0] != 0) return -1;
+        int i = 0;
+        int cnt = 0;
+        int j = 0;
+        while (i < n) {
+            int max_end = clips[i][1];
+            j = i + 1;
+            while (j < n && clips[j][0] <= clips[i][1]) {
+                max_end = max(max_end, clips[j][1]);
+                j++;
+            }
+            i = j;
+            cnt++;
+            if (max_end >= time) return cnt;
+        }
+        return -1;
+
+=======
+
+        vector<int> dp(time+1, 10001);
+        dp[0] = 0;
+        for (int i=1; i<=time; i++) {
+            for (auto& clip: clips) {
+                if (clip[0] < i && i <= clip[1]) {
+                    dp[i] = min(dp[i], dp[clip[0]] + 1);
+                }
+            }
+        }
+        return dp[time] == 10001? -1: dp[time];
+
+=======
+
+        vector<int> dp(time+1,INT_MAX-1);
+        dp[0] = 0;
+        for(int i = 1; i <= time; i++){
+            for(auto clip:clips){
+                if(clip[0] < i && i <= clip[1]){
+                    dp[i] = min(dp[i],dp[clip[0]]+1);
+                }
+            }
+        }
+        return dp[time] == INT_MAX-1 ? -1:dp[time];
+
+=======
+
+        sort(clips.begin(), clips.end());
+        int n = clips.size(), ans = 0, cur = 0, i = 0;
+        while (cur < time) {
+            int pre = cur;
+            while (i < n && clips[i][0] <= pre) {
+                cur = max(cur, clips[i][1]);
+                i++;
+            }
+            if (pre == cur) return -1;
+            ans++;
+        }
+        return ans;
+
+=======
+
+        sort(clips.begin(), clips.end());
+        int n = clips.size();
+        int ans = 0;
+        int i = 0;
+        int j = 0;
+        int max = 0;
+        while (i < n && j < n) {
+            while (i < n && clips[i][0] <= j) {
+                if (clips[i][1] > max) {
+                    max = clips[i][1];
+                }
+                i++;
+            }
+            if (max <= j) {
+                return -1;
+            }
+            j = max;
+            ans++;
+            if (j >= time) {
+                return ans;
+            }
+        }
+        return -1;

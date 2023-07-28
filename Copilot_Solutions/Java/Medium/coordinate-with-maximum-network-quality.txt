@@ -1,0 +1,263 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int max = 0;
+        int[] ans = new int[2];
+        for (int i = 0; i <= 50; i++) {
+            for (int j = 0; j <= 50; j++) {
+                int sum = 0;
+                for (int[] t : towers) {
+                    int d = (i - t[0]) * (i - t[0]) + (j - t[1]) * (j - t[1]);
+                    if (d <= radius * radius) {
+                        sum += t[2] / (1 + (int)Math.sqrt(d));
+                    }
+                }
+                if (sum > max) {
+                    max = sum;
+                    ans[0] = i;
+                    ans[1] = j;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[2];
+        int max = 0;
+        for (int i = 0; i < towers.length; i++) {
+            for (int j = 0; j < towers.length; j++) {
+                int x = towers[i][0], y = towers[i][1];
+                int x1 = towers[j][0], y1 = towers[j][1];
+                int distance = (int) Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
+                if (distance <= radius) {
+                    towers[i][2] += (int) Math.floor(towers[j][2] / (1 + distance));
+                }
+            }
+            if (towers[i][2] > max) {
+                max = towers[i][2];
+                ans[0] = towers[i][0];
+                ans[1] = towers[i][1];
+            }
+        }
+        return ans;
+
+=======
+
+        int[] result = new int[2];
+        int max = 0;
+        for (int i = 0; i < towers.length; i++) {
+            int x1 = towers[i][0];
+            int y1 = towers[i][1];
+            int q1 = towers[i][2];
+            int sum = 0;
+            for (int j = 0; j < towers.length; j++) {
+                int x2 = towers[j][0];
+                int y2 = towers[j][1];
+                int q2 = towers[j][2];
+                double distance = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+                if (distance <= radius) {
+                    sum += Math.floor(q2 / (1 + distance));
+                }
+            }
+            if (sum > max) {
+                max = sum;
+                result[0] = x1;
+                result[1] = y1;
+            } else if (sum == max) {
+                if (x1 < result[0]) {
+                    result[0] = x1;
+                    result[1] = y1;
+                } else if (x1 == result[0] && y1 < result[1]) {
+                    result[1] = y1;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[2];
+        int max = 0;
+        for (int i = 0; i < towers.length; i++) {
+            int x1 = towers[i][0];
+            int y1 = towers[i][1];
+            int q1 = towers[i][2];
+            for (int j = 0; j < towers.length; j++) {
+                int x2 = towers[j][0];
+                int y2 = towers[j][1];
+                int q2 = towers[j][2];
+                double d = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+                if (d <= radius) {
+                    q1 += Math.floor(q2 / (1 + d));
+                }
+            }
+            if (q1 > max) {
+                max = q1;
+                ans[0] = x1;
+                ans[1] = y1;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] result = new int[2];
+        int max = 0;
+        for (int i = 0; i < towers.length; i++) {
+            int quality = 0;
+            for (int j = 0; j < towers.length; j++) {
+                int distance = (int) Math.sqrt(Math.pow(towers[i][0] - towers[j][0], 2) + Math.pow(towers[i][1] - towers[j][1], 2));
+                if (distance <= radius) {
+                    quality += (int) Math.floor(towers[j][2] / (1.0 + distance));
+                }
+            }
+            if (quality > max) {
+                max = quality;
+                result[0] = towers[i][0];
+                result[1] = towers[i][1];
+            } else if (quality == max) {
+                if (towers[i][0] < result[0]) {
+                    result[0] = towers[i][0];
+                    result[1] = towers[i][1];
+                } else if (towers[i][0] == result[0] && towers[i][1] < result[1]) {
+                    result[1] = towers[i][1];
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[2];
+        int max = 0;
+        for(int i = 0; i < towers.length; i++){
+            for(int j = 0; j < towers.length; j++){
+                int sum = 0;
+                for(int k = 0; k < towers.length; k++){
+                    if(Math.sqrt(Math.pow(towers[k][0] - towers[j][0], 2) + Math.pow(towers[k][1] - towers[j][1], 2)) <= radius){
+                        sum += (int)(towers[k][2] / (1 + Math.sqrt(Math.pow(towers[k][0] - towers[j][0], 2) + Math.pow(towers[k][1] - towers[j][1], 2))));
+                    }
+                }
+                if(sum > max){
+                    max = sum;
+                    ans[0] = towers[j][0];
+                    ans[1] = towers[j][1];
+                }else if(sum == max){
+                    if(ans[0] > towers[j][0]){
+                        ans[0] = towers[j][0];
+                        ans[1] = towers[j][1];
+                    }else if(ans[0] == towers[j][0]){
+                        if(ans[1] > towers[j][1]){
+                            ans[0] = towers[j][0];
+                            ans[1] = towers[j][1];
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] max = new int[3];
+        for (int i = 0; i < towers.length; i++) {
+            int[] tower = towers[i];
+            int x = tower[0], y = tower[1], q = tower[2];
+            int q1 = 0;
+            for (int j = 0; j < towers.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int[] tower1 = towers[j];
+                int x1 = tower1[0], y1 = tower1[1], q2 = tower1[2];
+                double d = Math.sqrt((x1 - x) * (x1 - x) + (y1 - y) * (y1 - y));
+                if (d <= radius) {
+                    q1 += Math.floor(q2 / (1 + d));
+                }
+            }
+            if (q1 > max[2] || (q1 == max[2] && x < max[0]) || (q1 == max[2] && x == max[0] && y < max[1])) {
+                max[0] = x;
+                max[1] = y;
+                max[2] = q1;
+            }
+        }
+        return new int[] {max[0], max[1]};
+
+=======
+
+        int[] max = new int[2];
+        int maxQuality = 0;
+        for (int i = 0; i < towers.length; i++) {
+            int quality = 0;
+            for (int j = 0; j < towers.length; j++) {
+                int distance = (int) Math.sqrt(Math.pow(towers[i][0] - towers[j][0], 2) + Math.pow(towers[i][1] - towers[j][1], 2));
+                if (distance <= radius) {
+                    quality += (int) Math.floor(towers[j][2] / (1.0 + distance));
+                }
+            }
+            if (quality > maxQuality || (quality == maxQuality && (towers[i][0] < max[0] || (towers[i][0] == max[0] && towers[i][1] < max[1])))) {
+                max = towers[i];
+                maxQuality = quality;
+            }
+        }
+        return max;
+
+=======
+
+        int[] res = new int[2];
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < towers.length; i++) {
+            int[] tower = towers[i];
+            int x1 = tower[0];
+            int y1 = tower[1];
+            int q1 = tower[2];
+            int q = 0;
+            for (int j = 0; j < towers.length; j++) {
+                int[] tower2 = towers[j];
+                int x2 = tower2[0];
+                int y2 = tower2[1];
+                int q2 = tower2[2];
+                double d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                if (d <= radius) {
+                    q += Math.floor(q2 / (1 + d));
+                }
+            }
+            if (q > max) {
+                max = q;
+                res[0] = x1;
+                res[1] = y1;
+            } else if (q == max) {
+                if (x1 < res[0]) {
+                    res[0] = x1;
+                    res[1] = y1;
+                } else if (x1 == res[0] && y1 < res[1]) {
+                    res[0] = x1;
+                    res[1] = y1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] ans = new int[2];
+        int max = 0;
+        for(int i=0;i<towers.length;i++){
+            for(int j=0;j<towers.length;j++){
+                int x = towers[j][0];
+                int y = towers[j][1];
+                int q = towers[j][2];
+                int dist = (int)Math.sqrt((x-towers[i][0])*(x-towers[i][0]) + (y-towers[i][1])*(y-towers[i][1]));
+                if(dist <= radius){
+                    towers[i][2] += (int)Math.floor(q/(1+dist));
+                }
+            }
+            if(towers[i][2] > max){
+                max = towers[i][2];
+                ans[0] = towers[i][0];
+                ans[1] = towers[i][1];
+            }
+        }
+        return ans;

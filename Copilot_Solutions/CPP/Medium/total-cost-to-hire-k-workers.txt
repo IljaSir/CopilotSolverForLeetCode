@@ -1,0 +1,176 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = costs.size();
+        vector<vector<long long>> dp(k + 1, vector<long long>(n + 1, LLONG_MAX));
+        dp[0][0] = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = dp[i][j - 1];
+                for (int l = 1; l <= candidates && l <= j; l++) {
+                    dp[i][j] = min(dp[i][j], dp[i - 1][j - l] + *min_element(costs.begin() + j - l, costs.begin() + j));
+                }
+            }
+        }
+        return dp[k][n];
+
+=======
+
+        sort(costs.begin(), costs.end());
+        int n = costs.size();
+        vector<long long> dp(n);
+        dp[0] = costs[0];
+        for (int i = 1; i < n; ++i) {
+            dp[i] = dp[i - 1] + costs[i];
+        }
+        long long ans = dp[candidates - 1];
+        for (int i = 1; i < k; ++i) {
+            long long best = LLONG_MAX;
+            for (int j = 0; j < candidates; ++j) {
+                int idx = i * candidates + j;
+                if (idx >= n) break;
+                best = min(best, dp[idx] - (idx - candidates >= 0 ? dp[idx - candidates] : 0));
+            }
+            ans += best;
+        }
+        return ans;
+
+=======
+
+        int n = costs.size();
+        long long res = 0;
+        sort(costs.begin(), costs.end());
+        for (int i = 0; i < k; i++) {
+            res += costs[i];
+        }
+        long long tmp = res;
+        for (int i = 0; i < k; i++) {
+            tmp -= costs[i];
+            tmp += costs[n - k + i];
+            res = min(res, tmp + costs[i] * (candidates - 1));
+        }
+        return res;
+
+=======
+
+        int n = costs.size();
+        vector<vector<long long>> dp(k + 1, vector<long long>(n + 1, 0));
+        for (int i = 1; i <= k; i++) {
+            multiset<int> s;
+            for (int j = 1; j <= n; j++) {
+                s.insert(costs[j - 1]);
+                if (j > candidates) {
+                    s.erase(s.find(costs[j - candidates - 1]));
+                }
+                if (j >= i) {
+                    dp[i][j] = dp[i - 1][j - candidates] + *s.begin();
+                }
+            }
+        }
+        return dp[k][n];
+
+=======
+
+        sort(costs.begin(), costs.end());
+        long long ans = 0;
+        for (int i = 0; i < k; i++) {
+            ans += costs[i];
+        }
+        long long sum = ans;
+        for (int i = 1; i <= k; i++) {
+            sum += costs[i + candidates - 1] - costs[i - 1];
+            ans = min(ans, sum);
+        }
+        return ans;
+
+=======
+
+        int n = costs.size();
+        vector<vector<long long>> dp(k, vector<long long>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            dp[0][i] = costs[i];
+        }
+        for (int i = 1; i < k; ++i) {
+            for (int j = i; j < n; ++j) {
+                dp[i][j] = dp[i - 1][j - 1] + costs[j];
+                for (int x = 2; x <= candidates; ++x) {
+                    if (j - x < i - 1) break;
+                    dp[i][j] = min(dp[i][j], dp[i - 1][j - x] + costs[j]);
+                }
+            }
+        }
+        long long ans = dp[k - 1][n - 1];
+        for (int i = 1; i <= candidates; ++i) {
+            ans = min(ans, dp[k - 1][n - i]);
+        }
+        return ans;
+
+=======
+
+        int n = costs.size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; ++i) {
+            dp[i] = costs[i];
+            if (i >= candidates) {
+                dp[i] += dp[i - candidates];
+            }
+            if (i >= 1) {
+                dp[i] = min(dp[i], dp[i - 1]);
+            }
+        }
+        long long ans = 0;
+        for (int i = n - 1; i >= n - candidates; --i) {
+            ans += dp[i];
+        }
+        for (int i = 0; i < k - 1; ++i) {
+            ans += dp[n - candidates - 1];
+        }
+        return ans;
+
+=======
+
+        int n = costs.size();
+        sort(costs.begin(), costs.end());
+        long long ans = 0;
+        for (int i = 0; i < k; i++) {
+            int x = i * (candidates - 1) + n - k * candidates;
+            ans += costs[x];
+        }
+        return ans;
+
+=======
+
+        int n = costs.size();
+        vector<vector<long long>> dp(n, vector<long long>(k + 1, 0));
+        vector<long long> sum(n, 0);
+        sort(costs.begin(), costs.end());
+        sum[0] = costs[0];
+        for (int i = 1; i < n; i++) sum[i] = sum[i - 1] + costs[i];
+        for (int i = 0; i < n; i++) dp[i][1] = sum[i];
+        for (int i = 0; i < n; i++) {
+            for (int j = 2; j <= k; j++) {
+                dp[i][j] = 1e18;
+                for (int l = 1; l <= candidates && i - l >= 0; l++) {
+                    dp[i][j] = min(dp[i][j], dp[i - l][j - 1] + sum[i] - sum[i - l]);
+                }
+            }
+        }
+        return dp[n - 1][k];
+
+=======
+
+        int n = costs.size();
+        sort(costs.begin(), costs.end());
+        int i = 0, j = n-1;
+        long long res = 0;
+        while (k--) {
+            if (candidates <= j-i) {
+                res += costs[i];
+                i++;
+            } else {
+                res += costs[j];
+                j--;
+            }
+        }
+        return res;

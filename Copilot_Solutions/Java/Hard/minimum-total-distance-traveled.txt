@@ -1,0 +1,206 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        long res = 0;
+        int[] limit = new int[factory.length];
+        for (int i = 0; i < factory.length; i++) {
+            limit[i] = factory[i][1];
+        }
+        Collections.sort(robot);
+        Arrays.sort(factory, (a, b) -> a[0] - b[0]);
+        for (int i = 0, j = robot.size() - 1; i < j; i++, j--) {
+            int x = robot.get(i), y = robot.get(j);
+            int idx = find(factory, x);
+            if (limit[idx] > 0) {
+                res += y - x;
+                limit[idx]--;
+            } else {
+                idx = find(factory, y);
+                res += y - x;
+                limit[idx]--;
+            }
+        }
+        return res;
+    }
+
+    private int find(int[][] factory, int x) {
+        int l = 0, r = factory.length - 1;
+        while (l < r) {
+            int m = l + r >> 1;
+            if (factory[m][0] < x) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+
+=======
+
+        int n = robot.size(), m = factory.length;
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            long min = Long.MAX_VALUE;
+            for (int j = 0; j < m; j++) {
+                min = Math.min(min, Math.abs(robot.get(i) - factory[j][0]) * factory[j][1]);
+            }
+            ans += min;
+        }
+        return ans;
+
+=======
+
+        int n = robot.size();
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            int min = Integer.MAX_VALUE;
+            for (int j = 0; j < factory.length; j++) {
+                min = Math.min(min, Math.abs(robot.get(i) - factory[j][0]));
+            }
+            sum += min;
+        }
+        return sum;
+
+=======
+
+        long ans = 0;
+        int n = robot.size();
+        int m = factory.length;
+        long[][] dp = new long[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                dp[i][j] = Math.abs(robot.get(i) - factory[j][0]);
+            }
+            Arrays.sort(dp[i]);
+        }
+        for (int i = 0; i < m; i++) {
+            int sum = 0;
+            for (int j = 0; j < n; j++) {
+                sum += dp[j][i];
+            }
+            ans = Math.max(ans, sum + factory[i][1]);
+        }
+        return ans;
+
+=======
+
+        int n = robot.size();
+        int m = factory.length;
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i < m; i++) {
+            long sum = 0;
+            int[] f = factory[i];
+            for (int j = 0; j < n; j++) {
+                sum += Math.abs(robot.get(j) - f[0]);
+            }
+            ans = Math.min(ans, sum * f[1]);
+        }
+        return ans;
+
+=======
+
+        long ans = Long.MAX_VALUE;
+        int n = robot.size();
+        int m = factory.length;
+        int[] f = new int[m];
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            r[i] = robot.get(i);
+        }
+        for (int i = 0; i < m; i++) {
+            f[i] = factory[i][0];
+        }
+        Arrays.sort(f);
+        Arrays.sort(r);
+        for (int i = 0; i < m; i++) {
+            long cur = 0;
+            for (int j = 0; j < n; j++) {
+                cur += Math.abs(r[j] - f[i]);
+            }
+            ans = Math.min(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int n = robot.size();
+        int m = factory.length;
+        long ans = 0;
+        int[] cnt = new int[m];
+        for (int i = 0; i < n; i++) {
+            int min = Integer.MAX_VALUE;
+            int minIdx = -1;
+            for (int j = 0; j < m; j++) {
+                if (cnt[j] < factory[j][1]) {
+                    if (Math.abs(robot.get(i) - factory[j][0]) < min) {
+                        min = Math.abs(robot.get(i) - factory[j][0]);
+                        minIdx = j;
+                    }
+                }
+            }
+            ans += min;
+            cnt[minIdx]++;
+        }
+        return ans;
+
+=======
+
+        long res = 0;
+        int n = robot.size();
+        int m = factory.length;
+        int[] repair = new int[m];
+        for (int i = 0; i < n; i++) {
+            int min = Integer.MAX_VALUE;
+            int minIndex = -1;
+            for (int j = 0; j < m; j++) {
+                int dist = Math.abs(robot.get(i) - factory[j][0]);
+                if (repair[j] < factory[j][1] && dist < min) {
+                    min = dist;
+                    minIndex = j;
+                }
+            }
+            repair[minIndex]++;
+            res += min;
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        int n = robot.size();
+        int m = factory.length;
+        int[][] r = new int[n][2];
+        int[][] f = new int[m][2];
+        for (int i = 0; i < n; i++) {
+            r[i][0] = robot.get(i);
+            r[i][1] = i;
+        }
+        for (int i = 0; i < m; i++) {
+            f[i][0] = factory[i][0];
+            f[i][1] = factory[i][1];
+        }
+        Arrays.sort(r, (a, b) -> a[0] - b[0]);
+        Arrays.sort(f, (a, b) -> a[0] - b[0]);
+        int i = 0, j = 0;
+        while (i < n && j < m) {
+            if (r[i][0] <= f[j][0]) {
+                f[j][1]--;
+                res += f[j][0] - r[i][0];
+                i++;
+            } else {
+                j++;
+            }
+        }
+        i = n - 1;
+        j = m - 1;
+        while (i >= 0 && j >= 0) {
+            if (r[i][0] >= f[j][0]) {
+                f[j][1]--;
+                res += r[i][0] - f[j][0];
+                i--;
+            } else {
+                j--;
+            }
+        }
+        return res;

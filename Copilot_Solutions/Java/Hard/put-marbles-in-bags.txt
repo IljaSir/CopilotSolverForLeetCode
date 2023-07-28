@@ -1,0 +1,264 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = weights.length;
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + weights[i];
+        }
+        long[][] dp = new long[k + 1][n + 1];
+        for (int i = 0; i <= k; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= n; j++) {
+                for (int l = i - 1; l < j; l++) {
+                    long cost = sum[j] - sum[l];
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][l] + cost * cost);
+                }
+            }
+        }
+        return dp[k][n];
+
+=======
+
+        int n = weights.length;
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + weights[i];
+        }
+        long[][] dp = new long[k][n];
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = sum[i + 1];
+        }
+        for (int i = 1; i < k; i++) {
+            for (int j = i; j < n; j++) {
+                long min = Long.MAX_VALUE;
+                for (int p = i - 1; p < j; p++) {
+                    min = Math.min(min, Math.max(dp[i - 1][p], sum[j + 1] - sum[p + 1]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[k - 1][n - 1];
+    }
+}
+
+=======
+
+        int n = weights.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + weights[i];
+        }
+        long[][] dp = new long[k + 1][n + 1];
+        for (int i = 0; i <= k; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= n; j++) {
+                for (int p = i - 1; p < j; p++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][p] + prefix[j] - prefix[p]);
+                }
+            }
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = 1; i <= n; i++) {
+            res = Math.min(res, dp[k][i]);
+        }
+        return res;
+
+=======
+
+        long[] prefixSum = new long[weights.length];
+        prefixSum[0] = weights[0];
+        for (int i = 1; i < weights.length; i++) {
+            prefixSum[i] = prefixSum[i - 1] + weights[i];
+        }
+        
+        long[] dp = new long[weights.length];
+        dp[0] = weights[0];
+        for (int i = 1; i < weights.length; i++) {
+            dp[i] = dp[i - 1] + weights[i] * i;
+        }
+        
+        for (int i = 1; i < k; i++) {
+            for (int j = weights.length - 1; j >= i; j--) {
+                dp[j] = Long.MAX_VALUE;
+                for (int l = i - 1; l < j; l++) {
+                    dp[j] = Math.min(dp[j], dp[l] + (prefixSum[j] - prefixSum[l]) * (j - l));
+                }
+            }
+        }
+        
+        return dp[weights.length - 1];
+
+=======
+
+        int n = weights.length;
+        long[] preSum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + weights[i];
+        }
+        int[] min = new int[n];
+        int[] max = new int[n];
+        for (int i = 0; i < n; i++) {
+            min[i] = i;
+            max[i] = i;
+        }
+        for (int i = 1; i < k; i++) {
+            int[] nextMin = new int[n];
+            int[] nextMax = new int[n];
+            int minIndex = 0;
+            for (int j = 0; j < n; j++) {
+                while (minIndex < j && preSum[j + 1] - preSum[minIndex] >= preSum[minIndex + 1] - preSum[min[minIndex]]) {
+                    minIndex++;
+                }
+                nextMin[j] = min[minIndex];
+                int maxIndex = max[j];
+                while (maxIndex > 0 && preSum[maxIndex + 1] - preSum[j] >= preSum[max[maxIndex] + 1] - preSum[j]) {
+                    maxIndex = max[maxIndex - 1];
+                }
+                nextMax[j] = maxIndex;
+            }
+            min = nextMin;
+            max = nextMax;
+        }
+        long result = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            result = Math.min(result, preSum[max[i] + 1] - preSum[i] + preSum[n] - preSum[min[i]]);
+        }
+        return result;
+
+=======
+
+        long[] prefixSum = new long[weights.length];
+        prefixSum[0] = weights[0];
+        for (int i = 1; i < weights.length; ++i) {
+            prefixSum[i] = prefixSum[i - 1] + weights[i];
+        }
+        long[][] dp = new long[k + 1][weights.length + 1];
+        for (int i = 1; i <= k; ++i) {
+            for (int j = i; j <= weights.length; ++j) {
+                dp[i][j] = Long.MAX_VALUE;
+                for (int p = i - 1; p < j; ++p) {
+                    long cost = p == 0 ? 0 : (prefixSum[j - 1] - prefixSum[p - 1]) * (j - p);
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][p] + cost);
+                }
+            }
+        }
+        return dp[k][weights.length];
+
+=======
+
+        int n = weights.length;
+        long[] prefix = new long[n];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                prefix[i] = weights[i];
+            } else {
+                prefix[i] = prefix[i - 1] + weights[i];
+            }
+        }
+        long[][] dp = new long[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i <= n; i++) {
+            dp[i][1] = prefix[i - 1];
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 2; j <= k; j++) {
+                for (int l = 0; l < i; l++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[l][j - 1], prefix[i - 1] - prefix[l - 1]));
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = weights.length;
+        long[] prefix = new long[n];
+        prefix[0] = weights[0];
+        for(int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + weights[i];
+        }
+        long[][] dp = new long[n][k + 1];
+        for(int i = 0; i < n; i++) {
+            dp[i][1] = prefix[i];
+        }
+        for(int i = 1; i < n; i++) {
+            for(int j = 2; j <= k; j++) {
+                dp[i][j] = Long.MAX_VALUE;
+                for(int l = 0; l < i; l++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[l][j - 1], prefix[i] - prefix[l]));
+                }
+            }
+        }
+        long ans = Long.MAX_VALUE;
+        for(int i = 0; i < n; i++) {
+            ans = Math.min(ans, dp[i][k]);
+        }
+        return ans;
+
+=======
+
+        long[] prefix = new long[weights.length+1];
+        for (int i = 0; i < weights.length; i++) {
+            prefix[i+1] = prefix[i] + weights[i];
+        }
+        long[] dp = new long[weights.length];
+        for (int i = 0; i < weights.length; i++) {
+            dp[i] = prefix[i+1];
+        }
+        for (int i = 1; i < k; i++) {
+            long[] ndp = new long[weights.length];
+            int l = 0;
+            for (int j = 0; j < weights.length; j++) {
+                while (l < j && Math.max(prefix[j+1]-prefix[l+1], dp[l]) >= Math.max(prefix[j+1]-prefix[l], dp[l+1])) {
+                    l++;
+                }
+                ndp[j] = Math.max(prefix[j+1]-prefix[l], dp[l]);
+            }
+            dp = ndp;
+        }
+        long max = Long.MIN_VALUE;
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < weights.length; i++) {
+            max = Math.max(max, dp[i]);
+            min = Math.min(min, dp[i]);
+        }
+        return max - min;
+
+=======
+
+        long total = 0;
+        for (int i = 0; i < weights.length; i++)
+            total += weights[i];
+        long[] prefix = new long[weights.length + 1];
+        for (int i = 1; i < prefix.length; i++)
+            prefix[i] = prefix[i - 1] + weights[i - 1];
+        long[] dp = new long[weights.length + 1];
+        long[] ndp = new long[weights.length + 1];
+        for (int i = 0; i < dp.length; i++)
+            dp[i] = prefix[i];
+        for (int i = 2; i <= k; i++) {
+            Arrays.fill(ndp, 0);
+            for (int j = i; j <= weights.length; j++) {
+                ndp[j] = Long.MAX_VALUE;
+                for (int l = i - 1; l < j; l++) {
+                    long cost = prefix[j] - prefix[l];
+                    ndp[j] = Math.min(ndp[j], dp[l] + cost);
+                }
+            }
+            long[] temp = dp;
+            dp = ndp;
+            ndp = temp;
+        }
+        return dp[weights.length] - total;

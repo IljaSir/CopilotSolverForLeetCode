@@ -1,0 +1,155 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = s.size();
+        vector<int> last(26, -1);
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+        int mod = 1e9 + 7;
+        for (int i = 0; i < n; i++) {
+            int c = s[i] - 'a';
+            dp[i + 1] = dp[i] * 2 % mod;
+            if (last[c] >= 0) {
+                dp[i + 1] -= dp[last[c]];
+                dp[i + 1] %= mod;
+            }
+            last[c] = i;
+        }
+        dp[n]--;
+        if (dp[n] < 0) dp[n] += mod;
+        return dp[n];
+
+=======
+
+        int n = s.size();
+        int mod = 1e9 + 7;
+        vector<int> dp(n + 1);
+        vector<int> last(26, -1);
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            dp[i+1] = dp[i] * 2 % mod;
+            int x = s[i] - 'a';
+            if (last[x] >= 0) {
+                dp[i+1] -= dp[last[x]];
+            }
+            dp[i+1] %= mod;
+            last[x] = i;
+        }
+        dp[n]--;
+        if (dp[n] < 0) dp[n] += mod;
+        return dp[n];
+
+=======
+
+        vector<int> last(26);
+        int mod = 1e9 + 7;
+        int n = s.size();
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            int x = s[i] - 'a';
+            dp[i + 1] = (dp[i] * 2) % mod;
+            if (last[x]) {
+                dp[i + 1] = (dp[i + 1] - dp[last[x] - 1] + mod) % mod;
+            }
+            last[x] = i + 1;
+        }
+        return (dp[n] - 1 + mod) % mod;
+
+=======
+
+        int n = s.size();
+        vector<int> dp(n+1, 0);
+        dp[0] = 1;
+        unordered_map<char, int> m;
+        for (int i = 1; i <= n; i++) {
+            dp[i] = (dp[i-1] * 2) % 1000000007;
+            if (m.find(s[i-1]) != m.end()) {
+                dp[i] -= dp[m[s[i-1]]];
+                dp[i] = (dp[i] + 1000000007) % 1000000007;
+            }
+            m[s[i-1]] = i-1;
+        }
+        return (dp[n] - 1 + 1000000007) % 1000000007;
+
+=======
+
+        int n = s.size();
+        vector<int> dp(n);
+        dp[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            dp[i] = (dp[i - 1] << 1) % 1000000007;
+            for (int j = 0; j < i; ++j) {
+                if (s[i] == s[j]) {
+                    dp[i] = (dp[i] - dp[j] + 1000000007) % 1000000007;
+                    break;
+                }
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = s.size();
+        int dp[n + 1];
+        unordered_map<char, int> last;
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            dp[i] = (dp[i - 1] * 2) % 1000000007;
+            if (last.count(s[i - 1])) {
+                dp[i] = (dp[i] - dp[last[s[i - 1]] - 1] + 1000000007) % 1000000007;
+            }
+            last[s[i - 1]] = i;
+        }
+        return (dp[n] - 1 + 1000000007) % 1000000007;
+
+=======
+
+        int n = s.size();
+        int MOD = 1e9 + 7;
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        int last[26];
+        memset(last, -1, sizeof(last));
+        for (int i = 1; i <= n; i++) {
+            dp[i] = (dp[i - 1] * 2) % MOD;
+            if (last[s[i - 1] - 'a'] >= 0) {
+                dp[i] = (dp[i] - dp[last[s[i - 1] - 'a']]) % MOD;
+            }
+            last[s[i - 1] - 'a'] = i - 1;
+        }
+        dp[n]--;
+        if (dp[n] < 0) dp[n] += MOD;
+        return dp[n];
+
+=======
+
+        const int MOD = 1e9 + 7;
+        int n = s.size();
+        vector<int> sum(n + 1, 0);
+        vector<int> last(26, -1);
+        for (int i = 0; i < n; i++) {
+            int x = s[i] - 'a';
+            sum[i + 1] = sum[i] * 2 % MOD;
+            if (last[x] >= 0) {
+                sum[i + 1] -= sum[last[x]];
+                sum[i + 1] %= MOD;
+            }
+            sum[i + 1] += 2;
+            sum[i + 1] %= MOD;
+            last[x] = i;
+        }
+        sum[n]--;
+        if (sum[n] < 0) sum[n] += MOD;
+        return sum[n];
+
+=======
+
+        vector<int> dp(26, 0);
+        int mod = 1e9 + 7;
+        for (auto c : s) {
+            int tmp = accumulate(dp.begin(), dp.end(), 0) % mod;
+            dp[c - 'a'] = tmp + 1;
+        }
+        return accumulate(dp.begin(), dp.end(), 0) % mod;

@@ -1,0 +1,289 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int res = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n - 1; i++) {
+            int left = sum[i];
+            int right = sum[n - 1] - sum[i];
+            int cur = Math.abs(left - right);
+            if (cur < min) {
+                min = cur;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+        }
+        int min = Integer.MAX_VALUE;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int left = prefix[i];
+            int right = prefix[n - 1] - prefix[i];
+            int avg = (left + right) / (n - i);
+            int diff = Math.abs(avg - (left / (i + 1)));
+            if (diff < min) {
+                min = diff;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] prefixSum = new int[n];
+        prefixSum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i - 1] + nums[i];
+        }
+        int minDiff = Integer.MAX_VALUE;
+        int minDiffIndex = -1;
+        for (int i = 0; i < n - 1; i++) {
+            int leftSum = prefixSum[i];
+            int leftCount = i + 1;
+            int rightSum = prefixSum[n - 1] - prefixSum[i];
+            int rightCount = n - i - 1;
+            int leftAverage = leftSum / leftCount;
+            int rightAverage = rightSum / rightCount;
+            int diff = Math.abs(leftAverage - rightAverage);
+            if (diff < minDiff) {
+                minDiff = diff;
+                minDiffIndex = i;
+            }
+        }
+        return minDiffIndex;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+        }
+        int min = Integer.MAX_VALUE;
+        int minIdx = -1;
+        for (int i = 0; i < n - 1; i++) {
+            int left = (prefix[i] + i) / (i + 1);
+            int right = (prefix[n - 1] - prefix[i]) / (n - i - 1);
+            int diff = Math.abs(left - right);
+            if (diff < min) {
+                min = diff;
+                minIdx = i;
+            }
+        }
+        return minIdx;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        int ans = 0;
+        int minDiff = Integer.MAX_VALUE;
+        for (int i = 0; i < n - 1; i++) {
+            int left = i + 1;
+            int right = n;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                int sumLeft = preSum[i + 1];
+                int sumRight = preSum[n] - preSum[mid];
+                int avgLeft = sumLeft / (i + 1);
+                int avgRight = sumRight / (n - mid);
+                if (avgLeft <= avgRight) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            int sumLeft = preSum[i + 1];
+            int sumRight = preSum[n] - preSum[left];
+            int avgLeft = sumLeft / (i + 1);
+            int avgRight = sumRight / (n - left);
+            int diff = Math.abs(avgLeft - avgRight);
+            if (diff < minDiff) {
+                minDiff = diff;
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        prefix[0] = nums[0];
+        suffix[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i];
+            suffix[n - i - 1] = suffix[n - i] + nums[n - i - 1];
+        }
+        int min = Integer.MAX_VALUE;
+        int minIndex = 0;
+        for (int i = 0; i < n - 1; i++) {
+            int avg1 = prefix[i] / (i + 1);
+            int avg2 = suffix[i + 1] / (n - i - 1);
+            int diff = Math.abs(avg1 - avg2);
+            if (diff < min) {
+                min = diff;
+                minIndex = i;
+            }
+        }
+        return minIndex;
+
+=======
+
+        int n = nums.length;
+        long[] sum = new long[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int res = 0;
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < n - 1; ++i) {
+            int j = n - 1;
+            while (j - i > 1) {
+                int mid = (j + i) / 2;
+                long leftSum = sum[mid] - sum[i];
+                long leftCnt = mid - i;
+                long rightSum = sum[n - 1] - sum[mid];
+                long rightCnt = n - mid;
+                if (leftSum * rightCnt < rightSum * leftCnt) {
+                    j = mid;
+                } else {
+                    i = mid;
+                }
+            }
+            long leftSum = sum[i] - sum[res];
+            long leftCnt = i - res;
+            long rightSum = sum[n - 1] - sum[i];
+            long rightCnt = n - i;
+            if (leftSum * rightCnt < rightSum * leftCnt) {
+                min = leftSum * rightCnt;
+                res = i;
+            }
+            leftSum = sum[j] - sum[res];
+            leftCnt = j - res;
+            rightSum = sum[n - 1] - sum[j];
+            rightCnt = n - j;
+            if (leftSum * rightCnt < rightSum * leftCnt) {
+                min = leftSum * rightCnt;
+                res = j;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[][] ps = new int[n][2];
+        ps[0][0] = nums[0];
+        ps[0][1] = nums[0];
+        for (int i = 1; i < n; i++) {
+            ps[i][0] = ps[i - 1][0] + nums[i];
+            ps[i][1] = ps[i - 1][1] + nums[n - i - 1];
+        }
+        int ans = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int sum = ps[i][0] + ps[n - i - 1][1];
+            int c = (i + 1) * (n - i - 1);
+            int v = sum / c;
+            int d = Math.abs(sum - v * c);
+            if (d < min) {
+                min = d;
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n];
+        int[] preSumSq = new int[n];
+        preSum[0] = nums[0];
+        preSumSq[0] = nums[0] * nums[0];
+        for (int i = 1; i < n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i];
+            preSumSq[i] = preSumSq[i - 1] + nums[i] * nums[i];
+        }
+        int minIndex = 0;
+        int minDiff = Integer.MAX_VALUE;
+        for (int i = 0; i < n - 1; i++) {
+            int leftSum = preSum[i];
+            int leftSumSq = preSumSq[i];
+            int leftLen = i + 1;
+            int rightSum = preSum[n - 1] - preSum[i];
+            int rightSumSq = preSumSq[n - 1] - preSumSq[i];
+            int rightLen = n - leftLen;
+            int leftAvg = leftSum / leftLen;
+            int rightAvg = rightSum / rightLen;
+            int leftAvgSq = leftSumSq / leftLen;
+            int rightAvgSq = rightSumSq / rightLen;
+            int leftDiff = leftAvgSq - leftAvg * leftAvg;
+            int rightDiff = rightAvgSq - rightAvg * rightAvg;
+            int diff = Math.abs(leftDiff - rightDiff);
+            if (diff < minDiff) {
+                minIndex = i;
+                minDiff = diff;
+            }
+        }
+        return minIndex;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int minIndex = -1;
+        int n = nums.length;
+        int[] prefixSum = new int[n];
+        prefixSum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefixSum[i] = prefixSum[i - 1] + nums[i];
+        }
+        int[] suffixSum = new int[n];
+        suffixSum[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suffixSum[i] = suffixSum[i + 1] + nums[i];
+        }
+        for (int i = 0; i < n; i++) {
+            int left = 0;
+            int right = i;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                int leftSum = prefixSum[i] - prefixSum[mid] + nums[mid];
+                int rightSum = suffixSum[i + 1] - suffixSum[mid + 1];
+                if (leftSum < rightSum) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            int leftSum = prefixSum[i] - prefixSum[left] + nums[left];
+            int rightSum = suffixSum[i + 1] - suffixSum[left + 1];
+            int diff = Math.abs(leftSum / (i - left + 1) - rightSum / (n - i - 1));
+            if (diff < min) {
+                min = diff;
+                minIndex = i;
+            }
+        }
+        return minIndex;

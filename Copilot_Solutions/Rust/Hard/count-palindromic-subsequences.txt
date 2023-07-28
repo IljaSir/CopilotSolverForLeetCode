@@ -1,0 +1,114 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![vec![0; 10]; n];
+        for i in 0..n {
+            dp[i][s[i] - b'0'] = 1;
+        }
+        for i in 1..n {
+            for j in 0..10 {
+                dp[i][j] += dp[i - 1][j];
+            }
+        }
+        let mut res = 0;
+        for i in 0..n {
+            for j in i + 4..n {
+                if s[i] == s[j] {
+                    let mut diff = 0;
+                    for k in 0..10 {
+                        if dp[j - 1][k] - dp[i][k] > 0 {
+                            diff += 1;
+                        }
+                    }
+                    if diff <= 1 {
+                        res += 1;
+                    }
+                }
+            }
+        }
+        res as i32
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let n = s.len();
+        let s = s.as_bytes();
+        let mut dp = vec![vec![0; 10]; n];
+        for i in 0..n {
+            dp[i][s[i] as usize - 48] += 1;
+            for j in 0..10 {
+                if i > 0 {
+                    dp[i][j] += dp[i - 1][j];
+                }
+            }
+        }
+        let mut res = 0;
+        for i in 0..n {
+            for j in i + 4..n {
+                if s[i] == s[j] {
+                    res += 1;
+                    for k in 0..10 {
+                        if dp[j - 1][k] - dp[i][k] > 1 {
+                            res += 1;
+                        }
+                    }
+                }
+            }
+        }
+        res as i32
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![0; n]; n];
+        let mut ans = 0;
+        for i in 0..n {
+            dp[i][i] = 1;
+            ans += 1;
+        }
+        for i in (0..n).rev() {
+            for j in i+1..n {
+                if s[i] == s[j] {
+                    dp[i][j] = dp[i+1][j] + dp[i][j-1] + 1;
+                    if i+1 <= j-1 {
+                        dp[i][j] -= dp[i+1][j-1];
+                    }
+                } else {
+                    dp[i][j] = dp[i+1][j] + dp[i][j-1] - dp[i+1][j-1];
+                }
+                if i+4 <= j {
+                    ans = (ans + dp[i+1][j-1]) % 1000000007;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let n = s.len();
+        let mut dp = vec![vec![0; n]; n];
+        let mut ans = 0;
+        for i in (0..n).rev() {
+            dp[i][i] = 1;
+            for j in i + 1..n {
+                if s[i] == s[j] {
+                    dp[i][j] = dp[i + 1][j] + dp[i][j - 1] + 1;
+                } else {
+                    dp[i][j] = dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1];
+                }
+                if j - i == 4 {
+                    ans += 1;
+                }
+            }
+        }
+        ans

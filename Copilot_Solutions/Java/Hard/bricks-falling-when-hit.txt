@@ -1,0 +1,485 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] result = new int[hits.length];
+        for (int i = 0; i < hits.length; i++) {
+            grid[hits[i][0]][hits[i][1]] -= 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (grid[0][i] == 1) {
+                dfs(grid, 0, i);
+            }
+        }
+        for (int i = hits.length - 1; i >= 0; i--) {
+            grid[hits[i][0]][hits[i][1]] += 1;
+            if (grid[hits[i][0]][hits[i][1]] == 1 && isStable(grid, hits[i][0], hits[i][1])) {
+                result[i] = dfs(grid, hits[i][0], hits[i][1]) - 1;
+            }
+        }
+        return result;
+    }
+    private int dfs(int[][] grid, int i, int j) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != 1) {
+            return 0;
+        }
+        grid[i][j] = 2;
+        return 1 + dfs(grid, i - 1, j) + dfs(grid, i + 1, j) + dfs(grid, i, j - 1) + dfs(grid, i, j + 1);
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] res = new int[hits.length];
+        for (int i = 0; i < hits.length; i++) {
+            grid[hits[i][0]][hits[i][1]]--;
+        }
+        int[] parent = new int[m * n + 1];
+        for (int i = 0; i < parent.length; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    if (i == 0) {
+                        union(parent, i * n + j, m * n);
+                    }
+                    if (i > 0 && grid[i - 1][j] == 1) {
+                        union(parent, i * n + j, (i - 1) * n + j);
+                    }
+                    if (j > 0 && grid[i][j - 1] == 1) {
+                        union(parent, i * n + j, i * n + j - 1);
+                    }
+                }
+            }
+        }
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            grid[x][y]++;
+            if (grid[x][y] == 1) {
+                int before = find(parent, m * n);
+                if (x == 0) {
+                    union(parent, x * n + y, m * n);
+                }
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n || grid[nx][ny] == 0) {
+                        continue;
+                    }
+                    union(parent, x * n + y, nx * n + ny);
+                }
+                int after = find(parent, m * n);
+                res[i] = Math.max(0, after - before - 1);
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] result = new int[hits.length];
+        for (int i = 0; i < hits.length; i++) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 1) {
+                grid[x][y] = 2;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (grid[0][i] == 1) {
+                dfs(grid, 0, i);
+            }
+        }
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 2) {
+                grid[x][y] = 1;
+                if (canFall(grid, x, y)) {
+                    result[i] = dfs(grid, x, y) - 1;
+                }
+            }
+        }
+        return result;
+    }
+    
+    private int dfs(int[][] grid, int x, int y) {
+        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] != 1) {
+            return 0;
+        }
+        int result = 1;
+        grid[x][y] = 3;
+        result += dfs(grid, x - 1, y);
+        result += dfs(grid, x + 1, y);
+        result += dfs(grid, x, y - 1);
+        result += dfs(grid, x, y + 1);
+        return result;
+    }
+    
+    private boolean canFall(int[][] grid, int x, int y) {
+        if (x == 0) {
+            return true;
+        }
+        if (x > 0 && grid[x - 1][y] == 3) {
+            return true;
+        }
+        if (x < grid.length - 1 && grid[x + 1][y] == 3) {
+            return true;
+        }
+        if (y > 0 && grid[x][y - 1] == 3) {
+            return true;
+        }
+        if (y < grid[0].length - 1 && grid
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] copy = new int[m][n];
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                copy[i][j] = grid[i][j];
+            }
+        }
+        for(int[] hit: hits){
+            copy[hit[0]][hit[1]] = 0;
+        }
+        UnionFind uf = new UnionFind(m*n+1);
+        for(int i=0; i<n; i++){
+            if(copy[0][i] == 1){
+                uf.union(i, m*n);
+            }
+        }
+        for(int i=1; i<m; i++){
+            for(int j=0; j<n; j++){
+                if(copy[i][j] == 1){
+                    if(copy[i-1][j] == 1){
+                        uf.union(i*n+j, (i-1)*n+j);
+                    }
+                    if(j>0 && copy[i][j-1] == 1){
+                        uf.union(i*n+j, i*n+j-1);
+                    }
+                }
+            }
+        }
+        int[] res = new int[hits.length];
+        for(int i=hits.length-1; i>=0; i--){
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if(grid[x][y] == 0){
+                continue;
+            }
+            int origin = uf.getSize(m*n);
+            if(x == 0){
+                uf.union(y, m*n);
+            }
+            if(x>0 && copy[x-1][y] == 1){
+                uf.union(x*n+y, (x-1)*n+y);
+            }
+            if(x<m-1 && copy[x+1][y] == 1){
+                uf.union(x*n+y, (x+1)*n+y);
+            }
+            if(y>0 && copy[x][y-1] == 1){
+                uf.union(x*n+y, x*n+y-1);
+            }
+            if(y<n-1 && copy[x][y+1] == 1){
+                uf.union(x*n+y, x*n+y+1);
+            }
+            int cur = uf.getSize(m*n);
+            res[i] = Math.max(0, cur-origin-1);
+            copy[x][y] = 1
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] grid2 = new int[m][n];
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                grid2[i][j] = grid[i][j];
+            }
+        }
+        for(int i = 0; i < hits.length; i++){
+            grid2[hits[i][0]][hits[i][1]] = 0;
+        }
+        int[] ans = new int[hits.length];
+        int[] dx = {1, -1, 0, 0};
+        int[] dy = {0, 0, 1, -1};
+        for(int i = 0; i < hits.length; i++){
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if(grid[x][y] == 0){
+                continue;
+            }
+            grid2[x][y] = 1;
+            if(x == 0){
+                dfs(grid2, x, y, dx, dy);
+            }
+        }
+        for(int i = hits.length - 1; i >= 0; i--){
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if(grid[x][y] == 0){
+                continue;
+            }
+            grid2[x][y] = 0;
+            int count = 0;
+            for(int j = 0; j < 4; j++){
+                int nx = x + dx[j];
+                int ny = y + dy[j];
+                if(nx >= 0 && nx < m && ny >= 0 && ny < n && grid2[nx][ny] == 2){
+                    count++;
+                }
+            }
+            if(x == 0 || count > 0){
+                ans[i] = dfs(grid2, x, y, dx, dy) - 1;
+            }
+        }
+        return ans;
+    }
+    public int dfs(int[][] grid, int x, int y, int[] dx, int[] dy){
+        int m = grid.length;
+        int n = grid[0].length;
+        if(x < 0 || x >= m || y < 0 || y >= n || grid[x][y] != 1){
+            return 0;
+        }
+        grid
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[] res = new int[hits.length];
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int[] hit : hits) {
+            grid[hit[0]][hit[1]]--;
+        }
+        for (int j = 0; j < n; j++) {
+            dfs(grid, 0, j, m, n, dirs);
+        }
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0], y = hits[i][1];
+            grid[x][y]++;
+            if (grid[x][y] == 1 && isConnected(grid, x, y, m, n, dirs)) {
+                res[i] = dfs(grid, x, y, m, n, dirs) - 1;
+            }
+        }
+        return res;
+    }
+    
+    private boolean isConnected(int[][] grid, int x, int y, int m, int n, int[][] dirs) {
+        if (x == 0) {
+            return true;
+        }
+        for (int[] dir : dirs) {
+            int nx = x + dir[0], ny = y + dir[1];
+            if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private int dfs(int[][] grid, int x, int y, int m, int n, int[][] dirs) {
+        if (x < 0 || x >= m || y < 0 || y >= n || grid[x][y] != 1) {
+            return 0;
+        }
+        grid[x][y] = 2;
+        int res = 1;
+        for (int[] dir : dirs) {
+            int nx = x + dir[0], ny = y + dir[1];
+            res += dfs(grid, nx, ny, m, n, dirs);
+        }
+        return res;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[] res = new int[hits.length];
+        int[][] grid2 = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                grid2[i][j] = grid[i][j];
+            }
+        }
+        for (int[] hit : hits) {
+            grid2[hit[0]][hit[1]] = 0;
+        }
+        UnionFind uf = new UnionFind(m, n, grid2);
+        int[] dirs = new int[] {0, 1, 0, -1, 0};
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0], y = hits[i][1];
+            if (grid[x][y] == 0) continue;
+            int count = uf.count;
+            if (x == 0) uf.union(x * n + y, m * n);
+            for (int k = 0; k < 4; k++) {
+                int nx = x + dirs[k], ny = y + dirs[k + 1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid2[nx][ny] == 1) {
+                    uf.union(x * n + y, nx * n + ny);
+                }
+            }
+            grid2[x][y] = 1;
+            res[i] = Math.max(0, uf.count - count - 1);
+        }
+        return res;
+    }
+    
+    class UnionFind {
+        int[] parent;
+        int[] rank;
+        int count;
+        public UnionFind(int m, int n, int[][] grid) {
+            parent = new int[m * n + 1];
+            rank = new int[m * n + 1];
+            count = 0;
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (grid[i][j] == 1) {
+                        parent[i * n + j] = i * n + j;
+                        rank[i * n + j] = 1;
+                        count++;
+                    }
+                }
+
+=======
+
+        int[] result = new int[hits.length];
+        int[][] gridCopy = new int[grid.length][grid[0].length];
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                gridCopy[i][j] = grid[i][j];
+            }
+        }
+        for(int i = 0; i < hits.length; i++) {
+            gridCopy[hits[i][0]][hits[i][1]] = 0;
+        }
+        for(int i = 0; i < gridCopy[0].length; i++) {
+            if(gridCopy[0][i] == 1) {
+                dfs(gridCopy, 0, i);
+            }
+        }
+        for(int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if(grid[x][y] == 0) {
+                continue;
+            }
+            gridCopy[x][y] = 1;
+            if(x == 0 || gridCopy[x - 1][y] == 2 || gridCopy[x + 1][y] == 2 || gridCopy[x][y - 1] == 2 || gridCopy[x][y + 1] == 2) {
+                dfs(gridCopy, x, y);
+            }
+            result[i] = getNumberOfBricks(gridCopy) - getNumberOfBricks(grid);
+        }
+        return result;
+    }
+    
+    public void dfs(int[][] grid, int x, int y) {
+        if(x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] != 1) {
+            return;
+        }
+        grid[x][y] = 2;
+        dfs(grid, x - 1, y);
+        dfs(grid, x + 1, y);
+        dfs(grid, x, y - 1);
+        dfs(grid, x, y + 1);
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] result = new int[hits.length];
+        UnionFind uf = new UnionFind(m * n + 1);
+        int[] dx = new int[]{-1, 1, 0, 0};
+        int[] dy = new int[]{0, 0, -1, 1};
+        for (int[] hit : hits) {
+            if (grid[hit[0]][hit[1]] == 1) {
+                grid[hit[0]][hit[1]] = 2;
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            if (grid[0][j] == 1) {
+                uf.union(j, m * n);
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    if (grid[i - 1][j] == 1) {
+                        uf.union(getIndex(i, j, n), getIndex(i - 1, j, n));
+                    }
+                    if (j > 0 && grid[i][j - 1] == 1) {
+                        uf.union(getIndex(i, j, n), getIndex(i, j - 1, n));
+                    }
+                }
+            }
+        }
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 2) {
+                int origin = uf.getSize(m * n);
+                if (x == 0) {
+                    uf.union(y, m * n);
+                }
+                for (int j = 0; j < 4; j++) {
+                    int newX = x + dx[j];
+                    int newY = y + dy[j];
+                    if (inArea(newX, newY, m, n) && grid[newX][newY] == 1) {
+                        uf.union(getIndex(x, y, n), getIndex(newX, newY, n));
+                    }
+                }
+                int current = uf.getSize(m * n);
+                result[i] = Math.max(0, current - origin - 1);
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        // 1. build the union-find set
+        UnionFind uf = new UnionFind(m * n + 1);
+        // 2. mark the hits
+        for (int[] hit : hits) {
+            grid[hit[0]][hit[1]] -= 1;
+        }
+        // 3. union the stable bricks
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int p = i * n + j;
+                    if (i == 0) {
+                        uf.union(p, m * n);
+                    }
+                    if (i > 0 && grid[i - 1][j] == 1) {
+                        uf.union(p, p - n);
+                    }
+                    if (j > 0 && grid[i][j - 1] == 1) {
+                        uf.union(p, p - 1);
+                    }
+                }
+            }
+        }
+        // 4. restore the hits
+        int[] result = new int[hits.length];
+        for (int i = hits.length - 1; i >= 0; i--) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 0) {
+                continue;
+            }
+            int origin = uf.getSize(m * n);
+            if (x == 0) {
+                uf.union(y, m * n);
+            }
+            if (x > 0 && grid[x - 1][y] == 1) {
+                uf.union(x * n + y, (x - 1) * n + y);
+            }
+            if (x < m - 1 && grid[x + 1][y] == 1) {
+                uf.union(x * n + y, (x + 1) * n + y);
+            }
+            if (y > 0 && grid[x][y - 1] == 1) {
+                uf.union(x * n + y, x * n + y - 1);
+            }
+            if (y < n - 1 && grid[x][y + 1] == 1) {
+                uf.union(x * n

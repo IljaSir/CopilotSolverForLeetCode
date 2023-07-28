@@ -1,0 +1,214 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_map<string, vector<char>> m;
+        for (auto &s : allowed) {
+            m[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, m);
+    }
+    bool dfs(string bottom, unordered_map<string, vector<char>> &m) {
+        if (bottom.size() == 1) return true;
+        vector<string> next;
+        for (int i = 0; i < bottom.size() - 1; ++i) {
+            string s = bottom.substr(i, 2);
+            if (!m.count(s)) return false;
+            next.push_back(m[s]);
+        }
+        return dfs(next);
+    }
+    bool dfs(vector<string> &next) {
+        if (next.size() == 1) return true;
+        vector<string> tmp;
+        for (int i = 0; i < next.size() - 1; ++i) {
+            string s;
+            for (auto c1 : next[i]) {
+                for (auto c2 : next[i + 1]) {
+                    s.push_back(c1);
+                    s.push_back(c2);
+                    tmp.push_back(s);
+                    s.clear();
+                }
+            }
+        }
+        return dfs(tmp);
+
+=======
+
+        unordered_map<string, vector<char>> m;
+        for (auto& s: allowed) {
+            m[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, "", m);
+    }
+    bool dfs(string bottom, string next, unordered_map<string, vector<char>>& m) {
+        if (bottom.size() == 1) return true;
+        if (next.size() == bottom.size() - 1) return dfs(next, "", m);
+        string key = bottom.substr(next.size(), 2);
+        if (!m.count(key)) return false;
+        for (auto c: m[key]) {
+            if (dfs(bottom, next + c, m)) return true;
+        }
+        return false;
+
+=======
+
+        unordered_map<string, vector<char>> m;
+        for (auto &s: allowed) {
+            m[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, m);
+    }
+    bool dfs(string bottom, unordered_map<string, vector<char>> &m) {
+        if (bottom.size() == 1) return true;
+        if (bottom.size() == 2) {
+            if (m.count(bottom)) return true;
+            else return false;
+        }
+        vector<string> next;
+        dfs(bottom, 0, "", m, next);
+        for (auto &s: next) {
+            if (dfs(s, m)) return true;
+        }
+        return false;
+    }
+    void dfs(string &bottom, int idx, string cur, unordered_map<string, vector<char>> &m, vector<string> &next) {
+        if (cur.size() == bottom.size() - 1) {
+            next.push_back(cur);
+            return;
+        }
+        for (auto c: m[bottom.substr(idx, 2)]) {
+            dfs(bottom, idx + 1, cur + c, m, next);
+        }
+
+=======
+
+        unordered_map<string, vector<char>> mp;
+        for (auto& s : allowed) {
+            mp[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, "", mp);
+    }
+    
+    bool dfs(string bottom, string next, unordered_map<string, vector<char>>& mp) {
+        if (bottom.size() == 1) return true;
+        if (next.size() == bottom.size() - 1) return dfs(next, "", mp);
+        string key = bottom.substr(next.size(), 2);
+        if (mp.count(key) == 0) return false;
+        for (auto& c : mp[key]) {
+            if (dfs(bottom, next + c, mp)) return true;
+        }
+        return false;
+
+=======
+
+        unordered_map<string, vector<char>> m;
+        for (auto& s : allowed) {
+            m[s.substr(0, 2)].push_back(s[2]);
+        }
+        return build(bottom, "", m);
+    }
+    bool build(string cur, string next, unordered_map<string, vector<char>>& m) {
+        if (cur.size() == 1) return true;
+        if (next.size() == cur.size() - 1) return build(next, "", m);
+        for (auto& c : m[cur.substr(next.size(), 2)]) {
+            if (build(cur, next + c, m)) return true;
+        }
+        return false;
+
+=======
+
+        int n = bottom.size();
+        unordered_map<string, vector<char>> mp;
+        for (string s : allowed) {
+            mp[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, "", mp, 0, 0);
+    }
+    bool dfs(string& bottom, string next, unordered_map<string, vector<char>>& mp, int i, int j) {
+        if (bottom.size() == 1) return true;
+        if (j == bottom.size() - 1) return dfs(next, "", mp, 0, 0);
+        string s = bottom.substr(i, 2);
+        if (mp.count(s)) {
+            for (char c : mp[s]) {
+                if (dfs(bottom, next + c, mp, i + 1, j + 1)) return true;
+            }
+        }
+        return false;
+
+=======
+
+        unordered_map<string, vector<char>> mp;
+        for (auto& str: allowed) {
+            mp[str.substr(0, 2)].push_back(str[2]);
+        }
+        return dfs(bottom, mp);
+    }
+    
+    bool dfs(string& bottom, unordered_map<string, vector<char>>& mp) {
+        if (bottom.size() == 1) return true;
+        vector<string> next;
+        vector<vector<char>> choices;
+        for (int i = 0; i < bottom.size() - 1; i++) {
+            string key = bottom.substr(i, 2);
+            if (mp.find(key) == mp.end()) return false;
+            choices.push_back(mp[key]);
+        }
+        dfs(bottom, mp, 0, "", next, choices);
+        for (auto& str: next) {
+            if (dfs(str, mp)) return true;
+        }
+        return false;
+    }
+    
+    void dfs(string& bottom, unordered_map<string, vector<char>>& mp, int idx, string path, vector<string>& next, vector<vector<char>>& choices) {
+        if (idx == bottom.size() - 1) {
+            next.push_back(path);
+            return;
+        }
+        for (auto& c: choices[idx]) {
+            dfs(bottom, mp, idx + 1, path + c, next, choices);
+        }
+
+=======
+
+        unordered_map<string, vector<char>> m;
+        for (auto &s : allowed) m[s.substr(0, 2)].push_back(s[2]);
+        return dfs(bottom, "", 0, 1, m);
+    }
+    bool dfs(string &bottom, string next, int i, int j, unordered_map<string, vector<char>> &m) {
+        if (bottom.size() == 2 && m.find(bottom) != m.end()) return true;
+        if (bottom.size() == 1) return true;
+        if (i == bottom.size() - 1) return dfs(next, "", 0, 1, m);
+        string key = bottom.substr(i, 2);
+        if (m.find(key) == m.end()) return false;
+        for (auto c : m[key]) {
+            if (dfs(bottom, next + c, i + 1, j + 1, m)) return true;
+        }
+        return false;
+
+=======
+
+        map<string, vector<char>> mp;
+        for (auto& s: allowed) {
+            mp[s.substr(0, 2)].push_back(s[2]);
+        }
+        return dfs(bottom, "", 0, mp);
+    }
+    bool dfs(string& bottom, string cur, int i, map<string, vector<char>>& mp) {
+        if (bottom.size() == 1) return true;
+        if (cur.size() == bottom.size() - 1) return dfs(cur, "", 0, mp);
+        string key = bottom.substr(i, 2);
+        if (mp.count(key) == 0) return false;
+        for (auto& c: mp[key]) {
+            if (dfs(bottom, cur + c, i + 1, mp)) return true;
+        }
+        return false;
+
+=======
+
+        for (auto &a : allowed) {
+            m[a.substr(0, 2)].push_back(a[2]);
+        }
+        return dfs(0, bottom, "");

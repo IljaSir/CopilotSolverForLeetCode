@@ -1,0 +1,19 @@
+class Solution {
+    public boolean canConvertString(String s, String t, int k) {
+        
+        if (s.length() != t.length()) {
+            return false;
+        }
+        int[] shifts = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            int diff = (t.charAt(i) - s.charAt(i) + 26) % 26;
+            shifts[diff]++;
+        }
+        for (int i = 1; i < 26; i++) {
+            if (shifts[i] * 26 + i > k) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

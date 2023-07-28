@@ -1,0 +1,455 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        UnionFind uf1 = new UnionFind(n);
+        UnionFind uf2 = new UnionFind(n);
+        int ans = 0;
+        for (int[] e : edges) {
+            if (e[0] == 3) {
+                if (!uf1.union(e[1] - 1, e[2] - 1)) {
+                    ans++;
+                } else {
+                    uf2.union(e[1] - 1, e[2] - 1);
+                }
+            }
+        }
+        for (int[] e : edges) {
+            if (e[0] == 1) {
+                if (!uf1.union(e[1] - 1, e[2] - 1)) {
+                    ans++;
+                }
+            } else if (e[0] == 2) {
+                if (!uf2.union(e[1] - 1, e[2] - 1)) {
+                    ans++;
+                }
+            }
+        }
+        if (uf1.setCount != 1 || uf2.setCount != 1) {
+            return -1;
+        }
+        return ans;
+    }
+
+    class UnionFind {
+        int[] parent;
+        int[] rank;
+        int n;
+        int setCount;
+
+        public UnionFind(int n) {
+            this.n = n;
+            this.setCount = n;
+            this.parent = new int[n];
+            this.rank = new int[n];
+            Arrays.fill(rank, 1);
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public int find(int x) {
+            return parent[x] == x ? x : (parent[x] = find(parent[x]));
+        }
+
+        public boolean union(int x, int y) {
+            int xr = find(x);
+            int yr = find(y);
+            if (xr == yr) {
+                return false;
+            }
+            if (rank[xr] < rank[yr]) {
+                int tmp = xr;
+                xr = yr;
+                yr = tmp;
+            }
+            rank[xr] += rank[yr];
+            parent[yr] = xr;
+            setCount--;
+            return true;
+        }
+
+=======
+
+        UnionFind alice = new UnionFind(n);
+        UnionFind bob = new UnionFind(n);
+        int ans = 0;
+        for (int[] e : edges) {
+            if (e[0] == 3) {
+                if (alice.union(e[1] - 1, e[2] - 1)) {
+                    bob.union(e[1] - 1, e[2] - 1);
+                } else {
+                    ans++;
+                }
+            }
+        }
+        for (int[] e : edges) {
+            if (e[0] == 1) {
+                if (!alice.union(e[1] - 1, e[2] - 1)) {
+                    ans++;
+                }
+            }
+            if (e[0] == 2) {
+                if (!bob.union(e[1] - 1, e[2] - 1)) {
+                    ans++;
+                }
+            }
+        }
+        if (alice.setCount != 1 || bob.setCount != 1) {
+            return -1;
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int[] parent = new int[n + 1];
+        int[] size = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        int count = 0;
+        for (int[] edge : edges) {
+            if (edge[0] == 3) {
+                if (union(edge[1], edge[2], parent, size)) {
+                    count++;
+                }
+            }
+        }
+        int[] parentA = new int[n + 1];
+        int[] sizeA = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            parentA[i] = i;
+            sizeA[i] = 1;
+        }
+        int[] parentB = new int[n + 1];
+        int[] sizeB = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            parentB[i] = i;
+            sizeB[i] = 1;
+        }
+        for (int[] edge : edges) {
+            if (edge[0] == 1) {
+                if (union(edge[1], edge[2], parentA, sizeA)) {
+                    count++;
+                }
+            } else if (edge[0] == 2) {
+                if (union(edge[1], edge[2], parentB, sizeB)) {
+                    count++;
+                }
+            }
+        }
+        int root = find(1, parentA);
+        for (int i = 2; i <= n; i++) {
+            if (find(i, parentA) != root) {
+                return -1;
+            }
+        }
+        root = find(1, parentB);
+        for (int i = 2; i <= n; i++) {
+            if (find(i, parentB) != root) {
+                return -1;
+            }
+        }
+        return edges.length - count;
+    }
+    private int find(int x, int[] parent) {
+        if (parent[x] == x) {
+            return x;
+        }
+        return parent[x] = find(parent[x], parent);
+
+=======
+
+        DSU dsuA = new DSU(n);
+        DSU dsuB = new DSU(n);
+        int ans = 0;
+        for (int[] edge : edges) {
+            if (edge[0] == 3) {
+                if (!dsuA.union(edge[1] - 1, edge[2] - 1)) {
+                    ans++;
+                } else {
+                    dsuB.union(edge[1] - 1, edge[2] - 1);
+                }
+            }
+        }
+        for (int[] edge : edges) {
+            if (edge[0] == 1) {
+                if (!dsuA.union(edge[1] - 1, edge[2] - 1)) {
+                    ans++;
+                }
+            } else if (edge[0] == 2) {
+                if (!dsuB.union(edge[1] - 1, edge[2] - 1)) {
+                    ans++;
+                }
+            }
+        }
+        if (dsuA.setCount != 1 || dsuB.setCount != 1) {
+            return -1;
+        }
+        return ans;
+    }
+
+    class DSU {
+        int[] parent;
+        int[] rank;
+        int setCount;
+
+        public DSU(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                rank[i] = 1;
+            }
+            setCount = n;
+        }
+
+        public int find(int x) {
+            return parent[x] == x ? x : (parent[x] = find(parent[x]));
+        }
+
+        public boolean union(int x, int y) {
+            int fx = find(x), fy = find(y);
+            if (fx == fy) {
+                return false;
+            }
+            if (rank[fx] < rank[fy]) {
+                int temp = fx;
+                fx = fy;
+                fy = temp;
+            }
+            rank[fx] += rank[fy];
+            parent[fy] = fx;
+            setCount--;
+            return true;
+        }
+
+=======
+
+        int res = 0;
+        int[] parentA = new int[n + 1];
+        int[] parentB = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            parentA[i] = i;
+            parentB[i] = i;
+        }
+        for (int[] edge : edges) {
+            if (edge[0] == 3) {
+                if (!union(parentA, edge[1], edge[2])) {
+                    res++;
+                } else {
+                    union(parentB, edge[1], edge[2]);
+                }
+            }
+        }
+        for (int[] edge : edges) {
+            if (edge[0] == 1) {
+                if (!union(parentA, edge[1], edge[2])) {
+                    res++;
+                }
+            } else if (edge[0] == 2) {
+                if (!union(parentB, edge[1], edge[2])) {
+                    res++;
+                }
+            }
+        }
+        int rootA = find(parentA, 1);
+        int rootB = find(parentB, 1);
+        for (int i = 2; i <= n; i++) {
+            if (find(parentA, i) != rootA || find(parentB, i) != rootB) {
+                return -1;
+            }
+        }
+        return res;
+    }
+    
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+    
+    private boolean union(int[] parent, int x, int y) {
+        int rootX = find(parent, x);
+        int rootY = find(parent, y);
+        if (rootX == rootY) {
+            return false;
+        }
+        parent[rootX] = rootY;
+        return true;
+
+=======
+
+        int[] parent = new int[n + 1];
+        int[] rank = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+        int result = 0;
+        for (int[] edge : edges) {
+            if (edge[0] == 3) {
+                int p1 = find(parent, edge[1]);
+                int p2 = find(parent, edge[2]);
+                if (p1 != p2) {
+                    union(parent, rank, p1, p2);
+                } else {
+                    result++;
+                }
+            }
+        }
+        int[] parent1 = Arrays.copyOf(parent, n + 1);
+        int[] parent2 = Arrays.copyOf(parent, n + 1);
+        int[] rank1 = Arrays.copyOf(rank, n + 1);
+        int[] rank2 = Arrays.copyOf(rank, n + 1);
+        for (int[] edge : edges) {
+            if (edge[0] == 1) {
+                int p1 = find(parent1, edge[1]);
+                int p2 = find(parent1, edge[2]);
+                if (p1 != p2) {
+                    union(parent1, rank1, p1, p2);
+                } else {
+                    result++;
+                }
+            } else if (edge[0] == 2) {
+                int p1 = find(parent2, edge[1]);
+                int p2 = find(parent2, edge[2]);
+                if (p1 != p2) {
+                    union(parent2, rank2, p1, p2);
+                } else {
+                    result++;
+                }
+            }
+        }
+        for (int i = 2; i <= n; i++) {
+            if (find(parent1, 1) != find(parent1, i) || find(parent2, 1) != find(parent2, i)) {
+                return -1;
+            }
+        }
+        return result;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int res = 0;
+        int[] p1 = new int[n + 1];
+        int[] p2 = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            p1[i] = i;
+            p2[i] = i;
+        }
+        for (int[] e : edges) {
+            if (e[0] == 3) {
+                if (!union(p1, e[1], e[2])) {
+                    res++;
+                } else {
+                    union(p2, e[1], e[2]);
+                }
+            }
+        }
+        for (int[] e : edges) {
+            if (e[0] == 1) {
+                if (!union(p1, e[1], e[2])) {
+                    res++;
+                }
+            } else if (e[0] == 2) {
+                if (!union(p2, e[1], e[2])) {
+                    res++;
+                }
+            }
+        }
+        int p = find(p1, 1);
+        for (int i = 2; i <= n; i++) {
+            if (find(p1, i) != p) {
+                return -1;
+            }
+        }
+        p = find(p2, 1);
+        for (int i = 2; i <= n; i++) {
+            if (find(p2, i) != p) {
+                return -1;
+            }
+        }
+        return res;
+    }
+
+    private int find(int[] p, int x) {
+        if (p[x] != x) {
+            p[x] = find(p, p[x]);
+        }
+        return p[x];
+    }
+
+    private boolean union(int[] p, int x, int y) {
+        int px = find(p, x);
+        int py = find(p, y);
+        if (px == py) {
+            return false;
+        } else {
+            p[px] = py;
+            return true;
+        }
+
+=======
+
+        UnionFind uf1 = new UnionFind(n), uf2 = new UnionFind(n);
+        int result = 0;
+        for (int[] edge : edges) {
+            if (edge[0] == 3) {
+                if (!uf1.union(edge[1] - 1, edge[2] - 1)) {
+                    result++;
+                } else {
+                    uf2.union(edge[1] - 1, edge[2] - 1);
+                }
+            }
+        }
+        for (int[] edge : edges) {
+            if (edge[0] == 1) {
+                if (!uf1.union(edge[1] - 1, edge[2] - 1)) {
+                    result++;
+                }
+            } else if (edge[0] == 2) {
+                if (!uf2.union(edge[1] - 1, edge[2] - 1)) {
+                    result++;
+                }
+            }
+        }
+        if (uf1.setCount != 1 || uf2.setCount != 1) {
+            return -1;
+        }
+        return result;
+    }
+}
+
+=======
+
+        UnionFind alice = new UnionFind(n), bob = new UnionFind(n);
+        int res = 0;
+        for (int[] e : edges)
+            if (e[0] == 3) {
+                if (!alice.union(e[1] - 1, e[2] - 1))
+                    ++res;
+                else
+                    bob.union(e[1] - 1, e[2] - 1);
+            }
+        for (int[] e : edges)
+            if (e[0] == 1) {
+                if (!alice.union(e[1] - 1, e[2] - 1))
+                    ++res;
+            } else if (e[0] == 2) {
+                if (!bob.union(e[1] - 1, e[2] - 1))
+                    ++res;
+            }
+        return alice.setCount == 1 && bob.setCount == 1 ? res : -1;
+    }
+}

@@ -1,0 +1,73 @@
+impl Solution {
+    pub fn evaluate(expression: String) -> i32 {
+        
+        let mut stack = Vec::new();
+        let mut map = HashMap::new();
+        let mut exp = String::new();
+        let mut is_exp = false;
+        for c in expression.chars() {
+            if c == '(' {
+                if is_exp {
+                    exp.push(c);
+                } else {
+                    is_exp = true;
+                }
+            } else if c == ')' {
+                if is_exp {
+                    exp.push(c);
+                } else {
+                    let mut exps = Vec::new();
+                    while let Some(e) = stack.pop() {
+                        if e == "let" {
+                            break;
+                        }
+                        exps.push(e);
+                    }
+                    if exps.len() == 3 {
+                        let v = exps[0].parse::<i32>().unwrap();
+                        let x = exps[1].parse::<i32>().unwrap();
+                        let y = exps[2].parse::<i32>().unwrap();
+                        if v == 1 {
+                            stack.push((x + y).to_string());
+                        } else {
+                            stack.push((x * y).to_string());
+                        }
+                    } else {
+                        let mut i = 1;
+                        while i < exps.len() {
+                            map.insert(exps[i].clone(), exps[i - 1].clone());
+                            i += 2;
+                        }
+                    }
+                }
+            } else if c == ' ' {
+                if is_exp {
+                    exp.push(c);
+                } else {
+                    if !exp.is_empty() {
+                        stack.push(exp.clone());
+                        exp.clear();
+                    }
+                }
+            } else {
+                exp.push(c);
+            }
+        }
+        if !exp.is_empty() {
+            stack.push(exp.clone());
+        }
+        let mut exps = Vec::new();
+        while let Some(e) = stack.pop() {
+            if e == "let" {
+                break;
+            }
+            exps.push(e);
+        }
+        let mut i = 1;
+        while i < exps.len() {
+            map.insert(exps[i].clone(), exps[i - 1].clone());
+            i += 2;
+        }
+        exps[exps.len() - 1].parse::<i32>().unwrap()
+    }
+}

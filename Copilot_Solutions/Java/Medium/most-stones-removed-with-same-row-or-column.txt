@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = stones.length;
+        UnionFind uf = new UnionFind(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    uf.union(i, j);
+                }
+            }
+        }
+        return n - uf.getCount();
+    }
+}
+
+=======
+
+        int N = stones.length;
+        DSU dsu = new DSU(20000);
+        for (int[] stone: stones)
+            dsu.union(stone[0], stone[1] + 10000);
+        Set<Integer> seen = new HashSet();
+        for (int[] stone: stones)
+            seen.add(dsu.find(stone[0]));
+        return N - seen.size();
+    }
+}
+
+=======
+
+        int n = stones.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    union(parent, i, j);
+                }
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                count++;
+            }
+        }
+        return n - count;
+    }
+    private void union(int[] parent, int i, int j) {
+        int p1 = find(parent, i);
+        int p2 = find(parent, j);
+        parent[p1] = p2;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        return parent[i] = find(parent, parent[i]);
+
+=======
+
+        int n = stones.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    union(parent, i, j);
+                }
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                count++;
+            }
+        }
+        return n - count;
+    }
+    public int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    public void union(int[] parent, int x, int y) {
+        int xset = find(parent, x);
+        int yset = find(parent, y);
+        if (xset != yset) {
+            parent[xset] = yset;
+        }
+
+=======
+
+        int n = stones.length;
+        UnionFind uf = new UnionFind(20000);
+        for (int[] stone: stones)
+            uf.union(stone[0], stone[1] + 10000);
+        Set<Integer> seen = new HashSet();
+        for (int[] stone: stones)
+            seen.add(uf.find(stone[0]));
+        return n - seen.size();
+    }
+}
+
+=======
+
+        int n = stones.length;
+        UnionFind uf = new UnionFind(n);
+        Map<Integer, List<Integer>> rows = new HashMap<>();
+        Map<Integer, List<Integer>> cols = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int x = stones[i][0], y = stones[i][1];
+            if (!rows.containsKey(x)) rows.put(x, new ArrayList<>());
+            if (!cols.containsKey(y)) cols.put(y, new ArrayList<>());
+            rows.get(x).add(i);
+            cols.get(y).add(i);
+        }
+        for (List<Integer> row: rows.values())
+            for (int i = 1; i < row.size(); i++)
+                uf.union(row.get(i), row.get(i-1));
+        for (List<Integer> col: cols.values())
+            for (int i = 1; i < col.size(); i++)
+                uf.union(col.get(i), col.get(i-1));
+        return n - uf.count;
+    }
+}
+
+=======
+
+        int n = stones.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        Map<Integer, List<Integer>> rows = new HashMap<>();
+        Map<Integer, List<Integer>> cols = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int x = stones[i][0], y = stones[i][1];
+            rows.computeIfAbsent(x, z -> new ArrayList<>()).add(i);
+            cols.computeIfAbsent(y, z -> new ArrayList<>()).add(i);
+        }
+        for (int i = 0; i < n; i++) {
+            int x = stones[i][0], y = stones[i][1];
+            for (int j : rows.get(x)) {
+                union(parent, i, j);
+            }
+            for (int j : cols.get(y)) {
+                union(parent, i, j);
+            }
+        }
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            seen.add(find(parent, i));
+        }
+        return n - seen.size();
+    }
+
+    public int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+
+    public void union(int[] parent, int i, int j) {
+        int pi = find(parent, i);
+        int pj = find(parent, j);
+        if (pi != pj) {
+            parent[pi] = pj;
+        }
+
+=======
+
+        int n = stones.length;
+        int[] uf = new int[n];
+        for (int i = 0; i < n; i++) uf[i] = i;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    union(uf, i, j);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (uf[i] == i) res++;
+        }
+        return n - res;
+    }
+    
+    private int find(int[] uf, int i) {
+        if (uf[i] != i) {
+            uf[i] = find(uf, uf[i]);
+        }
+        return uf[i];
+    }
+    
+    private void union(int[] uf, int i, int j) {
+        int p = find(uf, i), q = find(uf, j);
+        if (p != q) {
+            uf[p] = q;
+        }

@@ -1,0 +1,180 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.size();
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < n; ++i) {
+            pos[s[i] - 'A'].push_back(i);
+        }
+        int ans = 0, mod = 1e9 + 7;
+        for (int i = 0; i < 26; ++i) {
+            for (int j = 0; j < pos[i].size(); ++j) {
+                int prev = j > 0 ? pos[i][j - 1] : -1;
+                int next = j < pos[i].size() - 1 ? pos[i][j + 1] : n;
+                ans = (ans + (pos[i][j] - prev) * (next - pos[i][j])) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<int> last(26, -1);
+        vector<int> next(n, -1);
+        for (int i = n - 1; i >= 0; --i) {
+            int c = s[i] - 'A';
+            next[i] = last[c];
+            last[c] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'A';
+            int j = last[c];
+            if (j == -1) {
+                ans += (i + 1) * (n - i);
+            } else {
+                ans += (i - j) * (j - next[j]);
+            }
+            last[c] = next[i];
+        }
+        return ans;
+
+=======
+
+        int res = 0, mod = 1e9 + 7, n = s.size();
+        vector<int> last(26, -1), pre(26, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'A';
+            res = (res + (i - last[c]) * (last[c] - pre[c])) % mod;
+            pre[c] = last[c];
+            last[c] = i;
+        }
+        for (int i = 0; i < 26; ++i) {
+            res = (res + (n - last[i]) * (last[i] - pre[i])) % mod;
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        vector<int> last(26, -1);
+        vector<int> dp(n, 0);
+        dp[0] = 1;
+        last[s[0] - 'A'] = 0;
+        for (int i = 1; i < n; ++i) {
+            int c = s[i] - 'A';
+            dp[i] = (i - last[c]) * (last[c] - last[c] + 1) / 2 + dp[i - 1];
+            last[c] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        int res = 0;
+        vector<int> last(26, -1);
+        vector<int> pre(26, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'A';
+            res += (i - pre[c]) * (pre[c] - last[c]);
+            last[c] = pre[c];
+            pre[c] = i;
+        }
+        for (int i = 0; i < 26; ++i) {
+            res += (n - pre[i]) * (pre[i] - last[i]);
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        int ans = 0;
+        vector<int> last(26, -1);
+        vector<int> pre(26, -1);
+        for (int i = 0; i < n; i++) {
+            int c = s[i] - 'A';
+            ans += (i - last[c]) * (last[c] - pre[c]);
+            pre[c] = last[c];
+            last[c] = i;
+        }
+        for (int c = 0; c < 26; c++) {
+            ans += (n - last[c]) * (last[c] - pre[c]);
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<int> last(26, -1);
+        vector<int> last2(26, -1);
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'A';
+            ans += (i - last[c]) * (last[c] - last2[c]);
+            last2[c] = last[c];
+            last[c] = i;
+        }
+        for (int i = 0; i < 26; ++i) {
+            ans += (n - last[i]) * (last[i] - last2[i]);
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<int> last(26, -1);
+        vector<int> prev(26, -1);
+        int res = 0;
+        int mod = 1e9 + 7;
+        for (int i = 0; i < n; i++) {
+            int x = s[i] - 'A';
+            res = (res + (i - last[x]) * (last[x] - prev[x])) % mod;
+            prev[x] = last[x];
+            last[x] = i;
+        }
+        for (int x = 0; x < 26; x++) {
+            res = (res + (n - last[x]) * (last[x] - prev[x])) % mod;
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> v(26, vector<int>(2, -1));
+        int ans = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            int id = s[i] - 'A';
+            ans += (i - v[id][1]) * (v[id][1] - v[id][0]);
+            v[id][0] = v[id][1];
+            v[id][1] = i;
+        }
+        for (int i = 0; i < 26; ++i) {
+            ans += (s.size() - v[i][1]) * (v[i][1] - v[i][0]);
+        }
+        return ans;
+
+=======
+
+        int result = 0;
+        int size = s.size();
+        vector<int> last(26, -1);
+        vector<int> current(26, 0);
+        for (int i = 0; i < size; ++i) {
+            int index = s[i] - 'A';
+            current[index] = i - last[index];
+            last[index] = i;
+        }
+        for (int i = 0; i < 26; ++i) {
+            last[i] = -1;
+        }
+        for (int i = size - 1; i >= 0; --i) {
+            int index = s[i] - 'A';
+            int next = last[index];
+            last[index] = i;
+            result += current[index] * (next - i);
+        }
+        return result;

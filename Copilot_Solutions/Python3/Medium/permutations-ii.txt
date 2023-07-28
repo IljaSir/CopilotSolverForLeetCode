@@ -1,0 +1,137 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, path, res):
+            if not nums:
+                res.append(path)
+                return
+            for i in range(len(nums)):
+                if i > 0 and nums[i] == nums[i-1]:
+                    continue
+                dfs(nums[:i]+nums[i+1:], path+[nums[i]], res)
+        res = []
+        nums.sort()
+        dfs(nums, [], res)
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        nums.sort()
+        def backtrack(nums, tmp):
+            if not nums:
+                res.append(tmp)
+                return
+            for i in range(len(nums)):
+                if i > 0 and nums[i] == nums[i - 1]:
+                    continue
+                backtrack(nums[:i] + nums[i + 1:], tmp + [nums[i]])
+        backtrack(nums, [])
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, path, used, res):
+            if len(path) == len(nums):
+                res.append(path)
+                return
+            for i in range(len(nums)):
+                if used[i]:
+                    continue
+                if i > 0 and nums[i] == nums[i-1] and not used[i-1]:
+                    continue
+                used[i] = True
+                dfs(nums, path+[nums[i]], used, res)
+                used[i] = False
+        res = []
+        nums.sort()
+        dfs(nums, [], [False]*len(nums), res)
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        def dfs(nums, path, used, res):
+            if len(path) == len(nums):
+                res.append(path)
+                return
+            for i in range(len(nums)):
+                if used[i] or (i > 0 and nums[i] == nums[i - 1] and not used[i - 1]):
+                    continue
+                used[i] = True
+                dfs(nums, path + [nums[i]], used, res)
+                used[i] = False
+        res = []
+        nums.sort()
+        dfs(nums, [], [False] * len(nums), res)
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        res = [[]]
+        for n in nums:
+            new_res = []
+            for perm in res:
+                for i in range(len(perm)+1):
+                    new_res.append(perm[:i]+[n]+perm[i:])
+                    if i<len(perm) and perm[i]==n:
+                        break
+            res = new_res
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        if not nums:
+            return [[]]
+        res = []
+        for i in range(len(nums)):
+            if i > 0 and nums[i] == nums[i-1]:
+                continue
+            for j in self.permuteUnique(nums[:i] + nums[i+1:]):
+                res.append([nums[i]] + j)
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        res = []
+        def backtrack(nums, tmp):
+            if not nums:
+                res.append(tmp)
+                return
+            for i, n in enumerate(nums):
+                if i > 0 and nums[i] == nums[i-1]:
+                    continue
+                backtrack(nums[:i]+nums[i+1:], tmp+[n])
+        backtrack(nums, [])
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        res = []
+        def dfs(path, nums, n):
+            if len(path) == n:
+                res.append(path[:])
+            for i in range(len(nums)):
+                if i > 0 and nums[i] == nums[i-1]:
+                    continue
+                path.append(nums[i])
+                dfs(path, nums[:i]+nums[i+1:], n)
+                path.pop()
+        dfs([], sorted(nums), n)
+        return res
+
+=======
+
+def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        return list(set(itertools.permutations(nums)))

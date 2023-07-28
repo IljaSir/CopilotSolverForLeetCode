@@ -1,0 +1,200 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int result = 0;
+        int left = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            while (set.contains(nums[i])) {
+                set.remove(nums[left]);
+                left++;
+            }
+            set.add(nums[i]);
+            result = Math.max(result, sum[i + 1] - sum[left]);
+        }
+        return result;
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 1; i <= nums.length; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int ans = 0;
+        int l = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int r = 0; r < nums.length; r++) {
+            while (set.contains(nums[r])) {
+                set.remove(nums[l]);
+                l++;
+            }
+            set.add(nums[r]);
+            ans = Math.max(ans, sum[r + 1] - sum[l]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int ans = 0;
+        for (int i = 1, j = 1; i <= n; i++) {
+            while (j <= n && sum[j] - sum[i - 1] == j - i + 1) {
+                j++;
+            }
+            ans = Math.max(ans, sum[j - 1] - sum[i - 1]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        int res = 0;
+        int j = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            while (j < n && !set.contains(nums[j])) {
+                set.add(nums[j]);
+                j++;
+            }
+            res = Math.max(res, sum[j] - sum[i]);
+            set.remove(nums[i]);
+        }
+        return res;
+
+=======
+
+        int i = 0, j = 0, sum = 0, max = 0;
+        Set<Integer> set = new HashSet<>();
+        while (j < nums.length) {
+            if (!set.contains(nums[j])) {
+                set.add(nums[j]);
+                sum += nums[j];
+                j++;
+                max = Math.max(max, sum);
+            } else {
+                set.remove(nums[i]);
+                sum -= nums[i];
+                i++;
+            }
+        }
+        return max;
+
+=======
+
+        int[] sum = new int[nums.length];
+        sum[0] = nums[0];
+        for (int i = 1; i < sum.length; i++) {
+            sum[i] = nums[i] + sum[i - 1];
+        }
+        int max = 0;
+        int start = 0;
+        int end = 0;
+        int[] set = new int[10001];
+        while (end < nums.length) {
+            if (set[nums[end]] == 0) {
+                set[nums[end]]++;
+                end++;
+            } else {
+                set[nums[start]]--;
+                start++;
+            }
+            if (start == end) {
+                max = Math.max(max, sum[end - 1]);
+            } else {
+                max = Math.max(max, sum[end - 1] - sum[start - 1]);
+            }
+        }
+        return max;
+
+=======
+
+        int max = 0, sum = 0;
+        Set<Integer> set = new HashSet<Integer>();
+        for (int i = 0, j = 0; j < nums.length; j++) {
+            while (set.contains(nums[j])) {
+                set.remove(nums[i]);
+                sum -= nums[i++];
+            }
+            set.add(nums[j]);
+            sum += nums[j];
+            max = Math.max(max, sum);
+        }
+        return max;
+
+=======
+
+        int max = 0;
+        int sum = 0;
+        int start = 0;
+        int end = 0;
+        Set<Integer> set = new HashSet<>();
+        while (end < nums.length) {
+            if (set.contains(nums[end])) {
+                max = Math.max(max, sum);
+                while (nums[start] != nums[end]) {
+                    set.remove(nums[start]);
+                    sum -= nums[start];
+                    start++;
+                }
+                start++;
+            } else {
+                set.add(nums[end]);
+                sum += nums[end];
+            }
+            end++;
+        }
+        return Math.max(max, sum);
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n+1];
+        for(int i = 1; i <= n; i++)
+            prefix[i] = prefix[i-1] + nums[i-1];
+        
+        int max = 0;
+        int i = 0;
+        int j = 0;
+        Set<Integer> set = new HashSet<>();
+        while(j < n){
+            if(!set.contains(nums[j])){
+                set.add(nums[j]);
+                max = Math.max(max, prefix[j+1] - prefix[i]);
+                j++;
+            } else {
+                set.remove(nums[i]);
+                i++;
+            }
+        }
+        return max;
+
+=======
+
+        int max=0;
+        int sum=0;
+        int start=0;
+        Set<Integer> set=new HashSet<>();
+        for(int i=0;i<nums.length;i++){
+            while(set.contains(nums[i])){
+                sum=sum-nums[start];
+                set.remove(nums[start]);
+                start++;
+            }
+            set.add(nums[i]);
+            sum=sum+nums[i];
+            max=Math.max(max,sum);
+        }
+        return max;

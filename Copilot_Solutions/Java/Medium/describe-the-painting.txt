@@ -1,0 +1,225 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = segments.length;
+        int[] diff = new int[100001];
+        for (int[] seg : segments) {
+            diff[seg[0]] += seg[2];
+            diff[seg[1]] -= seg[2];
+        }
+        List<List<Long>> res = new ArrayList<>();
+        long sum = 0, start = 0;
+        for (int i = 0; i < 100001; i++) {
+            if (sum > 0) {
+                res.add(Arrays.asList(start, (long) i, sum));
+            }
+            sum += diff[i];
+            start = i;
+        }
+        return res;
+
+=======
+
+        List<List<Long>> res = new ArrayList<>();
+        Map<Integer, Long> map = new HashMap<>();
+        for (int[] seg : segments) {
+            map.put(seg[0], map.getOrDefault(seg[0], 0L) + seg[2]);
+            map.put(seg[1], map.getOrDefault(seg[1], 0L) - seg[2]);
+        }
+        int start = 0;
+        long total = 0;
+        for (int i : map.keySet()) {
+            if (total > 0) {
+                res.add(Arrays.asList((long)start, (long)i, total));
+            }
+            start = i;
+            total += map.get(i);
+        }
+        return res;
+
+=======
+
+        List<List<Long>> result = new ArrayList<>();
+        long[] diff = new long[100001];
+        for (int[] segment: segments) {
+            diff[segment[0]] += segment[2];
+            diff[segment[1]] -= segment[2];
+        }
+        long sum = 0;
+        long start = 0;
+        for (int i = 0; i < 100001; i++) {
+            sum += diff[i];
+            if (sum > 0 && start == 0) {
+                start = i;
+            } else if (sum == 0 && start > 0) {
+                result.add(Arrays.asList(start, (long) i, sum));
+                start = 0;
+            }
+        }
+        return result;
+
+=======
+
+        List<List<Long>> list = new ArrayList<>();
+        TreeMap<Long, Long> map = new TreeMap<>();
+        for (int[] seg : segments) {
+            map.put((long) seg[0], map.getOrDefault((long) seg[0], 0L) + seg[2]);
+            map.put((long) seg[1], map.getOrDefault((long) seg[1], 0L) - seg[2]);
+        }
+        long last = 0, sum = 0;
+        for (Map.Entry<Long, Long> entry : map.entrySet()) {
+            if (sum > 0) {
+                list.add(Arrays.asList(last, entry.getKey(), sum));
+            }
+            sum += entry.getValue();
+            last = entry.getKey();
+        }
+        return list;
+
+=======
+
+        int n = segments.length;
+        List<List<Long>> res = new ArrayList<>();
+        long[] diff = new long[100001];
+        for (int i = 0; i < n; i++) {
+            diff[segments[i][0]] += segments[i][2];
+            diff[segments[i][1]] -= segments[i][2];
+        }
+        long sum = 0, start = 0;
+        for (int i = 0; i < 100001; i++) {
+            if (diff[i] != 0) {
+                if (sum != 0) {
+                    res.add(Arrays.asList(start, (long)i, sum));
+                }
+                sum += diff[i];
+                start = i;
+            }
+        }
+        return res;
+
+=======
+
+        List<List<Long>> res = new ArrayList<>();
+        int n = segments.length;
+        long[] diff = new long[100001];
+        for(int i = 0; i < n; i++){
+            diff[segments[i][0]] += segments[i][2];
+            diff[segments[i][1]] -= segments[i][2];
+        }
+        long sum = 0, prev = 0;
+        for(int i = 1; i <= 100000; i++){
+            sum += diff[i];
+            if(sum > 0){
+                if(prev > 0){
+                    List<Long> list = new ArrayList<>();
+                    list.add(prev);
+                    list.add((long)i);
+                    list.add(sum);
+                    res.add(list);
+                }
+                prev = i;
+            }
+            else{
+                prev = 0;
+            }
+        }
+        return res;
+
+=======
+
+        List<List<Long>> ans = new ArrayList<>();
+        int n = segments.length;
+        long[] diff = new long[100001];
+        for(int[] seg : segments){
+            diff[seg[0]] += seg[2];
+            diff[seg[1]] -= seg[2];
+        }
+        long start = 0, color = 0;
+        for(int i = 1; i <= 100000; i++){
+            if(diff[i] != 0){
+                if(color != 0){
+                    List<Long> list = new ArrayList<>();
+                    list.add(start);
+                    list.add((long)i);
+                    list.add(color);
+                    ans.add(list);
+                }
+                start = i;
+                color += diff[i];
+            }
+        }
+        return ans;
+
+=======
+
+        List<List<Long>> res = new ArrayList<>();
+        int n = segments.length;
+        List<int[]> events = new ArrayList<>();
+        for (int[] seg: segments) {
+            events.add(new int[]{seg[0], seg[2]});
+            events.add(new int[]{seg[1], -seg[2]});
+        }
+        Collections.sort(events, (a, b) -> a[0] - b[0]);
+        long total = 0, prev = 0;
+        for (int[] e: events) {
+            if (total > 0) {
+                res.add(Arrays.asList(prev, (long) e[0], total));
+            }
+            total += e[1];
+            prev = e[0];
+        }
+        return res;
+
+=======
+
+        int n = segments.length;
+        List<List<Long>> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int[] seg = segments[i];
+            ans.add(Arrays.asList((long) seg[0], (long) seg[1], (long) seg[2]));
+        }
+        Collections.sort(ans, (a, b) -> {
+            return a.get(0).compareTo(b.get(0));
+        });
+        List<List<Long>> res = new ArrayList<>();
+        long start = ans.get(0).get(0);
+        long end = ans.get(0).get(1);
+        long color = ans.get(0).get(2);
+        for (int i = 1; i < ans.size(); i++) {
+            List<Long> seg = ans.get(i);
+            if (seg.get(0) <= end) {
+                end = Math.max(end, seg.get(1));
+                color += seg.get(2);
+            } else {
+                res.add(Arrays.asList(start, end, color));
+                start = seg.get(0);
+                end = seg.get(1);
+                color = seg.get(2);
+            }
+        }
+        res.add(Arrays.asList(start, end, color));
+        return res;
+
+=======
+
+        int n = segments.length;
+        List<List<Long>> ans = new ArrayList<>();
+        if (n == 0) return ans;
+        Map<Integer, Long> map = new TreeMap<>();
+        for (int[] seg : segments) {
+            map.put(seg[0], map.getOrDefault(seg[0], 0L) + seg[2]);
+            map.put(seg[1], map.getOrDefault(seg[1], 0L) - seg[2]);
+        }
+        int start = 0;
+        long sum = 0;
+        for (Map.Entry<Integer, Long> entry : map.entrySet()) {
+            int pos = entry.getKey();
+            long color = entry.getValue();
+            if (sum > 0) {
+                ans.add(Arrays.asList((long)start, (long)pos, sum));
+            }
+            sum += color;
+            start = pos;
+        }
+        return ans;

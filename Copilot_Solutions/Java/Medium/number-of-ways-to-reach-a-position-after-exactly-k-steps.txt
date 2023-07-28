@@ -1,0 +1,121 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[k + 1][endPos + 1];
+        dp[0][startPos] = 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= endPos; j++) {
+                dp[i][j] = (dp[i - 1][j - 1] + dp[i - 1][j + 1]) % mod;
+            }
+        }
+        return dp[k][endPos];
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[k + 1][1001];
+        dp[0][startPos] = 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= 1000; j++) {
+                dp[i][j] = (dp[i - 1][j - 1] + dp[i - 1][j + 1]) % mod;
+            }
+        }
+        return dp[k][endPos];
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[k + 1][endPos - startPos + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j <= endPos - startPos; j++) {
+                int left = j == 0 ? 0 : dp[i - 1][j - 1];
+                int right = j == endPos - startPos ? 0 : dp[i - 1][j + 1];
+                dp[i][j] = (left + right) % mod;
+            }
+        }
+        return dp[k][endPos - startPos];
+
+=======
+
+        int MOD = 1000000007;
+        long[][] dp = new long[k + 1][endPos - startPos + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j < endPos - startPos + 1; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j > 0) {
+                    dp[i][j] += dp[i - 1][j - 1];
+                }
+                if (j < endPos - startPos) {
+                    dp[i][j] += dp[i - 1][j + 1];
+                }
+                dp[i][j] %= MOD;
+            }
+        }
+        return (int) dp[k][0];
+
+=======
+
+        int mod = (int)1e9 + 7;
+        int[][] dp = new int[k + 1][endPos + 1];
+        dp[0][startPos] = 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= endPos; j++) {
+                dp[i][j] = (dp[i][j] + dp[i - 1][j - 1]) % mod;
+                dp[i][j] = (dp[i][j] + dp[i - 1][j + 1]) % mod;
+            }
+        }
+        return dp[k][endPos];
+
+=======
+
+        int MOD = 1_000_000_007;
+        int[] dp = new int[1001];
+        dp[startPos] = 1;
+        for (int i = 0; i < k; i++) {
+            int[] ndp = new int[1001];
+            for (int j = 1; j <= 1000; j++) {
+                ndp[j] = (dp[j - 1] + dp[j + 1]) % MOD;
+            }
+            dp = ndp;
+        }
+        return dp[endPos];
+
+=======
+
+        int[][] dp = new int[k+1][endPos+1];
+        dp[0][startPos] = 1;
+        int mod = 1000000007;
+        for (int i=1; i<=k; i++) {
+            for (int j=1; j<=endPos; j++) {
+                dp[i][j] = (dp[i-1][j-1] + dp[i-1][j+1]) % mod;
+            }
+        }
+        return dp[k][endPos];
+
+=======
+
+        int mod = (int) 1e9 + 7;
+        int n = 1001;
+        int[][] dp = new int[2][n];
+        dp[0][startPos] = 1;
+        for (int i = 1; i <= k; i++) {
+            int cur = i % 2;
+            int pre = (i - 1) % 2;
+            int[] sum = new int[n];
+            sum[0] = dp[pre][0];
+            for (int j = 1; j < n; j++) {
+                sum[j] = (sum[j - 1] + dp[pre][j]) % mod;
+            }
+            for (int j = 0; j < n; j++) {
+                dp[cur][j] = sum[j];
+                if (j > 0) {
+                    dp[cur][j] -= dp[pre][j - 1];
+                    dp[cur][j] = (dp[cur][j] + mod) % mod;
+                }
+            }
+        }
+        return dp[k % 2][endPos];

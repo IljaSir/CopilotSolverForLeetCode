@@ -1,0 +1,274 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        for (char c : target.toCharArray()) {
+            count[c - 'a']--;
+        }
+        for (int i : count) {
+            if (i < 0) {
+                return 0;
+            }
+        }
+        int[] dp = new int[1 << target.length()];
+        dp[0] = 1;
+        for (int i = 0; i < (1 << target.length()); i++) {
+            if (dp[i] == 0) {
+                continue;
+            }
+            for (int j = 0; j < target.length(); j++) {
+                if (((i >> j) & 1) == 1) {
+                    continue;
+                }
+                int next = i | (1 << j);
+                dp[next] = Math.max(dp[next], dp[i] + 1);
+            }
+        }
+        return dp[(1 << target.length()) - 1];
+
+=======
+
+        int[] sCount = new int[26];
+        int[] tCount = new int[26];
+        for (char c : s.toCharArray()) {
+            sCount[c - 'a']++;
+        }
+        for (char c : target.toCharArray()) {
+            tCount[c - 'a']++;
+        }
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            if (tCount[i] == 0) continue;
+            if (sCount[i] == 0) return 0;
+            max = Math.max(max, sCount[i] / tCount[i]);
+        }
+        return max;
+
+=======
+
+        if (s.length() < target.length()) {
+            return 0;
+        }
+        int[] counts = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            counts[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < target.length(); i++) {
+            counts[target.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (counts[i] < 0) {
+                return 0;
+            }
+        }
+        int[] targetCounts = new int[26];
+        for (int i = 0; i < target.length(); i++) {
+            targetCounts[target.charAt(i) - 'a']++;
+        }
+        int result = 0;
+        while (true) {
+            for (int i = 0; i < 26; i++) {
+                if (targetCounts[i] > 0) {
+                    if (counts[i] > 0) {
+                        counts[i]--;
+                        targetCounts[i]--;
+                    } else {
+                        return result;
+                    }
+                }
+            }
+            result++;
+        }
+
+=======
+
+        int[] count = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        int[] targetCount = new int[26];
+        for (char c : target.toCharArray()) {
+            targetCount[c - 'a']++;
+        }
+        int[] countCopy = new int[26];
+        for (int i = 0; i < 26; i++) {
+            countCopy[i] = count[i];
+        }
+        int res = 0;
+        while (true) {
+            for (int i = 0; i < 26; i++) {
+                count[i] = countCopy[i];
+            }
+            boolean found = true;
+            for (int i = 0; i < 26; i++) {
+                if (targetCount[i] > 0 && count[i] == 0) {
+                    found = false;
+                    break;
+                }
+            }
+            if (!found) {
+                break;
+            }
+            for (int i = 0; i < 26; i++) {
+                if (targetCount[i] > 0) {
+                    count[i]--;
+                }
+            }
+            res++;
+        }
+        return res;
+
+=======
+
+        int[] count = new int[26];
+        int[] targetCount = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        for (char c : target.toCharArray()) {
+            targetCount[c - 'a']++;
+        }
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            int n = count[i] / targetCount[i];
+            max = Math.max(max, n);
+        }
+        return max;
+
+=======
+
+        if (s.length() < target.length()) {
+            return 0;
+        }
+        int[] sCount = new int[26];
+        int[] tCount = new int[26];
+        for (char c : s.toCharArray()) {
+            sCount[c - 'a']++;
+        }
+        for (char c : target.toCharArray()) {
+            tCount[c - 'a']++;
+        }
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            if (tCount[i] > 0) {
+                max = Math.max(max, sCount[i] / tCount[i]);
+            }
+        }
+        return max;
+
+=======
+
+        int[] freq = new int[26];
+        for(char c : s.toCharArray()){
+            freq[c - 'a']++;
+        }
+        for(char c : target.toCharArray()){
+            freq[c - 'a']--;
+        }
+        for(int i : freq){
+            if(i < 0){
+                return 0;
+            }
+        }
+        int max = 0;
+        for(char c : target.toCharArray()){
+            max = Math.max(max, freq[c - 'a']);
+        }
+        return max;
+
+=======
+
+        if (s.length() < target.length()) return 0;
+        int[] sFreq = new int[26];
+        int[] tFreq = new int[26];
+        for (char c : s.toCharArray()) {
+            sFreq[c - 'a']++;
+        }
+        for (char c : target.toCharArray()) {
+            tFreq[c - 'a']++;
+        }
+        int count = 0;
+        while (true) {
+            int i = 0;
+            for (; i < tFreq.length; i++) {
+                if (tFreq[i] == 0) continue;
+                if (sFreq[i] == 0) return count;
+                sFreq[i]--;
+            }
+            if (i == tFreq.length) count++;
+        }
+
+=======
+
+        if (s.length() < target.length()) {
+            return 0;
+        }
+        Map<Character, Integer> map = new HashMap<>();
+        int max = 0;
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+            max = Math.max(max, map.get(c));
+        }
+        if (max > (s.length() + 1) / 2) {
+            return 0;
+        }
+        int[] count = new int[26];
+        for (char c : target.toCharArray()) {
+            count[c - 'a']++;
+        }
+        int res = 0;
+        while (true) {
+            for (int i = 0; i < 26; i++) {
+                if (count[i] > 0) {
+                    if (map.get((char)('a' + i)) == null || map.get((char)('a' + i)) == 0) {
+                        return res;
+                    }
+                    map.put((char)('a' + i), map.get((char)('a' + i)) - 1);
+                    count[i]--;
+                }
+            }
+            res++;
+        }
+
+=======
+
+        if (target.length() > s.length()) {
+            return 0;
+        }
+        
+        int[] count = new int[26];
+        int[] targetCount = new int[26];
+        int k = target.length();
+        for (int i = 0; i < k; i++) {
+            count[s.charAt(i) - 'a']++;
+            targetCount[target.charAt(i) - 'a']++;
+        }
+        
+        if (!canMake(count, targetCount)) {
+            return 0;
+        }
+        
+        int i = 0;
+        while (i + k < s.length()) {
+            count[s.charAt(i) - 'a']--;
+            count[s.charAt(i + k) - 'a']++;
+            if (!canMake(count, targetCount)) {
+                return (i + k) / k;
+            }
+            i++;
+        }
+        return (i + k) / k;
+    }
+    
+    private boolean canMake(int[] count, int[] targetCount) {
+        int k = count.length;
+        for (int i = 0; i < k; i++) {
+            if (count[i] < targetCount[i]) {
+                return false;
+            }
+        }
+        return true;

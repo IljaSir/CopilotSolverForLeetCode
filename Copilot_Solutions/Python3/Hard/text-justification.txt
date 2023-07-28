@@ -1,0 +1,252 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        res, cur, num_of_letters = [], [], 0
+        for w in words:
+            if num_of_letters + len(w) + len(cur) > maxWidth:
+                for i in range(maxWidth - num_of_letters):
+                    cur[i%(len(cur)-1 or 1)] += ' '
+                res.append(''.join(cur))
+                cur, num_of_letters = [], 0
+            cur += [w]
+            num_of_letters += len(w)
+        return res + [' '.join(cur).ljust(maxWidth)]
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        lines = []
+        line = []
+        line_length = 0
+        for word in words:
+            if len(word) + line_length + len(line) > maxWidth:
+                lines.append(line)
+                line = []
+                line_length = 0
+            line.append(word)
+            line_length += len(word)
+        lines.append(line)
+        result = []
+        for line in lines[:-1]:
+            if len(line) == 1:
+                result.append(line[0] + ' ' * (maxWidth - len(line[0])))
+            else:
+                line_length = sum([len(word) for word in line])
+                spaces = maxWidth - line_length
+                spaces_per_word = spaces // (len(line) - 1)
+                spaces_left = spaces % (len(line) - 1)
+                result.append(' ' * spaces_left + (' ' * spaces_per_word).join(line))
+        result.append(' '.join(lines[-1]) + ' ' * (maxWidth - sum([len(word) for word in lines[-1]])))
+        return result
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        def justify(line, maxWidth):
+            if len(line) == 1:
+                return line[0] + ' ' * (maxWidth - len(line[0]))
+            spaces = maxWidth - sum([len(word) for word in line])
+            num_spaces = len(line) - 1
+            spaces_per_word = spaces // num_spaces
+            extra_spaces = spaces % num_spaces
+            res = ''
+            for i in range(num_spaces):
+                res += line[i]
+                if i < extra_spaces:
+                    res += ' ' * (spaces_per_word + 1)
+                else:
+                    res += ' ' * spaces_per_word
+            res += line[-1]
+            return res
+        res = []
+        line = []
+        line_len = 0
+        for word in words:
+            if line_len + len(word) + len(line) > maxWidth:
+                res.append(justify(line, maxWidth))
+                line = []
+                line_len = 0
+            line.append(word)
+            line_len += len(word)
+        res.append(' '.join(line) + ' ' * (maxWidth - line_len - len(line) + 1))
+        return res
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        def justify(line, maxWidth):
+            if len(line) == 1:
+                return line[0] + ' ' * (maxWidth - len(line[0]))
+            spaces = maxWidth - sum([len(w) for w in line])
+            gaps = len(line) - 1
+            if spaces % gaps == 0:
+                gap = spaces // gaps
+                return (' ' * gap).join(line)
+            else:
+                gap = spaces // gaps
+                extra = spaces % gaps
+                return (' ' * (gap + 1)).join(line[:extra]) + ' ' * gap + (' ' * gap).join(line[extra:])
+        res = []
+        line = []
+        line_len = 0
+        for w in words:
+            if len(w) + line_len + len(line) > maxWidth:
+                res.append(justify(line, maxWidth))
+                line = []
+                line_len = 0
+            line.append(w)
+            line_len += len(w)
+        res.append(' '.join(line) + ' ' * (maxWidth - len(' '.join(line))))
+        return res
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        res = []
+        i = 0
+        while i < len(words):
+            j = i + 1
+            line = words[i]
+            while j < len(words):
+                if len(line) + len(words[j]) + 1 > maxWidth:
+                    break
+                line += ' ' + words[j]
+                j += 1
+            if j == len(words):
+                line += ' ' * (maxWidth - len(line))
+            else:
+                if j - i > 1:
+                    num_spaces = maxWidth - len(line)
+                    num_spaces_per_word = num_spaces // (j - i - 1)
+                    num_spaces_left = num_spaces % (j - i - 1)
+                    for k in range(i + 1, j):
+                        line = line[:len(line) - len(words[k - 1])] + ' ' * num_spaces_per_word + line[len(line) - len(words[k - 1]):]
+                        if num_spaces_left > 0:
+                            line = line[:len(line) - len(words[k - 1])] + ' ' + line[len(line) - len(words[k - 1]):]
+                            num_spaces_left -= 1
+                else:
+                    line += ' ' * (maxWidth - len(line))
+            res.append(line)
+            i = j
+        return res
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        def justify(line, maxWidth):
+            if len(line) == 1:
+                return line[0] + ' '*(maxWidth - len(line[0]))
+            spaces = maxWidth - sum(len(w) for w in line)
+            n = len(line) - 1
+            q, r = divmod(spaces, n)
+            return (' '*(q+1)).join(line[:r+1]) + ' '*q + (' '*(q)).join(line[r+1:])
+        ans, line, n = [], [], 0
+        for w in words:
+            if n + len(w) + len(line) > maxWidth:
+                ans.append(justify(line, maxWidth))
+                line, n = [], 0
+            line += [w]
+            n += len(w)
+        return ans + [' '.join(line).ljust(maxWidth)]
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        if len(words) == 0:
+            return []
+        if len(words) == 1:
+            return [words[0] + ' '*(maxWidth-len(words[0]))]
+        res = []
+        i = 0
+        while i < len(words):
+            line = ''
+            j = i
+            while j < len(words) and len(line) + len(words[j]) <= maxWidth:
+                line += words[j] + ' '
+                j += 1
+            line = line[:-1]
+            if j == len(words):
+                line += ' '*(maxWidth-len(line))
+                res.append(line)
+                break
+            if j - i == 1:
+                line += ' '*(maxWidth-len(line))
+                res.append(line)
+                i = j
+                continue
+            space = maxWidth - len(line) + j - i - 1
+            space_list = [' ' for _ in range(space)]
+            pos = 0
+            while len(line) < maxWidth:
+                line = line[:pos] + ' ' + line[pos:]
+                pos += len(words[i]) + 2
+                i += 1
+            res.append(line)
+            i = j
+        return res
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        def justify(words, maxWidth):
+            if len(words) == 1:
+                return words[0] + " " * (maxWidth - len(words[0]))
+            else:
+                space = maxWidth - sum(len(word) for word in words)
+                per_space = space // (len(words) - 1)
+                extra_space = space % (len(words) - 1)
+                return (" " * (per_space + 1)).join(words[:extra_space + 1]) + " " * per_space + (" " * per_space).join(words[extra_space + 1:])
+        lines = []
+        line = []
+        line_len = 0
+        for word in words:
+            if line_len + len(word) + len(line) <= maxWidth:
+                line.append(word)
+                line_len += len(word)
+            else:
+                lines.append(justify(line, maxWidth))
+                line = [word]
+                line_len = len(word)
+        lines.append(" ".join(line) + " " * (maxWidth - line_len - len(line) + 1))
+        return lines
+
+=======
+
+def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        # print(words)
+        # print(maxWidth)
+        i = 0
+        n = len(words)
+        res = []
+        while i < n:
+            j = i+1
+            l = len(words[i])
+            while j < n:
+                l += len(words[j])
+                if l + j - i - 1 < maxWidth:
+                    j += 1
+                else:
+                    break
+            # print(i, j, l)
+            s = words[i]
+            if j == n:
+                for k in range(i+1, j):
+                    s += ' ' + words[k]
+                s += ' ' * (maxWidth - len(s))
+            else:
+                if j - i == 1:
+                    s += ' ' * (maxWidth - len(s))
+                else:
+                    space = (maxWidth - l) // (j - i - 1)
+                    extra = (maxWidth - l) % (j - i - 1)
+                    for k in range(i+1, j):
+                        s += ' ' * space
+                        if extra > 0:
+                            s += ' '
+                            extra -= 1
+                        s += words[k]
+            res.append(s)
+            i = j
+        return res

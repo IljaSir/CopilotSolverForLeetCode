@@ -1,0 +1,236 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = ring.length();
+        int m = key.length();
+        int[][] dp = new int[m + 1][n];
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = 0; k < n; k++) {
+                    if (ring.charAt(k) == key.charAt(i)) {
+                        int diff = Math.abs(j - k);
+                        int step = Math.min(diff, n - diff);
+                        dp[i][j] = Math.min(dp[i][j], step + dp[i + 1][k]);
+                    }
+                }
+            }
+        }
+        return dp[0][0] + m;
+
+=======
+
+        int n = ring.length();
+        int m = key.length();
+        int[][] dp = new int[m + 1][n];
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = 0; j < n; ++j) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = 0; k < n; ++k) {
+                    if (ring.charAt(k) == key.charAt(i)) {
+                        int diff = Math.abs(j - k);
+                        int step = Math.min(diff, n - diff);
+                        dp[i][j] = Math.min(dp[i][j], dp[i + 1][k] + step);
+                    }
+                }
+            }
+        }
+        return dp[0][0] + m;
+
+=======
+
+        int m = ring.length(), n = key.length();
+        int[][] dp = new int[n + 1][m];
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 0; j < m; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = 0; k < m; k++) {
+                    if (ring.charAt(k) == key.charAt(i)) {
+                        int diff = Math.abs(j - k);
+                        int step = Math.min(diff, m - diff);
+                        dp[i][j] = Math.min(dp[i][j], step + dp[i + 1][k]);
+                    }
+                }
+            }
+        }
+        return dp[0][0] + n;
+
+=======
+
+        int n = ring.length();
+        int m = key.length();
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < n; i++) {
+            if (ring.charAt(i) == key.charAt(0)) {
+                dp[0][i] = Math.min(i, n - i) + 1;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (ring.charAt(j) != key.charAt(i)) {
+                    continue;
+                }
+                for (int k = 0; k < n; k++) {
+                    if (ring.charAt(k) != key.charAt(i - 1)) {
+                        continue;
+                    }
+                    int diff = Math.abs(j - k);
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + Math.min(diff, n - diff) + 1);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE / 2;
+        for (int i = 0; i < n; i++) {
+            ans = Math.min(ans, dp[m - 1][i]);
+        }
+        return ans;
+
+=======
+
+        int m = ring.length();
+        int n = key.length();
+        int[][] dp = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int j = 0; j < m; j++) {
+            if (ring.charAt(j) == key.charAt(0)) {
+                dp[0][j] = Math.min(j, m - j) + 1;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (ring.charAt(j) != key.charAt(i)) {
+                    continue;
+                }
+                for (int k = 0; k < m; k++) {
+                    if (dp[i - 1][k] == Integer.MAX_VALUE) {
+                        continue;
+                    }
+                    int diff = Math.abs(j - k);
+                    int step = Math.min(diff, m - diff);
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + step);
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < m; j++) {
+            res = Math.min(res, dp[n - 1][j]);
+        }
+        return res;
+
+=======
+
+        int ringLen = ring.length();
+        int keyLen = key.length();
+        int[][] dp = new int[keyLen][ringLen];
+        for (int i = 0; i < keyLen; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < ringLen; i++) {
+            if (ring.charAt(i) == key.charAt(0)) {
+                dp[0][i] = Math.min(i, ringLen - i) + 1;
+            }
+        }
+        for (int i = 1; i < keyLen; i++) {
+            for (int j = 0; j < ringLen; j++) {
+                if (ring.charAt(j) == key.charAt(i)) {
+                    for (int k = 0; k < ringLen; k++) {
+                        if (dp[i - 1][k] != Integer.MAX_VALUE) {
+                            int diff = Math.abs(j - k);
+                            int step = Math.min(diff, ringLen - diff);
+                            dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + step + 1);
+                        }
+                    }
+                }
+            }
+        }
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < ringLen; i++) {
+            result = Math.min(result, dp[keyLen - 1][i]);
+        }
+        return result;
+
+=======
+
+        int[][] dp = new int[key.length() + 1][ring.length()];
+        for (int i = 0; i <= key.length(); i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= key.length(); i++) {
+            for (int j = 0; j < ring.length(); j++) {
+                if (ring.charAt(j) == key.charAt(i - 1)) {
+                    for (int k = 0; k < ring.length(); k++) {
+                        int diff = Math.abs(j - k);
+                        int step = Math.min(diff, ring.length() - diff);
+                        dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + step);
+                    }
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < ring.length(); i++) {
+            res = Math.min(res, dp[key.length()][i]);
+        }
+        return res + key.length();
+
+=======
+
+        int n = ring.length();
+        int m = key.length();
+        int[][] dp = new int[m+1][n];
+        for (int[] row: dp)
+            Arrays.fill(row, Integer.MAX_VALUE);
+        dp[0][0] = 0;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                if (dp[i][j] < Integer.MAX_VALUE)
+                    for (int k = 0; k < n; ++k)
+                        if (ring.charAt(k) == key.charAt(i)) {
+                            int diff = Math.abs(j - k);
+                            int step = Math.min(diff, n - diff);
+                            dp[i+1][k] = Math.min(dp[i+1][k], dp[i][j] + step);
+                        }
+
+        int res = Integer.MAX_VALUE;
+        for (int x: dp[m])
+            res = Math.min(res, x);
+        return res + m;
+
+=======
+
+        int N = ring.length();
+        int M = key.length();
+        int[][] dp = new int[M][N];
+        for (int i = 0; i < M; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < N; i++) {
+            if (ring.charAt(i) == key.charAt(0)) {
+                dp[0][i] = Math.min(i, N - i) + 1;
+            }
+        }
+        for (int i = 1; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                if (ring.charAt(j) != key.charAt(i)) {
+                    continue;
+                }
+                for (int k = 0; k < N; k++) {
+                    if (dp[i - 1][k] == Integer.MAX_VALUE) {
+                        continue;
+                    }
+                    int diff = Math.abs(j - k);
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + Math.min(diff, N - diff) + 1);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int x : dp[M - 1]) {
+            ans = Math.min(ans, x);
+        }
+        return ans;

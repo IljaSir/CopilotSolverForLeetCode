@@ -1,0 +1,218 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = bombs.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            dp[i][i] = 1;
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = i + 1; j < n; ++j) {
+                dp[i][j] = max(dp[i][j - 1], dp[i + 1][j]);
+                for (int k = i; k <= j; ++k) {
+                    dp[i][j] = max(dp[i][j], dp[i][k] + dp[k + 1][j]);
+                }
+                for (int k = i + 1; k <= j; ++k) {
+                    if (isOverlap(bombs[i], bombs[k])) {
+                        dp[i][j] = max(dp[i][j], dp[i + 1][k - 1] + dp[k][j]);
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = bombs.size();
+        vector<vector<int>> ranges(n);
+        for (int i = 0; i < n; i++) {
+            int x = bombs[i][0], y = bombs[i][1], r = bombs[i][2];
+            ranges[i] = {x - r, x + r, y - r, y + r};
+        }
+        int res = 1;
+        for (int i = 0; i < n; i++) {
+            int cur = 1;
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                if (ranges[j][0] <= ranges[i][0] && ranges[i][1] <= ranges[j][1] && ranges[j][2] <= ranges[i][2] && ranges[i][3] <= ranges[j][3]) {
+                    cur++;
+                }
+            }
+            res = max(res, cur);
+        }
+        return res;
+
+=======
+
+        int n = bombs.size();
+        vector<int> d(n);
+        for (int i = 0; i < n; ++i) {
+            d[i] = bombs[i][2];
+        }
+        sort(d.begin(), d.end());
+        d.erase(unique(d.begin(), d.end()), d.end());
+        int m = d.size();
+        vector<int> f(m);
+        for (int i = 0; i < n; ++i) {
+            int x = lower_bound(d.begin(), d.end(), bombs[i][2]) - d.begin();
+            ++f[x];
+        }
+        vector<int> g(m);
+        g[0] = f[0];
+        for (int i = 1; i < m; ++i) {
+            g[i] = g[i - 1] + f[i];
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = lower_bound(d.begin(), d.end(), bombs[i][2]) - d.begin();
+            res = max(res, g[x]);
+        }
+        return res;
+
+=======
+
+        int n = bombs.size();
+        vector<vector<int>> events;
+        for (auto &b : bombs) {
+            events.push_back({b[0] - b[2], b[1]});
+            events.push_back({b[0] + b[2], -b[1]});
+        }
+        sort(events.begin(), events.end());
+        int res = 0, cnt = 0;
+        set<int> ys;
+        for (auto &e : events) {
+            if (e[1] > 0) {
+                if (ys.empty()) ++cnt;
+                ys.insert(e[1]);
+            } else {
+                ys.erase(-e[1]);
+                if (ys.empty()) --cnt;
+            }
+            res = max(res, cnt);
+        }
+        return res;
+
+=======
+
+        int n = bombs.size();
+        vector<int> left(n), right(n), top(n), bottom(n);
+        for (int i = 0; i < n; i++) {
+            int x = bombs[i][0], y = bombs[i][1], r = bombs[i][2];
+            left[i] = x - r;
+            right[i] = x + r;
+            top[i] = y - r;
+            bottom[i] = y + r;
+        }
+        sort(left.begin(), left.end());
+        sort(right.begin(), right.end());
+        sort(top.begin(), top.end());
+        sort(bottom.begin(), bottom.end());
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int x = bombs[i][0], y = bombs[i][1], r = bombs[i][2];
+            int l = lower_bound(right.begin(), right.end(), x - r) - right.begin();
+            int r = upper_bound(left.begin(), left.end(), x + r) - left.begin();
+            int t = lower_bound(bottom.begin(), bottom.end(), y - r) - bottom.begin();
+            int b = upper_bound(top.begin(), top.end(), y + r) - top.begin();
+            ans = max(ans, r - l + b - t - 1);
+        }
+        return ans;
+
+=======
+
+        int n = bombs.size();
+        vector<int> ans(n);
+        vector<int> r(n);
+        for (int i = 0; i < n; ++i) {
+            r[i] = bombs[i][2];
+        }
+        sort(r.begin(), r.end());
+        for (int i = 0; i < n; ++i) {
+            int x = bombs[i][0];
+            int y = bombs[i][1];
+            int r = bombs[i][2];
+            int l = 0, h = n - 1;
+            while (l < h) {
+                int m = l + (h - l) / 2;
+                if (r[m] < r) {
+                    l = m + 1;
+                } else {
+                    h = m;
+                }
+            }
+            int cnt = 0;
+            for (int j = l; j < n; ++j) {
+                int x1 = bombs[j][0];
+                int y1 = bombs[j][1];
+                int r1 = bombs[j][2];
+                if (r1 > r && sqrt(pow(x1 - x, 2) + pow(y1 - y, 2)) <= r1 - r) {
+                    ++cnt;
+                }
+            }
+            ans[i] = cnt + 1;
+        }
+        return *max_element(ans.begin(), ans.end());
+
+=======
+
+        int n = bombs.size();
+        vector<vector<int>> g(n, vector<int>(n));
+        vector<int> dp(1<<n);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int dx = bombs[i][0] - bombs[j][0];
+                int dy = bombs[i][1] - bombs[j][1];
+                int d = dx * dx + dy * dy;
+                if (d <= bombs[i][2] * bombs[i][2]) {
+                    g[i][j] = 1;
+                }
+            }
+        }
+        for (int i = 0; i < (1<<n); i++) {
+            for (int j = 0; j < n; j++) {
+                if (i & (1<<j)) {
+                    for (int k = 0; k < n; k++) {
+                        if (g[j][k] && i & (1<<k)) {
+                            dp[i] = max(dp[i], dp[i ^ (1<<k)] + 1);
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1<<n) - 1];
+
+=======
+
+        int n = bombs.size();
+        vector<vector<int>> graph(n);
+        vector<int> indegree(n, 0), dp(n, 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (bombs[i][0] - bombs[i][2] <= bombs[j][0] + bombs[j][2] && bombs[i][0] + bombs[i][2] >= bombs[j][0] - bombs[j][2] &&
+                    bombs[i][1] - bombs[i][2] <= bombs[j][1] + bombs[j][2] && bombs[i][1] + bombs[i][2] >= bombs[j][1] - bombs[j][2]) {
+                    graph[i].push_back(j);
+                    indegree[j]++;
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            if (indegree[i] == 0) {
+                q.push(i);
+                dp[i] = 1;
+            }
+        }
+        int res = 0;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            res = max(res, dp[u]);
+            for (int v : graph[u]) {
+                if (--indegree[v] == 0) {
+                    q.push(v);
+                    dp[v] = max(dp[v], dp[u] + 1);
+                }
+            }
+        }
+        return res;

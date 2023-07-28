@@ -1,0 +1,217 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        from collections import Counter, defaultdict
+        counter = Counter(nums)
+        tails = defaultdict(int)
+        for num in nums:
+            if counter[num] == 0:
+                continue
+            elif tails[num] > 0:
+                tails[num] -= 1
+                tails[num + 1] += 1
+            elif counter[num + 1] > 0 and counter[num + 2] > 0:
+                counter[num + 1] -= 1
+                counter[num + 2] -= 1
+                tails[num + 3] += 1
+            else:
+                return False
+            counter[num] -= 1
+        return True
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        pass
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        from collections import defaultdict
+        d = defaultdict(list)
+        for n in nums:
+            if d[n-1]:
+                d[n].append(d[n-1].pop())
+            else:
+                d[n].append(1)
+        return all([not d[k] for k in d])
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        if len(nums) < 3:
+            return False
+        d = {}
+        for i in nums:
+            if i in d:
+                d[i] += 1
+            else:
+                d[i] = 1
+        for i in range(len(nums)):
+            if d[nums[i]] > 0:
+                for j in range(2):
+                    if nums[i]+j in d and d[nums[i]+j] > 0:
+                        d[nums[i]+j] -= 1
+                    else:
+                        return False
+        return True
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        from collections import defaultdict
+        d = defaultdict(list)
+        for n in nums:
+            if d[n-1]:
+                d[n].append(d[n-1].pop())
+            else:
+                d[n].append(1)
+        return all(sum(d[k]) < 3 for k in d)
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        from collections import Counter
+        c = Counter(nums)
+        end = Counter()
+        for x in nums:
+            if not c[x]:
+                continue
+            c[x] -= 1
+            if end[x-1] > 0:
+                end[x-1] -= 1
+                end[x] += 1
+            elif c[x+1] and c[x+2]:
+                c[x+1] -= 1
+                c[x+2] -= 1
+                end[x+2] += 1
+            else:
+                return False
+        return True
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        from collections import Counter, defaultdict
+        c = Counter(nums)
+        tails = defaultdict(int)
+        for x in nums:
+            if c[x] == 0:
+                continue
+            elif tails[x-1] > 0:
+                c[x] -= 1
+                tails[x-1] -= 1
+                tails[x] += 1
+            elif c[x+1] > 0 and c[x+2] > 0:
+                c[x] -= 1
+                c[x+1] -= 1
+                c[x+2] -= 1
+                tails[x+2] += 1
+            else:
+                return False
+        return True
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        # 1. count the number of each element
+        # 2. for each element, check if it can be appended to a existing subsequence. if not, create a new subsequence
+        # 3. if the number of the element is zero, skip it
+        # 4. if the number of the element is not zero, check if it can be appended to a existing subsequence
+        # 5. if it can be appended to a existing subsequence, append it and decrease the number of the element by one
+        # 6. if it cannot be appended to a existing subsequence, check if the number of the element is larger than 1
+        # 7. if the number of the element is larger than 1, create a new subsequence and decrease the number of the element by 3
+        # 8. if the number of the element is not larger than 1, return False
+        # 9. if the number of the element is zero, skip it
+        # 10. if all the elements are checked, return True
+        counter = collections.Counter(nums)
+        for i in nums:
+            if counter[i] == 0:
+                continue
+            if counter[i-1] > 0:
+                counter[i] -= 1
+                counter[i-1] -= 1
+            elif counter[i+1] > 0 and counter[i+2] > 0:
+                counter[i] -= 1
+                counter[i+1] -= 1
+                counter[i+2] -= 1
+            else:
+                return False
+        return True
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        # Greedy algorithm
+        # Key: the last element of the sequence
+        # Value: the length of the sequence
+        d = {}
+        for n in nums:
+            if n-1 in d:
+                # If n-1 exists, we can append it to the sequence
+                # and we can decrease the length of the sequence
+                d[n] = d[n-1] + 1
+                d[n-1] -= 1
+                if d[n-1] == 0:
+                    del d[n-1]
+            else:
+                # If n-1 does not exist, we can create a new sequence
+                d[n] = d.get(n, 0) + 1
+        return all([v < 3 for v in d.values()])
+
+=======
+
+def isPossible(self, nums: List[int]) -> bool:
+        # 1. count the frequency of each number
+        # 2. 2-dimentional dict, key is the number, value is a dict with key is the length of subseq and value is the freq
+        # 3. for each number, check if it can be added to the end of a subseq, if so, update the freq of the subseq, if not, check if it can start a new subseq, if so, update the freq of the new subseq, if not, return False
+        # 4. return True
+        freq = {}
+        for n in nums:
+            if n in freq:
+                freq[n] += 1
+            else:
+                freq[n] = 1
+        
+        subseq = {}
+        for n in nums:
+            if n in subseq:
+                if 1 in subseq[n]:
+                    if subseq[n][1] == 1:
+                        del subseq[n][1]
+                    else:
+                        subseq[n][1] -= 1
+                    if 2 in subseq[n]:
+                        subseq[n][2] += 1
+                    else:
+                        subseq[n][2] = 1
+                elif 2 in subseq[n]:
+                    if subseq[n][2] == 1:
+                        del subseq[n][2]
+                    else:
+                        subseq[n][2] -= 1
+                    if 3 in subseq[n]:
+                        subseq[n][3] += 1
+                    else:
+                        subseq[n][3] = 1
+                else:
+                    if 3 in subseq[n]:
+                        subseq[n][3] += 1
+                    else:
+                        subseq[n][3] = 1
+                freq[n] -= 1
+            else:
+                if freq[n] == 0:
+                    continue
+                if n+1 in freq and freq[n+1] > 0:
+                    if n+2 in freq and freq[n+2] > 0:
+                        freq[n] -= 1
+                        freq[n+1] -= 1
+                        freq[n+2] -= 1
+                        if n+2 in subseq:
+                            if 1 in subseq[n+2]:
+                                subseq[n+2][1] += 1
+                            else:
+                                subseq[n+2][1] = 1

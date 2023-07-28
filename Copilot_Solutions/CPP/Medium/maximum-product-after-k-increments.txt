@@ -1,0 +1,197 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        priority_queue<int, vector<int>, greater<int>> pq(nums.begin(), nums.end());
+        for (int i = 0; i < k; ++i) {
+            int t = pq.top(); pq.pop();
+            pq.push(t + 1);
+        }
+        long long res = 1;
+        while (pq.size()) {
+            res = res * pq.top() % 1000000007;
+            pq.pop();
+        }
+        return res;
+
+=======
+
+        priority_queue<int, vector<int>, greater<int>> minheap;
+        priority_queue<int> maxheap;
+        for (int i = 0; i < nums.size(); i++) {
+            minheap.push(nums[i]);
+            maxheap.push(nums[i]);
+        }
+        for (int i = 0; i < k; i++) {
+            int min = minheap.top();
+            int max = maxheap.top();
+            minheap.pop();
+            maxheap.pop();
+            minheap.push(min + 1);
+            maxheap.push(max + 1);
+        }
+        int64_t product = 1;
+        while (!minheap.empty()) {
+            product = product * minheap.top() % 1000000007;
+            minheap.pop();
+        }
+        return product;
+
+=======
+
+        int n = nums.size();
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for (int i = 0; i < n; ++i) {
+            pq.push(nums[i]);
+        }
+        int res = 1;
+        while (k--) {
+            int tmp = pq.top();
+            pq.pop();
+            res = (long)res * tmp % 1000000007;
+            pq.push(tmp + 1);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for (int i = 0; i < n; i++) {
+            pq.push(nums[i]);
+        }
+        int mod = 1e9 + 7;
+        long long res = 1;
+        for (int i = 0; i < k; i++) {
+            int cur = pq.top();
+            pq.pop();
+            res = res * cur % mod;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int min_product = 1;
+        for (int i = 0; i < k; ++i) {
+            min_product *= nums[i];
+        }
+        int max_product = 1;
+        for (int i = n - 1; i >= n - k; --i) {
+            max_product *= nums[i];
+        }
+        if (k % 2 == 0) {
+            return max_product % 1000000007;
+        }
+        int max_product1 = max_product / nums[n - k] * nums[k - 1];
+        int max_product2 = max_product / nums[n - 1] * nums[0];
+        return max(max_product1, max_product2) % 1000000007;
+
+=======
+
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int l = 0, r = n - 1;
+        long long ans = 1;
+        while (k > 0) {
+            if (k == 1) {
+                ans = (ans * nums[r]) % 1000000007;
+                k--;
+            } else {
+                long long a = 1LL * nums[l] * nums[l + 1];
+                long long b = 1LL * nums[r] * nums[r - 1];
+                if (a > b) {
+                    ans = (ans * a) % 1000000007;
+                    l += 2;
+                    k -= 2;
+                } else {
+                    ans = (ans * b) % 1000000007;
+                    r -= 2;
+                    k -= 2;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i <= k; i++) {
+            int j = k - i;
+            long long a = 1, b = 1;
+            for (int t = 0; t < i; t++) {
+                a *= nums[t];
+            }
+            for (int t = 0; t < j; t++) {
+                b *= nums[n - 1 - t];
+            }
+            res = max(res, (int)(a * b % 1000000007));
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int ans = 1;
+        int i = 0;
+        while (k--) {
+            ans *= nums[i];
+            ans %= 1e9 + 7;
+            i++;
+        }
+        return ans;
+
+=======
+
+        // sort the array
+        sort(nums.begin(), nums.end());
+        // find the min number
+        int min = nums[0];
+        // find the max number
+        int max = nums[nums.size() - 1];
+        // find the second max number
+        int secondMax = nums[nums.size() - 2];
+        // find the second min number
+        int secondMin = nums[1];
+        // find the number of min numbers
+        int minCount = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == min) {
+                minCount++;
+            }
+        }
+        // find the number of max numbers
+        int maxCount = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == max) {
+                maxCount++;
+            }
+        }
+        // if k is even
+        if (k % 2 == 0) {
+            // if k is less than the number of min numbers
+            if (k <= minCount) {
+                // find the number of min numbers after k operations
+                int minCountAfter = minCount / k;
+                // find the number of max numbers after k operations
+                int maxCountAfter = maxCount / k;
+                // find the number of second max numbers after k operations
+                int secondMaxCountAfter = (nums.size() - minCount - maxCount) / k;
+                // find the number of second min numbers after k operations
+                int secondMinCountAfter = (nums.size() - minCount - maxCount) / k;
+                // return the product of min numbers, max numbers, second max numbers, second min numbers
+                return (int)pow(min, k) * (int)pow(max, k) * (int)pow(secondMax, secondMaxCountAfter) * (int)pow(secondMin, secondMinCountAfter);
+            }
+            // if k is less than the number of max numbers
+            if (k <= maxCount) {
+                // find the number of min numbers after k operations
+                int minCountAfter = minCount / k;
+                // find the number of max numbers after k operations
+                int maxCountAfter = maxCount / k;
+                // find the number of second max numbers after k operations
+                int secondMax

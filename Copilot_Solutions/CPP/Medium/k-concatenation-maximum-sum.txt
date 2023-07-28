@@ -1,0 +1,313 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (k == 1) {
+            return kadane(arr);
+        }
+        long long sum = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            sum += arr[i];
+        }
+        if (sum <= 0) {
+            return kadane(arr);
+        }
+        long long ans = kadane(arr);
+        ans = max(ans, kadane(arr) + (k - 2) * sum);
+        ans = max(ans, kadane(arr) + (k - 1) * sum);
+        return ans % (int)(1e9 + 7);
+
+=======
+
+        if (k == 1) {
+            return maxSubArray(arr);
+        }
+        if (k == 2) {
+            vector<int> arr2 = arr;
+            arr.insert(arr.end(), arr2.begin(), arr2.end());
+            return maxSubArray(arr);
+        }
+        long long sum = 0;
+        long long maxSum = 0;
+        long long minSum = 0;
+        long long totalSum = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            totalSum += arr[i];
+            sum += arr[i];
+            if (sum < minSum) {
+                minSum = sum;
+            }
+            if (sum - minSum > maxSum) {
+                maxSum = sum - minSum;
+            }
+        }
+        if (totalSum > 0) {
+            return (maxSum + totalSum * (k - 2)) % 1000000007;
+        } else {
+            return maxSum % 1000000007;
+        }
+    }
+    
+    int maxSubArray(vector<int>& nums) {
+        long long sum = 0;
+        long long maxSum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i];
+            if (sum < 0) {
+                sum = 0;
+            }
+            if (sum > maxSum) {
+                maxSum = sum;
+            }
+        }
+        return maxSum % 1000000007;
+
+=======
+
+        int n = arr.size();
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+        }
+        if (sum < 0 || k == 1) {
+            return maxSubArray(arr) % 1000000007;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += arr[i];
+        }
+        ans = ans * (k - 2);
+        for (int i = 0; i < n; i++) {
+            ans += arr[i];
+        }
+        for (int i = 0; i < n; i++) {
+            ans += arr[i];
+        }
+        return ans % 1000000007;
+
+=======
+
+        int mod = 1e9 + 7;
+        int n = arr.size();
+        int sum = 0;
+        int maxSum = 0;
+        int minSum = 0;
+        int totalSum = 0;
+        for (int i = 0; i < n; ++i) {
+            totalSum += arr[i];
+            sum += arr[i];
+            maxSum = max(maxSum, sum);
+            minSum = min(minSum, sum);
+        }
+        if (k == 1) {
+            return maxSum;
+        }
+        int ans = 0;
+        if (totalSum > 0) {
+            ans = maxSum + totalSum * (k - 2) + max(0, minSum);
+        } else {
+            ans = maxSum + totalSum * (k - 2);
+        }
+        return ans % mod;
+
+=======
+
+        int n = arr.size();
+        int mod = 1e9 + 7;
+        long long int sum = 0;
+        long long int max_so_far = 0;
+        long long int max_ending_here = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+            max_ending_here += arr[i];
+            if (max_ending_here < 0) {
+                max_ending_here = 0;
+            }
+            if (max_so_far < max_ending_here) {
+                max_so_far = max_ending_here;
+            }
+        }
+        if (k == 1) {
+            return max_so_far % mod;
+        }
+        if (sum <= 0) {
+            return max_so_far % mod;
+        }
+        long long int max_ending_here_2 = 0;
+        long long int max_so_far_2 = 0;
+        for (int i = 0; i < n; i++) {
+            max_ending_here_2 += arr[i];
+            if (max_ending_here_2 < 0) {
+                max_ending_here_2 = 0;
+            }
+            if (max_so_far_2 < max_ending_here_2) {
+                max_so_far_2 = max_ending_here_2;
+            }
+        }
+        long long int max_ending_here_3 = 0;
+        long long int max_so_far_3 = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            max_ending_here_3 += arr[i];
+            if (max_ending_here_3 < 0) {
+                max_ending_here_3 = 0;
+            }
+            if (max_so_far_3 < max_ending_here_3) {
+                max_so_far_3 = max_ending_here_3;
+            }
+        }
+        long long int ans = max_so_far;
+        ans = max(ans, sum * (k - 2) + max_so_far_2 + max_so_far_3);
+        return ans % mod;
+
+=======
+
+        long long int mod = 1000000007;
+        long long int len = arr.size();
+        long long int sum = 0;
+        long long int max_sum = 0;
+        long long int min_sum = 0;
+        long long int sum1 = 0;
+        long long int sum2 = 0;
+        long long int sum3 = 0;
+        for (int i = 0; i < len; i++) {
+            sum1 += arr[i];
+            if (sum1 > sum2)
+                sum2 = sum1;
+            if (sum1 < 0)
+                sum1 = 0;
+        }
+        for (int i = 0; i < len; i++) {
+            sum += arr[i];
+            if (sum > max_sum)
+                max_sum = sum;
+            if (sum < min_sum)
+                min_sum = sum;
+        }
+        if (k == 1)
+            return sum2 % mod;
+        sum3 = sum;
+        for (int i = 0; i < len; i++) {
+            sum3 += arr[i];
+            if (sum3 > sum1)
+                sum1 = sum3;
+            if (sum3 < 0)
+                sum3 = 0;
+        }
+        if (sum > 0)
+            return max(sum1 % mod, ((k - 2) * sum + max_sum - min_sum) % mod);
+        else
+            return max(sum1 % mod, max_sum % mod);
+
+=======
+
+        int sum = 0;
+        int maxSum = 0;
+        int minSum = 0;
+        int maxElement = INT_MIN;
+        int totalSum = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            totalSum += arr[i];
+            maxElement = max(maxElement, arr[i]);
+            sum += arr[i];
+            maxSum = max(maxSum, sum);
+            minSum = min(minSum, sum);
+        }
+        if (k == 1) {
+            return maxSum;
+        }
+        if (totalSum < 0) {
+            return maxSum;
+        }
+        if (maxElement < 0) {
+            return 0;
+        }
+        return (maxSum - minSum + totalSum * (k - 2)) % 1000000007;
+
+=======
+
+        int n = arr.size();
+        int mod = 1e9 + 7;
+        long long sum = 0, max_sum = 0, max_sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            sum = (sum + arr[i]) % mod;
+            max_sum = max(max_sum, sum);
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            sum = (sum + arr[i]) % mod;
+            max_sum2 = max(max_sum2, sum);
+        }
+        if (k == 1) return max_sum;
+        long long ans = max(max_sum, max_sum2);
+        ans = max(ans, max_sum + max_sum2);
+        if (k > 2) {
+            sum = 0;
+            for (int i = 0; i < n; i++) {
+                sum = (sum + arr[i]) % mod;
+            }
+            ans = max(ans, max_sum + max_sum2 + sum * (k - 2));
+        }
+        return ans;
+
+=======
+
+        long long int n=arr.size();
+        long long int sum=0;
+        long long int maxsum=0;
+        long long int minsum=0;
+        long long int mod=1000000007;
+        for(int i=0;i<n;i++)
+        {
+            sum+=arr[i];
+            maxsum=max(maxsum,sum);
+            minsum=min(minsum,sum);
+        }
+        long long int ans=0;
+        if(k==1)
+        {
+            ans=maxsum;
+        }
+        else if(k==2)
+        {
+            ans=max(maxsum,sum-minsum);
+        }
+        else
+        {
+            ans=max(maxsum,sum-minsum);
+            ans=max(ans,sum*(k-2)+maxsum);
+        }
+        return ans%mod;
+
+=======
+
+        int n = arr.size();
+        long long int sum = 0, maxSum = 0, curr = 0, totalSum = 0;
+        for(int i = 0; i < n; i++) {
+            totalSum += arr[i];
+            curr += arr[i];
+            if(curr < 0) curr = 0;
+            maxSum = max(maxSum, curr);
+        }
+        curr = 0;
+        for(int i = n-1; i >= 0; i--) {
+            curr += arr[i];
+            if(curr < 0) curr = 0;
+            maxSum = max(maxSum, curr);
+        }
+        if(k == 1) return maxSum % 1000000007;
+        if(totalSum > 0) {
+            sum = totalSum * (k-2);
+            curr = 0;
+            for(int i = 0; i < n; i++) {
+                curr += arr[i];
+                if(curr < 0) curr = 0;
+                maxSum = max(maxSum, curr + sum);
+            }
+            curr = 0;
+            for(int i = n-1; i >= 0; i--) {
+                curr += arr[i];
+                if(curr < 0) curr = 0;
+                maxSum = max(maxSum, curr + sum);
+            }
+        }
+        return maxSum % 1000000007;

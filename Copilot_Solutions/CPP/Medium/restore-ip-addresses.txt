@@ -1,0 +1,144 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<string> res;
+        string ip;
+        dfs(s, 0, 0, ip, res);
+        return res;
+    }
+    void dfs(string s, int start, int step, string ip, vector<string>& res) {
+        if (start == s.size() && step == 4) {
+            ip.erase(ip.end() - 1);
+            res.push_back(ip);
+            return;
+        }
+        if (s.size() - start > (4 - step) * 3) return;
+        if (s.size() - start < (4 - step)) return;
+        int num = 0;
+        for (int i = start; i < start + 3; i++) {
+            num = num * 10 + (s[i] - '0');
+            if (num <= 255) {
+                ip += s[i];
+                dfs(s, i + 1, step + 1, ip + '.', res);
+            }
+            if (num == 0) break;
+        }
+
+=======
+
+        vector<string> result;
+        int n = s.size();
+        for (int i = 1; i < 4; i++) {
+            for (int j = i + 1; j < i + 4; j++) {
+                for (int k = j + 1; k < j + 4 && k < n; k++) {
+                    string s1 = s.substr(0, i);
+                    string s2 = s.substr(i, j - i);
+                    string s3 = s.substr(j, k - j);
+                    string s4 = s.substr(k, n - k);
+                    if (isValid(s1) && isValid(s2) && isValid(s3) && isValid(s4)) {
+                        result.push_back(s1 + "." + s2 + "." + s3 + "." + s4);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    bool isValid(string s) {
+        if (s.size() > 3 || s.empty() || (s.size() > 1 && s[0] == '0')) {
+            return false;
+        }
+        int num = stoi(s);
+        return num <= 255 && num >= 0;
+
+=======
+
+        vector<string> result;
+        string ip;
+        dfs(s, 0, 0, ip, result);
+        return result;
+
+=======
+
+        vector<string> result;
+        if (s.size() < 4) {
+            return result;
+        }
+        for (int i = 1; i < 4; i++) {
+            for (int j = i + 1; j < i + 4; j++) {
+                for (int k = j + 1; k < j + 4; k++) {
+                    if (k >= s.size()) {
+                        break;
+                    }
+                    string s1 = s.substr(0, i);
+                    string s2 = s.substr(i, j - i);
+                    string s3 = s.substr(j, k - j);
+                    string s4 = s.substr(k);
+                    if (isValid(s1) && isValid(s2) && isValid(s3) && isValid(s4)) {
+                        result.push_back(s1 + "." + s2 + "." + s3 + "." + s4);
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        vector<string> result;
+        string path;
+        dfs(s, 0, 0, path, result);
+        return result;
+
+=======
+
+        vector<string> res;
+        string path;
+        dfs(0, 0, s, path, res);
+        return res;
+    }
+    void dfs(int start, int step, string s, string path, vector<string>& res) {
+        if (start == s.size() && step == 4) {
+            res.push_back(path);
+            return;
+        }
+        if (s.size() - start > (4 - step) * 3) return;
+        if (s.size() - start < (4 - step)) return;
+        int num = 0;
+        for (int i = start; i < start + 3; i++) {
+            num = num * 10 + (s[i] - '0');
+            if (num <= 255) {
+                path += s[i];
+                dfs(i + 1, step + 1, s, path + (step == 3 ? "" : "."), res);
+            }
+            if (num == 0) break;
+        }
+
+=======
+
+        vector<string> res;
+        int n = s.size();
+        if (n < 4 || n > 12)
+            return res;
+        string path;
+        dfs(s, 0, 0, path, res);
+        return res;
+
+=======
+
+        vector<string> res;
+        DFS(s, 0, 0, "", res);
+        return res;
+    }
+    void DFS(string s, int index, int count, string out, vector<string>& res) {
+        if (index == s.size() && count == 4) {
+            res.push_back(out);
+            return;
+        }
+        if (index == s.size() || count == 4) return;
+        for (int i = 1; i <= 3; i++) {
+            if (index + i > s.size()) break;
+            string tmp = s.substr(index, i);
+            if ((tmp[0] == '0' && tmp.size() > 1) || (i == 3 && stoi(tmp) > 255)) continue;
+            DFS(s, index + i, count + 1, out + tmp + (count == 3 ? "" : "."), res);
+        }

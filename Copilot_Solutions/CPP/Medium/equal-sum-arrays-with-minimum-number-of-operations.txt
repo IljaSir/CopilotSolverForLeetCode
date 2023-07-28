@@ -1,0 +1,288 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        if (sum1 == sum2) return 0;
+        if (sum1 > sum2) {
+            swap(sum1, sum2);
+            swap(nums1, nums2);
+        }
+        int diff = sum2 - sum1;
+        int n1 = nums1.size(), n2 = nums2.size();
+        if (n1 * 6 < diff || n2 * 1 > diff) return -1;
+        vector<int> freq1(7), freq2(7);
+        for (int x : nums1) freq1[x]++;
+        for (int x : nums2) freq2[x]++;
+        int ans = 0;
+        for (int i = 1; i <= 6; i++) {
+            int need = (i - 1) * freq1[i];
+            if (diff <= need) {
+                ans += (diff + i - 2) / (i - 1);
+                break;
+            }
+            ans += freq1[i];
+            diff -= need;
+        }
+        for (int i = 6; i >= 1; i--) {
+            int need = (7 - i) * freq2[i];
+            if (diff <= need) {
+                ans += (diff + 7 - i - 1) / (7 - i);
+                break;
+            }
+            ans += freq2[i];
+            diff -= need;
+        }
+        return ans;
+
+=======
+
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        if (sum1 == sum2) return 0;
+        if (sum1 > sum2) {
+            swap(nums1, nums2);
+            swap(sum1, sum2);
+        }
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end(), greater<int>());
+        int i = 0, j = 0, res = 0;
+        while (sum1 < sum2) {
+            if (i < nums1.size() && j < nums2.size()) {
+                if (6 - nums1[i] > nums2[j] - 1) {
+                    sum1 += 6 - nums1[i];
+                    ++i;
+                } else {
+                    sum2 -= nums2[j] - 1;
+                    ++j;
+                }
+            } else if (i < nums1.size()) {
+                sum1 += 6 - nums1[i];
+                ++i;
+            } else {
+                sum2 -= nums2[j] - 1;
+                ++j;
+            }
+            ++res;
+        }
+        return res;
+
+=======
+
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        if (sum1 == sum2) return 0;
+        if (sum1 > sum2) return minOperations(nums2, nums1);
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end(), greater<int>());
+        int i = 0, j = 0, res = 0;
+        while (sum1 < sum2) {
+            int v1 = i < nums1.size() ? 6 - nums1[i] : 0;
+            int v2 = j < nums2.size() ? nums2[j] - 1 : 0;
+            if (v1 > v2) {
+                sum1 += v1;
+                ++i;
+            } else {
+                sum2 -= v2;
+                ++j;
+            }
+            ++res;
+        }
+        return res;
+
+=======
+
+        if (nums1.size() * 6 < nums2.size() || nums2.size() * 6 < nums1.size()) {
+            return -1;
+        }
+        int sum1 = 0;
+        int sum2 = 0;
+        int count1[6] = {0};
+        int count2[6] = {0};
+        for (int i = 0; i < nums1.size(); i++) {
+            sum1 += nums1[i];
+            count1[nums1[i] - 1]++;
+        }
+        for (int i = 0; i < nums2.size(); i++) {
+            sum2 += nums2[i];
+            count2[nums2[i] - 1]++;
+        }
+        int ans = 0;
+        if (sum1 < sum2) {
+            for (int i = 0; i < 5; i++) {
+                int diff = min(count2[5 - i - 1], (sum2 - sum1) / (5 - i));
+                ans += diff;
+                sum2 -= diff * (5 - i);
+            }
+        } else {
+            for (int i = 0; i < 5; i++) {
+                int diff = min(count1[5 - i - 1], (sum1 - sum2) / (5 - i));
+                ans += diff;
+                sum1 -= diff * (5 - i);
+            }
+        }
+        return ans;
+
+=======
+
+        int sum1 = 0, sum2 = 0;
+        for (int i = 0; i < nums1.size(); ++i) sum1 += nums1[i];
+        for (int i = 0; i < nums2.size(); ++i) sum2 += nums2[i];
+        if (sum1 > sum2) return minOperations(nums2, nums1);
+        vector<int> cnt1(7, 0), cnt2(7, 0);
+        for (int i = 0; i < nums1.size(); ++i) ++cnt1[nums1[i]];
+        for (int i = 0; i < nums2.size(); ++i) ++cnt2[nums2[i]];
+        int ans = 0;
+        while (sum1 < sum2) {
+            int i = 1, j = 6;
+            while (i <= 6 && cnt1[i] == 0) ++i;
+            while (j >= 1 && cnt2[j] == 0) --j;
+            if (i > 6 || j < 1) return -1;
+            int d = min(sum2 - sum1, min(cnt1[i] * i, cnt2[j] * (6 - j + 1)));
+            sum1 += d;
+            sum2 -= d;
+            cnt1[i] -= d / i;
+            cnt2[j] -= d / (6 - j + 1);
+            ++ans;
+        }
+        return ans;
+
+=======
+
+        int s1 = 0, s2 = 0;
+        for (int i = 0; i < nums1.size(); i++) {
+            s1 += nums1[i];
+        }
+        for (int i = 0; i < nums2.size(); i++) {
+            s2 += nums2[i];
+        }
+        if (s1 == s2) {
+            return 0;
+        }
+        if (s1 > s2) {
+            return minOperations(nums2, nums1);
+        }
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end(), greater<int>());
+        int i = 0, j = 0;
+        int cnt = 0;
+        while (s1 < s2) {
+            int diff = s2 - s1;
+            if (i < nums1.size() && j < nums2.size()) {
+                int d1 = 6 - nums1[i];
+                int d2 = nums2[j] - 1;
+                if (d1 > d2) {
+                    if (d1 >= diff) {
+                        cnt++;
+                        break;
+                    }
+                    s1 += d1;
+                    i++;
+                } else {
+                    if (d2 >= diff) {
+                        cnt++;
+                        break;
+                    }
+                    s2 -= d2;
+                    j++;
+                }
+            } else if (i < nums1.size()) {
+                int d1 = 6 - nums1[i];
+                if (d1 >= diff) {
+                    cnt++;
+                    break;
+                }
+                s1 += d1;
+                i++;
+            } else {
+                int d2 = nums2[j] - 1;
+                if (d2 >= diff) {
+                    cnt++;
+                    break;
+                }
+                s2 -= d2;
+                j++;
+            }
+            cnt++;
+        }
+        return cnt;
+
+=======
+
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        if (n1 > n2 * 6 || n2 > n1 * 6) return -1;
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        if (sum1 > sum2) return minOperations(nums2, nums1);
+        int diff = sum2 - sum1;
+        vector<int> count1(6, 0), count2(6, 0);
+        for (int i = 0; i < n1; ++i) ++count1[nums1[i] - 1];
+        for (int i = 0; i < n2; ++i) ++count2[nums2[i] - 1];
+        int ans = 0;
+        for (int i = 5; i >= 0 && diff > 0; --i) {
+            int x = min(diff / (i + 1), count1[i]);
+            ans += x;
+            diff -= x * (i + 1);
+            x = min(diff / (6 - i), count2[5 - i]);
+            ans += x;
+            diff -= x * (6 - i);
+        }
+        return ans;
+
+=======
+
+        int sum1 = 0;
+        int sum2 = 0;
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        for (int i = 0; i < n1; i++) {
+            sum1 += nums1[i];
+        }
+        for (int i = 0; i < n2; i++) {
+            sum2 += nums2[i];
+        }
+        if (sum1 == sum2) {
+            return 0;
+        }
+        if (n1 > n2) {
+            return minOperations(nums2, nums1);
+        }
+        vector<int> count1(7, 0);
+        vector<int> count2(7, 0);
+        for (int i = 0; i < n1; i++) {
+            count1[nums1[i]]++;
+        }
+        for (int i = 0; i < n2; i++) {
+            count2[nums2[i]]++;
+        }
+        int res = 0;
+        if (sum1 < sum2) {
+            int diff = sum2 - sum1;
+            for (int i = 1; i <= 6; i++) {
+                if (diff == 0) break;
+                if (i <= 5) {
+                    int num = min(count2[i + 1], diff / (i + 1));
+                    res += num;
+                    diff -= num * (i + 1);
+                }
+                int num = min(count1[i], diff / (6 - i + 1));
+                res += num;
+                diff -= num * (6 - i + 1);
+            }
+        } else {
+            int diff = sum1 - sum2;
+            for (int i = 6; i >= 1; i--) {
+                if (diff == 0) break;
+                if (i >= 2) {
+                    int num = min(count1[i - 1], diff / (6 - i + 1));
+                    res += num;
+                    diff -= num * (6 - i + 1);
+                }
+                int num = min(count2[i], diff / i);
+                res += num;
+                diff -= num * i;
+            }
+        }
+        return res;

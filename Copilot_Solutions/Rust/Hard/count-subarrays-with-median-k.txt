@@ -1,0 +1,177 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut s = vec![0; n + 1];
+        for i in 0..n {
+            s[i + 1] = s[i] + nums[i];
+        }
+        let mut res = 0;
+        for i in 0..n {
+            for j in i + 1..n + 1 {
+                let m = (s[j] - s[i]) as f64 / (j - i) as f64;
+                if m == k as f64 {
+                    res += 1;
+                }
+            }
+        }
+        res
+
+=======
+
+        let n = nums.len();
+        let mut result = 0;
+        for i in 0..n {
+            let mut count = 0;
+            for j in i..n {
+                if nums[j] < k {
+                    count += 1;
+                } else if nums[j] == k {
+                    count += 1;
+                    result += count;
+                } else {
+                    break;
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut count = 0;
+        for i in 0..nums.len() {
+            let mut sub = vec![];
+            for j in i..nums.len() {
+                sub.push(nums[j]);
+                sub.sort();
+                if sub[sub.len() / 2] == k {
+                    count += 1;
+                }
+            }
+        }
+        count
+
+=======
+
+        let n = nums.len();
+        let k = k as usize;
+        let mut pos = vec![0; n + 1];
+        for (i, &num) in nums.iter().enumerate() {
+            pos[num as usize] = i;
+        }
+        let mut ans = 0;
+        for i in 1..=n {
+            let mut l = pos[i];
+            let mut r = pos[i];
+            while l > 0 && nums[l - 1] < i as i32 {
+                l -= 1;
+            }
+            while r + 1 < n && nums[r + 1] < i as i32 {
+                r += 1;
+            }
+            let mut ll = l;
+            let mut rr = r;
+            while ll > 0 && nums[ll - 1] == i as i32 {
+                ll -= 1;
+            }
+            while rr + 1 < n && nums[rr + 1] == i as i32 {
+                rr += 1;
+            }
+            if i < k {
+                ans += (l - ll + 1) * (rr - r + 1);
+            } else if i > k {
+                ans += (ll - l + 1) * (r - rr + 1);
+            } else {
+                ans += (l - ll + 1) * (r - rr + 1);
+            }
+        }
+        ans as i32
+
+=======
+
+        let mut ans = 0;
+        let mut pre = vec![0; nums.len() + 1];
+        for i in 0..nums.len() {
+            pre[i + 1] = pre[i] + (nums[i] < k) as i32;
+        }
+        let mut cnt = vec![0; nums.len() + 1];
+        for i in 0..=nums.len() {
+            ans += cnt[pre[i] as usize];
+            cnt[pre[i] as usize] += 1;
+        }
+        ans
+
+=======
+
+        let mut ans = 0;
+        let mut prefix = vec![0; nums.len() + 1];
+        for (i, n) in nums.iter().enumerate() {
+            prefix[i + 1] = prefix[i] + (if *n < k { -1 } else if *n > k { 1 } else { 0 });
+        }
+        let mut count = vec![0; nums.len() + 1];
+        for p in prefix.iter() {
+            ans += count[(p + nums.len() as i32) as usize];
+            count[(p + nums.len() as i32) as usize] += 1;
+        }
+        ans
+
+=======
+
+        let mut res = 0;
+        let mut left = 0;
+        let mut right = 0;
+        let mut count = 0;
+        let mut map = std::collections::HashMap::new();
+        while right < nums.len() {
+            if nums[right] < k {
+                right += 1;
+            } else if nums[right] == k {
+                count += 1;
+                right += 1;
+            } else {
+                while left < right && count == 0 {
+                    if nums[left] < k {
+                        left += 1;
+                    } else if nums[left] == k {
+                        count -= 1;
+                        left += 1;
+                    } else {
+                        left += 1;
+                    }
+                }
+                if count > 0 {
+                    res += 1;
+                    count -= 1;
+                }
+                right += 1;
+            }
+            if count > 0 {
+                res += 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut res = 0;
+        let mut counts = vec![0; nums.len()+1];
+        let mut count = 0;
+        for i in 0..nums.len() {
+            if nums[i] < k {
+                count += 1;
+            }
+            counts[count] += 1;
+        }
+        count = 0;
+        for i in (0..nums.len()).rev() {
+            if nums[i] > k {
+                count += 1;
+            }
+            res += counts[count];
+        }
+        res

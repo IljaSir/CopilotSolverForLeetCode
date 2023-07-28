@@ -1,0 +1,193 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = tires.size();
+        vector<pair<int, int>> tire(n);
+        for (int i = 0; i < n; i++) {
+            tire[i] = {tires[i][0], tires[i][1]};
+        }
+        sort(tire.begin(), tire.end(), [](pair<int, int> &a, pair<int, int> &b) {
+            return a.first * b.second < b.first * a.second;
+        });
+        long long ans = 1e18;
+        for (int i = 0; i < n; i++) {
+            long long sum = 0;
+            for (int j = 0; j < n; j++) {
+                int k = (i + j) % n;
+                long long t = tire[k].first * pow(tire[k].second, numLaps - 1);
+                sum += t;
+                if (j != n - 1) sum += changeTime;
+            }
+            ans = min(ans, sum);
+        }
+        return ans;
+
+=======
+
+        int n = tires.size();
+        vector<vector<int>> dp(n, vector<int>(2, 0));
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = tires[i][0];
+            dp[i][1] = tires[i][0] * tires[i][1];
+        }
+        sort(dp.begin(), dp.end(), [](vector<int> &a, vector<int> &b) {
+            return a[1] < b[1];
+        });
+        vector<int> dp2(n, 0);
+        for (int i = 0; i < n; i++) {
+            dp2[i] = dp[i][0] * tires[i][1];
+        }
+        int ans = dp2[0] * numLaps;
+        for (int i = 0; i < n; i++) {
+            int t = dp[i][0];
+            int c = dp[i][1];
+            int temp = c * numLaps;
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                int t2 = dp[j][0];
+                int c2 = dp[j][1];
+                int t3 = max(0, t2 - t);
+                int t4 = (t3 + t - 1) / t;
+                temp += t4 * changeTime + (t4 + 1) * t2 * tires[i][1];
+            }
+            ans = min(ans, temp);
+        }
+        return ans;
+
+=======
+
+        int n = tires.size();
+        vector<vector<int>> dp(n, vector<int>(numLaps+1, INT_MAX));
+        for (int i = 0; i < n; ++i) {
+            dp[i][1] = tires[i][0];
+        }
+        for (int j = 2; j <= numLaps; ++j) {
+            for (int i = 0; i < n; ++i) {
+                for (int k = 0; k < n; ++k) {
+                    dp[i][j] = min(dp[i][j], dp[k][j-1] + tires[i][0] + changeTime);
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            ans = min(ans, dp[i][numLaps]);
+        }
+        return ans;
+
+=======
+
+        int n = tires.size();
+        vector<vector<long long>> dp(n, vector<long long>(2, 0));
+        for (int i = 0; i < n; ++i) {
+            dp[i][0] = tires[i][0] * tires[i][1];
+            dp[i][1] = tires[i][0] * tires[i][1] * tires[i][1];
+        }
+        for (int i = 1; i < numLaps; ++i) {
+            vector<vector<long long>> tmp(n, vector<long long>(2, 0));
+            for (int j = 0; j < n; ++j) {
+                tmp[j][0] = dp[j][0] + tires[j][0] * tires[j][1];
+                tmp[j][1] = dp[j][1] + tires[j][0] * tires[j][1] * tires[j][1];
+            }
+            for (int j = 0; j < n; ++j) {
+                for (int k = 0; k < n; ++k) {
+                    if (j == k) continue;
+                    tmp[j][0] = min(tmp[j][0], dp[k][0] + changeTime + tires[j][0] * tires[j][1]);
+                    tmp[j][1] = min(tmp[j][1], dp[k][1] + changeTime + tires[j][0] * tires[j][1] * tires[j][1]);
+                }
+            }
+            dp = tmp;
+        }
+        long long ans = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            ans = min(ans, dp[i][0]);
+            ans = min(ans, dp[i][1]);
+        }
+        return ans;
+
+=======
+
+        int n = tires.size();
+        vector<int> minTime(n, 0);
+        for (int i = 0; i < n; i++) {
+            int f = tires[i][0], r = tires[i][1];
+            int t = f;
+            for (int j = 1; j < numLaps; j++) {
+                t += f * pow(r, j);
+            }
+            minTime[i] = t;
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            int t = minTime[i];
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    int x = numLaps;
+                    int y = minTime[j];
+                    int z = changeTime;
+                    int c = 0;
+                    while (x > 1) {
+                        if (y > t) {
+                            t += z;
+                            c++;
+                        } else {
+                            t += y;
+                            c++;
+                            y += z;
+                            x--;
+                        }
+                    }
+                    t += y;
+                    c++;
+                    ans = min(ans, t);
+                    t = minTime[i];
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = tires.size();
+        vector<long long> dp(n, 0);
+        for (int i = 0; i < n; i++) {
+            dp[i] = tires[i][0] * 1LL * pow(tires[i][1], numLaps - 1);
+        }
+        sort(dp.begin(), dp.end());
+        for (int i = 1; i < n; i++) {
+            dp[i] = min(dp[i], dp[i - 1] + changeTime);
+        }
+        return dp[n - 1];
+
+=======
+
+        int n=tires.size();
+        vector<int> dp(n,0);
+        for(int i=0;i<n;i++){
+            dp[i]=tires[i][0];
+            for(int j=1;j<numLaps;j++){
+                dp[i]=min(dp[i],tires[i][0]+changeTime+dp[i]*tires[i][1]);
+            }
+        }
+        int ans=INT_MAX;
+        for(int i=0;i<n;i++){
+            ans=min(ans,dp[i]);
+        }
+        return ans;
+
+=======
+
+        vector<int> tireCosts;
+        for (auto tire : tires) {
+            int cost = 0;
+            for (int i = 0; i < numLaps; ++i) {
+                cost += tire[0] * pow(tire[1], i);
+            }
+            tireCosts.push_back(cost);
+        }
+        sort(tireCosts.begin(), tireCosts.end());
+        int minCost = tireCosts[0];
+        for (int i = 1; i < tireCosts.size(); ++i) {
+            minCost += tireCosts[i] + changeTime;
+        }
+        return minCost;

@@ -1,0 +1,196 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> dp(maxSum + 1);
+        dp[0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            if (find(banned.begin(), banned.end(), i) != banned.end()) continue;
+            for (int j = maxSum; j >= i; --j) {
+                dp[j] += dp[j - i];
+            }
+        }
+        return dp[maxSum];
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int res = 0;
+        for (int i = 0; i < banned.size(); ++i) {
+            if (banned[i] > maxSum) break;
+            int j = i + 1;
+            while (j < banned.size() && banned[j] == banned[j - 1] + 1) ++j;
+            int low = i == 0 ? 1 : banned[i - 1] + 1;
+            int high = j == banned.size() ? n : banned[j] - 1;
+            if (low <= high) {
+                int sum = (low + high) * (high - low + 1) / 2;
+                if (sum > maxSum) {
+                    int l = low, r = high;
+                    while (l < r) {
+                        int m = l + (r - l) / 2;
+                        int s = (low + m) * (m - low + 1) / 2;
+                        if (s <= maxSum) l = m + 1;
+                        else r = m;
+                    }
+                    res += l - low;
+                    break;
+                }
+                res += high - low + 1;
+            }
+            i = j - 1;
+        }
+        return res;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int count = 0;
+        int sum = 0;
+        for (int i = 1; i <= n; i++) {
+            if (find(banned.begin(), banned.end(), i) != banned.end()) {
+                continue;
+            }
+            if (sum + i > maxSum) {
+                break;
+            }
+            sum += i;
+            count++;
+        }
+        return count;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int sum = 0;
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            if (sum + i <= maxSum && !binary_search(banned.begin(), banned.end(), i)) {
+                sum += i;
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int ans = 0;
+        int sum = 0;
+        for (int i = 1; i <= n; i++) {
+            if (sum + i <= maxSum) {
+                if (binary_search(banned.begin(), banned.end(), i)) {
+                    continue;
+                }
+                sum += i;
+                ans++;
+            } else {
+                break;
+            }
+        }
+        return ans;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int count = 0;
+        for (int i = 0; i < banned.size(); ++i) {
+            int j = i;
+            while (j < banned.size() && banned[j] == banned[i]) {
+                ++j;
+            }
+            int sum = (j - i) * banned[i];
+            if (sum > maxSum) {
+                break;
+            }
+            maxSum -= sum;
+            count += j - i;
+            i = j - 1;
+        }
+        count += maxSum / n;
+        return count;
+
+=======
+
+        int ans = 0;
+        sort(banned.begin(), banned.end());
+        for (int i = 0; i < banned.size(); ++i) {
+            if (i == 0) {
+                ans += min(n, banned[i] - 1) - (maxSum - n) / (banned.size() + 1);
+            } else {
+                ans += min(n, banned[i] - banned[i - 1] - 1) - (maxSum - n) / (banned.size() + 1);
+            }
+        }
+        ans += min(n, maxSum - banned.back()) - (maxSum - n) / (banned.size() + 1);
+        return ans;
+
+=======
+
+        int l = 0, r = n;
+        sort(banned.begin(), banned.end());
+        while (l < r) {
+            int mid = (l + r + 1) >> 1;
+            if (check(banned, n, maxSum, mid)) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+    }
+    bool check(vector<int>& banned, int n, int maxSum, int k) {
+        int sum = 0, i = 0;
+        for (int j = 1; j <= k; ++j) {
+            while (i < banned.size() && banned[i] < j) {
+                ++i;
+            }
+            sum += (j - i);
+        }
+        return sum <= maxSum;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        banned.push_back(n+1);
+        int res = 0;
+        for (int i = 0; i < banned.size(); ++i) {
+            int j = i + 1;
+            while (j < banned.size() && banned[j] == banned[i]) ++j;
+            int x = banned[i] - banned[i-1] - 1;
+            int y = maxSum - (banned[i] - 1) * (j - i);
+            if (x <= y) {
+                res += x;
+                maxSum -= (banned[i] - banned[i-1] - 1) * (j - i);
+            } else {
+                res += y;
+                break;
+            }
+            i = j - 1;
+        }
+        return res;
+
+=======
+
+        sort(banned.begin(), banned.end());
+        int i = 0;
+        int count = 0;
+        int sum = 0;
+        while ( i < banned.size() && sum + banned[i] - 1 <= maxSum) {
+            sum += banned[i] - 1;
+            count += banned[i] - 1;
+            i++;
+        }
+        if (i < banned.size()) {
+            int k = banned[i] - sum - 1;
+            count += k;
+            sum += k;
+            int j = i;
+            while (j < banned.size() && banned[j] == banned[i]) {
+                j++;
+            }
+            i = j;
+        }
+        if (sum < maxSum) {
+            int k = min(n - banned.back(), maxSum - sum);
+            count += k;
+        }
+        return count;

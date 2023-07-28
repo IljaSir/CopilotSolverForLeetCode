@@ -1,0 +1,359 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<string> ans;
+        int i = 0;
+        while (i < words.size()) {
+            int len = words[i].size();
+            int j = i + 1;
+            while (j < words.size()) {
+                if (len + 1 + words[j].size() > maxWidth) break;
+                len += 1 + words[j].size();
+                ++j;
+            }
+            string s = words[i];
+            int space = maxWidth - len;
+            int each = 1, extra = 0;
+            if (j - i - 1 > 0) {
+                each = space / (j - i - 1);
+                extra = space % (j - i - 1);
+            }
+            for (int k = i + 1; k < j; ++k) {
+                s += string(each, ' ');
+                if (extra > 0) {
+                    s += ' ';
+                    --extra;
+                }
+                s += words[k];
+            }
+            if (j - i == 1) s += string(space, ' ');
+            ans.push_back(s);
+            i = j;
+        }
+        return ans;
+
+=======
+
+        vector<string> ans;
+        int n = words.size();
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            int len = 0;
+            while (j < n && len + words[j].size() + j - i <= maxWidth) {
+                len += words[j].size();
+                ++j;
+            }
+            int spaceNum = maxWidth - len;
+            string cur;
+            if (j == n) {
+                for (int k = i; k < j; ++k) {
+                    cur += words[k];
+                    if (k != j - 1) {
+                        cur += " ";
+                        --spaceNum;
+                    }
+                }
+                while (spaceNum > 0) {
+                    cur += " ";
+                    --spaceNum;
+                }
+            } else {
+                int spaceNumEach = 0;
+                int spaceNumExtra = 0;
+                if (j - i - 1 > 0) {
+                    spaceNumEach = spaceNum / (j - i - 1);
+                    spaceNumExtra = spaceNum % (j - i - 1);
+                }
+                for (int k = i; k < j; ++k) {
+                    cur += words[k];
+                    if (k != j - 1) {
+                        for (int m = 0; m < spaceNumEach; ++m) {
+                            cur += " ";
+                        }
+                        if (spaceNumExtra > 0) {
+                            cur += " ";
+                            --spaceNumExtra;
+                        }
+                    }
+                }
+            }
+            ans.push_back(cur);
+            i = j;
+        }
+        return ans;
+
+=======
+
+        vector<string> result;
+        int i = 0;
+        while (i < words.size()) {
+            int j = i, len = 0;
+            while (j < words.size() && len + words[j].size() <= maxWidth) {
+                len += words[j].size() + 1;
+                j++;
+            }
+            int space = maxWidth - len + 1;
+            int num = j - i - 1;
+            if (j == words.size() || num == 0) {
+                string s = words[i];
+                for (int k = i + 1; k < j; k++) {
+                    s += " " + words[k];
+                }
+                s += string(space - num, ' ');
+                result.push_back(s);
+            } else {
+                int r = space % num;
+                int s = space / num;
+                string t = words[i];
+                for (int k = i + 1; k < j; k++) {
+                    t += string(s + (k - i <= r), ' ') + words[k];
+                }
+                result.push_back(t);
+            }
+            i = j;
+        }
+        return result;
+
+=======
+
+        vector<string> res;
+        for (int i = 0; i < words.size(); ) {
+            int len = 0, j = i;
+            while (j < words.size() && len + words[j].size() + j - i <= maxWidth) {
+                len += words[j].size();
+                ++j;
+            }
+            string s = words[i];
+            if (j == words.size()) {
+                for (int k = i + 1; k < j; ++k) {
+                    s += " " + words[k];
+                }
+                s.append(maxWidth - len - j + i, ' ');
+            } else if (j - i == 1) {
+                s.append(maxWidth - len, ' ');
+            } else {
+                int space = (maxWidth - len) / (j - i - 1);
+                int r = (maxWidth - len) % (j - i - 1);
+                for (int k = i + 1; k < j; ++k) {
+                    s.append(space + (k - i <= r), ' ');
+                    s += words[k];
+                }
+            }
+            res.push_back(s);
+            i = j;
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        int n = words.size();
+        int left = 0;
+        while (left < n) {
+            int right = left;
+            int sumLen = 0;
+            while (right < n && sumLen + words[right].length() + right - left <= maxWidth) {
+                sumLen += words[right].length();
+                right++;
+            }
+            string s = words[left];
+            int numWords = right - left;
+            int numSpaces = maxWidth - sumLen;
+            if (right == n || numWords == 1) {
+                for (int i = left + 1; i < right; i++) {
+                    s += " " + words[i];
+                }
+                s += string(numSpaces - numWords + 1, ' ');
+            } else {
+                int avgSpaces = numSpaces / (numWords - 1);
+                int extraSpaces = numSpaces % (numWords - 1);
+                for (int i = left + 1; i < right; i++) {
+                    s += string(avgSpaces + (i - left <= extraSpaces ? 1 : 0), ' ') + words[i];
+                }
+            }
+            res.push_back(s);
+            left = right;
+        }
+        return res;
+
+=======
+
+        vector<string> result;
+        int n = words.size();
+        int i = 0;
+        while(i < n) {
+            int j = i + 1;
+            int len = words[i].length();
+            while(j < n && len + words[j].length() + j - i <= maxWidth) {
+                len += words[j++].length();
+            }
+            int space = 1;
+            int extra = 0;
+            if(j < n && j - i - 1 > 0) {
+                space = (maxWidth - len) / (j - i - 1);
+                extra = (maxWidth - len) % (j - i - 1);
+            }
+            string line = words[i];
+            for(int k = i + 1; k < j; k++) {
+                line += string(space, ' ');
+                if(extra-- > 0) {
+                    line += ' ';
+                }
+                line += words[k];
+            }
+            line += string(maxWidth - line.length(), ' ');
+            result.push_back(line);
+            i = j;
+        }
+        return result;
+
+=======
+
+        vector<string> ans;
+        int i = 0;
+        while (i < words.size()) {
+            int left = i;
+            int len = 0;
+            while (i < words.size() && len + words[i].size() <= maxWidth) {
+                len += words[i].size() + 1;
+                i++;
+            }
+            int right = i - 1;
+            int space = maxWidth - len + 1;
+            if (left == right) {
+                ans.push_back(words[left] + string(space, ' '));
+                continue;
+            }
+            if (i == words.size()) {
+                string s = words[left++];
+                while (left <= right) {
+                    s += ' ' + words[left++];
+                }
+                s += string(space - 1, ' ');
+                ans.push_back(s);
+                continue;
+            }
+            int wordsNum = right - left + 1;
+            int spaceNum = space / wordsNum;
+            int extra = space % wordsNum;
+            string s = words[left++];
+            while (left <= right) {
+                s += string(spaceNum + (extra-- > 0 ? 1 : 0), ' ') + words[left++];
+            }
+            ans.push_back(s);
+        }
+        return ans;
+
+=======
+
+        vector<string> result;
+        int n = words.size();
+        int i = 0;
+        while (i < n) {
+            int j = i + 1;
+            int curLen = words[i].size();
+            while (j < n && curLen + words[j].size() + 1 <= maxWidth) {
+                curLen += words[j].size() + 1;
+                j++;
+            }
+            int spaceNum = maxWidth - curLen;
+            int spaceSlot = j - i - 1;
+            string line;
+            if (j == n || spaceSlot == 0) {
+                for (int k = i; k < j; k++) {
+                    line += words[k];
+                    if (k != j - 1) {
+                        line += " ";
+                    }
+                }
+                line += string(spaceNum - spaceSlot, ' ');
+            } else {
+                int spaceAvg = spaceNum / spaceSlot;
+                int spaceRem = spaceNum % spaceSlot;
+                for (int k = i; k < j; k++) {
+                    line += words[k];
+                    if (k != j - 1) {
+                        line += string(spaceAvg + (k - i < spaceRem ? 1 : 0), ' ');
+                    }
+                }
+            }
+            result.push_back(line);
+            i = j;
+        }
+        return result;
+
+=======
+
+        vector<string> res;
+        int i = 0;
+        while (i < words.size()) {
+            int line_length = words[i].size();
+            int j = i + 1;
+            while (j < words.size() && line_length + 1 + words[j].size() <= maxWidth) {
+                line_length += 1 + words[j].size();
+                j++;
+            }
+            string line = words[i];
+            if (j == words.size() || j == i + 1) {
+                for (int k = i + 1; k < j; k++) {
+                    line += " " + words[k];
+                }
+                line += string(maxWidth - line.size(), ' ');
+            } else {
+                int num_space = maxWidth - line_length;
+                int num_space_between = num_space / (j - i - 1);
+                int num_extra_space = num_space % (j - i - 1);
+                for (int k = i + 1; k < j; k++) {
+                    line += string(num_space_between, ' ');
+                    if (num_extra_space > 0) {
+                        line += " ";
+                        num_extra_space--;
+                    }
+                    line += " " + words[k];
+                }
+            }
+            res.push_back(line);
+            i = j;
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        string s = "";
+        int len = 0;
+        for (int i = 0; i < words.size(); i++) {
+            if (len + words[i].size() + s.size() <= maxWidth) {
+                s += words[i];
+                len += words[i].size();
+            } else {
+                res.push_back(justify(s, len, maxWidth));
+                s = words[i];
+                len = words[i].size();
+            }
+        }
+        res.push_back(s);
+        res[res.size() - 1] += string(maxWidth - res[res.size() - 1].size(), ' ');
+        return res;
+    }
+    string justify(string s, int len, int maxWidth) {
+        int n = s.size();
+        if (n == 1) return s + string(maxWidth - len, ' ');
+        int spaces = maxWidth - len;
+        int space = spaces / (n - 1);
+        int extra = spaces % (n - 1);
+        string res = "";
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] == ' ') {
+                res += string(space, ' ');
+                if (extra > 0) {
+                    res += ' ';
+                    extra--;
+                }
+            } else {
+                res += s[i];
+            }
+        }
+        return res;

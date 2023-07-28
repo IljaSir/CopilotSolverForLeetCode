@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n];
+        if (k == 0) {
+            for (int i = 0; i < n; i++) {
+                res[i] = nums[i];
+            }
+            return res;
+        }
+        int[] preSum = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+        for (int i = 0; i < n; i++) {
+            int left = Math.max(i - k, 0);
+            int right = Math.min(i + k, n - 1);
+            int count = right - left + 1;
+            if (count < 2 * k + 1) {
+                res[i] = -1;
+            } else {
+                res[i] = (preSum[right + 1] - preSum[left]) / count;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n];
+        preSum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i];
+        }
+        int[] res = new int[n];
+        for (int i = 0; i < n; i++) {
+            int left = Math.max(0, i - k);
+            int right = Math.min(n - 1, i + k);
+            int sum = preSum[right];
+            if (left > 0) {
+                sum -= preSum[left - 1];
+            }
+            if (right - left + 1 < 2 * k + 1) {
+                res[i] = -1;
+            } else {
+                res[i] = sum / (right - left + 1);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] avgs = new int[n];
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (i >= k) {
+                sum -= nums[i - k];
+            }
+            avgs[i] = (i < k - 1) ? -1 : sum / k;
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            sum += nums[i];
+            if (i < n - k) {
+                sum -= nums[i + k];
+            }
+            avgs[i] = (i > n - k) ? -1 : Math.max(avgs[i], sum / k);
+        }
+        return avgs;
+
+=======
+
+        int n = nums.length;
+        int[] avgs = new int[n];
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            if (i <= k) {
+                sum += nums[i];
+                avgs[i] = i == k ? sum / (k + 1) : -1;
+            } else if (i <= n - k - 1) {
+                sum += nums[i];
+                sum -= nums[i - k - 1];
+                avgs[i] = sum / (k + 1);
+            } else {
+                sum -= nums[i - k - 1];
+                avgs[i] = -1;
+            }
+        }
+        return avgs;
+
+=======
+
+        int[] avgs = new int[nums.length];
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i <= k) {
+                sum += nums[i];
+                if (i == k) {
+                    avgs[i] = sum / (k + 1);
+                }
+            } else if (i >= nums.length - k) {
+                avgs[i] = -1;
+            } else {
+                sum += nums[i];
+                sum -= nums[i - k - 1];
+                avgs[i] = sum / (k + 1);
+            }
+        }
+        return avgs;
+
+=======
+
+        int[] avgs = new int[nums.length];
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (i >= k) {
+                sum -= nums[i - k];
+            }
+            avgs[i] = i < k - 1 ? -1 : sum / k;
+        }
+        return avgs;
+
+=======
+
+        int[] result = new int[nums.length];
+        int left = 0;
+        int right = 0;
+        int sum = 0;
+        int count = 0;
+        while (right < nums.length) {
+            sum += nums[right];
+            count++;
+            if (right - left + 1 > 2 * k + 1) {
+                sum -= nums[left];
+                count--;
+                left++;
+            }
+            if (right - left + 1 == 2 * k + 1) {
+                result[left + k] = sum / count;
+            }
+            right++;
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n];
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            int l = i - k;
+            int r = i + k;
+            if (l < 0) {
+                sum += nums[i];
+                if (r >= n) {
+                    res[i] = sum / (r - l);
+                }
+            } else if (r >= n) {
+                sum += nums[i];
+                res[i] = sum / (r - l);
+            } else {
+                sum += nums[r] - nums[l];
+                res[i] = sum / (r - l);
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[nums.length];
+        int sum = 0, count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i - k - 1 >= 0) {
+                sum -= nums[i - k - 1];
+                count--;
+            }
+            if (i + k < nums.length) {
+                sum += nums[i + k];
+                count++;
+            }
+            res[i] = count == 0 ? -1 : sum / count;
+        }
+        return res;
+
+=======
+
+        int[] averages = new int[nums.length];
+        int sum = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(i <= k) {
+                sum += nums[i];
+                if(i == k) {
+                    averages[i - k] = sum / (k + 1);
+                }
+            } else if(i > k && i < nums.length - k) {
+                sum += nums[i];
+                sum -= nums[i - k - 1];
+                averages[i - k] = sum / (2 * k + 1);
+            } else if(i >= nums.length - k) {
+                sum -= nums[i - k - 1];
+                averages[i - k] = sum / (nums.length - i + k);
+            }
+        }
+        return averages;

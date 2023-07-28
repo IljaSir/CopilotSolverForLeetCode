@@ -1,0 +1,247 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        
+        def backtrack(index, prev_operand, curr_operand, value, string):
+            # Done processing all the digits in num
+            if index == N:
+                if value == target and curr_operand == 0:
+                    output.append("".join(string[1:]))
+                return
+
+            # Extending the current operand by one digit
+            curr_operand = curr_operand * 10 + int(num[index])
+            str_op = str(curr_operand)
+
+            # To avoid cases where we have 1 + 05 or 1 * 05 since 05 won't be a
+            # valid operand. Hence this check
+            if curr_operand > 0:
+                # NO OP recursion
+                backtrack(index + 1, prev_operand, curr_operand, value, string)
+
+            # ADDITION
+            string.append("+"); string.append(str_op)
+            backtrack(index + 1, curr_operand, 0, value + curr_operand, string)
+            string.pop(); string.pop()
+
+            # Can subtract or multiply only if there are some previous operands
+            if string:
+                # SUBTRACTION
+                string.append("-"); string.append(str_op)
+                backtrack(index + 1, -curr_operand, 0, value - curr_operand, string)
+                string.pop(); string.pop()
+
+                # MULTIPLICATION
+                string.append("*"); string.append(str_op)
+                backtrack(index + 1, curr_operand * prev_operand, 0, value - prev_operand + (curr_operand * prev_operand), string)
+                string.pop(); string.pop()
+
+        N = len(num)
+        output, string = [], []
+        backtrack(0, 0, 0, 0, string)
+        return output
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(num, target, path, value, last):
+            if not num and value == target:
+                res.append(path)
+                return
+            for i in range(1, len(num) + 1):
+                curr = num[:i]
+                if len(curr) > 1 and curr[0] == '0':
+                    return
+                next = num[i:]
+                if path:
+                    dfs(next, target, path + '+' + curr, value + int(curr), int(curr))
+                    dfs(next, target, path + '-' + curr, value - int(curr), -int(curr))
+                    dfs(next, target, path + '*' + curr, value - last + last * int(curr), last * int(curr))
+                else:
+                    dfs(next, target, curr, int(curr), int(curr))
+        res = []
+        dfs(num, target, '', 0, 0)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        
+        def helper(num, target, path, pos, value, prev):
+            if pos == len(num):
+                if value == target:
+                    res.append(path)
+                return
+            for i in range(pos, len(num)):
+                if i != pos and num[pos] == '0':
+                    break
+                curr = int(num[pos:i+1])
+                if pos == 0:
+                    helper(num, target, path+str(curr), i+1, curr, curr)
+                else:
+                    helper(num, target, path+'+'+str(curr), i+1, value+curr, curr)
+                    helper(num, target, path+'-'+str(curr), i+1, value-curr, -curr)
+                    helper(num, target, path+'*'+str(curr), i+1, value-prev+prev*curr, prev*curr)
+        res = []
+        helper(num, target, '', 0, 0, 0)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(num, target, path, prev, cur, res):
+            if not num and cur == target:
+                res.append(path)
+                return
+            for i in range(1, len(num) + 1):
+                s = num[:i]
+                if len(s) > 1 and s[0] == '0':
+                    return
+                n = int(s)
+                dfs(num[i:], target, path + '+' + s, n, cur + n, res)
+                dfs(num[i:], target, path + '-' + s, -n, cur - n, res)
+                dfs(num[i:], target, path + '*' + s, prev * n, cur - prev + prev * n, res)
+        res = []
+        for i in range(1, len(num) + 1):
+            s = num[:i]
+            if len(s) > 1 and s[0] == '0':
+                return res
+            dfs(num[i:], target, s, int(s), int(s), res)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        
+        def dfs(num, target, path, value, prev):
+            if not num and value == target:
+                res.append(path)
+                return
+            for i in range(1, len(num)+1):
+                curr = num[:i]
+                if len(curr) > 1 and curr[0] == '0':
+                    return
+                curr = int(curr)
+                rest = num[i:]
+                if not path:
+                    dfs(rest, target, curr, curr, curr)
+                else:
+                    dfs(rest, target, path + '+' + str(curr), value + curr, curr)
+                    dfs(rest, target, path + '-' + str(curr), value - curr, -curr)
+                    dfs(rest, target, path + '*' + str(curr), value - prev + prev * curr, prev * curr)
+        
+        res = []
+        dfs(num, target, '', 0, 0)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(num, target, prev, cur, value, expr):
+            if not num and value == target:
+                res.append(expr)
+                return
+            for i in range(1, len(num) + 1):
+                cur = num[:i]
+                if len(cur) > 1 and cur[0] == '0':
+                    return
+                nxt = num[i:]
+                if expr:
+                    dfs(nxt, target, int(cur), int(cur), value + int(cur), expr + '+' + cur)
+                    dfs(nxt, target, -int(cur), -int(cur), value - int(cur), expr + '-' + cur)
+                    dfs(nxt, target, prev * int(cur), prev * int(cur), value - prev + prev * int(cur), expr + '*' + cur)
+                else:
+                    dfs(nxt, target, int(cur), int(cur), int(cur), cur)
+        res = []
+        dfs(num, target, 0, 0, 0, '')
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(num, target, path, res, prev, cur):
+            if not num and cur == target:
+                res.append(path)
+                return
+            for i in range(1, len(num) + 1):
+                curr = num[:i]
+                if len(curr) > 1 and curr[0] == '0':
+                    return
+                curr = int(curr)
+                if not path:
+                    dfs(num[i:], target, curr, res, curr, curr)
+                else:
+                    dfs(num[i:], target, path + '+' + str(curr), res, curr, cur + curr)
+                    dfs(num[i:], target, path + '-' + str(curr), res, -curr, cur - curr)
+                    dfs(num[i:], target, path + '*' + str(curr), res, prev * curr, cur - prev + prev * curr)
+        res = []
+        dfs(num, target, '', res, 0, 0)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(s, path, val, last):
+            if not s:
+                if val == target:
+                    res.append(path)
+                return
+            for i in range(1, len(s)+1):
+                if i > 1 and s[0] == '0':
+                    break
+                cur = int(s[:i])
+                if not path:
+                    dfs(s[i:], str(cur), cur, cur)
+                else:
+                    dfs(s[i:], path + '+' + str(cur), val + cur, cur)
+                    dfs(s[i:], path + '-' + str(cur), val - cur, -cur)
+                    dfs(s[i:], path + '*' + str(cur), val - last + last * cur, last * cur)
+        res = []
+        dfs(num, '', 0, 0)
+        return res
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        def dfs(num, target, path, result, pos, value, prev):
+            if pos == len(num):
+                if target == value:
+                    result.append(path)
+                return
+            for i in range(pos, len(num)):
+                if i != pos and num[pos] == '0':
+                    break
+                cur = int(num[pos:i+1])
+                if pos == 0:
+                    dfs(num, target, path + str(cur), result, i + 1, cur, cur)
+                else:
+                    dfs(num, target, path + '+' + str(cur), result, i + 1, value + cur, cur)
+                    dfs(num, target, path + '-' + str(cur), result, i + 1, value - cur, -cur)
+                    dfs(num, target, path + '*' + str(cur), result, i + 1, value - prev + prev * cur, prev * cur)
+        result = []
+        dfs(num, target, '', result, 0, 0, 0)
+        return result
+
+=======
+
+def addOperators(self, num: str, target: int) -> List[str]:
+        
+        def dfs(num, target, val, prev, cur, res):
+            if not num and val == target:
+                res.append(cur)
+                return
+            for i in range(1, len(num)+1):
+                curr = num[:i]
+                if curr[0] == '0' and len(curr) > 1:
+                    continue
+                if not cur:
+                    dfs(num[i:], target, int(curr), int(curr), curr, res)
+                else:
+                    dfs(num[i:], target, val+int(curr), int(curr), cur+'+'+curr, res)
+                    dfs(num[i:], target, val-int(curr), -int(curr), cur+'-'+curr, res)
+                    dfs(num[i:], target, val-prev+prev*int(curr), prev*int(curr), cur+'*'+curr, res)
+        res = []
+        dfs(num, target, 0, 0, '', res)
+        return res

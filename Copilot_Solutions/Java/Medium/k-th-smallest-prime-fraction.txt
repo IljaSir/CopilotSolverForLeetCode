@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> {
+            return arr[a[0]] * arr[b[1]] - arr[a[1]] * arr[b[0]];
+        });
+        for (int i = 0; i < n - 1; i++) {
+            pq.add(new int[]{i, n - 1});
+        }
+        while (k-- > 1) {
+            int[] cur = pq.poll();
+            if (cur[1] - 1 > cur[0]) {
+                cur[1]--;
+                pq.add(cur);
+            }
+        }
+        int[] cur = pq.poll();
+        return new int[]{arr[cur[0]], arr[cur[1]]};
+
+=======
+
+        int n = arr.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (arr[a[0]] * arr[b[1]]) - (arr[a[1]] * arr[b[0]]));
+        for (int i = 0; i < n - 1; i++) {
+            pq.add(new int[] {i, n - 1});
+        }
+        int[] ans = new int[2];
+        while (k-- > 0) {
+            int[] p = pq.poll();
+            ans[0] = arr[p[0]];
+            ans[1] = arr[p[1]];
+            if (p[1] - 1 > p[0]) {
+                pq.add(new int[] {p[0], p[1] - 1});
+            }
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[2];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (arr[a[0]] * arr[b[1]] - arr[b[0]] * arr[a[1]]));
+        for (int i = 0; i < arr.length - 1; i++) {
+            pq.offer(new int[]{i, arr.length - 1});
+        }
+        while (k-- > 0) {
+            int[] cur = pq.poll();
+            res[0] = arr[cur[0]];
+            res[1] = arr[cur[1]];
+            if (cur[1] - 1 > cur[0]) {
+                cur[1]--;
+                pq.offer(cur);
+            }
+        }
+        return res;
+
+=======
+
+        int n = arr.length;
+        int[] result = new int[2];
+        double low = 0, high = 1;
+        while (low < high) {
+            double mid = (low + high) / 2;
+            int[] count = new int[1];
+            int[] p = new int[1];
+            int[] q = new int[1];
+            p[0] = 0;
+            q[0] = 1;
+            for (int i = 0, j = 0; i < n; i++) {
+                while (j < n && arr[i] > mid * arr[j]) {
+                    j++;
+                }
+                count[0] += n - j;
+                if (j < n && p[0] * arr[j] < q[0] * arr[i]) {
+                    p[0] = arr[i];
+                    q[0] = arr[j];
+                }
+            }
+            if (count[0] == k) {
+                result[0] = p[0];
+                result[1] = q[0];
+                break;
+            } else if (count[0] < k) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+        }
+        return result;
+
+=======
+
+        int n = arr.length;
+        double left = 0, right = 1;
+        while (true) {
+            double mid = (left + right) / 2;
+            int count = 0, p = 0, q = 1;
+            for (int i = 0, j = 0; i < n; i++) {
+                while (j < n && arr[i] > mid * arr[j]) j++;
+                count += n - j;
+                if (j < n && p * arr[j] < q * arr[i]) {
+                    p = arr[i];
+                    q = arr[j];
+                }
+            }
+            if (count == k) return new int[] {p, q};
+            if (count > k) right = mid;
+            else left = mid;
+        }
+
+=======
+
+        double lo = 0.0, hi = 1.0;
+        while (hi - lo > 1e-9) {
+            double mi = (lo + hi) / 2.0;
+            int count = 0, p = 0, q = 1;
+            for (int i = 0, j = 1; j < arr.length; ++j) {
+                while (i < j && arr[i] < mi * arr[j]) ++i;
+                count += j - i;
+                if (i < j && p * arr[j] < q * arr[i]) {
+                    p = arr[i];
+                    q = arr[j];
+                }
+            }
+            if (count == k) return new int[]{p, q};
+            if (count > k) hi = mi;
+            else lo = mi;
+        }
+        return new int[]{0, 0};
+
+=======
+
+        int[] ans = new int[2];
+        double l = 0.0, r = 1.0;
+        while (l < r) {
+            double mid = l + (r - l) / 2;
+            int cnt = 0;
+            int p = 0;
+            for (int i = 0, j = 1; j < arr.length; ) {
+                if (arr[i] * 1.0 / arr[j] < mid) {
+                    if (p * arr[j] < arr[i]) {
+                        p = arr[i];
+                        ans[0] = arr[i];
+                        ans[1] = arr[j];
+                    }
+                    cnt += arr.length - j;
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+            if (cnt >= k) {
+                r = mid;
+            } else {
+                l = mid;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        double l = 0, r = 1;
+        double[] res = new double[2];
+        while (l < r) {
+            double m = (l + r) / 2;
+            int[] p = new int[]{-1, 1};
+            int count = 0;
+            for (int i = 0, j = 1; i < n - 1; i++) {
+                while (j < n && arr[i] > m * arr[j]) j++;
+                if (j == n) break;
+                count += n - j;
+                if (p[0] == -1 || arr[i] * p[1] > arr[j] * p[0]) {
+                    p[0] = arr[i];
+                    p[1] = arr[j];
+                }
+            }
+            if (count == k) {
+                res[0] = p[0];
+                res[1] = p[1];
+                break;
+            }
+            if (count > k) r = m;
+            else l = m;
+        }
+        return new int[]{(int)res[0], (int)res[1]};
+
+=======
+
+        int n = arr.length;
+        int[] res = new int[]{0, 1};
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>(){
+            @Override
+            public int compare(int[] a, int[] b){
+                return arr[a[0]] * arr[b[1]] - arr[a[1]] * arr[b[0]];
+            }
+        });
+        for(int i = 0; i < n - 1; i++){
+            pq.add(new int[]{i, n - 1});
+        }
+        while(k > 0){
+            int[] curr = pq.poll();
+            res[0] = arr[curr[0]];
+            res[1] = arr[curr[1]];
+            if(curr[1] - 1 > curr[0]){
+                pq.add(new int[]{curr[0], curr[1] - 1});
+            }
+            k--;
+        }
+        return res;
+
+=======
+
+        int n = arr.length;
+        // min heap
+        PriorityQueue<int[]> q = new PriorityQueue<>((a, b) -> {
+            return arr[a[0]] * arr[b[1]] - arr[b[0]] * arr[a[1]];
+        });
+        for (int i = 0; i < n - 1; i++) {
+            q.offer(new int[]{i, n - 1});
+        }
+        while (k > 1) {
+            int[] cur = q.poll();
+            if (cur[1] - 1 > cur[0]) {
+                cur[1]--;
+                q.offer(cur);
+            }
+            k--;
+        }
+        int[] res = q.poll();
+        return new int[]{arr[res[0]], arr[res[1]]};

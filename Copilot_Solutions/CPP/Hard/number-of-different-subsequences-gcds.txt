@@ -1,0 +1,200 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.size();
+        int mx = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(mx + 1, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= mx; i++) {
+            if (cnt[i] > 0) {
+                ans++;
+            }
+            int g = 0;
+            for (int j = i + i; j <= mx; j += i) {
+                if (cnt[j] > 0) {
+                    if (g == 0) {
+                        g = j;
+                    } else {
+                        g = __gcd(g, j);
+                    }
+                }
+            }
+            if (g > 0 && __gcd(g, i) == i) {
+                ans--;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxNum = 0;
+        for (int i = 0; i < n; i++) {
+            maxNum = max(maxNum, nums[i]);
+        }
+        vector<int> cnt(maxNum + 1, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= maxNum; i++) {
+            int g = 0;
+            for (int j = i; j <= maxNum; j += i) {
+                if (cnt[j]) {
+                    g = __gcd(g, j);
+                }
+            }
+            if (g == i) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(n + 1);
+        for (int x: nums) {
+            cnt[x]++;
+        }
+        vector<int> dp(n + 1);
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            if (cnt[i]) {
+                ans++;
+            }
+            for (int j = 2 * i; j <= n; j += i) {
+                if (cnt[j]) {
+                    ans += !dp[i];
+                }
+                dp[j] = __gcd(dp[j], i);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int mx = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(mx + 1, 0);
+        for (int x : nums) {
+            cnt[x]++;
+        }
+        int res = 0;
+        for (int g = 1; g <= mx; ++g) {
+            int sum = 0;
+            for (int k = g; k <= mx; k += g) {
+                sum += cnt[k];
+            }
+            if (sum > 0) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int maxNum = *max_element(nums.begin(), nums.end());
+        vector<int> freq(maxNum + 1, 0);
+        for (int i = 0; i < n; i++) {
+            freq[nums[i]]++;
+        }
+        int ans = 0;
+        for (int i = 1; i <= maxNum; i++) {
+            if (freq[i] == 0) {
+                continue;
+            }
+            ans++;
+            for (int j = i + i; j <= maxNum; j += i) {
+                if (freq[j] > 0) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int max_num = *max_element(nums.begin(), nums.end());
+        vector<bool> exist(max_num + 1);
+        for (int num : nums) {
+            exist[num] = true;
+        }
+        int ans = 0;
+        for (int i = 1; i <= max_num; ++i) {
+            int cnt = 0;
+            for (int j = i; j <= max_num; j += i) {
+                if (exist[j]) {
+                    ++cnt;
+                }
+            }
+            if (cnt > 1) {
+                ++ans;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size(), ans = 0;
+        vector<int> cnt(200001);
+        for (int x : nums) cnt[x]++;
+        for (int i = 1; i <= 200000; i++) {
+            int g = 0;
+            for (int j = i; j <= 200000; j += i) {
+                g = __gcd(g, cnt[j]);
+            }
+            ans += g;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxVal = *max_element(nums.begin(), nums.end());
+        vector<int> cnt(maxVal + 1);
+        for (auto& num : nums)
+            cnt[num]++;
+        int res = 0;
+        for (int g = 1; g <= maxVal; ++g) {
+            int cur = 0;
+            for (int i = g; i <= maxVal; i += g) {
+                if (cnt[i])
+                    cur = __gcd(cur, i);
+                if (cur == g) {
+                    ++res;
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int maxn = 2e5+5;
+        vector<int> cnt(maxn, 0);
+        for (auto x : nums) {
+            cnt[x]++;
+        }
+        vector<int> dp(maxn, 0);
+        for (int i = 1; i < maxn; i++) {
+            if (cnt[i]) {
+                for (int j = i; j < maxn; j += i) {
+                    dp[j] = __gcd(dp[j], i);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < maxn; i++) {
+            if (dp[i] == i) {
+                ans++;
+            }
+        }
+        return ans;

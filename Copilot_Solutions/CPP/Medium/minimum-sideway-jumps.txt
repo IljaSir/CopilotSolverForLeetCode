@@ -1,0 +1,193 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = obstacles.size();
+        vector<vector<int>> dp(n, vector<int>(3, 1e9));
+        dp[0][1] = 0;
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if (obstacles[i] != j + 1) {
+                    dp[i][j] = min(dp[i][j], dp[i - 1][j]);
+                }
+            }
+            for (int j = 0; j < 3; ++j) {
+                if (obstacles[i] != j + 1) {
+                    for (int k = 0; k < 3; ++k) {
+                        if (j != k) {
+                            dp[i][j] = min(dp[i][j], dp[i][k] + 1);
+                        }
+                    }
+                }
+            }
+        }
+        return min({dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]});
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp{1, 0, 1};
+        for (int i = 1; i < n; ++i) {
+            vector<int> ndp(3, INT_MAX);
+            for (int j = 0; j < 3; ++j) {
+                if (obstacles[i] == j + 1) {
+                    continue;
+                }
+                ndp[j] = min(ndp[j], dp[j]);
+                for (int k = 0; k < 3; ++k) {
+                    if (j == k || obstacles[i] == k + 1) {
+                        continue;
+                    }
+                    ndp[j] = min(ndp[j], dp[k] + 1);
+                }
+            }
+            dp = move(ndp);
+        }
+        return *min_element(dp.begin(), dp.end());
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp(4, 1);
+        dp[obstacles[0]] = INT_MAX;
+        for (int i = 1; i < n; ++i) {
+            vector<int> ndp(4, INT_MAX);
+            for (int j = 1; j <= 3; ++j) {
+                if (obstacles[i] != j) {
+                    ndp[j] = min(ndp[j], dp[j]);
+                }
+            }
+            for (int j = 1; j <= 3; ++j) {
+                if (obstacles[i] != j) {
+                    for (int k = 1; k <= 3; ++k) {
+                        if (j != k) {
+                            ndp[k] = min(ndp[k], dp[j] + 1);
+                        }
+                    }
+                }
+            }
+            dp = ndp;
+        }
+        return *min_element(dp.begin() + 1, dp.end());
+
+=======
+
+        int n = obstacles.size();
+        int f[n][3];
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < 3; j++) {
+                f[i][j] = 0x3f3f3f3f;
+            }
+        }
+        f[0][1] = 0;
+        for(int i = 1; i < n; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(obstacles[i] == j + 1) {
+                    f[i][j] = 0x3f3f3f3f;
+                } else {
+                    f[i][j] = f[i - 1][j];
+                }
+            }
+            for(int j = 0; j < 3; j++) {
+                if(obstacles[i] == j + 1) {
+                    continue;
+                }
+                for(int k = 0; k < 3; k++) {
+                    if(k == j || obstacles[i] == k + 1) {
+                        continue;
+                    }
+                    f[i][j] = min(f[i][j], f[i][k] + 1);
+                }
+            }
+        }
+        return min({f[n - 1][0], f[n - 1][1], f[n - 1][2]});
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp(4, 0);
+        for (int i = 1; i < n; ++i) {
+            if (obstacles[i] == 0) {
+                dp[1] = min(dp[1], min(dp[2], dp[3]) + 1);
+                dp[2] = min(dp[1], min(dp[2], dp[3]) + 1);
+                dp[3] = min(dp[1], min(dp[2], dp[3]) + 1);
+            } else {
+                dp[obstacles[i]] = INT_MAX;
+                dp[1] = min(dp[1], min(dp[2], dp[3]) + 1);
+                dp[2] = min(dp[1], min(dp[2], dp[3]) + 1);
+                dp[3] = min(dp[1], min(dp[2], dp[3]) + 1);
+            }
+        }
+        return min(dp[1], min(dp[2], dp[3]));
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp(3, 1);
+        for (int i = 1; i < n; ++i) {
+            if (obstacles[i] == 0) {
+                for (int j = 0; j < 3; ++j) dp[j] = min({dp[0], dp[1], dp[2]}) + (j == 1 ? 0 : 1);
+            } else {
+                int j = obstacles[i] - 1;
+                dp[j] = INT_MAX;
+                for (int k = 0; k < 3; ++k) if (k != j) dp[j] = min(dp[j], dp[k] + (j == 1 ? 0 : 1));
+            }
+        }
+        return min({dp[0], dp[1], dp[2]});
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp(4, 0);
+        for (int i = 1; i < n; ++i) {
+            int obs = obstacles[i];
+            if (obs) dp[obs] = INT_MAX;
+            for (int j = 1; j <= 3; ++j) {
+                if (j != obs) {
+                    dp[j] = min(dp[j], dp[j-1]+1);
+                    dp[j] = min(dp[j], dp[j+1]+1);
+                }
+            }
+        }
+        return min(dp[1], min(dp[2], dp[3]));
+
+=======
+
+        int res = 0;
+        int n = obstacles.size();
+        int pos[3] = {1, 2, 3};
+        for (int i = 0; i < n - 1; i++) {
+            if (obstacles[i] == 0) {
+                continue;
+            }
+            int lane = obstacles[i] - 1;
+            int t = pos[lane];
+            pos[lane] = 6 - pos[lane] - pos[(lane + 1) % 3];
+            if (pos[lane] == t) {
+                res++;
+                pos[lane] = 6 - t - pos[(lane + 2) % 3];
+            }
+        }
+        return res;
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp(3, 0);
+        for (int i = 1; i < n; i++) {
+            vector<int> cur(3, 0);
+            for (int j = 0; j < 3; j++) {
+                if (obstacles[i] == j + 1) {
+                    cur[j] = INT_MAX;
+                } else {
+                    cur[j] = dp[j];
+                    for (int k = 0; k < 3; k++) {
+                        if (k == j) continue;
+                        if (obstacles[i] == k + 1) continue;
+                        cur[j] = min(cur[j], dp[k] + 1);
+                    }
+                }
+            }
+            dp = cur;
+        }
+        return *min_element(dp.begin(), dp.end());

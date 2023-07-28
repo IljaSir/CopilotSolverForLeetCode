@@ -1,0 +1,207 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> powers;
+        int p = 1;
+        while (n) {
+            if (n & 1) {
+                powers.push_back(p);
+            }
+            p <<= 1;
+            n >>= 1;
+        }
+        vector<int> answers;
+        for (auto& q : queries) {
+            int64_t ans = 1;
+            for (int i = q[0]; i <= q[1]; ++i) {
+                ans *= powers[i];
+                ans %= 1000000007;
+            }
+            answers.push_back(ans);
+        }
+        return answers;
+
+=======
+
+        vector<int> powers;
+        for (int i = 0; i < 31; i++) {
+            if (n & (1 << i)) {
+                powers.push_back(1 << i);
+            }
+        }
+        vector<int> ans;
+        for (auto q : queries) {
+            int prod = 1;
+            for (int i = q[0]; i <= q[1]; i++) {
+                prod = (prod * 1LL * powers[i]) % 1000000007;
+            }
+            ans.push_back(prod);
+        }
+        return ans;
+
+=======
+
+        vector<int> powers;
+        int p = 1;
+        while (n > 0) {
+            if (n & 1) {
+                powers.push_back(p);
+            }
+            p <<= 1;
+            n >>= 1;
+        }
+        int m = powers.size();
+        vector<int> sums(m + 1, 1);
+        for (int i = 0; i < m; ++i) {
+            sums[i + 1] = (sums[i] * (long long)powers[i]) % 1000000007;
+        }
+        vector<int> ans;
+        for (auto& q : queries) {
+            int i = q[0];
+            int j = q[1];
+            ans.push_back((sums[j + 1] * (long long)pow(sums[i], 1000000005)) % 1000000007);
+        }
+        return ans;
+
+=======
+
+        vector<int> powers;
+        for (int i = 0; i < 31; i++) {
+            if (n & (1 << i)) {
+                powers.push_back(1 << i);
+            }
+        }
+        int m = powers.size();
+        vector<int> prefix(m + 1);
+        for (int i = 1; i <= m; i++) {
+            prefix[i] = prefix[i - 1] + powers[i - 1];
+        }
+        vector<int> ret;
+        for (auto &query : queries) {
+            int l = query[0], r = query[1];
+            int p = prefix[r + 1] - prefix[l];
+            ret.push_back(p);
+        }
+        return ret;
+
+=======
+
+        vector<int> powers;
+        for (int i = 0; i <= 30; ++i) {
+            if (n & (1 << i)) {
+                powers.push_back(1 << i);
+            }
+        }
+        int m = queries.size();
+        vector<int> ans(m);
+        for (int i = 0; i < m; ++i) {
+            long long prod = 1;
+            for (int j = queries[i][0]; j <= queries[i][1]; ++j) {
+                prod = prod * powers[j] % 1000000007;
+            }
+            ans[i] = prod;
+        }
+        return ans;
+
+=======
+
+        vector<int> powers;
+        int num = 1;
+        while (n) {
+            if (n & 1) {
+                powers.push_back(num);
+            }
+            num <<= 1;
+            n >>= 1;
+        }
+        vector<int> res;
+        for (auto& q: queries) {
+            int left = q[0], right = q[1];
+            int prod = 1;
+            for (int i = left; i <= right; ++i) {
+                prod = (long long) prod * powers[i] % 1000000007;
+            }
+            res.push_back(prod);
+        }
+        return res;
+
+=======
+
+        vector<int> powers;
+        int p = 1;
+        while (p <= n) {
+            powers.push_back(p);
+            p *= 2;
+        }
+        vector<int> ans;
+        for (auto& q: queries) {
+            int product = 1;
+            for (int i = q[0]; i <= q[1]; ++i) {
+                product = (product * powers[i]) % (1000000000 + 7);
+            }
+            ans.push_back(product);
+        }
+        return ans;
+
+=======
+
+        vector<int> powers;
+        while (n > 0) {
+            int p = 1;
+            while (p <= n) {
+                p <<= 1;
+            }
+            powers.push_back(p >> 1);
+            n -= p >> 1;
+        }
+        vector<int> res;
+        for (auto& q : queries) {
+            int p = 1;
+            for (int i = q[0]; i <= q[1]; ++i) {
+                p *= powers[i];
+                p %= 1000000007;
+            }
+            res.push_back(p);
+        }
+        return res;
+
+=======
+
+        vector<int> powers;
+        while (n) {
+            powers.push_back(n & 1);
+            n >>= 1;
+        }
+        int m = powers.size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        for (int i = 0; i < m; i++) {
+            dp[i][i] = powers[i];
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = i + 1; j < m; j++) {
+                dp[i][j] = dp[i][j - 1] * dp[j][j];
+            }
+        }
+        vector<int> res;
+        for (auto& q: queries) {
+            res.push_back(dp[q[0]][q[1]]);
+        }
+        return res;
+
+=======
+
+        vector<int> powers;
+        while(n) {
+            powers.push_back(n & -n);
+            n -= n & -n;
+        }
+        vector<int> res;
+        for(auto& q: queries) {
+            long long p = 1;
+            for(int i = q[0]; i <= q[1]; ++i) {
+                p = p * powers[i] % 1000000007;
+            }
+            res.push_back(p);
+        }
+        return res;

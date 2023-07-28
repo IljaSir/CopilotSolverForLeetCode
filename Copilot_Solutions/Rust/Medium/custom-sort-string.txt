@@ -1,0 +1,183 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = [0; 26];
+        for c in s.chars() {
+            count[c as usize - 'a' as usize] += 1;
+        }
+        let mut result = String::new();
+        for c in order.chars() {
+            let i = c as usize - 'a' as usize;
+            if count[i] > 0 {
+                result.push_str(&c.to_string().repeat(count[i]));
+                count[i] = 0;
+            }
+        }
+        for (i, &n) in count.iter().enumerate() {
+            if n > 0 {
+                result.push_str(&((i as u8 + 'a' as u8) as char).to_string().repeat(n));
+            }
+        }
+        result
+
+=======
+
+        let mut count = [0; 26];
+        for c in s.chars() {
+            count[(c as u8 - b'a') as usize] += 1;
+        }
+        let mut ret = String::new();
+        for c in order.chars() {
+            let idx = (c as u8 - b'a') as usize;
+            while count[idx] > 0 {
+                ret.push(c);
+                count[idx] -= 1;
+            }
+        }
+        for c in 'a' as u8..='z' as u8 {
+            let idx = (c - b'a') as usize;
+            while count[idx] > 0 {
+                ret.push(c as char);
+                count[idx] -= 1;
+            }
+        }
+        ret
+
+=======
+
+        let mut map = vec![0; 26];
+        for c in s.chars() {
+            map[c as usize - 'a' as usize] += 1;
+        }
+        let mut res = String::new();
+        for c in order.chars() {
+            let cnt = map[c as usize - 'a' as usize];
+            for _ in 0..cnt {
+                res.push(c);
+            }
+        }
+        for c in 'a' as u8..'z' as u8 + 1 {
+            let cnt = map[c as usize - 'a' as usize];
+            for _ in 0..cnt {
+                res.push(c as char);
+            }
+        }
+        res
+
+=======
+
+        let mut order_map = std::collections::HashMap::new();
+        for (i, c) in order.chars().enumerate() {
+            order_map.insert(c, i);
+        }
+        let mut s_chars: Vec<char> = s.chars().collect();
+        s_chars.sort_by(|a, b| {
+            match (order_map.get(a), order_map.get(b)) {
+                (Some(a), Some(b)) => a.cmp(b),
+                (Some(_), None) => std::cmp::Ordering::Less,
+                (None, Some(_)) => std::cmp::Ordering::Greater,
+                (None, None) => std::cmp::Ordering::Equal,
+            }
+        });
+        s_chars.into_iter().collect()
+
+=======
+
+        let mut order_map = std::collections::HashMap::new();
+        for (i, c) in order.chars().enumerate() {
+            order_map.insert(c, i);
+        }
+        let mut s: Vec<char> = s.chars().collect();
+        s.sort_unstable_by_key(|c| order_map.get(c).unwrap_or(&26));
+        s.into_iter().collect()
+
+=======
+
+        let mut ans = String::new();
+        let mut count = [0; 26];
+        for c in s.chars() {
+            count[c as usize - 'a' as usize] += 1;
+        }
+        for c in order.chars() {
+            for _ in 0..count[c as usize - 'a' as usize] {
+                ans.push(c);
+            }
+            count[c as usize - 'a' as usize] = 0;
+        }
+        for c in 'a'..='z' {
+            for _ in 0..count[c as usize - 'a' as usize] {
+                ans.push(c);
+            }
+        }
+        ans
+
+=======
+
+        let mut arr = [0; 26];
+        let mut res = String::new();
+        for c in s.chars() {
+            arr[c as usize - 'a' as usize] += 1;
+        }
+        for c in order.chars() {
+            let i = c as usize - 'a' as usize;
+            if arr[i] > 0 {
+                for _ in 0..arr[i] {
+                    res.push(c);
+                }
+                arr[i] = 0;
+            }
+        }
+        for i in 0..arr.len() {
+            if arr[i] > 0 {
+                for _ in 0..arr[i] {
+                    res.push((i + 'a' as usize) as u8 as char);
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut order = order.into_bytes();
+        let mut s = s.into_bytes();
+        order.sort();
+        s.sort();
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = 0;
+        let mut res = vec![0; s.len()];
+        while i < order.len() {
+            while j < s.len() && s[j] == order[i] {
+                res[k] = s[j];
+                j += 1;
+                k += 1;
+            }
+            i += 1;
+        }
+        while j < s.len() {
+            res[k] = s[j];
+            j += 1;
+            k += 1;
+        }
+        String::from_utf8(res).unwrap()
+
+=======
+
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut order = order.chars().collect::<Vec<char>>();
+        s.sort_by_key(|&c| order.iter().position(|&x| x == c).unwrap_or(27));
+        s.iter().collect()
+
+=======
+
+        let mut order = order.chars().collect::<Vec<char>>();
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut order_map = vec![0; 26];
+        for i in 0..order.len() {
+            order_map[order[i] as usize - 97] = i;
+        }
+        s.sort_by(|a, b| order_map[a as usize - 97].cmp(&order_map[b as usize - 97]));
+        s.iter().collect::<String>()

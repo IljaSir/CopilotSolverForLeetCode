@@ -1,0 +1,366 @@
+Synthesizing 4/10 solutions
+
+=======
+
+        vector<vector<int>> groupGraph(m + n);
+        vector<int> groupDegree(m + n);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m + i;
+            }
+        }
+        vector<vector<int>> itemGraph(n);
+        vector<int> itemDegree(n);
+        for (int i = 0; i < n; ++i) {
+            int curGroup = group[i];
+            for (int item: beforeItems[i]) {
+                int beforeGroup = group[item];
+                if (beforeGroup == curGroup) {
+                    itemGraph[item].push_back(i);
+                    ++itemDegree[i];
+                }
+                else {
+                    groupGraph[beforeGroup].push_back(curGroup);
+                    ++groupDegree[curGroup];
+                }
+            }
+        }
+
+        vector<int> groupOrder = topSort(groupDegree, groupGraph);
+        if (groupOrder.size() == 0) {
+            return {};
+        }
+        vector<int> ans;
+        vector<int> itemOrder;
+        for (int curGroup: groupOrder) {
+            int num = curGroup < m ? 0 : n;
+            itemOrder.clear();
+            for (int i = 0; i < n; ++i) {
+                if (group[i] == curGroup) {
+                    itemOrder.push_back(i);
+                }
+            }
+            vector<int> subAns = topSort(itemDegree, itemGraph, itemOrder);
+            if (subAns.size() == 0) {
+                return {};
+            }
+            for (int item: subAns) {
+                ans.push_back(item);
+            }
+        }
+        return ans;
+    }
+
+    vector<int> topSort(vector<int>& degree, vector<vector<int>>& graph, vector<int>& items) {
+        queue<int> q;
+        for (int item: items) {
+            if (degree[item] == 0) {
+                q.push(item);
+            }
+        }
+        vector<int> ans;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            ans.push_back(u);
+            for (int v: graph[u]) {
+                --degree[v];
+                if (degree[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        if (ans.size() != items.size()) {
+            return {};
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> g(n + m);
+        vector<int> in(n + m, 0);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m++;
+            }
+            g[group[i]].push_back(i);
+            ++in[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j : beforeItems[i]) {
+                if (group[i] == group[j]) {
+                    g[j].push_back(i);
+                    ++in[i];
+                }
+                else {
+                    g[group[j]].push_back(group[i]);
+                    ++in[group[i]];
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < m; ++i) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<int> res;
+        while (!q.empty()) {
+            int t = q.front();
+            q.pop();
+            if (t < n) {
+                res.push_back(t);
+            }
+            for (int i : g[t]) {
+                --in[i];
+                if (in[i] == 0) {
+                    q.push(i);
+                }
+            }
+        }
+        return res.size() == m ? res : vector<int>();
+
+=======
+
+        vector<vector<int>> groupItem(n);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m++;
+            }
+            groupItem[group[i]].push_back(i);
+        }
+        vector<vector<int>> groupGraph(m);
+        vector<int> groupDegree(m);
+        vector<vector<int>> itemGraph(n);
+        vector<int> itemDegree(n);
+        vector<int> id(m);
+        iota(id.begin(), id.end(), 0);
+        for (int i = 0; i < n; ++i) {
+            int curGroup = group[i];
+            for (int item : beforeItems[i]) {
+                int beforeGroup = group[item];
+                if (curGroup == beforeGroup) {
+                    itemGraph[item].push_back(i);
+                    ++itemDegree[i];
+                }
+                else {
+                    groupGraph[beforeGroup].push_back(curGroup);
+                    ++groupDegree[curGroup];
+                }
+            }
+        }
+        vector<int> groupOrder;
+        if (!topSort(id, groupDegree, groupGraph, groupOrder)) {
+            return {};
+        }
+        vector<int> ans;
+        for (int &curGroup : groupOrder) {
+            int size = groupItem[curGroup].size();
+            if (size == 0) {
+                continue;
+            }
+            vector<int> res;
+            if (!topSort(groupItem[curGroup], itemDegree, itemGraph, res)) {
+                return {};
+            }
+            for (int &item : res) {
+                ans.push_back(item);
+            }
+        }
+        return ans;
+    }
+    bool topSort(vector<int> &id, vector<int> &degree, vector<vector<int>> &graph, vector<int> &order) {
+        queue<int> q;
+        for (int &i : id) {
+            if (degree[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            order.push_back(cur);
+            for (int &next : graph[cur]) {
+                if (--degree[next] == 0) {
+                    q.push(next);
+                }
+            }
+        }
+        return order.size() == id.size();
+
+=======
+
+        vector<int> res;
+        vector<vector<int>> g(n+m);
+        vector<int> in(n+m);
+        vector<vector<int>> g2(n);
+        vector<int> in2(n);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m++;
+            }
+            for (auto j : beforeItems[i]) {
+                if (group[j] != group[i]) {
+                    g[group[j]].push_back(group[i]);
+                    in[group[i]]++;
+                } else {
+                    g2[j].push_back(i);
+                    in2[i]++;
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < m; ++i) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            res.push_back(i);
+            for (auto j : g[i]) {
+                if (--in[j] == 0) {
+                    q.push(j);
+                }
+            }
+        }
+        if (res.size() != m) {
+            return {};
+        }
+        vector<int> ans;
+        for (auto i : res) {
+            if (i < m) {
+                queue<int> q;
+                for (int j = 0; j < n; ++j) {
+                    if (group[j] == i && in2[j] == 0) {
+                        q.push(j);
+                    }
+                }
+                while (!q.empty()) {
+                    int j = q.front();
+                    q.pop();
+                    ans.push_back(j);
+                    for (auto k : g2[j]) {
+                        if (--in2[k] == 0) {
+                            q.push(k);
+                        }
+                    }
+                }
+                if (ans.size() != count(group.begin(), group.end(), i)) {
+                    return {};
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> g(n + m);
+        vector<int> in(n + m, 0);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m++;
+            }
+            g[group[i]].push_back(i);
+            ++in[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j : beforeItems[i]) {
+                if (group[i] == group[j]) {
+                    g[j].push_back(i);
+                    ++in[i];
+                }
+                else {
+                    g[group[j]].push_back(group[i]);
+                    ++in[group[i]];
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < m; ++i) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<int> res;
+        while (!q.empty()) {
+            int t = q.front();
+            q.pop();
+            if (t < n) {
+                res.push_back(t);
+            }
+            for (int i : g[t]) {
+                --in[i];
+                if (in[i] == 0) {
+                    q.push(i);
+                }
+            }
+        }
+        return res.size() == m ? res : vector<int>();
+
+=======
+
+        vector<int> res;
+        vector<vector<int>> g(n+m);
+        vector<int> in(n+m);
+        vector<vector<int>> g2(n);
+        vector<int> in2(n);
+        for (int i = 0; i < n; ++i) {
+            if (group[i] == -1) {
+                group[i] = m++;
+            }
+            for (auto j : beforeItems[i]) {
+                if (group[j] != group[i]) {
+                    g[group[j]].push_back(group[i]);
+                    in[group[i]]++;
+                } else {
+                    g2[j].push_back(i);
+                    in2[i]++;
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < m; ++i) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            res.push_back(i);
+            for (auto j : g[i]) {
+                if (--in[j] == 0) {
+                    q.push(j);
+                }
+            }
+        }
+        if (res.size() != m) {
+            return {};
+        }
+        vector<int> ans;
+        for (auto i : res) {
+            if (i < m) {
+                queue<int> q;
+                for (int j = 0; j < n; ++j) {
+                    if (group[j] == i && in2[j] == 0) {
+                        q.push(j);
+                    }
+                }
+                while (!q.empty()) {
+                    int j = q.front();
+                    q.pop();
+                    ans.push_back(j);
+                    for (auto k : g2[j]) {
+                        if (--in2[k] == 0) {
+                            q.push(k);
+                        }
+                    }
+                }
+                if (ans.size() != count(group.begin(), group.end(), i)) {
+                    return {};
+                }
+            }
+        }
+        return ans;

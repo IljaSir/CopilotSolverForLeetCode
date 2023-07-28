@@ -1,0 +1,250 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        heights = [0]
+        for left, side in positions:
+            right = left + side
+            i, j = bisect.bisect_left(heights, left), bisect.bisect_right(heights, right)
+            h = max(heights[i:j]) + side
+            heights[i:j] = [h] * (j - i + 1)
+            heights.append(0)
+            heights[i + 1] = h
+        return heights
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        ans = []
+        for i, (left, side) in enumerate(positions):
+            right = left + side
+            h = side
+            for j in range(i):
+                l, s = positions[j]
+                r = l + s
+                if l < right and r > left:
+                    h = max(h, side + ans[j])
+            ans.append(h)
+        return ans
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        res = []
+        height = 0
+        for left, size in positions:
+            right = left + size
+            h = 0
+            for l, r, h in res:
+                if left < r and right > l:
+                    h = max(h, h)
+            h += size
+            res.append([left, right, h])
+            height = max(height, h)
+            res.append(height)
+        return res
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        ans = []
+        heights = []
+        for pos in positions:
+            left, side = pos[0], pos[1]
+            right = left + side
+            height = side
+            for i in range(len(heights)):
+                if left < heights[i][1] and heights[i][0] < right:
+                    height = max(height, heights[i][2] + side)
+            heights.append([left, right, height])
+            ans.append(max(ans[-1] if ans else 0, height))
+        return ans
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        res = []
+        stack = []
+        for left, side in positions:
+            right = left + side
+            h = 0
+            for l, r, h0 in stack:
+                if left < r and right > l:
+                    h = max(h, h0)
+            h += side
+            stack.append([left, right, h])
+            res.append(max(res[-1] if res else 0, h))
+        return res
+
+=======
+
+class Solution:
+    def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        # print(positions)
+        # print(len(positions))
+        # print(positions[0][0])
+        # print(positions[0][1])
+        # print(positions[0][0]+positions[0][1])
+        # print(positions[1][0])
+        # print(positions[1][1])
+        # print(positions[1][0]+positions[1][1])
+        # print(positions[2][0])
+        # print(positions[2][1])
+        # print(positions[2][0]+positions[2][1])
+        # print(positions[3][0])
+        # print(positions[3][1])
+        # print(positions[3][0]+positions[3][1])
+        # print(positions[4][0])
+        # print(positions[4][1])
+        # print(positions[4][0]+positions[4][1])
+
+        # print(positions[0][0]<positions[1][0])
+        # print(positions[0][0]+positions[0][1]>positions[1][0])
+        # print(positions[0][0]<positions[1][0]+positions[1][1])
+        # print(positions[0][0]+positions[0][1]>positions[1][0]+positions[1][1])
+        # print(positions[0][0]<positions[2][0])
+        # print(positions[0][0]+positions[0][1]>positions[2][0])
+        # print(positions[0][0]<positions[2][0]+positions[2][1])
+        # print(positions[0][0]+positions[0][1]>positions[2][0]+positions[2][1])
+        # print(positions[0][0]<positions[3][0])
+        # print(positions[0][0]+positions[0][1]>positions[3][0])
+        # print(positions[0][0]<positions[3][0]+positions[3][1])
+        # print(positions[0][0]+positions[0][1]>positions[3][0]+positions[3][1])
+        # print(positions[0][0]<positions[4][0])
+        # print(positions[0][0]+positions[0][1]>positions[4][0])
+        # print(position
+
+=======
+
+def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        h = 0
+        res = []
+        for p in positions:
+            h = max(h, self.add(p))
+            res.append(h)
+        return res
+
+=======
+
+        # Sweep line
+        # Time  complexity: O(N^2)
+        # Space complexity: O(N)
+        # N = len(positions)
+        # res = []
+        # cur = 0
+        # h = [0] * (positions[-1][0] + positions[-1][1])
+        # for p in positions:
+        #     left, side = p
+        #     right = left + side
+        #     cur = max(cur, max(h[left:right]) + side)
+        #     res.append(cur)
+        #     for i in range(left, right):
+        #         h[i] = max(h[i], cur)
+        # return res
+        
+        # Segment Tree
+        # Time  complexity: O(NlogN)
+        # Space complexity: O(N)
+        # N = len(positions)
+        # res = []
+        # cur = 0
+        # h = [0] * (positions[-1][0] + positions[-1][1])
+        # def update(l, r, val, i, j, k):
+        #     if l > r or l > j or r < i:
+        #         return
+        #     if l <= i and r >= j:
+        #         h[k] = max(h[k], val)
+        #         return
+        #     mid = (i + j) >> 1
+        #     update(l, r, val, i, mid, k << 1)
+        #     update(l, r, val, mid + 1, j, k << 1 | 1)
+        # for p in positions:
+        #     left, side = p
+        #     right = left + side
+        #     cur = max(cur, max(h[left:right]) + side)
+        #     res.append(cur)
+        #     update(left, right - 1, cur, 0, len(h) - 1, 1)
+        # return res
+        
+        # Binary Indexed Tree
+        # Time  complexity: O(NlogN)
+        # Space complexity: O(N)
+        N = len(positions)
+        res = []
+        cur = 0
+        h = [0] * (positions[-1][0] + positions[-1][1])
+        def update(i, val):
+            while i < len(h):
+                h[i] = max(h[i],
+
+=======
+
+class Solution:
+    def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation
+        # https://leetcode.com/problems/falling-squares/discuss/109766/JavaC%2B%2BPython-Sweep-Line
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111137
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111136
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111134
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111133
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111132
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111131
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111130
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111129
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111128
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111127
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111126
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111125
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111124
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-solution-with-explanation/111123
+        # https://leetcode.com/problems/falling-squares/discuss/109769/Python-O(n2)-
+
+=======
+
+class Solution:
+    def fallingSquares(self, positions: List[List[int]]) -> List[int]:
+        # 1. find the left and right of the square
+        # 2. find the height of the square
+        # 3. update the height of the squares
+        # 4. find the max height
+        # 5. return the max height
+        # 6. find the height of the square
+        # 7. update the height of the squares
+        # 8. find the max height
+        # 9. return the max height
+        # 10. find the left and right of the square
+        # 11. find the height of the square
+        # 12. update the height of the squares
+        # 13. find the max height
+        # 14. return the max height
+        # 15. find the height of the square
+        # 16. update the height of the squares
+        # 17. find the max height
+        # 18. return the max height
+        # 19. find the left and right of the square
+        # 20. find the height of the square
+        # 21. update the height of the squares
+        # 22. find the max height
+        # 23. return the max height
+        # 24. find the height of the square
+        # 25. update the height of the squares
+        # 26. find the max height
+        # 27. return the max height
+        # 28. find the left and right of the square
+        # 29. find the height of the square
+        # 30. update the height of the squares
+        # 31. find the max height
+        # 32. return the max height
+        # 33. find the height of the square
+        # 34. update the height of the squares
+        # 35. find the max height
+        # 36. return the max height
+        # 37. find the left and right of the square
+        # 38. find the height of the square
+        # 39. update the height of the squares
+        # 40. find the max height
+        # 41. return the max height
+        # 42. find the height of the square
+        # 43. update the height of the squares
+        # 44. find the max height

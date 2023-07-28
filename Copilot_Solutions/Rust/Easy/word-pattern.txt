@@ -1,0 +1,204 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let pattern = pattern.chars().collect::<Vec<char>>();
+        let s = s.split(' ').collect::<Vec<&str>>();
+        if pattern.len() != s.len() {
+            return false;
+        }
+        let mut map = std::collections::HashMap::new();
+        let mut set = std::collections::HashSet::new();
+        for i in 0..pattern.len() {
+            if !set.contains(&pattern[i]) {
+                if map.contains_key(&pattern[i]) {
+                    return false;
+                }
+                map.insert(pattern[i], s[i]);
+                set.insert(pattern[i]);
+            } else {
+                if map[&pattern[i]] != s[i] {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let pattern = pattern.chars().collect::<Vec<char>>();
+        let s = s.split(' ').collect::<Vec<&str>>();
+        if pattern.len() != s.len() {
+            return false;
+        }
+        let mut map = std::collections::HashMap::new();
+        for i in 0..pattern.len() {
+            if let Some(v) = map.get(&pattern[i]) {
+                if *v != s[i] {
+                    return false;
+                }
+            } else {
+                if map.values().any(|v| *v == s[i]) {
+                    return false;
+                }
+                map.insert(pattern[i], s[i]);
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut pattern = pattern.chars().collect::<Vec<char>>();
+        let mut s = s.split_whitespace().collect::<Vec<&str>>();
+        if pattern.len() != s.len() {
+            return false;
+        }
+        let mut map = std::collections::HashMap::new();
+        for i in 0..pattern.len() {
+            if map.contains_key(&pattern[i]) {
+                if map[&pattern[i]] != s[i] {
+                    return false;
+                }
+            } else {
+                if map.values().any(|v| *v == s[i]) {
+                    return false;
+                }
+                map.insert(pattern[i], s[i]);
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut pattern = pattern.chars().collect::<Vec<char>>();
+        let mut s = s.split_whitespace().collect::<Vec<&str>>();
+        let mut map = std::collections::HashMap::new();
+        if pattern.len() != s.len() {
+            return false;
+        }
+        for i in 0..pattern.len() {
+            if !map.contains_key(&pattern[i]) {
+                if map.values().any(|&v| v == s[i]) {
+                    return false;
+                }
+                map.insert(pattern[i], s[i]);
+            } else {
+                if map[&pattern[i]] != s[i] {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut set = std::collections::HashSet::new();
+        let words: Vec<String> = s.split(' ').map(|s| s.to_string()).collect();
+        if pattern.len() != words.len() {
+            return false;
+        }
+        for (i, c) in pattern.chars().enumerate() {
+            let word = &words[i];
+            if map.contains_key(&c) {
+                if map.get(&c).unwrap() != word {
+                    return false;
+                }
+            } else {
+                if set.contains(word) {
+                    return false;
+                }
+                map.insert(c, word);
+                set.insert(word);
+            }
+        }
+        true
+
+=======
+
+        let mut words = s.split(' ');
+        let mut map = std::collections::HashMap::new();
+        let mut set = std::collections::HashSet::new();
+        for (i, c) in pattern.chars().enumerate() {
+            match words.next() {
+                Some(w) => {
+                    if let Some(&c2) = map.get(w) {
+                        if c != c2 {
+                            return false;
+                        }
+                    } else {
+                        if set.contains(&c) {
+                            return false;
+                        }
+                        map.insert(w, c);
+                        set.insert(c);
+                    }
+                }
+                None => return false,
+            }
+        }
+        words.next().is_none()
+
+=======
+
+        let mut pattern = pattern.chars().collect::<Vec<char>>();
+        let mut s = s.split_whitespace().collect::<Vec<&str>>();
+        let mut hash = std::collections::HashMap::new();
+        if pattern.len() != s.len() {
+            return false;
+        }
+        for i in 0..pattern.len() {
+            if hash.contains_key(&pattern[i]) {
+                if hash[&pattern[i]] != s[i] {
+                    return false;
+                }
+            } else {
+                if hash.contains_value(&s[i]) {
+                    return false;
+                }
+                hash.insert(pattern[i], s[i]);
+            }
+        }
+        true
+
+=======
+
+        let mut s = s.split(' ');
+        let mut map = std::collections::HashMap::new();
+        for c in pattern.chars() {
+            if let Some(word) = s.next() {
+                if map.contains_key(&c) {
+                    if map[&c] != word {
+                        return false;
+                    }
+                } else {
+                    if map.values().any(|&v| v == word) {
+                        return false;
+                    }
+                    map.insert(c, word);
+                }
+            } else {
+                return false;
+            }
+        }
+        s.next().is_none()
+    }
+}
+
+=======
+
+        let mut p = pattern.chars().peekable();
+        let mut s = s.split_whitespace().peekable();
+        let mut map = std::collections::HashMap::new();
+        while let (Some(&c), Some(&w)) = (p.peek(), s.peek()) {
+            if map.insert(c, w) != map.insert(w, c) {
+                return false;
+            }
+            p.next();
+            s.next();
+        }
+        p.next().is_none() && s.next().is_none()

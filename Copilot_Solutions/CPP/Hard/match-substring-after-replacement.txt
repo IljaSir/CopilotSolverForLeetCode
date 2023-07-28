@@ -1,0 +1,345 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.size();
+        int m = sub.size();
+        int i = 0;
+        int j = 0;
+        while (i < n && j < m) {
+            if (s[i] == sub[j]) {
+                ++i;
+                ++j;
+            } else {
+                int k = 0;
+                for (; k < mappings.size(); ++k) {
+                    if (s[i] == mappings[k][0]) {
+                        s[i] = mappings[k][1];
+                        break;
+                    }
+                }
+                if (k == mappings.size()) {
+                    return false;
+                }
+            }
+        }
+        return j == m;
+    }
+    bool isSubsequence(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        int i = 0;
+        int j = 0;
+        while (i < n && j < m) {
+            if (s[i] == t[j]) {
+                ++i;
+                ++j;
+            } else {
+                ++j;
+            }
+        }
+        return i == n;
+    }
+    bool isMatch(string s, string p) {
+        int n = s.size();
+        int m = p.size();
+        int i = 0;
+        int j = 0;
+        vector<vector<char>> mappings;
+        while (i < n && j < m) {
+            if (s[i] == p[j]) {
+                ++i;
+                ++j;
+            } else {
+                int k = 0;
+                for (; k < mappings.size(); ++k) {
+                    if (s[i] == mappings[k][0]) {
+                        s[i] = mappings[k][1];
+                        break;
+                    }
+                }
+                if (k == mappings.size()) {
+                    mappings.push_back({s[i], p[j]});
+                    ++i;
+                    ++j;
+                }
+            }
+        }
+        return i == n && j == m && matchReplacement(s, p, mappings) && isSubsequence(p, s);
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (j == 0) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                if (s[i - 1] == sub[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+                if (dp[i][j] == 0) {
+                    for (auto& v : mappings) {
+                        if (v[0] == sub[j - 1] && v[1] == s[i - 1]) {
+                            dp[i][j] = dp[i - 1][j - 1];
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m];
+    }
+    bool isSubsequence(string s, string t) {
+        int i = 0;
+        for (int j = 0; j < t.length(); j++) {
+            if (i < s.length() && s[i] == t[j]) {
+                i++;
+            }
+        }
+        return i == s.length();
+    }
+    bool isPossible(string s, string sub, vector<vector<char>>& mappings) {
+        if (!matchReplacement(s, sub, mappings)) {
+            return false;
+        }
+        int n = s.length();
+        int m = sub.length();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (j == 0) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                if (s[i - 1] == sub[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+                if (dp[i][j] == 0) {
+                    for (auto& v : mappings) {
+                        if (v[
+
+=======
+
+        unordered_map<char, char> mp;
+        for (auto& v : mappings) {
+            mp[v[0]] = v[1];
+        }
+        int i = 0, j = 0;
+        while (i < s.length() && j < sub.length()) {
+            if (s[i] == sub[j]) {
+                ++i;
+                ++j;
+            } else if (mp.count(s[i])) {
+                s[i] = mp[s[i]];
+            } else {
+                return false;
+            }
+        }
+        return j == sub.length();
+
+=======
+
+        unordered_map<char, char> map;
+        for (auto& m : mappings) {
+            map[m[0]] = m[1];
+        }
+        int i = 0, j = 0;
+        while (i < s.size() && j < sub.size()) {
+            if (s[i] == sub[j]) {
+                ++i;
+                ++j;
+            } else {
+                if (map.count(s[i]) && map[s[i]] == sub[j]) {
+                    ++i;
+                    ++j;
+                } else {
+                    ++i;
+                }
+            }
+        }
+        return j == sub.size();
+
+=======
+
+        unordered_map<char, char> m;
+        for (auto &v : mappings) {
+            if (m.count(v[0]) && m[v[0]] != v[1]) return false;
+            m[v[0]] = v[1];
+        }
+        int i = 0, j = 0;
+        while (i < s.size() && j < sub.size()) {
+            if (m.count(sub[j]) && s[i] == m[sub[j]]) {
+                ++i;
+                ++j;
+            } else if (s[i] == sub[j]) {
+                ++i;
+                ++j;
+            } else {
+                ++i;
+            }
+        }
+        return j == sub.size();
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0] = 1;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (s[i] == sub[j]) {
+                    dp[i+1][j+1] = dp[i][j];
+                } else {
+                    for (auto& mapping : mappings) {
+                        if (mapping[0] == sub[j]) {
+                            if (mapping[1] == s[i]) {
+                                dp[i+1][j+1] = dp[i][j];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m];
+    }
+    bool isSubsequence(string s, string sub) {
+        int n = s.length();
+        int m = sub.length();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0] = 1;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (s[i] == sub[j]) {
+                    dp[i+1][j+1] = dp[i][j];
+                } else {
+                    dp[i+1][j+1] = dp[i][j+1];
+                }
+            }
+        }
+        return dp[n][m];
+    }
+    bool isMatch(string s, string sub, vector<vector<char>>& mappings) {
+        if (isSubsequence(s, sub)) {
+            return true;
+        }
+        int n = s.length();
+        int m = sub.length();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0] = 1;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m;
+
+=======
+
+        int n = s.size(), m = sub.size();
+        vector<vector<int>> mp(256, vector<int>(256, 0));
+        for (auto& v : mappings) {
+            mp[v[0]][v[1]] = 1;
+        }
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (s[i - 1] == sub[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (mp[s[i - 1]][sub[j - 1]]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (mp[sub[j - 1]][s[i - 1]]) {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        unordered_map<char, char> m;
+        for (auto& v: mappings) m[v[0]] = v[1];
+        for (int i = 0; i < s.size(); ++i) {
+            string t = s.substr(i, sub.size());
+            if (match(t, sub, m)) return true;
+        }
+        return false;
+    }
+    bool match(string s, string sub, unordered_map<char, char>& m) {
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] != sub[i]) {
+                if (m.find(s[i]) == m.end()) return false;
+                if (m[s[i]] != sub[i]) return false;
+            }
+        }
+        return true;
+
+=======
+
+        bool result = false;
+        if (s.empty() || sub.empty() || mappings.empty()) {
+            return result;
+        }
+        if (s.size() < sub.size()) {
+            return result;
+        }
+        unordered_map<char, char> mappingMap;
+        for (auto mapping : mappings) {
+            mappingMap[mapping[0]] = mapping[1];
+        }
+        for (int i = 0; i <= s.size() - sub.size(); ++i) {
+            int j = 0;
+            for (; j < sub.size(); ++j) {
+                if (s[i + j] != sub[j]) {
+                    if (mappingMap.find(sub[j]) != mappingMap.end()) {
+                        if (mappingMap[sub[j]] != s[i + j]) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (j == sub.size()) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+
+=======
+
+        vector<vector<char>> m2;
+        for (auto& v : mappings) {
+            if (v[0] != v[1]) {
+                m2.push_back(v);
+            }
+        }
+        mappings = m2;
+        int n = s.size();
+        int m = sub.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                if (s[i - 1] == sub[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+                for (auto& v : mappings) {
+                    if (v[0] == sub[j - 1] && v[1] == s[i - 1]) {
+                        dp[i][j] |= dp[i - 1][j - 1];
+                    }
+                }
+            }
+        }
+        return dp[n][m];

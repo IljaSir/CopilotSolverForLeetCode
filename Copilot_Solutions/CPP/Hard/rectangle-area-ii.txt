@@ -1,0 +1,256 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int MOD = 1000000007;
+        set<int> X, Y;
+        for (auto& rec: rectangles) {
+            X.insert(rec[0]);
+            X.insert(rec[2]);
+            Y.insert(rec[1]);
+            Y.insert(rec[3]);
+        }
+        vector<int> x;
+        vector<int> y;
+        for (int i: X) x.push_back(i);
+        for (int j: Y) y.push_back(j);
+        vector<vector<int>> count(x.size(), vector<int>(y.size()));
+        for (auto& rec: rectangles) {
+            int x1 = rec[0], y1 = rec[1], x2 = rec[2], y2 = rec[3];
+            int x1i = lower_bound(x.begin(), x.end(), x1) - x.begin();
+            int x2i = lower_bound(x.begin(), x.end(), x2) - x.begin();
+            int y1i = lower_bound(y.begin(), y.end(), y1) - y.begin();
+            int y2i = lower_bound(y.begin(), y.end(), y2) - y.begin();
+            for (int i = x1i; i < x2i; i++) {
+                for (int j = y1i; j < y2i; j++) {
+                    count[i][j]++;
+                }
+            }
+        }
+        long long ans = 0;
+        for (int i = 0; i < x.size() - 1; i++) {
+            for (int j = 0; j < y.size() - 1; j++) {
+                if (count[i][j]) {
+                    ans += (long long)(x[i + 1] - x[i]) * (y[j + 1] - y[j]);
+                    ans %= MOD;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = rectangles.size();
+        vector<int> x, y;
+        for (auto& r : rectangles) {
+            x.push_back(r[0]);
+            x.push_back(r[2]);
+            y.push_back(r[1]);
+            y.push_back(r[3]);
+        }
+        sort(x.begin(), x.end());
+        x.erase(unique(x.begin(), x.end()), x.end());
+        sort(y.begin(), y.end());
+        y.erase(unique(y.begin(), y.end()), y.end());
+        vector<vector<int>> grid(x.size(), vector<int>(y.size()));
+        for (auto& r : rectangles) {
+            int x1 = lower_bound(x.begin(), x.end(), r[0]) - x.begin();
+            int x2 = lower_bound(x.begin(), x.end(), r[2]) - x.begin();
+            int y1 = lower_bound(y.begin(), y.end(), r[1]) - y.begin();
+            int y2 = lower_bound(y.begin(), y.end(), r[3]) - y.begin();
+            for (int i = x1; i < x2; ++i) {
+                for (int j = y1; j < y2; ++j) {
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        long long ans = 0;
+        for (int i = 0; i < x.size(); ++i) {
+            for (int j = 0; j < y.size(); ++j) {
+                if (grid[i][j]) {
+                    ans += (long long)(x[i + 1] - x[i]) * (y[j + 1] - y[j]);
+                }
+            }
+        }
+        return ans % 1000000007;
+
+=======
+
+        int n = rectangles.size();
+        vector<int> xs;
+        for (auto& rec : rectangles) {
+            xs.push_back(rec[0]);
+            xs.push_back(rec[2]);
+        }
+        sort(xs.begin(), xs.end());
+        xs.erase(unique(xs.begin(), xs.end()), xs.end());
+        vector<int> ys;
+        for (auto& rec : rectangles) {
+            ys.push_back(rec[1]);
+            ys.push_back(rec[3]);
+        }
+        sort(ys.begin(), ys.end());
+        ys.erase(unique(ys.begin(), ys.end()), ys.end());
+        vector<vector<int>> g(xs.size() - 1, vector<int>(ys.size() - 1));
+        for (auto& rec : rectangles) {
+            int x1 = lower_bound(xs.begin(), xs.end(), rec[0]) - xs.begin();
+            int x2 = lower_bound(xs.begin(), xs.end(), rec[2]) - xs.begin();
+            int y1 = lower_bound(ys.begin(), ys.end(), rec[1]) - ys.begin();
+            int y2 = lower_bound(ys.begin(), ys.end(), rec[3]) - ys.begin();
+            for (int i = x1; i < x2; ++i) {
+                for (int j = y1; j < y2; ++j) {
+                    g[i][j] = 1;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < xs.size() - 1; ++i) {
+            for (int j = 0; j < ys.size() - 1; ++j) {
+                if (g[i][j]) {
+                    ans += (long long)(xs[i + 1] - xs[i]) * (ys[j + 1] - ys[j]);
+                    ans %= 1000000007;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = rectangles.size();
+        vector<int> x;
+        vector<int> y;
+        for (auto& r : rectangles) {
+            x.push_back(r[0]);
+            x.push_back(r[2]);
+            y.push_back(r[1]);
+            y.push_back(r[3]);
+        }
+        sort(x.begin(), x.end());
+        sort(y.begin(), y.end());
+        x.erase(unique(x.begin(), x.end()), x.end());
+        y.erase(unique(y.begin(), y.end()), y.end());
+        int m = x.size();
+        int p = y.size();
+        vector<vector<int>> grid(m, vector<int>(p, 0));
+        for (auto& r : rectangles) {
+            int x1 = lower_bound(x.begin(), x.end(), r[0]) - x.begin();
+            int x2 = lower_bound(x.begin(), x.end(), r[2]) - x.begin();
+            int y1 = lower_bound(y.begin(), y.end(), r[1]) - y.begin();
+            int y2 = lower_bound(y.begin(), y.end(), r[3]) - y.begin();
+            for (int i = x1; i < x2; ++i) {
+                for (int j = y1; j < y2; ++j) {
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        long long res = 0;
+        for (int i = 0; i < m - 1; ++i) {
+            for (int j = 0; j < p - 1; ++j) {
+                if (grid[i][j]) {
+                    res += 1LL * (x[i + 1] - x[i]) * (y[j + 1] - y[j]);
+                }
+            }
+        }
+        return res % 1000000007;
+
+=======
+
+        long long ans = 0;
+        int mod = 1e9 + 7;
+        int n = rectangles.size();
+        vector<int> x, y;
+        for (auto &r : rectangles) {
+            x.push_back(r[0]);
+            x.push_back(r[2]);
+            y.push_back(r[1]);
+            y.push_back(r[3]);
+        }
+        sort(x.begin(), x.end());
+        sort(y.begin(), y.end());
+        x.erase(unique(x.begin(), x.end()), x.end());
+        y.erase(unique(y.begin(), y.end()), y.end());
+        for (auto &r : rectangles) {
+            int x1 = lower_bound(x.begin(), x.end(), r[0]) - x.begin();
+            int x2 = lower_bound(x.begin(), x.end(), r[2]) - x.begin();
+            int y1 = lower_bound(y.begin(), y.end(), r[1]) - y.begin();
+            int y2 = lower_bound(y.begin(), y.end(), r[3]) - y.begin();
+            for (int i = x1; i < x2; i++) {
+                for (int j = y1; j < y2; j++) {
+                    ans += (long long)(x[i + 1] - x[i]) * (y[j + 1] - y[j]);
+                    ans %= mod;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<pair<int,int>> h;
+        for (auto& r:rectangles) {
+            h.push_back({r[1], r[3]});
+            h.push_back({r[1], -r[3]});
+        }
+        sort(h.begin(), h.end());
+        int area = 0;
+        for (int i=0; i<h.size(); ++i) {
+            int j = i+1;
+            while (j<h.size() && h[j].first==h[i].first) ++j;
+            area += (h[i].first-h[i].second) * getArea(h, i, j);
+            i = j-1;
+        }
+        return area;
+    }
+    int getArea(vector<pair<int,int>>& h, int i, int j) {
+        int area = 0, cnt = 0, last = 0;
+        for (int k=i; k<j; ++k) {
+            if (h[k].second>0) {
+                if (cnt==0) last = h[k].first;
+                ++cnt;
+            } else {
+                --cnt;
+                if (cnt==0) area += h[k].first - last;
+            }
+        }
+        return area;
+
+=======
+
+        // 1. Sort the rectangles by x1
+        // 2. For each rectangle, find the intersection of each rectangle
+        //    with the rest of rectangles
+        // 3. Calculate the area
+        // 4. Repeat 1. 2. 3. until all rectangles are merged
+        // 5. return the area
+        const int MOD = 1e9 + 7;
+        auto cmp = [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        };
+        sort(rectangles.begin(), rectangles.end(), cmp);
+        long long area = 0;
+        for (int i = 0; i < rectangles.size(); i++) {
+            vector<int> r = rectangles[i];
+            for (int j = i + 1; j < rectangles.size(); j++) {
+                vector<int> r2 = rectangles[j];
+                if (r[0] == r2[0] && r[1] == r2[1] && r[2] == r2[2] && r[3] == r2[3]) {
+                    continue;
+                }
+                if (r[2] <= r2[0] || r[3] <= r2[1] || r[0] >= r2[2] || r[1] >= r2[3]) {
+                    continue;
+                }
+                // r2 is inside r
+                if (r[0] <= r2[0] && r[1] <= r2[1] && r[2] >= r2[2] && r[3] >= r2[3]) {
+                    rectangles[j][0] = r[0];
+                    rectangles[j][1] = r[1];
+                    rectangles[j][2] = r[2];
+                    rectangles[j][3] = r[3];
+                    continue;
+                }
+                // r is inside r2
+                if (r2[0] <= r[0] && r2[1] <= r[1] && r2[2] >= r[2] && r2[3] >= r[3]) {
+                    continue;
+                }
+                // r2 is on the left of r
+                if (r2[2] <= r[0]) {
+                    continue;
+                }
+                // r2 is on the

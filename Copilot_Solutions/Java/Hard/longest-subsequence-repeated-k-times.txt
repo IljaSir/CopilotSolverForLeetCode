@@ -1,0 +1,307 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s.charAt(i - 1) == s.charAt(j - 1) && i != j) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = n, j = n;
+        while (i > 0 && j > 0) {
+            if (dp[i][j] == dp[i - 1][j - 1] + 1) {
+                sb.append(s.charAt(i - 1));
+                i--;
+                j--;
+            } else if (dp[i][j] == dp[i - 1][j]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+        String res = sb.reverse().toString();
+        return res.repeat(k);
+
+=======
+
+        int n = s.length();
+        int[][][] dp = new int[n + 1][n + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int l = 1; l <= k; l++) {
+                    if (s.charAt(i - 1) == s.charAt(j - 1) && i != j) {
+                        dp[i][j][l] = dp[i - 1][j - 1][l - 1] + 1;
+                    } else {
+                        dp[i][j][l] = Math.max(dp[i - 1][j][l], dp[i][j - 1][l]);
+                    }
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = n, j = n, l = k;
+        while (i > 0 && j > 0 && l > 0) {
+            if (dp[i][j][l] == dp[i - 1][j][l]) {
+                i--;
+            } else if (dp[i][j][l] == dp[i][j - 1][l]) {
+                j--;
+            } else {
+                sb.append(s.charAt(i - 1));
+                i--;
+                j--;
+                l--;
+            }
+        }
+        return sb.reverse().toString();
+
+=======
+
+        int n = s.length();
+        int[][][] dp = new int[n + 1][n + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int l = 1; l <= k; l++) {
+                    if (s.charAt(i - 1) == s.charAt(j - 1) && i != j) {
+                        dp[i][j][l] = dp[i - 1][j - 1][l - 1] + 1;
+                    } else {
+                        dp[i][j][l] = Math.max(dp[i][j - 1][l], dp[i - 1][j][l]);
+                    }
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = n, j = n, l = k;
+        while (i > 0 && j > 0 && l > 0) {
+            if (dp[i][j][l] == dp[i - 1][j][l]) {
+                i--;
+            } else if (dp[i][j][l] == dp[i][j - 1][l]) {
+                j--;
+            } else {
+                sb.append(s.charAt(i - 1));
+                i--;
+                j--;
+                l--;
+            }
+        }
+        return sb.reverse().toString();
+
+=======
+
+        int n = s.length();
+        String[][] dp = new String[n+1][n+1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
+                dp[i][j] = "";
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = dp[i-1][j];
+                if (s.charAt(i-1) == s.charAt(j-1) && i != j) {
+                    String candidate = s.charAt(i-1) + dp[i-1][j-1];
+                    if (candidate.length() > dp[i][j].length() || (candidate.length() == dp[i][j].length() && candidate.compareTo(dp[i][j]) > 0)) {
+                        dp[i][j] = candidate;
+                    }
+                }
+            }
+        }
+        String res = "";
+        for (int i = 1; i <= n; i++) {
+            String candidate = dp[i][i];
+            if (candidate.length() > 0) {
+                int count = 0;
+                for (int j = 0; j < n; j++) {
+                    if (s.startsWith(candidate, j)) {
+                        count++;
+                        j += candidate.length() - 1;
+                    }
+                }
+                if (count == k && (candidate.length() > res.length() || (candidate.length() == res.length() && candidate.compareTo(res) > 0))) {
+                    res = candidate;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; ++i) {
+            for (int j = 0; j <= n; ++j) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                } else if (s.charAt(i - 1) == s.charAt(j - 1) && i != j) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = n, j = n;
+        while (i > 0 && j > 0) {
+            if (dp[i][j] == dp[i - 1][j - 1] + 1) {
+                sb.append(s.charAt(i - 1));
+                i--;
+                j--;
+            } else if (dp[i][j] == dp[i - 1][j]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+        String ans = sb.reverse().toString();
+        if (ans.length() * k > n) {
+            return "";
+        }
+        StringBuilder res = new StringBuilder();
+        for (int t = 0; t < k; ++t) {
+            res.append(ans);
+        }
+        return res.toString();
+
+=======
+
+        int n = s.length();
+        int[] dp = new int[n];
+        int[] last = new int[26];
+        Arrays.fill(last, -1);
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'a';
+            dp[i] = (i > 0 ? dp[i - 1] : 0) + 1;
+            if (last[c] >= 0) {
+                dp[i] = Math.max(dp[i], dp[last[c]] + 1);
+            }
+            last[c] = i;
+        }
+        int total = dp[n - 1];
+        int[] count = new int[26];
+        for (int i = 0; i < n; i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        int[] next = new int[26];
+        int[] prev = new int[26];
+        for (int i = 0; i < 26; i++) {
+            next[i] = (i + 1) % 26;
+            prev[i] = (i + 25) % 26;
+        }
+        int[] idx = new int[26];
+        for (int i = 0; i < 26; i++) {
+            idx[i] = n;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            int c = s.charAt(i) - 'a';
+            if (count[c] > 0) {
+                idx[c] = i;
+                count[c]--;
+            }
+        }
+        int[] ans = new int[total];
+        int ansLen = 0;
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'a';
+            if (dp[i] == total && count[c] % k == 0) {
+                while (ansLen > 0 && ans[ansLen - 1] < c) {
+                    int d = ans[ansLen - 1];
+                    next[prev[d]] = next[d];
+                    prev[next[d]] = prev[d];
+                    ansLen--;
+                }
+                ans[ansLen++] = c;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ansLen; i++) {
+
+=======
+
+        int n = s.length();
+        String ans = "";
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            while (j + 1 < n && s.charAt(j + 1) == s.charAt(i)) {
+                j++;
+            }
+            int cnt = (j - i + 1) / k;
+            if (cnt > 0) {
+                ans += String.valueOf(s.charAt(i)).repeat(cnt);
+            }
+            i = j;
+        }
+        return ans;
+
+=======
+
+        // 1. dfs
+        // 2. dp
+        // 3. trie
+        // 4. suffix array
+        // 5. binary search
+        // 6. greedy
+        // 7. brute force
+        // 8. math
+        // 9. bit manipulation
+        // 10. sort
+        // 11. stack
+        // 12. queue
+        // 13. linked list
+        // 14. tree
+        // 15. graph
+        // 16. hash table
+        // 17. string
+        // 18. binary search
+        // 19. two pointers
+        // 20. divide and conquer
+        // 21. dynamic programming
+        // 22. backtracking
+        // 23. memoization
+        // 24. recursion
+        // 25. sliding window
+        // 26. greedy
+        // 27. sort
+        // 28. bit manipulation
+        // 29. math
+        // 30. binary search
+        // 31. stack
+        // 32. queue
+        // 33. linked list
+        // 34. tree
+        // 35. graph
+        // 36. hash table
+        // 37. string
+        // 38. two pointers
+        // 39. divide and conquer
+        // 40. dynamic programming
+        // 41. backtracking
+        // 42. memoization
+        // 43. recursion
+        // 44. sliding window
+        // 45. greedy
+        // 46. sort
+        // 47. bit manipulation
+        // 48. math
+        // 49. binary search
+        // 50. stack
+        // 51. queue
+        // 52. linked list
+        // 53. tree
+        // 54. graph
+        // 55. hash table
+        // 56. string
+        // 57. two pointers
+        // 58. divide and conquer
+        // 59. dynamic programming
+        // 60. backtracking
+        // 61. memoization
+        // 62. recursion
+        // 63. sliding window
+        // 64. greedy
+        // 65. sort
+        // 66. bit manipulation

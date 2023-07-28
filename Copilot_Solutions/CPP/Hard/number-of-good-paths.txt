@@ -1,0 +1,273 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            for (int v: g[u]) {
+                if (v == p) continue;
+                if (vals[v] >= vals[u]) continue;
+                dp[v] = 1 + dp[u];
+                dfs(v, u);
+            }
+        };
+        dfs(0, -1);
+        return accumulate(dp.begin(), dp.end(), 0LL);
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        int ans = 0;
+        function<int(int, int)> dfs = [&](int u, int v) {
+            if (dp[u][v] != -1) {
+                return dp[u][v];
+            }
+            if (vals[u] != vals[v]) {
+                return 0;
+            }
+            int ans = 1;
+            for (int w: g[v]) {
+                if (w != u && vals[w] <= vals[u]) {
+                    ans = (ans + dfs(v, w)) % 1000000007;
+                }
+            }
+            return dp[u][v] = ans;
+        };
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = (ans + dfs(i, j)) % 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        return dfs(0, 0, vals, adj, dp);
+    }
+    int dfs(int u, int v, vector<int>& vals, vector<vector<int>>& adj, vector<vector<int>>& dp) {
+        if (dp[u][v] != -1) return dp[u][v];
+        if (vals[u] < vals[v]) {
+            dp[u][v] = 0;
+            return 0;
+        }
+        int ans = 0;
+        if (u == v) ans++;
+        for (int w : adj[u]) {
+            if (w == v) continue;
+            ans += dfs(w, v, vals, adj, dp);
+            if (ans >= 1000000007) ans -= 1000000007;
+        }
+        dp[u][v] = ans;
+        return ans;
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        int res = 0;
+        function<int(int, int)> dfs = [&](int u, int p) {
+            if (dp[u][p] != -1) return dp[u][p];
+            int res = vals[u] >= vals[p];
+            for (int v : adj[u]) {
+                if (v == p) continue;
+                if (vals[v] <= vals[u]) res += dfs(v, u);
+            }
+            return dp[u][p] = res;
+        };
+        for (int i = 0; i < n; i++) {
+            res += dfs(i, i);
+        }
+        return res;
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> cnt(n);
+        vector<int> f(n);
+        function<void(int, int)> dfs = [&](int x, int fa) {
+            cnt[x] = vals[x] == vals[0];
+            f[x] = vals[x] == vals[0];
+            for (auto y : g[x]) {
+                if (y == fa) continue;
+                dfs(y, x);
+                cnt[x] += cnt[y];
+                f[x] += f[y];
+            }
+        };
+        dfs(0, -1);
+        function<int(int, int)> calc = [&](int x, int fa) {
+            int res = 0;
+            for (auto y : g[x]) {
+                if (y == fa) continue;
+                res += calc(y, x);
+            }
+            int tot = cnt[x] - cnt[fa];
+            int cur = f[x] - f[fa];
+            res += cur * (tot - cur);
+            return res;
+        };
+        return calc(0, -1);
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        vector<bool> visited(n, false);
+        dfs(vals, graph, dp, visited, 0);
+        return dp[0][0];
+    }
+    void dfs(vector<int>& vals, vector<vector<int>>& graph, vector<vector<int>>& dp, vector<bool>& visited, int node) {
+        visited[node] = true;
+        for (int i = node; i < vals.size(); ++i) {
+            if (vals[i] <= vals[node]) {
+                dp[node][i] = 1;
+            }
+        }
+        for (int nei : graph[node]) {
+            if (visited[nei]) continue;
+            dfs(vals, graph, dp, visited, nei);
+            for (int i = node; i < vals.size(); ++i) {
+                if (vals[i] <= vals[node]) {
+                    dp[node][i] = (dp[node][i] + dp[nei][i]) % 1000000007;
+                }
+            }
+        }
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto &e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> f(n);
+        vector<int> s(n);
+        s[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                f[j] = 0;
+            }
+            for (int j = 0; j < n; ++j) {
+                if (vals[j] > vals[i]) continue;
+                for (auto &v: g[j]) {
+                    if (vals[v] > vals[i]) continue;
+                    f[j] = (f[j] + s[v]) % 1000000007;
+                }
+            }
+            s = f;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = (ans + s[i]) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> adj(n);
+        for (auto &edge: edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        return dfs(vals, adj, dp, 0, vals[0]);
+    }
+    int dfs(vector<int>& vals, vector<vector<int>>& adj, vector<vector<int>>& dp, int u, int cur) {
+        if (dp[u][cur] != -1) return dp[u][cur];
+        int ans = 0;
+        for (int v: adj[u]) {
+            if (vals[v] >= cur) {
+                ans += dfs(vals, adj, dp, v, cur);
+            }
+        }
+        if (u == 0) ans++; // self loop
+        return dp[u][cur] = ans;
+
+=======
+
+        const int MOD = 1'000'000'007;
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        function<int(int, int)> dfs = [&](int u, int p) {
+            int& ans = dp[u][p];
+            if (ans != -1) return ans;
+            if (vals[u] < vals[p]) return ans = 0;
+            ans = 1;
+            for (int v : g[u]) {
+                if (v != p) ans = (ans + dfs(v, u)) % MOD;
+            }
+            return ans;
+        };
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = (ans + dfs(i, i)) % MOD;
+        }
+        return ans;
+
+=======
+
+        const int N = vals.size();
+        const int MOD = 1e9 + 7;
+        vector<vector<int>> graph(N);
+        for (auto& e: edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(N, vector<int>(N, 0));
+        dp[0][vals[0]] = 1;
+        for (int i = 1; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                if (dp[i][j] == 0) continue;
+                for (int k: graph[i]) {
+                    if (vals[k] >= j) {
+                        dp[k][vals[k]] = (dp[k][vals[k]] + dp[i][j]) % MOD;
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < N; ++i) {
+            ans = (ans + dp[i][vals[i]]) % MOD;
+        }
+        return ans;

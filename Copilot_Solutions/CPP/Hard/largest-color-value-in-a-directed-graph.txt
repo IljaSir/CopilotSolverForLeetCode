@@ -1,0 +1,381 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = colors.size();
+        vector<vector<int>> g(n);
+        vector<int> deg(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            deg[e[1]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (deg[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<vector<int>> cnt(n, vector<int>(26));
+        int res = 0;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            cnt[u][colors[u] - 'a']++;
+            for (int v: g[u]) {
+                for (int i = 0; i < 26; i++) {
+                    cnt[v][i] = max(cnt[v][i], cnt[u][i]);
+                }
+                deg[v]--;
+                if (deg[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (deg[i] > 0) {
+                return -1;
+            }
+            res = max(res, *max_element(cnt[i].begin(), cnt[i].end()));
+        }
+        return res;
+
+=======
+
+        int n = colors.size();
+        vector<vector<int>> g(n);
+        vector<int> deg(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            g[u].push_back(v);
+            deg[v]++;
+        }
+        vector<int> q;
+        for (int i = 0; i < n; i++) {
+            if (deg[i] == 0) {
+                q.push_back(i);
+            }
+        }
+        for (int i = 0; i < q.size(); i++) {
+            int u = q[i];
+            for (auto& v : g[u]) {
+                if (--deg[v] == 0) {
+                    q.push_back(v);
+                }
+            }
+        }
+        if (q.size() < n) {
+            return -1;
+        }
+        vector<int> f(n, 1);
+        vector<vector<int>> cnt(n, vector<int>(26));
+        for (int i = n - 1; i >= 0; i--) {
+            int u = q[i];
+            cnt[u][colors[u] - 'a'] = f[u];
+            for (auto& v : g[u]) {
+                for (int c = 0; c < 26; c++) {
+                    cnt[u][c] = max(cnt[u][c], cnt[v][c]);
+                }
+                f[u] = max(f[u], f[v] + 1);
+            }
+        }
+        return *max_element(f.begin(), f.end());
+
+=======
+
+        int n = colors.size();
+        vector<int> indegree(n, 0);
+        vector<vector<int>> graph(n, vector<int>());
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            indegree[edge[1]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) q.push(i);
+        }
+        vector<vector<int>> dp(n, vector<int>(26, 0));
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            dp[node][colors[node] - 'a']++;
+            for (int nei : graph[node]) {
+                indegree[nei]--;
+                if (indegree[nei] == 0) q.push(nei);
+                for (int i = 0; i < 26; i++) {
+                    dp[nei][i] = max(dp[nei][i], dp[node][i]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] != 0) return -1;
+            ans = max(ans, *max_element(dp[i].begin(), dp[i].end()));
+        }
+        return ans;
+
+=======
+
+        int n = colors.size();
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+        }
+        vector<int> inDegree(n);
+        for (auto& e : edges) {
+            inDegree[e[1]]++;
+        }
+        vector<int> colorCount(n, 0);
+        vector<vector<int>> colorCountInPath(n, vector<int>(26, 0));
+        int maxColorCount = 0;
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+                colorCountInPath[i][colors[i] - 'a']++;
+                colorCount[i] = 1;
+            }
+        }
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            maxColorCount = max(maxColorCount, colorCount[u]);
+            for (auto& v : graph[u]) {
+                inDegree[v]--;
+                if (inDegree[v] == 0) {
+                    q.push(v);
+                }
+                for (int i = 0; i < 26; i++) {
+                    colorCountInPath[v][i] = max(colorCountInPath[v][i], colorCountInPath[u][i]);
+                }
+                if (colors[u] == colors[v]) {
+                    colorCount[v] = max(colorCount[v], colorCount[u] + 1);
+                } else {
+                    colorCount[v] = max(colorCount[v], colorCountInPath[u][colors[v] - 'a'] + 1);
+                }
+                colorCountInPath[v][colors[u] - 'a'] = max(colorCountInPath[v][colors[u] - 'a'], colorCount[u] + 1);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] != 0) {
+                return -1;
+            }
+        }
+        return maxColorCount;
+
+=======
+
+        int n = colors.size();
+        vector<int> degree(n, 0);
+        vector<vector<int>> adj(n, vector<int>());
+        for (int i = 0; i < edges.size(); i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            adj[u].push_back(v);
+            degree[v]++;
+        }
+        vector<int> q;
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 0) {
+                q.push_back(i);
+            }
+        }
+        for (int i = 0; i < q.size(); i++) {
+            for (int j = 0; j < adj[q[i]].size(); j++) {
+                int v = adj[q[i]][j];
+                degree[v]--;
+                if (degree[v] == 0) {
+                    q.push_back(v);
+                }
+            }
+        }
+        if (q.size() != n) {
+            return -1;
+        }
+        vector<vector<int>> dp(n, vector<int>(26, 0));
+        for (int i = 0; i < n; i++) {
+            dp[i][colors[i] - 'a']++;
+        }
+        int res = 0;
+        for (int i = q.size() - 1; i >= 0; i--) {
+            int u = q[i];
+            for (int j = 0; j < adj[u].size(); j++) {
+                int v = adj[u][j];
+                for (int k = 0; k < 26; k++) {
+                    dp[v][k] = max(dp[v][k], dp[u][k]);
+                }
+            }
+            int maxCnt = 0;
+            for (int j = 0; j < 26; j++) {
+                maxCnt = max(maxCnt, dp[u][j]);
+            }
+            res = max(res, maxCnt);
+        }
+        return res;
+
+=======
+
+        int n = colors.size();
+        vector<int> in(n, 0);
+        vector<vector<int>> g(n, vector<int>(0));
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            ++in[e[1]];
+        }
+        vector<int> q;
+        for (int i = 0; i < n; ++i) {
+            if (in[i] == 0) {
+                q.push_back(i);
+            }
+        }
+        vector<int> f(n, 0);
+        vector<vector<int>> cnt(n, vector<int>(26, 0));
+        int ans = 0;
+        for (int i = 0; i < q.size(); ++i) {
+            int u = q[i];
+            ++cnt[u][colors[u] - 'a'];
+            for (int v : g[u]) {
+                for (int j = 0; j < 26; ++j) {
+                    cnt[v][j] = max(cnt[v][j], cnt[u][j]);
+                }
+                if (--in[v] == 0) {
+                    q.push_back(v);
+                }
+            }
+        }
+        if (q.size() < n) {
+            return -1;
+        }
+        for (int i = 0; i < n; ++i) {
+            ans = max(ans, *max_element(cnt[i].begin(), cnt[i].end()));
+        }
+        return ans;
+
+=======
+
+        int n = colors.size();
+        vector<vector<int>> adj(n);
+        vector<int> indeg(n, 0);
+        vector<vector<int>> cnt(n, vector<int>(26, 0));
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            indeg[e[1]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (indeg[i] == 0) {
+                q.push(i);
+                cnt[i][colors[i] - 'a'] = 1;
+            }
+        }
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v : adj[u]) {
+                indeg[v]--;
+                for (int i = 0; i < 26; i++) {
+                    cnt[v][i] = max(cnt[v][i], cnt[u][i]);
+                }
+                cnt[v][colors[v] - 'a']++;
+                if (indeg[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (indeg[i] > 0) {
+                return -1;
+            }
+            for (int j = 0; j < 26; j++) {
+                res = max(res, cnt[i][j]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = colors.size();
+        vector<int> a(n, 0);
+        vector<int> b(n, 0);
+        vector<vector<int>> g(n, vector<int>());
+        vector<int> in(n, 0);
+        for (auto &e: edges) {
+            g[e[0]].push_back(e[1]);
+            in[e[1]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            if (colors[i] == 'a') {
+                a[i]++;
+            } else if (colors[i] == 'b') {
+                b[i]++;
+            } else {
+                a[i]++;
+                b[i]++;
+            }
+            for (auto &j: g[i]) {
+                a[j] = max(a[j], a[i]);
+                b[j] = max(b[j], b[i]);
+                in[j]--;
+                if (in[j] == 0) {
+                    q.push(j);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (in[i]) {
+                return -1;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, a[i] + b[i]);
+        }
+        return ans;
+
+=======
+
+        vector<int> in(colors.size(), 0);
+        vector<vector<int>> out(colors.size(), vector<int>());
+        vector<vector<int>> colorsCount(colors.size(), vector<int>(26, 0));
+        for (auto edge : edges) {
+            out[edge[0]].push_back(edge[1]);
+            in[edge[1]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < colors.size(); ++i) {
+            if (in[i] == 0) {
+                q.push(i);
+                colorsCount[i][colors[i] - 'a'] = 1;
+            }
+        }
+        int res = 0;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            for (int next : out[node]) {
+                for (int i = 0; i < 26; ++i) {
+                    colorsCount[next][i] = max(colorsCount[next][i], colorsCount[node][i]);
+                }
+                colorsCount[next][colors[next] - 'a']++;
+                in[next]--;
+                if (in[next] == 0) {
+                    q.push(next);
+                }
+            }
+        }
+        for (int i = 0; i < colors.size(); ++i) {
+            if (in[i] != 0) {
+                return -1;
+            }
+            for (int j = 0; j < 26; ++j) {
+                res = max(res, colorsCount[i][j]);
+            }
+        }
+        return res;

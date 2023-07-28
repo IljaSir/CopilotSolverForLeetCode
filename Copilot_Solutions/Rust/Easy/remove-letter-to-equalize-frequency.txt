@@ -1,0 +1,273 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut freq: Vec<i32> = vec![0; 26];
+        for c in word.chars() {
+            freq[(c as u8 - 'a' as u8) as usize] += 1;
+        }
+        let mut freqs = freq.iter().filter(|x| **x > 0).collect::<Vec<&i32>>();
+        if freqs.len() == 1 {
+            return true;
+        }
+        if freqs.len() == 2 {
+            if freqs[0] == &1 || freqs[1] == &1 {
+                return true;
+            }
+        }
+        freqs.sort();
+        let min = *freqs[0];
+        let max = *freqs[freqs.len() - 1];
+        if (max - min) == 1 {
+            return freqs.iter().filter(|x| **x == min).count() == 1;
+        }
+        if min == 1 {
+            return freqs.iter().filter(|x| **x == min).count() == 1;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut count = vec![0; 26];
+        for c in word.chars() {
+            let i = (c as u8 - b'a') as usize;
+            count[i] += 1;
+        }
+        let mut count = count.into_iter().filter(|&x| x > 0).collect::<Vec<_>>();
+        count.sort();
+        let n = count.len();
+        if n == 1 {
+            return true;
+        }
+        if count[0] == 1 {
+            let mut i = 1;
+            while i < n && count[i] == count[0] {
+                i += 1;
+            }
+            if i == n {
+                return true;
+            }
+            if count[i] == count[i - 1] + 1 {
+                return count[i] * (n - i) == count[i - 1] * i;
+            }
+            return false;
+        }
+        if count[0] == count[n - 1] {
+            return true;
+        }
+        if count[0] + 1 == count[n - 1] {
+            return count[0] * (n - 1) == count[n - 1] * (n - 2);
+        }
+        false
+
+=======
+
+        let mut freq = vec![0; 26];
+        for c in word.chars() {
+            freq[c as usize - 'a' as usize] += 1;
+        }
+        freq.sort();
+        let mut i = 0;
+        while freq[i] == 0 {
+            i += 1;
+        }
+        let min = freq[i];
+        let max = freq[25];
+        if min == max {
+            return true;
+        }
+        if min == 1 {
+            return freq[i + 1] == max;
+        }
+        if max - min == 1 {
+            return freq[24] == min;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut freq = vec![0; 26];
+        for c in word.chars() {
+            freq[(c as u8 - b'a') as usize] += 1;
+        }
+        let mut cnt = vec![0; word.len() + 1];
+        for f in freq.iter() {
+            if *f > 0 {
+                cnt[*f] += 1;
+            }
+        }
+        let mut one = 0;
+        let mut more = 0;
+        for (i, c) in cnt.iter().enumerate() {
+            if *c == 1 {
+                one = i;
+            }
+            if *c > 1 {
+                more = i;
+            }
+        }
+        if one == 0 {
+            return true;
+        }
+        if one == 1 {
+            return more == 1 || more == word.len();
+        } else if one == more - 1 {
+            return cnt[one] == 1;
+        }
+        false
+
+=======
+
+        let mut cnt = [0; 26];
+        for c in word.chars() {
+            cnt[c as usize - 'a' as usize] += 1;
+        }
+        let mut freq = [0; 101];
+        for i in 0..26 {
+            if cnt[i] > 0 {
+                freq[cnt[i] as usize] += 1;
+            }
+        }
+        let mut diff = 0;
+        let mut i = 0;
+        while i < 101 && freq[i] == 0 {
+            i += 1;
+        }
+        let mut j = 100;
+        while j > 0 && freq[j] == 0 {
+            j -= 1;
+        }
+        if i == j {
+            return true;
+        }
+        if i + 1 == j && freq[i] == 1 {
+            return true;
+        }
+        if j - i == 1 && freq[j] == 1 {
+            return true;
+        }
+        false
+
+=======
+
+        let mut v = vec![0; 26];
+        for c in word.chars() {
+            v[c as usize - 'a' as usize] += 1;
+        }
+        let mut count = 0;
+        for i in 0..26 {
+            if v[i] == 0 {
+                continue;
+            }
+            if v[i] == 1 {
+                count += 1;
+            }
+            if count > 1 {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut freq = vec![0; 26];
+        for c in word.bytes() {
+            freq[(c - b'a') as usize] += 1;
+        }
+        let mut count = 0;
+        for i in 0..26 {
+            if freq[i] > 0 {
+                count += 1;
+            }
+        }
+        if count == 1 {
+            return true;
+        }
+        for i in 0..26 {
+            if freq[i] == 0 {
+                continue;
+            }
+            freq[i] -= 1;
+            let mut f = 0;
+            for j in 0..26 {
+                if freq[j] > 0 {
+                    f = gcd(f, freq[j]);
+                }
+            }
+            if f > 1 {
+                return true;
+            }
+            freq[i] += 1;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut cnt = vec![0; 26];
+        for c in word.chars() {
+            cnt[c as usize - 'a' as usize] += 1;
+        }
+        let mut cnts = vec![0; word.len() + 1];
+        for c in cnt {
+            cnts[c] += 1;
+        }
+        let mut n = 0;
+        let mut c = 0;
+        for i in 0..=word.len() {
+            if cnts[i] > 0 {
+                n += 1;
+                c = cnts[i];
+            }
+        }
+        if n == 1 {
+            true
+        } else if n == 2 {
+            c == 1 || cnts[0] == 1
+        } else {
+            false
+        }
+
+=======
+
+        let mut freq = [0;26];
+        for c in word.chars() {
+            freq[c as usize - 97] += 1;
+        }
+        let mut count = 0;
+        for i in 0..26 {
+            if freq[i] != 0 {
+                count += 1;
+            }
+        }
+        if count == 1 {
+            return true;
+        }
+        let mut freqs = freq.to_vec();
+        freqs.sort();
+        let mut i = 0;
+        while i < 26 && freqs[i] == 0 {
+            i += 1;
+        }
+        let mut j = 25;
+        while j >= 0 && freqs[j] == 0 {
+            j -= 1;
+        }
+        if freqs[i] == 1 && freqs[i+1] == freqs[j] {
+            return true;
+        }
+        if freqs[j] - freqs[i] == 1 && freqs[j-1] == freqs[i] {
+            return true;
+        }
+        false
+
+=======
+
+        
+    }
+}

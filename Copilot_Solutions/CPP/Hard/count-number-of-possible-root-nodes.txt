@@ -1,0 +1,79 @@
+Synthesizing 2/10 solutions
+
+=======
+
+        int n = edges.size();
+        vector<vector<int>> graph(n+1);
+        for(int i=0;i<n;i++){
+            graph[edges[i][0]].push_back(edges[i][1]);
+            graph[edges[i][1]].push_back(edges[i][0]);
+        }
+        vector<int> degree(n+1);
+        for(int i=0;i<n;i++){
+            degree[edges[i][0]]++;
+            degree[edges[i][1]]++;
+        }
+        vector<int> leaves;
+        for(int i=0;i<n;i++){
+            if(degree[i]==1){
+                leaves.push_back(i);
+            }
+        }
+        int res = 0;
+        for(auto leaf : leaves){
+            vector<int> parent(n+1);
+            parent[leaf] = -1;
+            queue<int> q;
+            q.push(leaf);
+            while(!q.empty()){
+                int cur = q.front();
+                q.pop();
+                for(auto next : graph[cur]){
+                    if(parent[next]==0){
+                        parent[next] = cur;
+                        q.push(next);
+                    }
+                }
+            }
+            int count = 0;
+            for(auto guess : guesses){
+                if(parent[guess[0]]==guess[1]){
+                    count++;
+                }
+            }
+            if(count>=k){
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = edges.size() + 1;
+        vector<int> inDegree(n, 0);
+        vector<vector<int>> adj(n, vector<int>());
+        for (auto e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+            inDegree[e[0]]++;
+            inDegree[e[1]]++;
+        }
+        vector<int> roots;
+        for (int i = 0; i < n; ++i) {
+            if (inDegree[i] == 1) {
+                roots.push_back(i);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < roots.size(); ++i) {
+            int cnt = 0;
+            for (auto g : guesses) {
+                if (g[0] == roots[i]) {
+                    cnt++;
+                }
+            }
+            if (cnt >= k) {
+                ans++;
+            }
+        }
+        return ans;

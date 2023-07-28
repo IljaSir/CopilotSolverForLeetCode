@@ -1,0 +1,278 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto road : roads) {
+            graph[road[0]].push_back({road[1], road[2]});
+            graph[road[1]].push_back({road[0], road[2]});
+        }
+        
+        vector<int> dist(n, INT_MAX);
+        vector<int> ways(n, 0);
+        dist[0] = 0;
+        ways[0] = 1;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        
+        while (!pq.empty()) {
+            int d = pq.top().first;
+            int u = pq.top().second;
+            pq.pop();
+            
+            if (d > dist[u]) continue;
+            
+            for (auto v : graph[u]) {
+                int d2 = d + v.second;
+                if (d2 < dist[v.first]) {
+                    dist[v.first] = d2;
+                    ways[v.first] = ways[u];
+                    pq.push({d2, v.first});
+                } else if (d2 == dist[v.first]) {
+                    ways[v.first] = (ways[v.first] + ways[u]) % 1000000007;
+                }
+            }
+        }
+        
+        return ways[n - 1];
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : roads) {
+            graph[e[0]].push_back({e[1], e[2]});
+            graph[e[1]].push_back({e[0], e[2]});
+        }
+        vector<long long> dist(n, INT_MAX);
+        vector<int> ways(n, 0);
+        dist[0] = 0;
+        ways[0] = 1;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d > dist[u]) continue;
+            for (auto& [v, w] : graph[u]) {
+                if (d + w < dist[v]) {
+                    dist[v] = d + w;
+                    ways[v] = ways[u];
+                    pq.push({dist[v], v});
+                } else if (d + w == dist[v]) {
+                    ways[v] = (ways[v] + ways[u]) % 1000000007;
+                }
+            }
+        }
+        return ways[n - 1];
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& road : roads) {
+            int u = road[0], v = road[1], w = road[2];
+            graph[u].push_back({v, w});
+            graph[v].push_back({u, w});
+        }
+        vector<int> dist(n, INT_MAX);
+        vector<int> ways(n, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        dist[0] = 0;
+        ways[0] = 1;
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d > dist[u]) continue;
+            for (auto [v, w] : graph[u]) {
+                if (dist[v] == d + w) {
+                    ways[v] = (ways[v] + ways[u]) % 1000000007;
+                } else if (dist[v] > d + w) {
+                    dist[v] = d + w;
+                    ways[v] = ways[u];
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        return ways[n - 1];
+
+=======
+
+        vector<vector<vector<int>>> adj(n);
+        for (auto& road: roads) {
+            adj[road[0]].push_back({road[1], road[2]});
+            adj[road[1]].push_back({road[0], road[2]});
+        }
+        vector<int> dist(n, INT_MAX);
+        vector<int> cnt(n, 0);
+        dist[0] = 0;
+        cnt[0] = 1;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [d, u] = q.top();
+            q.pop();
+            if (d > dist[u]) continue;
+            for (auto& [v, w]: adj[u]) {
+                if (dist[u] + w > dist[v]) continue;
+                if (dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                    q.push({dist[v], v});
+                }
+                cnt[v] = (cnt[v] + cnt[u]) % (int)(1e9 + 7);
+            }
+        }
+        return cnt[n - 1];
+
+=======
+
+        const int mod = 1e9 + 7;
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& road : roads) {
+            g[road[0]].emplace_back(road[1], road[2]);
+            g[road[1]].emplace_back(road[0], road[2]);
+        }
+        vector<vector<int>> dist(n, vector<int>(n, INT_MAX / 2));
+        vector<vector<int>> ways(n, vector<int>(n, 0));
+        dist[0][0] = 0;
+        ways[0][0] = 1;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {0, 0}});
+        while (!pq.empty()) {
+            auto [d, p] = pq.top();
+            pq.pop();
+            int u = p.first;
+            int v = p.second;
+            if (d > dist[u][v]) {
+                continue;
+            }
+            for (auto& [w, t] : g[v]) {
+                int nd = d + t;
+                if (nd < dist[u][w]) {
+                    dist[u][w] = nd;
+                    ways[u][w] = ways[u][v];
+                    pq.push({nd, {u, w}});
+                } else if (nd == dist[u][w]) {
+                    ways[u][w] = (ways[u][w] + ways[u][v]) % mod;
+                }
+            }
+        }
+        return ways[0][n - 1];
+
+=======
+
+        const int MOD = 1e9 + 7;
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& road: roads) {
+            g[road[0]].push_back({road[1], road[2]});
+            g[road[1]].push_back({road[0], road[2]});
+        }
+        vector<long> dist(n, LONG_MAX);
+        vector<int> ways(n);
+        dist[0] = 0;
+        ways[0] = 1;
+        priority_queue<pair<long, int>, vector<pair<long, int>>, greater<pair<long, int>>> pq;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d > dist[u]) continue;
+            for (auto& [v, w]: g[u]) {
+                if (dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                    ways[v] = ways[u];
+                    pq.push({dist[v], v});
+                } else if (dist[v] == dist[u] + w) {
+                    ways[v] = (ways[v] + ways[u]) % MOD;
+                }
+            }
+        }
+        return ways[n - 1];
+
+=======
+
+        int mod = 1e9 + 7;
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& r: roads) {
+            graph[r[0]].push_back({r[1], r[2]});
+            graph[r[1]].push_back({r[0], r[2]});
+        }
+        vector<long long> dist(n, 1e18);
+        vector<int> ways(n);
+        dist[0] = 0;
+        ways[0] = 1;
+        priority_queue<pair<int, int>> pq;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d > dist[u]) continue;
+            for (auto [v, w]: graph[u]) {
+                if (dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                    pq.push({dist[v], v});
+                    ways[v] = ways[u];
+                } else if (dist[v] == dist[u] + w) {
+                    ways[v] = (ways[v] + ways[u]) % mod;
+                }
+            }
+        }
+        return ways[n - 1];
+
+=======
+
+        long long int mod = 1e9 + 7;
+        vector<vector<pair<int,int>>> graph(n);
+        for(auto road: roads){
+            graph[road[0]].push_back({road[1], road[2]});
+            graph[road[1]].push_back({road[0], road[2]});
+        }
+        vector<long long int> dist(n, INT64_MAX);
+        vector<int> ways(n, 0);
+        dist[0] = 0;
+        ways[0] = 1;
+        priority_queue<vector<long long int>, vector<vector<long long int>>, greater<vector<long long int>>> pq;
+        pq.push({0, 0});
+        while(!pq.empty()){
+            auto curr = pq.top();
+            pq.pop();
+            if(curr[0] != dist[curr[1]]) continue;
+            for(auto neighbour: graph[curr[1]]){
+                if(dist[neighbour.first] > dist[curr[1]] + neighbour.second){
+                    dist[neighbour.first] = dist[curr[1]] + neighbour.second;
+                    ways[neighbour.first] = ways[curr[1]];
+                    pq.push({dist[neighbour.first], neighbour.first});
+                }
+                else if(dist[neighbour.first] == dist[curr[1]] + neighbour.second){
+                    ways[neighbour.first] = (ways[neighbour.first] + ways[curr[1]]) % mod;
+                }
+            }
+        }
+        return ways[n-1];
+
+=======
+
+        const int MOD = 1e9 + 7;
+        // dp[i][j] = {ways: int, time: int}
+        vector<vector<pair<int, int>>> dp(n, vector<pair<int, int>>(n, {0, 0}));
+        for (auto& r : roads) {
+            int u = r[0], v = r[1], t = r[2];
+            dp[u][v] = {1, t};
+            dp[v][u] = {1, t};
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == j || dp[i][k].second == 0 || dp[k][j].second == 0) {
+                        continue;
+                    }
+                    int time = dp[i][k].second + dp[k][j].second;
+                    if (dp[i][j].second == 0 || time < dp[i][j].second) {
+                        dp[i][j].second = time;
+                        dp[i][j].first = dp[i][k].first * dp[k][j].first;
+                    } else if (time == dp[i][j].second) {
+                        dp[i][j].first = (dp[i][j].first + dp[i][k].first * dp[k][j].first) % MOD;
+                    }
+                }
+            }
+        }
+        return dp[0][n - 1].first;

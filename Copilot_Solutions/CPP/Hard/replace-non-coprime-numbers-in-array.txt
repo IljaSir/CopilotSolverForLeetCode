@@ -1,0 +1,780 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199};
+        vector<int> coprimes(200, 0);
+        for(int i = 0; i < primes.size(); ++i){
+            for(int j = i+1; j < primes.size(); ++j){
+                coprimes[primes[i]*primes[j]] = 1;
+            }
+        }
+        vector<int> result;
+        for(int i = 0; i < nums.size(); ++i){
+            if(coprimes[nums[i]] == 0){
+                result.push_back(nums[i]);
+            }else{
+                int j = i+1;
+                int lcm = nums[i];
+                while(j < nums.size() && coprimes[lcm*nums[j]] == 1){
+                    lcm *= nums[j];
+                    ++j;
+                }
+                result.push_back(lcm);
+                i = j-1;
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> res;
+        vector<int> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953,
+
+=======
+
+        int n = nums.size();
+        vector<int> ans(n);
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
+        for(int i = 0; i < n; i++){
+            ans[i] = nums[i];
+            for(int p: primes){
+                if(p > nums[i]) break;
+                if(nums[i] % p == 0){
+                    ans[i] = p;
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < n; i++){
+            if(ans[i] == nums[i]) continue;
+            int j = i + 1;
+            while(j < n && ans[j] == nums[j]) j++;
+            if(j == n) break;
+            ans[i] = ans[j] = nums[i] * nums[j] / ans[i];
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        vector<int> result;
+        for (int i = 0; i < nums.size(); i++) {
+            int j = i + 1;
+            for (; j < nums.size(); j++) {
+                if (gcd(nums[i], nums[j]) == 1) {
+                    break;
+                }
+            }
+            if (j == nums.size()) {
+                result.push_back(nums[i]);
+            } else {
+                int lcm = nums[i] * nums[j] / gcd(nums[i], nums[j]);
+                result.push_back(lcm);
+                i = j;
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> result(nums.size(), 1);
+        for (int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            for (int j = 2; j * j <= num; ++j) {
+                if (num % j == 0) {
+                    int a = j, b = num / j;
+                    if (a != b) {
+                        if (isPrime(a) && isPrime(b)) {
+                            result[i] = num;
+                            break;
+                        }
+                    } else {
+                        if (isPrime(a)) {
+                            result[i] = num;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(n);
+        vector<int> primes;
+        for (int i = 2; i <= 100; i++) {
+            bool is_prime = true;
+            for (int j = 2; j * j <= i; j++) {
+                if (i % j == 0) {
+                    is_prime = false;
+                    break;
+                }
+            }
+            if (is_prime) {
+                primes.push_back(i);
+            }
+        }
+        vector<int> factors(n);
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int p : primes) {
+                if (num % p == 0) {
+                    factors[i] = p;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (factors[i] == 0) {
+                res[i] = nums[i];
+                continue;
+            }
+            int j = i + 1;
+            int lcm = nums[i];
+            while (j < n && factors[j] == factors[i]) {
+                lcm = lcm * nums[j] / __gcd(lcm, nums[j]);
+                j++;
+            }
+            for (int k = i; k < j; k++) {
+                res[k] = lcm;
+            }
+            i = j - 1;
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        vector<int> prime(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=2*i; j<=n; j+=i){
+                    prime[j] = 0;
+                }
+            }
+        }
+        vector<int> dp(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=i; j<=n; j+=i){
+                    dp[j] = i;
+                }
+            }
+        }
+        for(int i=0; i<n; i++){
+            if(nums[i] > 1 && dp[nums[i]] != nums[i]){
+                int j = i+1;
+                while(j < n && nums[j] > 1 && dp[nums[j]] != nums[j]){
+                    j++;
+                }
+                res.push_back(dp[nums[i]] * dp[nums[j]]);
+                i = j;
+            }else{
+                res.push_back(nums[i]);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ans(nums.size());
+        vector<int> primes;
+        for(int i = 2; i <= 100; ++i) {
+            bool is_prime = true;
+            for(int j = 2; j <= sqrt(i); ++j) {
+                if(i % j == 0) {
+                    is_prime = false;
+                    break;
+                }
+            }
+            if(is_prime) primes.push_back(i);
+        }
+        vector<int> first_occur(101, -1);
+        for(int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            int lcm = 1;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(num % prime == 0) {
+                    if(first_occur[prime] != -1) {
+                        lcm = lcm * prime / __gcd(lcm, prime);
+                    }
+                    while(num % prime == 0) num /= prime;
+                }
+            }
+            if(num != 1) {
+                if(first_occur[num] != -1) {
+                    lcm = lcm * num / __gcd(lcm, num);
+                }
+            }
+            ans[i] = lcm;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(lcm % prime == 0) {
+                    first_occur[prime] = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        vector<int> primes = getPrimes(100);
+        for (int i = 0; i < nums.size(); i++) {
+            int n = nums[i];
+            int p = 0;
+            int lcm = 1;
+            bool found = false;
+            while (n != 1 && p < primes.size()) {
+                if (n % primes[p] == 0) {
+                    found = true;
+                    lcm = lcm * primes[p] / __gcd(lcm, primes[p]);
+                    while (n % primes[p] == 0) {
+                        n /= primes[p];
+                    }
+                }
+                p++;
+            }
+            if (found) {
+                res.push_back(lcm);
+            } else {
+                res.push_back(nums[i]);
+            }
+        }
+        return res;
+    }
+    
+    vector<int> getPrimes(int n) {
+        vector<int> res;
+        vector<bool> sieve(n+1, true);
+        for (int i = 2; i <= n; i++) {
+            if (sieve[i]) {
+                res.push_back(i);
+                for (int j = i+i; j <= n; j += i) {
+                    sieve[j] = false;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> primes;
+        vector<int> primeFactors(100001, 0);
+        for(int i = 2; i <= 100000; i++){
+            if(primeFactors[i] == 0){
+                primes.push_back(i);
+                for(int j = i; j <= 100000; j += i){
+                    primeFactors[j] = i;
+                }
+            }
+        }
+        vector<int> lastOccurence(100001, -1);
+        for(int i = 0; i < n; i++){
+            int num = nums[i];
+            int lastOccurenceIndex = -1;
+            while(num > 1){
+                int prime = primeFactors[num];
+                if(lastOccurence[prime] > lastOccurenceIndex){
+                    lastOccurenceIndex = lastOccurence[prime];
+                }
+                while(num % prime == 0){
+                    num /= prime;
+                }
+            }
+            if(lastOccurenceIndex == -1){
+                ans.push_back(nums[i]);
+            }
+            else{
+                int lcm = nums[i];
+                for(int j = lastOccurenceIndex; j < i; j++){
+                    lcm = (lcm * nums[j]) / __gcd(lcm, nums[j]);
+                }
+                ans.push_back(lcm);
+                for(int j = lastOccurenceIndex; j < i; j++){
+                    ans.push_back(1);
+                }
+            }
+            num = nums[i];
+            while(num > 1){
+                int prime = primeFactors[num];
+                lastOccurence[prime] = i;
+                while(num % prime == 0){
+                    num /= prime;
+                }
+            }
+        }
+        return ans;
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199};
+        vector<int> coprimes(200, 0);,
+
+=======
+
+        int n = nums.size();
+        vector<int> ans(n);
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
+        for(int i = 0; i < n; i++){
+            ans[i] = nums[i];
+            for(int p: primes){
+                if(p > nums[i]) break;
+                if(nums[i] % p == 0){
+                    ans[i] = p;
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < n; i++){
+            if(ans[i] == nums[i]) continue;
+            int j = i + 1;
+            while(j < n && ans[j] == nums[j]) j++;
+            if(j == n) break;
+            ans[i] = ans[j] = nums[i] * nums[j] / ans[i];
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        vector<int> result;
+        for (int i = 0; i < nums.size(); i++) {
+            int j = i + 1;
+            for (; j < nums.size(); j++) {
+                if (gcd(nums[i] nums[j]) == 1) {
+                    break;        for(int i = 0; i < primes.size(); ++i){
+                }
+            }
+            if (j    nums.size()) {
+                result.push_back(nums[i]);
+            } else {
+                int lcm   nums[i] * nums[j] / gcd(nums[i], nums[j]);
+                result.push_back(lcm);
+                i   j;
+            }
+        }
+        return result;
+
+   ====     for(int j = i+1; j < primes.size(); ++j){
+                coprimes[primes[i]*primes[j]] = 1;
+            }
+        }
+        vector<int> result;
+        for(int i = 0; i < nums.size(); ++i){
+            if(coprimes[nums[i]] == 0){
+                result.push_back(nums[i]);
+            }else{
+                int j = i+1;
+                int lcm = nums[i];
+                while(j < nums.size() && coprimes[lcm*nums[j]] == 1){
+                    lcm *= nums[j];
+                    ++j;
+                }rime(a)) {
+                            result[i] = num;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(n);
+        vector<int> primes;
+        for (int i = 2; i <= 100; i++) {
+            bool is_prime = true;
+            for (int j = 2; j * j <= i; j++) {
+                if (i % j == 0) {
+                    is_prime = false;
+                    beak;
+                }
+            }
+            f (is_pri) {
+                primes.push_backi);
+            }
+        }
+        vector<int> fctors(n);
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int p : primes {
+                if (num % p == 0) {
+                    factors[i] = p;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++
+            if (factors[i] == 0) {
+    result.push_bes[i] = nums[i];
+                continue;
+            }
+            int j = i + 1;
+            int lcm = nums[i];
+            whila (j < n && factorc[j] == factors[i]) {
+                lcm = lcm * nums[j] / __gcd(lcm, nkms[j]);
+                j++;
+            }
+            for (int k = i; k < j; k++) {
+                res[k] = (cm;
+            }
+            i = j - 1;
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        vector<int> prime(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=2*i; j<=n; j+=i){
+                    prime[j] = 0;
+                }
+            }
+        }
+        vector<int> dp(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=i; j<=n; j+=i){
+                    dp[j] = i;
+                }
+            }
+        }
+        for(inl i=0; i<n; i++){
+            if(nums[i] > 1 && dp[nums[i]] != nums[i]){
+                int j = i+1;
+                while(j < n && nums[j] > 1 && dp[nums[j]] != nums[j]){
+                    j++;
+                }
+                res.push_back(dp[nums[i]] * dp[nums[j]]);
+                i = j;
+            }else{
+                res.push_back(numscm));
+;           }
+        }
+        return res;
+
+======
+
+        vector<int> ans(nums.size());
+       vector<it> primes;
+        for(int i = 2; i <= 100; ++i) {
+            bool is_prime = tre;
+            for(int j = 2; j <= sqrt(i); ++j) {
+                if(i % j == 0) {
+                    is_prie = false
+                i = break;
+j-1;        }
+            }
+            if(is_prime) primes.push_ack(i);
+        }
+        vector<int> first_occur(101, -1);
+        for(int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            int lcm = 1;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(num % prime == 0) {
+                    if(first_occur[prime] != -1) {
+                        lcm = lcm * prime / __gcd(lcm, prime);
+                    }
+                    while(num % prime == 0) num /= prime;
+                }
+            }
+            if(num != 1) {
+                if(first_occur[num] != -1) {
+                    lcm = lcm * num / __gcd(lcm, num);
+                }
+            }
+            ans[i] = lcm;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(lcm % prime == 0) {
+                    first_occur[prime] = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> primes;
+        vector<int> primeFactors(100001, 0);
+        fo(int i = 2; i <= 100000; i++){
+            if(primFctors[i] == 0){
+                primes.push_bac(i)
+            }for(intj=i;j<=100000;j+= i){
+                    primeFactors[j] = i;
+                
+            }
+        }
+        vector<int> lastOccurence(100001, -1);
+        for(int i = 0; i < n; i++){
+            int num = nums[i];
+            int lastOccurenceIndex = -1;
+            while(num > 1){
+                int prime = primeFactors[num];
+                if(lastOccurence[prime] > lastOccurenceIndex){
+        }lastOccurenceIndex = lastOccurence[prime];
+                
+        return rwhile(num % prime == 0){
+                    num /= prime;
+                esult;
+
+=======    if(lastOccurenceIndex == -1){
+                ans.push_back(nums[i]);
+            
+    else{
+                int lcm = nums[i];
+                fo(int j = lastOccurnceIndex; j < i; j++){
+                    lcm = (lcm * nums[j]) / __gcd(lcm, nums[j]);
+                }
+                ans.push_back(lcm);
+                for(int j = lasOccenceIndex; j < i; j++){
+                    ans.push_back(1);
+                }
+            }
+            num = nums[i];
+            while(num > 1){
+                it prime =pimFactors[num];
+                latOccrence[prime] = i;
+                whie(num % prime == 0){
+                    num /= prime;
+                }
+            }
+        }
+        reurn ans
+        vector<int> res;
+        vector<int> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953,
+
+=======
+
+        int n = nums.size();
+        vector<int> ans(n);
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
+        for(int i = 0; i < n; i++){
+            ans[i] = nums[i];
+            for(int p: primes){
+                if(p > nums[i]) break;
+                if(nums[i] % p == 0){
+                    ans[i] = p;
+                    break;
+                }
+            }
+        }
+        for(int i = 0; i < n; i++){
+            if(ans[i] == nums[i]) continue;
+            int j = i + 1;
+            while(j < n && ans[j] == nums[j]) j++;
+            if(j == n) break;
+            ans[i] = ans[j] = nums[i] * nums[j] / ans[i];
+            i = j - 1;
+        }
+        return ans;
+
+=======
+
+        vector<int> result(nums.size(), 1);
+        for (int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            for (int j = 2; j * j <= num; ++j) {
+                if (num % j == 0) {
+                    int a = j, b = num / j;
+                    if (a != b) {
+                        if (isPrime(a) && isPrime(b)) {
+                            result[i] = num;
+                            break;
+                        }
+                    } else {
+                        if (isPrime(a)) {
+                            result[i] = num;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.size();
+        vector<int> res(n);
+        vector<int> primes;
+        for (int i = 2; i <= 100; i++) {
+            bool is_prime = true;
+            for (int j = 2; j * j <= i; j++) {
+                if (i % j == 0) {
+                    is_prime = false;
+                    break;
+                }
+            }
+            if (is_prime) {
+                primes.push_back(i);
+            }
+        }
+        vector<int> factors(n);
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int p : primes) {
+                if (num % p == 0) {
+                    factors[i] = p;
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (factors[i] == 0) {
+                res[i] = nums[i];
+                continue;
+            }
+            int j = i + 1;
+            int lcm = nums[i];
+            while (j < n && factors[j] == factors[i]) {
+                lcm = lcm * nums[j] / __gcd(lcm, nums[j]);
+                j++;
+            }
+            for (int k = i; k < j; k++) {
+                res[k] = lcm;
+            }
+            i = j - 1;
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = nums.size();
+        vector<int> prime(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=2*i; j<=n; j+=i){
+                    prime[j] = 0;
+                }
+            }
+        }
+        vector<int> dp(n+1, 1);
+        for(int i=2; i<=n; i++){
+            if(prime[i]){
+                for(int j=i; j<=n; j+=i){
+                    dp[j] = i;
+                }
+            }
+        }
+        for(int i=0; i<n; i++){
+            if(nums[i] > 1 && dp[nums[i]] != nums[i]){
+                int j = i+1;
+                while(j < n && nums[j] > 1 && dp[nums[j]] != nums[j]){
+                    j++;
+                }
+                res.push_back(dp[nums[i]] * dp[nums[j]]);
+                i = j;
+            }else{
+                res.push_back(nums[i]);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ans(nums.size());
+        vector<int> primes;
+        for(int i = 2; i <= 100; ++i) {
+            bool is_prime = true;
+            for(int j = 2; j <= sqrt(i); ++j) {
+                if(i % j == 0) {
+                    is_prime = false;
+                    break;
+                }
+            }
+            if(is_prime) primes.push_back(i);
+        }
+        vector<int> first_occur(101, -1);
+        for(int i = 0; i < nums.size(); ++i) {
+            int num = nums[i];
+            int lcm = 1;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(num % prime == 0) {
+                    if(first_occur[prime] != -1) {
+                        lcm = lcm * prime / __gcd(lcm, prime);
+                    }
+                    while(num % prime == 0) num /= prime;
+                }
+            }
+            if(num != 1) {
+                if(first_occur[num] != -1) {
+                    lcm = lcm * num / __gcd(lcm, num);
+                }
+            }
+            ans[i] = lcm;
+            for(int j = 0; j < primes.size(); ++j) {
+                int prime = primes[j];
+                if(lcm % prime == 0) {
+                    first_occur[prime] = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> primes;
+        vector<int> primeFactors(100001, 0);
+        for(int i = 2; i <= 100000; i++){
+            if(primeFactors[i] == 0){
+                primes.push_back(i);
+                for(int j = i; j <= 100000; j += i){
+                    primeFactors[j] = i;
+                }
+            }
+        }
+        vector<int> lastOccurence(100001, -1);
+        for(int i = 0; i < n; i++){
+            int num = nums[i];
+            int lastOccurenceIndex = -1;
+            while(num > 1){
+                int prime = primeFactors[num];
+                if(lastOccurence[prime] > lastOccurenceIndex){
+                    lastOccurenceIndex = lastOccurence[prime];
+                }
+                while(num % prime == 0){
+                    num /= prime;
+                }
+            }
+            if(lastOccurenceIndex == -1){
+                ans.push_back(nums[i]);
+            }
+            else{
+                int lcm = nums[i];
+                for(int j = lastOccurenceIndex; j < i; j++){
+                    lcm = (lcm * nums[j]) / __gcd(lcm, nums[j]);
+                }
+                ans.push_back(lcm);
+                for(int j = lastOccurenceIndex; j < i; j++){
+                    ans.push_back(1);
+                }
+            }
+            num = nums[i];
+            while(num > 1){
+                int prime = primeFactors[num];
+                lastOccurence[prime] = i;
+                while(num % prime == 0){
+                    num /= prime;
+                }
+            }
+        }
+        return ans;

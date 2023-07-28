@@ -1,0 +1,21 @@
+impl Solution {
+    pub fn max_ascending_sum(nums: Vec<i32>) -> i32 {
+        
+        let mut max = nums[0];
+        let mut sum = nums[0];
+        for i in 1..nums.len() {
+            if nums[i] > nums[i-1] {
+                sum += nums[i];
+            } else {
+                if sum > max {
+                    max = sum;
+                }
+                sum = nums[i];
+            }
+        }
+        if sum > max {
+            max = sum;
+        }
+        max
+    }
+}

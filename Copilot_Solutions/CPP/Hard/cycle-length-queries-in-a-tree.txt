@@ -1,0 +1,55 @@
+Synthesizing 3/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = queries.size();
+        vector<int> answer(m, 0);
+        vector<int> parent(1 << n, 0);
+        vector<int> depth(1 << n, 0);
+        for (int i = 1; i < (1 << n); i++) {
+            parent[i] = i / 2;
+            depth[i] = depth[i / 2] + 1;
+        }
+        for (int i = 0; i < m; i++) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            int d = 0;
+            while (a != b) {
+                if (depth[a] < depth[b]) {
+                    swap(a, b);
+                }
+                d += depth[a] - depth[b];
+                a = parent[a];
+            }
+            answer[i] = d;
+        }
+        return answer;
+
+=======
+
+        // 1, 2, 3, 4, 5, 6, 7
+        // 2, 4, 6, 8, 10, 12, 14
+        // 3, 6, 9, 12, 15, 18, 21
+        // 4, 8, 12, 16, 20, 24, 28
+        // 5, 10, 15, 20, 25, 30, 35
+        // 6, 12, 18, 24, 30, 36, 42
+        // 7, 14, 21, 28, 35, 42, 49
+        vector<int> ret;
+        int m = queries.size();
+        int N = (1 << n) - 1;
+        vector<vector<int>> dist(N + 1, vector<int>(N + 1, 0));
+        for (int i = 1; i <= N; ++i) {
+            for (int j = 1; j <= N; ++j) {
+                dist[i][j] = dist[j][i] = __builtin_popcount(i ^ j);
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            int res = N;
+            for (int j = 1; j <= N; ++j) {
+                res = min(res, dist[a][j] + dist[b][j] + 1);
+            }
+            ret.push_back(res);
+        }
+        return ret;

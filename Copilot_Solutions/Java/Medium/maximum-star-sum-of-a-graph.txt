@@ -1,0 +1,325 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = vals.length;
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[] dp = new int[n];
+        int[] tmp = new int[n];
+        int[] sum = new int[n];
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = vals[i];
+            count[i] = 1;
+        }
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < n; j++) {
+                int max = 0;
+                for (int v : graph[j]) {
+                    max = Math.max(max, dp[v]);
+                }
+                tmp[j] = max + sum[j];
+            }
+            int[] t = dp;
+            dp = tmp;
+            tmp = t;
+            for (int j = 0; j < n; j++) {
+                for (int v : graph[j]) {
+                    sum[j] += vals[v];
+                    count[j]++;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i] + vals[i] * (k + 1 - count[i]));
+        }
+        return ans;
+
+=======
+
+        int n = vals.length;
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+
+        int[] dp = new int[n];
+        int[] sum = new int[n];
+        int[] size = new int[n];
+        int[] max = new int[n];
+        int[] max2 = new int[n];
+
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            dfs(i, -1, graph, dp, sum, size, max, max2);
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+    }
+
+    private void dfs(int cur, int pre, List<Integer>[] graph, int[] dp, int[] sum, int[] size, int[] max, int[] max2) {
+        sum[cur] = max[cur] = max2[cur] = 0;
+        size[cur] = 1;
+        for (int nxt : graph[cur]) {
+            if (nxt != pre) {
+                dfs(nxt, cur, graph, dp, sum, size, max, max2);
+                sum[cur] += sum[nxt];
+                size[cur] += size[nxt];
+                if (max[nxt] > max[cur]) {
+                    max2[cur] = max[cur];
+                    max[cur] = max[nxt];
+                } else if (max[nxt] > max2[cur]) {
+                    max2[cur] = max[nxt];
+                }
+            }
+        }
+        sum[cur] += max[cur];
+        dp[cur] = sum[cur];
+        if (size[cur] > 1) {
+            dp[cur] = Math.max(dp[cur], sum[cur] + max2[cur]);
+        }
+
+=======
+
+        int n = vals.length;
+        int[][] g = new int[n][n];
+        for (int[] e : edges) {
+            g[e[0]][e[1]] = g[e[1]][e[0]] = 1;
+        }
+        int[] dp = new int[n];
+        int[] max = new int[n];
+        int maxSum = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            dp[i] = max[i] = vals[i];
+            for (int j = 0; j < n; j++) {
+                if (g[i][j] == 1) {
+                    dp[i] += vals[j];
+                    max[i] = Math.max(max[i], vals[j]);
+                }
+            }
+            maxSum = Math.max(maxSum, dp[i]);
+        }
+        if (k == 0) {
+            return maxSum;
+        }
+        int[][] dp2 = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= k; j++) {
+                dp2[i][j] = dp[i];
+                for (int m = 0; m < n; m++) {
+                    if (g[i][m] == 1 && m != j) {
+                        dp2[i][j] = Math.max(dp2[i][j], dp2[m][j - 1] + max[i]);
+                    }
+                }
+                maxSum = Math.max(maxSum, dp2[i][j]);
+            }
+        }
+        return maxSum;
+
+=======
+
+        int n = vals.length;
+        int[] degree = new int[n];
+        int[] sum = new int[n];
+        for (int[] edge : edges) {
+            degree[edge[0]]++;
+            degree[edge[1]]++;
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<Integer>(new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                return degree[i2] - degree[i1];
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            pq.offer(i);
+        }
+        int[] dp = new int[k+1];
+        for (int i = 0; i < n; i++) {
+            int cur = pq.poll();
+            sum[cur] = vals[cur];
+            for (int j = k; j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[j-1] + sum[cur]);
+            }
+            for (int[] edge : edges) {
+                if (edge[0] == cur) {
+                    sum[edge[1]] += vals[cur];
+                }
+                if (edge[1] == cur) {
+                    sum[edge[0]] += vals[cur];
+                }
+            }
+        }
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i <= k; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int n = vals.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        dp[0] = vals[0];
+        for (int i = 0; i < k; i++) {
+            int[] ndp = new int[n];
+            Arrays.fill(ndp, Integer.MIN_VALUE);
+            for (int[] edge : edges) {
+                int u = edge[0], v = edge[1];
+                ndp[u] = Math.max(ndp[u], dp[v]);
+                ndp[v] = Math.max(ndp[v], dp[u]);
+            }
+            for (int j = 0; j < n; j++) {
+                ndp[j] = Math.max(ndp[j], dp[j] + vals[j]);
+            }
+            dp = ndp;
+        }
+        int ans = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = vals.length;
+        int[] dp = new int[n];
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = vals[i];
+            sum[i] = vals[i];
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            if (dp[u] < dp[v]) {
+                int tmp = u;
+                u = v;
+                v = tmp;
+            }
+            dp[u] = Math.max(dp[u], dp[v] + vals[u]);
+            sum[u] += sum[v];
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int i = 0; i < n; i++) {
+            pq.offer(dp[i] - sum[i]);
+        }
+        int ans = 0;
+        for (int i = 0; i <= k; i++) {
+            ans = Math.max(ans, sum[pq.poll()] + i * (i - 1) / 2);
+        }
+        return ans;
+
+=======
+
+        int n = vals.length;
+        int[] dp = new int[n];
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = vals[i];
+        }
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph[edge[0]][edge[1]] = 1;
+            graph[edge[1]][edge[0]] = 1;
+        }
+        int[] next = new int[n];
+        for (int i = 0; i < n; i++) {
+            next[i] = -1;
+        }
+        for (int i = 0; i < n; i++) {
+            int max = 0;
+            for (int j = 0; j < n; j++) {
+                if (graph[i][j] == 1 && dp[j] > dp[max]) {
+                    max = j;
+                }
+            }
+            next[i] = max;
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            int[] cur = new int[n];
+            for (int j = 0; j < n; j++) {
+                cur[j] = dp[j];
+            }
+            int count = 0;
+            int sum = 0;
+            int j = i;
+            while (j >= 0 && count <= k) {
+                sum += cur[j];
+                cur[j] = 0;
+                j = next[j];
+                count++;
+            }
+            max = Math.max(max, sum);
+        }
+        return max;
+
+=======
+
+        int n = vals.length;
+        int[] dp = new int[n];
+        for(int i = 0; i < n; i++) dp[i] = vals[i];
+        for(int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            int a = edge[0];
+            int b = edge[1];
+            if(a > b) {
+                int t = a;
+                a = b;
+                b = t;
+            }
+            dp[b] = Math.max(dp[b], dp[a] + vals[b]);
+        }
+        Arrays.sort(dp);
+        int ans = 0;
+        for(int i = n - 1; i >= n - 1 - k; i--) {
+            ans += dp[i];
+        }
+        return ans;
+
+=======
+
+        int n = vals.length;
+        int[] dp = new int[n];
+        int[] sum = new int[n];
+        int[] count = new int[n];
+        for (int[] e : edges) {
+            int u = e[0];
+            int v = e[1];
+            count[u]++;
+            count[v]++;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            int u = i;
+            sum[u] = vals[u];
+            dp[u] = vals[u];
+            PriorityQueue<Integer> pq = new PriorityQueue<>();
+            for (int[] e : edges) {
+                int v = e[0] == u ? e[1] : e[0] == v ? e[1] : -1;
+                if (v == -1) continue;
+                pq.add(dp[v]);
+                sum[u] += sum[v];
+            }
+            while (pq.size() > k) {
+                sum[u] -= pq.poll();
+            }
+            dp[u] = Math.max(dp[u], sum[u]);
+        }
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;

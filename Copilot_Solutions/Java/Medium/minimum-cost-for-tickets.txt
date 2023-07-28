@@ -1,0 +1,236 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] dp = new int[days.length];
+        dp[0] = Math.min(costs[0], Math.min(costs[1], costs[2]));
+        for (int i = 1; i < days.length; i++) {
+            int min = costs[0] + dp[i - 1];
+            int j = i - 1;
+            while (j >= 0 && days[i] - days[j] < 7) {
+                j--;
+            }
+            if (j >= 0) {
+                min = Math.min(min, costs[1] + dp[j]);
+            } else {
+                min = Math.min(min, costs[1]);
+            }
+            j = i - 1;
+            while (j >= 0 && days[i] - days[j] < 30) {
+                j--;
+            }
+            if (j >= 0) {
+                min = Math.min(min, costs[2] + dp[j]);
+            } else {
+                min = Math.min(min, costs[2]);
+            }
+            dp[i] = min;
+        }
+        return dp[days.length - 1];
+
+=======
+
+        int[] dp = new int[days.length];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 0; i < days.length; i++) {
+            for (int j = 0; j < 3; j++) {
+                int prev = findPrev(days, days[i] - (j == 0 ? 1 : j == 1 ? 7 : 30));
+                if (prev == -1) {
+                    dp[i] = Math.min(dp[i], costs[j]);
+                } else {
+                    dp[i] = Math.min(dp[i], dp[prev] + costs[j]);
+                }
+            }
+        }
+        return dp[dp.length - 1];
+    }
+    
+    private int findPrev(int[] days, int target) {
+        int left = 0;
+        int right = days.length - 1;
+        if (days[left] >= target) {
+            return -1;
+        }
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (days[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+
+=======
+
+        int[] dp = new int[days.length];
+        Arrays.fill(dp, -1);
+        return mincostTickets(days, costs, 0, dp);
+
+=======
+
+        int[] dp = new int[days.length];
+        Arrays.fill(dp, -1);
+        return mincostTickets(days, costs, 0, dp);
+    }
+    public int mincostTickets(int[] days, int[] costs, int i, int[] dp) {
+        if (i >= days.length) {
+            return 0;
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        int ans = Integer.MAX_VALUE;
+        ans = Math.min(ans, costs[0] + mincostTickets(days, costs, i + 1, dp));
+        int j = i + 1;
+        while (j < days.length && days[j] - days[i] < 7) {
+            j++;
+        }
+        ans = Math.min(ans, costs[1] + mincostTickets(days, costs, j, dp));
+        while (j < days.length && days[j] - days[i] < 30) {
+            j++;
+        }
+        ans = Math.min(ans, costs[2] + mincostTickets(days, costs, j, dp));
+        return dp[i] = ans;
+
+=======
+
+        int[] dp = new int[days.length];
+        Arrays.fill(dp, -1);
+        return mincostTickets(days, costs, 0, dp);
+    }
+    public int mincostTickets(int[] days, int[] costs, int i, int[] dp) {
+        if (i >= days.length) {
+            return 0;
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        int min = Integer.MAX_VALUE;
+        int j = i;
+        min = Math.min(min, costs[0] + mincostTickets(days, costs, i + 1, dp));
+        while (j < days.length && days[j] < days[i] + 7) {
+            j++;
+        }
+        min = Math.min(min, costs[1] + mincostTickets(days, costs, j, dp));
+        while (j < days.length && days[j] < days[i] + 30) {
+            j++;
+        }
+        min = Math.min(min, costs[2] + mincostTickets(days, costs, j, dp));
+        dp[i] = min;
+        return min;
+
+=======
+
+        int[] dp = new int[days.length];
+        int[] durations = new int[]{1, 7, 30};
+        for (int i = 0; i < days.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < 3; j++) {
+                int cost = costs[j];
+                int duration = durations[j];
+                int prev = i - 1;
+                while (prev >= 0 && days[i] - days[prev] < duration) {
+                    prev--;
+                }
+                if (prev < 0) {
+                    dp[i] = Math.min(dp[i], cost);
+                } else {
+                    dp[i] = Math.min(dp[i], dp[prev] + cost);
+                }
+            }
+        }
+        return dp[days.length - 1];
+
+=======
+
+        int[] dp = new int[days.length];
+        int[] durations = {1, 7, 30};
+        for (int i = 0; i < days.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < 3; j++) {
+                int index = findIndex(days, days[i] - durations[j]);
+                int cost = j == 0 ? costs[j] : costs[j] + dp[index];
+                dp[i] = Math.min(dp[i], cost);
+            }
+        }
+        return dp[days.length - 1];
+    }
+
+    private int findIndex(int[] days, int val) {
+        int left = 0, right = days.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (days[mid] == val) {
+                return mid;
+            } else if (days[mid] > val) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return right;
+
+=======
+
+        int dp[] = new int[days.length];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = costs[0];
+        for (int i = 1; i < days.length; i++) {
+            int day = days[i];
+            dp[i] = dp[i - 1] + costs[0];
+            int j = i - 1;
+            while (j >= 0 && days[j] + 6 >= day) {
+                j--;
+            }
+            if (j >= 0) {
+                dp[i] = Math.min(dp[i], dp[j] + costs[1]);
+            } else {
+                dp[i] = Math.min(dp[i], costs[1]);
+            }
+            while (j >= 0 && days[j] + 29 >= day) {
+                j--;
+            }
+            if (j >= 0) {
+                dp[i] = Math.min(dp[i], dp[j] + costs[2]);
+            } else {
+                dp[i] = Math.min(dp[i], costs[2]);
+            }
+        }
+        return dp[days.length - 1];
+
+=======
+
+        int[] dp = new int[366];
+        int[] dayset = new int[366];
+        for (int d: days) dayset[d] = 1;
+        for (int i=1; i<=365; i++) {
+            if (dayset[i] == 0) {
+                dp[i] = dp[i-1];
+                continue;
+            }
+            int min = dp[i-1] + costs[0];
+            min = Math.min(min, dp[Math.max(0, i-7)] + costs[1]);
+            min = Math.min(min, dp[Math.max(0, i-30)] + costs[2]);
+            dp[i] = min;
+        }
+        return dp[365];
+
+=======
+
+        int[] dp = new int[days.length];
+        int[] lasts = new int[3];
+        int[] durations = new int[] {1, 7, 30};
+        for (int i = 0; i < days.length; i++) {
+            int day = days[i];
+            for (int j = 0; j < 3; j++) {
+                while (lasts[j] < i && day - days[lasts[j]] >= durations[j]) {
+                    lasts[j]++;
+                }
+                int cost = costs[j] + (lasts[j] == 0 ? 0 : dp[lasts[j] - 1]);
+                dp[i] = i == 0 ? cost : Math.min(dp[i - 1], cost);
+            }
+        }
+        return dp[days.length - 1];

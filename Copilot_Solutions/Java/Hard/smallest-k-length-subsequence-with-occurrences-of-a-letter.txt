@@ -1,0 +1,381 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.length();
+        int[] last = new int[26];
+        for (int i = 0; i < n; i++) {
+            last[s.charAt(i) - 'a'] = i;
+        }
+        int[] freq = new int[n];
+        int[] prefix = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i > 0) {
+                prefix[i] = prefix[i - 1];
+            }
+            if (s.charAt(i) == letter) {
+                prefix[i]++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            freq[i] = prefix[i];
+            if (i >= k) {
+                freq[i] -= prefix[i - k];
+            }
+        }
+        int minIndex = -1;
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == letter) {
+                if (i + k - 1 < n && freq[i + k - 1] >= repetition) {
+                    minIndex = i;
+                    break;
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(letter);
+        int remain = k - 1;
+        int lastLetter = minIndex;
+        int lastLetterFreq = 1;
+        for (int i = minIndex + 1; i < n && remain > 0; i++) {
+            if (s.charAt(i) == letter) {
+                lastLetter = i;
+                lastLetterFreq++;
+            }
+            if (last[s.charAt(i) - 'a'] >= lastLetter && lastLetterFreq + remain - 1 >= repetition) {
+                sb.append(s.charAt(i));
+                remain--;
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] count = new int[n];
+        count[n - 1] = s.charAt(n - 1) == letter ? 1 : 0;
+        for (int i = n - 2; i >= 0; i--) {
+            count[i] = count[i + 1] + (s.charAt(i) == letter ? 1 : 0);
+        }
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (k > 0) {
+            int j = i;
+            while (j < n && (n - j + sb.length() >= k) && (count[j] < repetition || s.charAt(j) > letter)) {
+                j++;
+            }
+            if (j == n) {
+                sb.append(letter);
+                repetition--;
+            } else {
+                sb.append(s.charAt(j));
+                if (s.charAt(j) == letter) {
+                    repetition--;
+                }
+                i = j + 1;
+            }
+            k--;
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] count = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--) {
+            count[i] = count[i + 1] + (s.charAt(i) == letter ? 1 : 0);
+        }
+        int pos = 0;
+        int need = repetition;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < k; i++) {
+            char min = 'z' + 1;
+            while (pos + k - i <= n) {
+                if (count[pos] >= need) {
+                    min = s.charAt(pos);
+                    break;
+                }
+                pos++;
+            }
+            for (int j = pos; j < n; j++) {
+                if (s.charAt(j) < min && j + k - i <= n && count[j] >= need) {
+                    min = s.charAt(j);
+                    pos = j;
+                }
+            }
+            sb.append(min);
+            if (min == letter) {
+                need--;
+            }
+            pos++;
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] cnt = new int[n];
+        cnt[n - 1] = s.charAt(n - 1) == letter ? 1 : 0;
+        for (int i = n - 2; i >= 0; i--) {
+            cnt[i] = cnt[i + 1] + (s.charAt(i) == letter ? 1 : 0);
+        }
+        int[] pos = new int[26];
+        Arrays.fill(pos, -1);
+        for (int i = 0; i < n; i++) {
+            pos[s.charAt(i) - 'a'] = i;
+        }
+        char[] ans = new char[k];
+        int p = 0;
+        int r = repetition;
+        for (int i = 0; i < k - repetition; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (pos[j] < p) {
+                    continue;
+                }
+                if (cnt[pos[j]] >= r && pos[j] + k - i <= n) {
+                    ans[i] = (char) ('a' + j);
+                    p = pos[j] + 1;
+                    break;
+                }
+            }
+        }
+        for (int i = k - repetition; i < k; i++) {
+            ans[i] = letter;
+        }
+        return new String(ans);
+
+=======
+
+        int n = s.length();
+        int[] count = new int[26];
+        for (int i = 0; i < n; i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        int[] used = new int[26];
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            count[c - 'a']--;
+            if (used[c - 'a'] > 0) {
+                used[c - 'a']--;
+                continue;
+            }
+            while (!stack.isEmpty() && c < stack.peek() && count[stack.peek() - 'a'] > 0) {
+                used[stack.pop() - 'a']--;
+            }
+            if (stack.size() < k) {
+                stack.push(c);
+                used[c - 'a']++;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        sb.reverse();
+        int l = sb.length();
+        int c = 0;
+        for (int i = 0; i < l; i++) {
+            if (sb.charAt(i) == letter) {
+                c++;
+            }
+        }
+        if (c < repetition) {
+            for (int i = 0; i < repetition - c; i++) {
+                sb.append(letter);
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] count = new int[26];
+        boolean[] seen = new boolean[26];
+        for (int i = 0; i < n; i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            while (!stack.isEmpty() && c < stack.peek() && count[stack.peek() - 'a'] > 0 && stack.size() - 1 + n - i >= k) {
+                char top = stack.pop();
+                seen[top - 'a'] = false;
+            }
+            if (!seen[c - 'a'] && stack.size() < k) {
+                stack.push(c);
+                seen[c - 'a'] = true;
+            }
+            count[c - 'a']--;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        sb.reverse();
+        int l = sb.length();
+        int num = 0;
+        for (int i = 0; i < l; i++) {
+            if (sb.charAt(i) == letter) {
+                num++;
+            }
+        }
+        if (num < repetition) {
+            int diff = repetition - num;
+            for (int i = 0; i < l; i++) {
+                if (sb.charAt(i) != letter) {
+                    sb.setCharAt(i, letter);
+                    diff--;
+                    if (diff == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int[] count = new int[26];
+        int[] used = new int[26];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
+        }
+        Stack<Character> stack = new Stack<>();
+        for (char c : s.toCharArray()) {
+            if (used[c - 'a'] == 0) {
+                while (!stack.isEmpty() && stack.peek() > c && count[stack.peek() - 'a'] >= repetition) {
+                    used[stack.pop() - 'a'] = 0;
+                }
+            }
+            if (used[c - 'a'] < repetition) {
+                stack.push(c);
+                used[c - 'a']++;
+            }
+            count[c - 'a']--;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.reverse().toString();
+
+=======
+
+        int n = s.length();
+        int[] cnt = new int[26];
+        for (int i = 0; i < n; i++) {
+            cnt[s.charAt(i) - 'a']++;
+        }
+        int need = k - repetition;
+        int have = 0;
+        int[] seen = new int[26];
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            while (!stack.isEmpty() && stack.peek() > c && cnt[stack.peek() - 'a'] - seen[stack.peek() - 'a'] > 0 && need > 0) {
+                seen[stack.pop() - 'a']--;
+                need--;
+            }
+            if (c == letter) {
+                stack.push(c);
+                seen[c - 'a']++;
+                have++;
+            } else if (have < repetition) {
+                stack.push(c);
+                seen[c - 'a']++;
+                have++;
+                need--;
+            } else if (need > 0) {
+                stack.push(c);
+                seen[c - 'a']++;
+                need--;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        sb.reverse();
+        return sb.toString();
+
+=======
+
+        int n = s.length();
+        int[] cnt = new int[26];
+        int[] cnt2 = new int[26];
+        for (int i = 0; i < n; i++) {
+            cnt[s.charAt(i) - 'a']++;
+        }
+        int p = 0;
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == letter) {
+                cnt2[c - 'a']++;
+                cnt[c - 'a']--;
+                p++;
+            }
+            if (p == repetition) {
+                break;
+            }
+        }
+        int m = n - p;
+        char[] res = new char[k];
+        int t = 0;
+        int[] cnt3 = new int[26];
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (cnt2[c - 'a'] > 0) {
+                cnt2[c - 'a']--;
+                cnt3[c - 'a']++;
+                continue;
+            }
+            if (cnt[c - 'a'] > 0) {
+                while (t > 0 && res[t - 1] > c && cnt[res[t - 1] - 'a'] + cnt3[res[t - 1] - 'a'] > 0) {
+                    cnt3[res[t - 1] - 'a']--;
+                    t--;
+                }
+                res[t++] = c;
+                cnt[c - 'a']--;
+            }
+        }
+        return new String(res);
+
+=======
+
+        int[] freq = new int[26];
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+        int[] count = new int[26];
+        int[] seen = new int[26];
+        Stack<Character> stack = new Stack<>();
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']--;
+            if (seen[c - 'a']++ > 0) {
+                continue;
+            }
+            while (!stack.isEmpty() && c < stack.peek() && freq[stack.peek() - 'a'] > 0) {
+                seen[stack.pop() - 'a'] = 0;
+            }
+            stack.push(c);
+        }
+        char[] result = new char[k];
+        for (int i = k - 1; i >= 0; i--) {
+            char c = stack.pop();
+            result[i] = c;
+            count[c - 'a']++;
+        }
+        int start = 0, end = k - 1;
+        while (count[letter - 'a'] < repetition) {
+            char c = result[start];
+            if (c == letter) {
+                count[c - 'a']--;
+                while (result[end] != letter) {
+                    end--;
+                }
+                result[end--] = c;
+            }
+            start++;
+        }
+        return new String(result);

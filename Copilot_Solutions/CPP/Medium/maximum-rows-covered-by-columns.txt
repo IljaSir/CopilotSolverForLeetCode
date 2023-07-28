@@ -1,0 +1,257 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<int> dp(1 << n, 0);
+        for (int i = 0; i < m; ++i) {
+            int mask = 0;
+            for (int j = 0; j < n; ++j) {
+                if (matrix[i][j] == 1) {
+                    mask |= (1 << j);
+                }
+            }
+            for (int j = mask; j; j = (j - 1) & mask) {
+                dp[j] = max(dp[j], dp[j ^ mask] + 1);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            if (__builtin_popcount(i) == numSelect) {
+                ans = max(ans, dp[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        int res = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            if (__builtin_popcount(i) != numSelect) continue;
+            int cnt = 0;
+            for (int j = 0; j < m; j++) {
+                bool ok = true;
+                for (int k = 0; k < n; k++) {
+                    if (matrix[j][k] == 1 && !(i & (1 << k))) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) cnt++;
+            }
+            res = max(res, cnt);
+        }
+        return res;
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<int> rows(m);
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                rows[i] = rows[i] * 2 + matrix[i][j];
+            }
+        }
+        vector<int> dp(1 << n);
+        for (int i = 0; i < m; ++i) {
+            for (int j = (1 << n) - 1; j >= 0; --j) {
+                dp[j | rows[i]] = max(dp[j | rows[i]], dp[j] + 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<int> rowCover(m, 0);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    rowCover[i] |= (1 << j);
+                }
+            }
+        }
+        vector<int> dp(1 << n, 0);
+        for (int i = 0; i < m; i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                dp[j | rowCover[i]] = max(dp[j | rowCover[i]], dp[j] + 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+    }
+    int maximumRows2(vector<vector<int>>& matrix, int numSelect) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<int> rowCover(m, 0);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    rowCover[i] |= (1 << j);
+                }
+            }
+        }
+        vector<int> dp(1 << n, 0);
+        for (int i = 0; i < m; i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                dp[j | rowCover[i]] = max(dp[j | rowCover[i]], dp[j] + 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = matrix.size();
+        int m = matrix[0].size();
+        vector<vector<int>> dp(n, vector<int>(1 << m, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (matrix[i][j] == 0) continue;
+                for (int s = 0; s < (1 << m); s++) {
+                    if (s & (1 << j)) {
+                        dp[i][s] += 1;
+                    }
+                }
+            }
+        }
+        vector<vector<int>> dp2(n + 1, vector<int>(1 << m, 0));
+        for (int i = 0; i < n; i++) {
+            for (int s = 0; s < (1 << m); s++) {
+                dp2[i + 1][s] = max(dp2[i + 1][s], dp2[i][s]);
+                dp2[i + 1][s] = max(dp2[i + 1][s], dp2[i][s ^ ((1 << m) - 1)] + dp[i][s]);
+            }
+        }
+        return dp2[n][(1 << m) - 1];
+
+=======
+
+        int m = matrix.size(), n = matrix[0].size();
+        int res = 0;
+        vector<int> cnt(1 << n, 0);
+        for (int i = 0; i < m; ++i) {
+            int state = 0;
+            for (int j = 0; j < n; ++j) {
+                if (matrix[i][j]) state |= (1 << j);
+            }
+            ++cnt[state];
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int state = (1 << n) - 1; state >= 0; --state) {
+                if (state & (1 << i)) cnt[state ^ (1 << i)] += cnt[state];
+            }
+        }
+        for (int state = 0; state < (1 << n); ++state) {
+            if (__builtin_popcount(state) == numSelect) res = max(res, cnt[state]);
+        }
+        return res;
+
+=======
+
+        int m = matrix.size(), n = matrix[0].size();
+        vector<int> rows(m, 0);
+        int res = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            if (__builtin_popcount(i) == numSelect) {
+                fill(rows.begin(), rows.end(), 0);
+                for (int j = 0; j < n; ++j) {
+                    if (i & (1 << j)) {
+                        for (int k = 0; k < m; ++k) {
+                            rows[k] += matrix[k][j];
+                        }
+                    }
+                }
+                res = max(res, *max_element(rows.begin(), rows.end()));
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        int res = 0;
+        vector<vector<int>> dp(m, vector<int>(1 << n, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    dp[i][1 << j] = 1;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                for (int k = 0; k < n; k++) {
+                    if ((j & (1 << k)) == 0) {
+                        dp[i][j | (1 << k)] = max(dp[i][j | (1 << k)], dp[i][j] + matrix[i][k]);
+                    }
+                }
+            }
+        }
+        vector<vector<int>> dp2(m + 1, vector<int>((1 << n), 0));
+        for (int i = 1; i <= m; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                dp2[i][j] = dp2[i - 1][j];
+                for (int k = 0; k < (1 << n); k++) {
+                    if ((j & k) == 0) {
+                        dp2[i][j] = max(dp2[i][j], dp2[i - 1][j | k] + dp[i - 1][k]);
+                    }
+                }
+            }
+        }
+        return dp2[m][(1 << n) - 1];
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        int res = 0;
+        vector<int> row(m, 0);
+        for (int i = 0; i < (1 << n); ++i) {
+            if (__builtin_popcount(i) != numSelect) continue;
+            for (int j = 0; j < m; ++j) row[j] = 0;
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) {
+                    for (int k = 0; k < m; ++k) {
+                        row[k] += matrix[k][j];
+                    }
+                }
+            }
+            int cnt = 0;
+            for (int j = 0; j < m; ++j) {
+                if (row[j] == 0) cnt++;
+            }
+            res = max(res, cnt);
+        }
+        return res;
+
+=======
+
+        int m = matrix.size();
+        int n = matrix[0].size();
+        int max = 0;
+        vector<int> rows(m, 0);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rows[i] += matrix[i][j];
+            }
+        }
+        for (int i = 0; i < pow(2, n); i++) {
+            int count = 0;
+            int sum = 0;
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    count++;
+                    for (int k = 0; k < m; k++) {
+                        sum += matrix[k][j];
+                    }
+                }
+            }
+            if (count == numSelect && sum > max) {
+                max = sum;
+            }
+        }
+        return max;

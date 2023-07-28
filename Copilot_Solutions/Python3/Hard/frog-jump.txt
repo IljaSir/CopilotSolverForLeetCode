@@ -1,0 +1,188 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        n = len(stones)
+        dp = [[False] * n for _ in range(n)]
+        dp[0][0] = True
+        for i in range(1, n):
+            if stones[i] - stones[i - 1] > i:
+                return False
+        for i in range(1, n):
+            for j in range(i - 1, -1, -1):
+                k = stones[i] - stones[j]
+                if k > j + 1:
+                    break
+                dp[i][k] = dp[j][k - 1] or dp[j][k] or dp[j][k + 1]
+                if i == n - 1 and dp[i][k]:
+                    return True
+        return False
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        if stones[1] != 1:
+            return False
+        dp = {}
+        for stone in stones:
+            dp[stone] = set()
+        dp[1].add(1)
+        for stone in stones:
+            for jump in dp[stone]:
+                for i in range(jump-1, jump+2):
+                    if i > 0 and stone+i in dp:
+                        dp[stone+i].add(i)
+        return len(dp[stones[-1]]) > 0
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        if stones[1] != 1:
+            return False
+        n = len(stones)
+        dp = [set() for _ in range(n)]
+        dp[1].add(1)
+        for i in range(1, n):
+            for j in range(i):
+                k = stones[i] - stones[j]
+                if k in dp[j]:
+                    dp[i].add(k)
+                    if k - 1 > 0:
+                        dp[i].add(k - 1)
+                    dp[i].add(k + 1)
+        return len(dp[-1]) > 0
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        dp = {}
+        for i in stones:
+            dp[i] = set()
+        dp[0].add(0)
+        for i in stones:
+            for k in dp[i]:
+                for step in [k-1, k, k+1]:
+                    if step > 0 and i+step in dp:
+                        dp[i+step].add(step)
+        return len(dp[stones[-1]]) > 0
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        if stones[1] != 1:
+            return False
+        if len(stones) == 2:
+            return True
+        dp = [set() for _ in range(len(stones))]
+        dp[0].add(0)
+        dp[1].add(1)
+        for i in range(2, len(stones)):
+            for j in range(i-1, -1, -1):
+                for k in dp[j]:
+                    if stones[i] - stones[j] == k or stones[i] - stones[j] == k + 1 or stones[i] - stones[j] == k - 1:
+                        dp[i].add(stones[i] - stones[j])
+                        break
+        return len(dp[-1]) > 0
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        if not stones:
+            return False
+        if stones[1] != 1:
+            return False
+        if len(stones) == 2:
+            return True
+        d = collections.defaultdict(set)
+        d[1].add(1)
+        for i in range(1, len(stones)):
+            for j in d[stones[i]]:
+                for k in range(j-1, j+2):
+                    if k <= 0:
+                        continue
+                    if stones[i] + k in d:
+                        d[stones[i] + k].add(k)
+                    else:
+                        d[stones[i] + k] = set([k])
+        return len(d[stones[-1]]) != 0
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        # stones = sorted(stones)
+        n = len(stones)
+        dp = [[0]*n for _ in range(n)]
+        dp[0][0] = 1
+        for i in range(1, n):
+            for j in range(i):
+                k = stones[i] - stones[j]
+                if k > j + 1:
+                    break
+                dp[i][k] = dp[j][k-1] or dp[j][k] or dp[j][k+1]
+                if i == n - 1 and dp[i][k]:
+                    return True
+        return False
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        if stones[1] > 1:
+            return False
+        if len(stones) == 2:
+            return True
+        stones = set(stones)
+        last = stones.pop()
+        stack = [[0, 1]]
+        while stack:
+            i, k = stack.pop()
+            if i + k == last:
+                return True
+            if i + k in stones:
+                stones.remove(i + k)
+                stack.append([i + k, k])
+                stack.append([i + k, k + 1])
+                if k > 1:
+                    stack.append([i + k, k - 1])
+        return False
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        # DP
+        # dp[i][j] = True if we can reach stone i with last jump size j
+        # dp[i][j] = True if dp[k][j-1] or dp[k][j] or dp[k][j+1] is True
+        # where k is the index of the last stone before stone i
+        # O(n^2)
+        n = len(stones)
+        dp = [[False] * n for _ in range(n)]
+        dp[0][0] = True
+        for i in range(1, n):
+            for j in range(i):
+                k = stones[i] - stones[j]
+                if k > j + 1:
+                    break
+                dp[i][k] = dp[j][k-1] or dp[j][k] or dp[j][k+1]
+        return any(dp[-1])
+
+=======
+
+def canCross(self, stones: List[int]) -> bool:
+        # DP
+        # dp[i][j] means if we can reach to i-th stone with j-step
+        # dp[i][j] = dp[k][j-1] or dp[k][j] or dp[k][j+1]
+        # where k is the index of stone before i-th stone
+        # Time O(n^2)
+        # Space O(n^2)
+        n = len(stones)
+        dp = [[False] * n for _ in range(n)]
+        dp[0][0] = True
+        for i in range(1, n):
+            for j in range(i-1, -1, -1):
+                k = stones[i] - stones[j]
+                if k > j + 1:
+                    break
+                dp[i][k] = dp[j][k-1] or dp[j][k] or dp[j][k+1]
+                if i == n-1 and dp[i][k]:
+                    return True
+        return False

@@ -1,0 +1,220 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = tasks.size();
+        vector<int> dp(1 << n, 0x3f3f3f3f);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            int sum = 0;
+            for (int j = 0; j < n; ++j) {
+                if ((i >> j) & 1) {
+                    sum += tasks[j];
+                }
+            }
+            int x = sum / sessionTime;
+            if (sum % sessionTime != 0) {
+                ++x;
+            }
+            for (int j = i; j; j = (j - 1) & i) {
+                dp[i] = min(dp[i], dp[j] + x - 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.size();
+        vector<int> dp(1<<n, n+1);
+        dp[0] = 0;
+        for (int i = 1; i < (1<<n); i++) {
+            int sum = 0, maxTask = 0;
+            for (int j = 0; j < n; j++) {
+                if ((i>>j) & 1) {
+                    sum += tasks[j];
+                    maxTask = max(maxTask, tasks[j]);
+                }
+            }
+            int k = i;
+            do {
+                if (sum - maxTask <= sessionTime) {
+                    dp[i] = min(dp[i], dp[i^k] + 1);
+                }
+                k = (k-1) & i;
+            } while (k != i);
+        }
+        return dp[(1<<n)-1];
+
+=======
+
+        int n = tasks.size();
+        int m = 1 << n;
+        int dp[m];
+        memset(dp, 0x3f, sizeof(dp));
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int sum = 0;
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    sum += tasks[j];
+                }
+            }
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    continue;
+                }
+                if (sum + tasks[j] <= sessionTime) {
+                    dp[i | (1 << j)] = min(dp[i | (1 << j)], dp[i]);
+                } else {
+                    dp[i | (1 << j)] = min(dp[i | (1 << j)], dp[i] + 1);
+                }
+            }
+        }
+        return dp[m - 1];
+
+=======
+
+        int n = tasks.size();
+        vector<int> mask(1 << n, 0);
+        for (int i = 0; i < (1 << n); i++) {
+            int sum = 0;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    sum += tasks[j];
+                }
+            }
+            mask[i] = (sum <= sessionTime) ? 1 : -1;
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = i; j > 0; j = (j - 1) & i) {
+                if (mask[j] == 1) {
+                    dp[i] = min(dp[i], dp[i ^ j] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.size();
+        vector<int> dp(1 << n, 0);
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            int time = 0;
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    time += tasks[i];
+                }
+            }
+            if (time <= sessionTime) {
+                dp[mask] = 1;
+            } else {
+                for (int i = 0; i < n; ++i) {
+                    if (mask & (1 << i)) {
+                        dp[mask] = max(dp[mask], dp[mask ^ (1 << i)]);
+                    }
+                }
+            }
+        }
+        vector<int> dp2(1 << n, n);
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            dp2[mask] = dp[mask];
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    dp2[mask] = min(dp2[mask], dp2[mask ^ (1 << i)] + dp[mask ^ (1 << i)]);
+                }
+            }
+        }
+        return dp2[(1 << n) - 1];
+
+=======
+
+        int n = tasks.size();
+        int total = 0;
+        for (int i = 0; i < n; ++i) {
+            total += tasks[i];
+        }
+        int m = total / sessionTime + 1;
+        vector<int> dp(1 << n, m);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            int sum = 0;
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) {
+                    sum += tasks[j];
+                }
+            }
+            int sessions = sum / sessionTime + (sum % sessionTime > 0);
+            for (int j = i; j != 0; j = (j - 1) & i) {
+                dp[i] = min(dp[i], dp[j] + sessions);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.size();
+        int ans = INT_MAX;
+        vector<int> dp(1<<n, -1);
+        dp[0] = 0;
+        for(int mask = 0; mask < (1<<n); mask++) {
+            if (dp[mask] == -1) {
+                continue;
+            }
+            int rem = sessionTime;
+            for(int i = 0; i < n; i++) {
+                if ((mask & (1<<i)) == 0) {
+                    if (rem >= tasks[i]) {
+                        dp[mask | (1<<i)] = max(dp[mask | (1<<i)], dp[mask]);
+                    } else {
+                        dp[mask | (1<<i)] = max(dp[mask | (1<<i)], dp[mask] + 1);
+                    }
+                    rem = min(rem, sessionTime - tasks[i]);
+                }
+            }
+            ans = min(ans, dp[mask] + (rem < sessionTime));
+        }
+        return ans;
+
+=======
+
+        int n = tasks.size();
+        vector<int> dp(1<<n, 0);
+        for (int i=1; i<(1<<n); i++) {
+            int j = __builtin_ctz(i);
+            dp[i] = dp[i^(1<<j)] + tasks[j];
+            if (dp[i] > sessionTime) {
+                dp[i] = tasks[j];
+            }
+        }
+        vector<int> dp2(1<<n, n);
+        dp2[0] = 0;
+        for (int i=1; i<(1<<n); i++) {
+            int x = i;
+            do {
+                dp2[i] = min(dp2[i], dp2[i^x] + 1);
+                x = (x-1) & i;
+            } while (x != i);
+        }
+        return dp2[(1<<n)-1];
+
+=======
+
+        int n = tasks.size(), ans = INT_MAX;
+        vector<int> mask(1 << n);
+        for (int i = 1; i < (1 << n); i++) {
+            int last = __builtin_ctz(i);
+            mask[i] = mask[i ^ (1 << last)] + tasks[last];
+        }
+        vector<int> dp(1 << n, INT_MAX / 2);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int time = 0;
+            for (int j = i; j; j = (j - 1) & i) {
+                if (mask[j] <= sessionTime) {
+                    dp[i] = min(dp[i], dp[i ^ j] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];

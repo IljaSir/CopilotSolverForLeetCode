@@ -1,0 +1,128 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        dp[0] = 0;
+        for i in 1..nums.len() {
+            if nums[i] > nums[i-1] {
+                dp[i] = dp[i-1];
+            } else {
+                dp[i] = dp[i-1] + 1;
+                let mut j = i;
+                while j > 0 && nums[j] < nums[j-1] {
+                    nums.swap(j, j-1);
+                    j -= 1;
+                }
+            }
+        }
+        dp[nums.len()-1] as i64
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        for i in 0..nums.len() {
+            dp[i] = 1;
+            for j in 0..i {
+                if nums[i] >= nums[j] {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+        }
+        let mut res = 0;
+        for i in 0..nums.len() {
+            res = res.max(dp[i]);
+        }
+        nums.len() as i64 - res
+
+=======
+
+        let mut dp = vec![1i64; nums.len()];
+        let mut max = 1i64;
+        for i in 1..nums.len() {
+            if nums[i] > nums[i - 1] {
+                dp[i] = dp[i - 1] + 1;
+            }
+            max = max.max(dp[i]);
+        }
+        nums.len() as i64 - max
+    }
+}
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        let mut max = 0;
+        for i in 0..nums.len() {
+            let mut j = i;
+            while j > 0 && nums[j] > nums[j - 1] {
+                j -= 1;
+            }
+            dp[i] = if j > 0 { dp[j - 1] + i - j } else { i - j };
+            max = max.max(dp[i]);
+        }
+        nums.len() as i64 - max as i64
+
+=======
+
+        use std::collections::BinaryHeap;
+        let mut heap = BinaryHeap::new();
+        let mut res = 0;
+        for n in nums {
+            if heap.len() == 0 {
+                heap.push(n);
+            } else {
+                if heap.peek().unwrap() > &n {
+                    res += 1;
+                    heap.push(n);
+                } else {
+                    while heap.len() > 0 && heap.peek().unwrap() <= &n {
+                        heap.pop();
+                    }
+                    heap.push(n);
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        dp[0] = 0;
+        dp[1] = 0;
+        for i in 2..nums.len() {
+            let mut min = dp[i-1];
+            if nums[i] > nums[i-1] {
+                min = min.min(dp[i-2]);
+            }
+            if nums[i] > nums[i-2] {
+                min = min.min(dp[i-3]);
+            }
+            dp[i] = min + 1;
+        }
+        dp[nums.len()-1] as i64
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        let mut res = 0;
+        for i in 1..nums.len() {
+            let mut k = 0;
+            while i > k && nums[i] > nums[i - k - 1] {
+                k += 1;
+            }
+            dp[i] = k;
+            if k > 0 {
+                dp[i] += dp[i - k];
+            }
+            res = res.max(dp[i] as i64);
+        }
+        res

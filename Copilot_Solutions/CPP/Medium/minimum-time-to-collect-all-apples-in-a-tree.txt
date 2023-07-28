@@ -1,0 +1,215 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(graph, visited, hasApple, 0);
+    }
+    
+    int dfs(vector<vector<int>>& graph, vector<bool>& visited, vector<bool>& hasApple, int node) {
+        if (visited[node]) return 0;
+        visited[node] = true;
+        int total = 0;
+        for (int neighbor : graph[node]) {
+            total += dfs(graph, visited, hasApple, neighbor);
+        }
+        if (total > 0 || hasApple[node]) {
+            return total + 2;
+        } else {
+            return 0;
+        }
+
+=======
+
+        vector<vector<int>> g(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(g, 0, visited, hasApple);
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto e: edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(graph, visited, hasApple, 0);
+    }
+    int dfs(vector<vector<int>>& graph, vector<bool>& visited, vector<bool>& hasApple, int node) {
+        visited[node] = true;
+        int ret = 0;
+        for (auto adj: graph[node]) {
+            if (!visited[adj]) {
+                int res = dfs(graph, visited, hasApple, adj);
+                if (res > 0 || hasApple[adj]) {
+                    ret += res + 2;
+                }
+            }
+        }
+        return ret;
+
+=======
+
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<bool> vis(n);
+        return dfs(0, g, hasApple, vis);
+    }
+    
+    int dfs(int u, vector<vector<int>>& g, vector<bool>& hasApple, vector<bool>& vis) {
+        vis[u] = true;
+        int res = 0;
+        for (int v : g[u]) {
+            if (vis[v]) continue;
+            int t = dfs(v, g, hasApple, vis);
+            if (t > 0) res += t + 2;
+        }
+        if (hasApple[u]) res += 2;
+        return res;
+
+=======
+
+        vector<vector<int>> g(n);
+        for (auto e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        return dfs(0, -1, g, hasApple);
+    }
+    int dfs(int u, int p, vector<vector<int>>& g, vector<bool>& hasApple) {
+        int r = 0;
+        for (auto v: g[u]) {
+            if (v != p) {
+                r += dfs(v, u, g, hasApple);
+            }
+        }
+        if (r > 0 || hasApple[u]) {
+            r += 2;
+        }
+        return r;
+
+=======
+
+        unordered_map<int, vector<int>> adj;
+        for (auto &e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(0, adj, hasApple, visited);
+    }
+    int dfs(int node, unordered_map<int, vector<int>> &adj, vector<bool> &hasApple, vector<bool> &visited) {
+        visited[node] = true;
+        int res = 0;
+        for (auto &n : adj[node]) {
+            if (!visited[n]) {
+                int t = dfs(n, adj, hasApple, visited);
+                if (t > 0 || hasApple[n]) {
+                    res += t + 2;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        vector<int> visited(n, 0);
+        dfs(0, graph, visited, hasApple);
+        return 2 * (n - 1 - visited[0]);
+    }
+    
+    int dfs(int cur, vector<vector<int>>& graph, vector<int>& visited, vector<bool>& hasApple) {
+        visited[cur] = 1;
+        int res = 0;
+        for (auto& next : graph[cur]) {
+            if (visited[next] == 0) {
+                res += dfs(next, graph, visited, hasApple);
+            }
+        }
+        if (res == 0 && hasApple[cur] == false) {
+            return 0;
+        }
+        return 1 + res;
+
+=======
+
+        int res = 0;
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<bool> visited(n, false);
+        dfs(0, adj, hasApple, visited, res);
+        return res;
+    }
+    
+    void dfs(int cur, vector<vector<int>>& adj, vector<bool>& hasApple, vector<bool>& visited, int& res) {
+        visited[cur] = true;
+        for (int next : adj[cur]) {
+            if (visited[next]) continue;
+            dfs(next, adj, hasApple, visited, res);
+            if (hasApple[next] || visited[next]) {
+                res += 2;
+            }
+        }
+
+=======
+
+        unordered_map<int, vector<int>> tree;
+        for (auto &e: edges) {
+            tree[e[0]].push_back(e[1]);
+            tree[e[1]].push_back(e[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(tree, hasApple, visited, 0);
+    }
+    
+    int dfs(unordered_map<int, vector<int>> &tree, vector<bool> &hasApple, vector<bool> &visited, int root) {
+        visited[root] = true;
+        int res = 0;
+        for (auto &child: tree[root]) {
+            if (visited[child]) continue;
+            int sub = dfs(tree, hasApple, visited, child);
+            if (sub > 0 || hasApple[child]) res += sub + 2;
+        }
+        return res;
+
+=======
+
+        // build graph
+        vector<vector<int>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        vector<bool> visited(n, false);
+        return dfs(graph, hasApple, visited, 0) * 2;
+    }
+    
+    int dfs(vector<vector<int>>& graph, vector<bool>& hasApple, vector<bool>& visited, int node) {
+        visited[node] = true;
+        int time = 0;
+        for (auto& child : graph[node]) {
+            if (visited[child]) continue;
+            time += dfs(graph, hasApple, visited, child);
+        }
+        if (time == 0 && !hasApple[node]) return 0;
+        return time + 1;

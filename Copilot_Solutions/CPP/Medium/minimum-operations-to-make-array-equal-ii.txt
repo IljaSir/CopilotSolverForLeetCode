@@ -1,0 +1,288 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums1.size();
+        int m = nums2.size();
+        int sum1 = accumulate(nums1.begin(), nums1.end(), 0);
+        int sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        if (sum1 > sum2) {
+            return minOperations(nums2, nums1, k);
+        }
+        if (sum1 + k < sum2) {
+            return -1;
+        }
+        vector<int> diff;
+        for (int i = 0; i < n; i++) {
+            diff.push_back(nums1[i] - 1);
+        }
+        for (int i = 0; i < m; i++) {
+            diff.push_back(6 - nums2[i]);
+        }
+        sort(diff.begin(), diff.end());
+        int sum = 0;
+        int ans = n + m;
+        for (int i = 0; i < n + m; i++) {
+            sum += diff[i];
+            if (sum + k >= sum2) {
+                ans = min(ans, i + 1);
+            }
+        }
+        return ans;
+
+=======
+
+        long long sum1 = accumulate(nums1.begin(), nums1.end(), 0LL);
+        long long sum2 = accumulate(nums2.begin(), nums2.end(), 0LL);
+        long long diff = sum1 - sum2;
+        if (diff < 0) {
+            swap(nums1, nums2);
+            diff = -diff;
+        }
+        if (diff > k * 5LL) {
+            return -1;
+        }
+
+        vector<int> v1, v2;
+        for (int x : nums1) {
+            v1.push_back(x - 1);
+        }
+        for (int x : nums2) {
+            v2.push_back(6 - x);
+        }
+        sort(v1.begin(), v1.end());
+        sort(v2.begin(), v2.end());
+        reverse(v1.begin(), v1.end());
+        reverse(v2.begin(), v2.end());
+
+        int n = nums1.size();
+        int best = INT_MAX;
+        for (int i = 0; i <= k; ++i) {
+            int j = k - i;
+            if (i > n || j > n) {
+                continue;
+            }
+            long long cur = 0;
+            for (int x = 0; x < i; ++x) {
+                cur += v1[x];
+            }
+            for (int x = 0; x < j; ++x) {
+                cur += v2[x];
+            }
+            if (cur >= diff) {
+                best = min(best, i + j);
+            }
+        }
+        return best;
+
+=======
+
+        int n1 = nums1.size(), n2 = nums2.size();
+        long long sum1 = accumulate(nums1.begin(), nums1.end(), 0), sum2 = accumulate(nums2.begin(), nums2.end(), 0);
+        long long diff = sum2 - sum1;
+        if (diff < 0) diff = -diff;
+        if (diff < k) return -1;
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        vector<long long> arr1(n1), arr2(n2);
+        for (int i = 0; i < n1; i++) arr1[i] = nums1[i];
+        for (int i = 0; i < n2; i++) arr2[i] = nums2[i];
+        long long ans = 1e18;
+        for (int i = 0; i <= k; i++) {
+            long long cur = 0;
+            if (i > 0) {
+                int j = min(n1, i);
+                cur += arr1[j - 1] - 1;
+            }
+            if (k - i > 0) {
+                int j = min(n2, k - i);
+                cur += arr2[j - 1] - 1;
+            }
+            if (cur >= diff) {
+                ans = min(ans, i);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.size();
+        vector<int> diff;
+        for (int i = 0; i < n; i++) {
+            diff.push_back(nums1[i] - nums2[i]);
+        }
+        sort(diff.begin(), diff.end());
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += diff[i];
+        }
+        if (sum > 0) return 0;
+        int ans = k;
+        for (int i = k; i < n; i++) {
+            sum += diff[i];
+            if (sum > 0) break;
+            ans++;
+        }
+        return ans;
+
+=======
+
+        int n = nums1.size();
+        vector<int> diff(n, 0);
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums1[i] - nums2[i];
+        }
+        sort(diff.begin(), diff.end());
+        vector<long long> prefix(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + diff[i - 1];
+        }
+        int l = 0, r = n;
+        long long res = LLONG_MAX;
+        while (l <= min(k, n) && r >= max(n - k, 0)) {
+            res = min(res, (long long)k * (long long)l - prefix[l] + prefix[r] - (long long)k * (long long)(n - r));
+            if (l == k || r == n - k) break;
+            if (prefix[l] - l * (long long)k < (long long)(n - r) * k - prefix[r]) {
+                l++;
+            } else {
+                r--;
+            }
+        }
+        return res > 0 ? -1 : res;
+
+=======
+
+        int n = nums1.size();
+        int m = nums2.size();
+        vector<int> diff;
+        for (int i = 0; i < n; ++i) {
+            diff.push_back(nums1[i] - nums2[i]);
+        }
+        sort(diff.begin(), diff.end());
+        long long sum = 0;
+        for (int i = 0; i < k; ++i) {
+            sum += diff[i];
+        }
+        if (sum >= 0) return 0;
+        long long ans = (long long)1e18;
+        for (int i = k - 1; i >= 0; --i) {
+            sum -= diff[i];
+            sum += -diff[n - k + i];
+            if (sum >= 0) {
+                ans = min(ans, (long long)2 * (k - i));
+            }
+        }
+        return ans == (long long)1e18 ? -1 : ans;
+
+=======
+
+        int n = nums1.size();
+        int m = nums2.size();
+        if (n * 6 < k || m * 6 < k) return -1;
+        vector<int> s1(6 * n + 1, 0);
+        vector<int> s2(6 * m + 1, 0);
+        for (int i = 0; i < n; i++) {
+            s1[nums1[i]]++;
+        }
+        for (int i = 0; i < m; i++) {
+            s2[nums2[i]]++;
+        }
+        for (int i = 1; i <= 6 * n; i++) {
+            s1[i] += s1[i - 1];
+        }
+        for (int i = 1; i <= 6 * m; i++) {
+            s2[i] += s2[i - 1];
+        }
+        long long ans = 1e18;
+        for (int i = 0; i <= k; i++) {
+            if (i * 6 > k) break;
+            int j = k - i;
+            if (j * 6 < k) continue;
+            int l = max(0, i - m);
+            int r = min(n, i);
+            for (int x = l; x <= r; x++) {
+                int y = k - x;
+                int lo = 1, hi = 6 * m;
+                while (lo < hi) {
+                    int mid = (lo + hi) / 2;
+                    if (s2[mid] < y) {
+                        lo = mid + 1;
+                    } else {
+                        hi = mid;
+                    }
+                }
+                int a = hi;
+                lo = 1, hi = 6 * m;
+                while (lo < hi) {
+                    int mid = (lo + hi + 1) / 2;
+                    if (s2[mid] > 6 * m - y) {
+                        hi = mid - 1;
+                    } else {
+                        lo = mid;
+                    }
+                }
+                int b = lo;
+                lo = 1, hi = 6 * n;
+                while (lo < hi) {
+                    int mid = (lo + hi) / 2;
+                    if (s1[mid] < x) {
+                        lo = mid +
+
+=======
+
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        if (k > n1 + n2) return -1;
+        vector<int> v1(6, 0);
+        vector<int> v2(6, 0);
+        long long sum1 = 0;
+        long long sum2 = 0;
+        for (int i = 0; i < n1; ++i) {
+            ++v1[nums1[i]];
+            sum1 += nums1[i];
+        }
+        for (int i = 0; i < n2; ++i) {
+            ++v2[nums2[i]];
+            sum2 += nums2[i];
+        }
+        if (sum1 == sum2) return 0;
+        if (sum1 > sum2) {
+            swap(v1, v2);
+            swap(sum1, sum2);
+        }
+        int diff = sum2 - sum1;
+        if (diff > k * 5) return -1;
+        vector<int> dp(k + 1, 0);
+        for (int i = 1; i <= 6; ++i) {
+            for (int j = k; j >= 1; --j) {
+                for (int x = 1; x <= v1[i - 1] && x <= j; ++x) {
+                    dp[j] = max(dp[j], dp[j - x] + min(x, v2[7 - i]) * i);
+                }
+            }
+        }
+        return k - dp[k];
+
+=======
+
+        int n = nums1.size();
+        int m = nums2.size();
+        if (n * m < k) return -1;
+        vector<int> v;
+        for (int i = 0; i < n; i++) {
+            v.push_back(nums1[i] - 1);
+        }
+        for (int i = 0; i < m; i++) {
+            v.push_back(6 - nums2[i]);
+        }
+        sort(v.begin(), v.end());
+        long long sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += v[i];
+        }
+        long long ans = sum;
+        for (int i = k; i < n + m; i++) {
+            sum += v[i];
+            sum -= v[i - k];
+            ans = min(ans, sum);
+        }
+        return ans;

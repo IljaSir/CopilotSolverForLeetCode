@@ -1,0 +1,208 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        def expand_around_center(s, left, right):
+            L, R = left, right
+            while L >= 0 and R < len(s) and s[L] == s[R]:
+                L -= 1
+                R += 1
+            return R - L - 1
+
+        if s == None or len(s) < 1:
+            return ""
+
+        start, end = 0, 0
+        for i in range(len(s)):
+            len1 = expand_around_center(s, i, i)
+            len2 = expand_around_center(s, i, i + 1)
+            len_max = max(len1, len2)
+            if len_max > end - start:
+                start = i - (len_max - 1) // 2
+                end = i + len_max // 2
+        return s[start:end + 1]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        if len(s) < 2 or s == s[::-1]:
+            return s
+        start = 0
+        end = 0
+        for i in range(len(s)):
+            len1 = self.expand(s, i, i)
+            len2 = self.expand(s, i, i + 1)
+            max_len = max(len1, len2)
+            if max_len > end - start:
+                start = i - (max_len - 1) // 2
+                end = i + max_len // 2
+        return s[start:end + 1]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        if n == 1:
+            return s
+        elif n == 2:
+            if s[0] == s[1]:
+                return s
+            else:
+                return s[0]
+        else:
+            start = 0
+            end = 0
+            max_len = 0
+            for i in range(n):
+                if i - max_len >= 1 and s[i-max_len-1:i+1] == s[i-max_len-1:i+1][::-1]:
+                    start = i - max_len - 1
+                    end = i + 1
+                    max_len += 2
+                if i - max_len >= 0 and s[i-max_len:i+1] == s[i-max_len:i+1][::-1]:
+                    start = i - max_len
+                    end = i + 1
+                    max_len += 1
+            return s[start:end]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        if not s or len(s) < 1:
+            return ""
+        start = end = 0
+        for i in range(len(s)):
+            len1 = self.expandAroundCenter(s, i, i)
+            len2 = self.expandAroundCenter(s, i, i + 1)
+            length = max(len1, len2)
+            if length > end - start:
+                start = i - (length - 1) // 2
+                end = i + length // 2
+        return s[start:end + 1]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        if n <= 1:
+            return s
+        dp = [[0] * n for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = 1
+        for i in range(n - 1, -1, -1):
+            for j in range(i + 1, n):
+                if s[i] == s[j]:
+                    if j - i == 1:
+                        dp[i][j] = 2
+                    elif dp[i + 1][j - 1] > 0:
+                        dp[i][j] = dp[i + 1][j - 1] + 2
+                else:
+                    dp[i][j] = 0
+        max_len, res = 0, ''
+        for i in range(n):
+            for j in range(i, n):
+                if dp[i][j] > max_len:
+                    max_len = dp[i][j]
+                    res = s[i:j + 1]
+        return res
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        if len(s) == 0:
+            return ""
+        if len(s) == 1:
+            return s
+        start = 0
+        end = 0
+        for i in range(len(s)):
+            len1 = self.expandAroundCenter(s, i, i)
+            len2 = self.expandAroundCenter(s, i, i + 1)
+            length = max(len1, len2)
+            if length > end - start:
+                start = i - ((length - 1) // 2)
+                end = i + (length // 2)
+        return s[start:end + 1]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        dp = [[0]*n for _ in range(n)]
+        ans = ""
+        for i in range(n-1, -1, -1):
+            for j in range(i, n):
+                dp[i][j] = (s[i] == s[j] and (j-i < 2 or dp[i+1][j-1]))
+                if dp[i][j] and j-i+1 > len(ans):
+                    ans = s[i:j+1]
+        return ans
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        if len(s) == 0:
+            return ""
+        if len(s) == 1:
+            return s
+        max_len = 1
+        start = 0
+        for i in range(1, len(s)):
+            low = i - 1
+            high = i
+            while low >= 0 and high < len(s) and s[low] == s[high]:
+                if high - low + 1 > max_len:
+                    max_len = high - low + 1
+                    start = low
+                low -= 1
+                high += 1
+            low = i - 1
+            high = i + 1
+            while low >= 0 and high < len(s) and s[low] == s[high]:
+                if high - low + 1 > max_len:
+                    max_len = high - low + 1
+                    start = low
+                low -= 1
+                high += 1
+        return s[start:start + max_len]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        # 1. 暴力法
+        # 2. 动态规划
+        # 3. 中心扩散法
+        if len(s) < 2:
+            return s
+        start = 0
+        end = 0
+        for i in range(len(s)):
+            len1 = self.expandAroundCenter(s, i, i)
+            len2 = self.expandAroundCenter(s, i, i + 1)
+            max_len = max(len1, len2)
+            if max_len > end - start:
+                start = i - (max_len - 1) // 2
+                end = i + max_len // 2
+        return s[start:end + 1]
+
+=======
+
+def longestPalindrome(self, s: str) -> str:
+        if len(s) == 1:
+            return s
+        else:
+            # 1. Create a list of all possible substrings
+            substrings = []
+            for i in range(len(s)):
+                for j in range(i+1, len(s)+1):
+                    substrings.append(s[i:j])
+            # 2. Check if each substring is a palindrome
+            palindromes = []
+            for substring in substrings:
+                if substring == substring[::-1]:
+                    palindromes.append(substring)
+            # 3. Find the longest palindrome
+            longest = palindromes[0]
+            for palindrome in palindromes:
+                if len(palindrome) > len(longest):
+                    longest = palindrome
+            return longest

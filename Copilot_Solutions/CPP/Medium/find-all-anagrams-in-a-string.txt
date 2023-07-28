@@ -1,0 +1,233 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> res;
+        unordered_map<char, int> m;
+        for (char c : p) m[c]++;
+        int left = 0, right = 0, count = m.size();
+        while (right < s.size()) {
+            if (m.count(s[right])) {
+                m[s[right]]--;
+                if (m[s[right]] == 0) count--;
+            }
+            right++;
+            while (count == 0) {
+                if (m.count(s[left])) {
+                    m[s[left]]++;
+                    if (m[s[left]] > 0) count++;
+                }
+                if (right - left == p.size()) res.push_back(left);
+                left++;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int m = s.length();
+        int n = p.length();
+        if(m < n) return res;
+        vector<int> mp(26, 0);
+        vector<int> ms(26, 0);
+        for(int i = 0; i < n; i++) {
+            mp[p[i] - 'a']++;
+            ms[s[i] - 'a']++;
+        }
+        if(mp == ms) res.push_back(0);
+        for(int i = 1; i <= m - n; i++) {
+            ms[s[i - 1] - 'a']--;
+            ms[s[i + n - 1] - 'a']++;
+            if(mp == ms) res.push_back(i);
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        int n = s.size();
+        int m = p.size();
+        if (m > n) return ans;
+        vector<int> hash(26, 0);
+        for (int i = 0; i < m; ++i) {
+            hash[p[i] - 'a']++;
+            hash[s[i] - 'a']--;
+        }
+        if (all_of(hash.begin(), hash.end(), [](int x){return x == 0;})) ans.push_back(0);
+        for (int i = m; i < n; ++i) {
+            hash[s[i] - 'a']--;
+            hash[s[i - m] - 'a']++;
+            if (all_of(hash.begin(), hash.end(), [](int x){return x == 0;})) ans.push_back(i - m + 1);
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        int n = s.size();
+        int m = p.size();
+        if (n < m) return res;
+        int freq[26] = {0};
+        for (int i = 0; i < m; i++) {
+            freq[p[i] - 'a']++;
+        }
+        int cnt = 0;
+        for (int i = 0; i < m; i++) {
+            if (freq[s[i] - 'a'] > 0) cnt++;
+            freq[s[i] - 'a']--;
+        }
+        if (cnt == m) res.push_back(0);
+        for (int i = m; i < n; i++) {
+            if (freq[s[i - m] - 'a'] >= 0) cnt--;
+            freq[s[i - m] - 'a']++;
+            if (freq[s[i] - 'a'] > 0) cnt++;
+            freq[s[i] - 'a']--;
+            if (cnt == m) res.push_back(i - m + 1);
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        if (s.length() < p.length()) return res;
+        int n = s.length(), m = p.length();
+        vector<int> cnt(26, 0);
+        for (char c : p) cnt[c - 'a']++;
+        int l = 0, r = 0, diff = m;
+        while (r < n) {
+            if (cnt[s[r] - 'a'] > 0) {
+                diff--;
+            }
+            cnt[s[r] - 'a']--;
+            r++;
+            if (diff == 0) res.push_back(l);
+            if (r - l == m) {
+                if (cnt[s[l] - 'a'] >= 0) {
+                    diff++;
+                }
+                cnt[s[l] - 'a']++;
+                l++;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int n = s.size();
+        int m = p.size();
+        if (n < m) return res;
+        int cnt[26] = {0};
+        for (char c : p) {
+            cnt[c - 'a']++;
+        }
+        int cnt2[26] = {0};
+        for (int i = 0; i < m; i++) {
+            cnt2[s[i] - 'a']++;
+        }
+        if (equal(cnt, cnt2)) res.push_back(0);
+        for (int i = m; i < n; i++) {
+            cnt2[s[i] - 'a']++;
+            cnt2[s[i - m] - 'a']--;
+            if (equal(cnt, cnt2)) res.push_back(i - m + 1);
+        }
+        return res;
+    }
+    bool equal(int *a, int *b) {
+        for (int i = 0; i < 26; i++) {
+            if (a[i] != b[i]) return false;
+        }
+        return true;
+
+=======
+
+        vector<int> ans;
+        if (s.length() < p.length()) return ans;
+        int count[26] = {0};
+        for (char c : p) count[c - 'a']++;
+        int left = 0, right = 0, length = p.length();
+        while (right < s.length()) {
+            count[s[right++] - 'a']--;
+            if (right - left == length) {
+                bool isAnagram = true;
+                for (int i = 0; i < 26; i++) {
+                    if (count[i] != 0) {
+                        isAnagram = false;
+                        break;
+                    }
+                }
+                if (isAnagram) ans.push_back(left);
+                count[s[left++] - 'a']++;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        vector<int> cnt1(128, 0);
+        vector<int> cnt2(128, 0);
+        int n = s.size();
+        int m = p.size();
+        if (n < m) return res;
+        for (int i = 0; i < m; i++) {
+            cnt1[s[i]]++;
+            cnt2[p[i]]++;
+        }
+        if (cnt1 == cnt2) {
+            res.push_back(0);
+        }
+        for (int i = m; i < n; i++) {
+            cnt1[s[i]]++;
+            cnt1[s[i - m]]--;
+            if (cnt1 == cnt2) {
+                res.push_back(i - m + 1);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        vector<int> pmap(26, 0);
+        vector<int> smap(26, 0);
+        int lenp = p.length();
+        int lens = s.length();
+        int i;
+        for (i = 0; i < lenp; i++) {
+            pmap[p[i] - 'a']++;
+        }
+        for (i = 0; i < lens; i++) {
+            smap[s[i] - 'a']++;
+            if (i >= lenp) {
+                smap[s[i - lenp] - 'a']--;
+            }
+            if (smap == pmap) {
+                res.push_back(i - lenp + 1);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        int len = p.size();
+        unordered_map<char, int> m;
+        for (char c : p) m[c]++;
+        int cnt = m.size();
+        int l = 0, r = 0;
+        while (r < s.size()) {
+            if (m.count(s[r])) {
+                if (--m[s[r]] == 0) cnt--;
+            }
+            r++;
+            while (cnt == 0) {
+                if (r - l == len) res.push_back(l);
+                if (m.count(s[l])) {
+                    if (++m[s[l]] > 0) cnt++;
+                }
+                l++;
+            }
+        }
+        return res;

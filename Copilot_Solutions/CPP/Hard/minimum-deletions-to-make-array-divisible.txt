@@ -1,0 +1,187 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size(), m = numsDivide.size();
+        int gcd = numsDivide[0];
+        for (int i = 1; i < m; ++i) {
+            gcd = __gcd(gcd, numsDivide[i]);
+        }
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] % gcd != 0) {
+                nums.erase(nums.begin() + i);
+                --i;
+                --n;
+            }
+        }
+        if (n == 0) {
+            return -1;
+        }
+        sort(nums.begin(), nums.end());
+        int result = 0;
+        for (int i = 0; i < m; ++i) {
+            result += numsDivide[i] / gcd - 1;
+        }
+        return result;
+
+=======
+
+        int n1 = nums.size(), n2 = numsDivide.size();
+        int gcd = numsDivide[0];
+        for (int i = 1; i < n2; ++i) {
+            gcd = __gcd(gcd, numsDivide[i]);
+        }
+        for (int i = 0; i < n1; ++i) {
+            if (nums[i] > gcd) return -1;
+        }
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        for (int i = 0; i < n1; ++i) {
+            if (nums[i] == gcd) break;
+            int t = gcd / nums[i] * nums[i];
+            if (t != gcd) ++ans;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size(), m = numsDivide.size();
+        long long gcd = numsDivide[0];
+        for (int i = 1; i < m; ++i) {
+            gcd = __gcd(gcd, (long long)numsDivide[i]);
+        }
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] % gcd != 0) {
+                return -1;
+            }
+        }
+        sort(nums.begin(), nums.end());
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] % gcd != 0) {
+                cnt++;
+            }
+        }
+        return cnt;
+
+=======
+
+        int ans = 0;
+        for (int i = 0; i < numsDivide.size(); ++i) {
+            int min = INT_MAX;
+            for (int j = 0; j < nums.size(); ++j) {
+                if (numsDivide[i] % nums[j] == 0 && nums[j] < min) {
+                    min = nums[j];
+                }
+            }
+            if (min == INT_MAX) {
+                return -1;
+            }
+            if (numsDivide[i] % min != 0) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = numsDivide.size();
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        int minNum = nums[0];
+        for (int i = 0; i < m; i++) {
+            if (numsDivide[i] % minNum == 0) {
+                continue;
+            }
+            ans++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = numsDivide.size();
+        if (n > m) return -1;
+        sort(nums.begin(), nums.end());
+        for (int& i : numsDivide) {
+            i = __gcd(i, nums[0]);
+        }
+        sort(numsDivide.begin(), numsDivide.end());
+        int g = numsDivide[0];
+        for (int i = 1; i < m; ++i) {
+            g = __gcd(g, numsDivide[i]);
+        }
+        if (g != nums[0]) return -1;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] != nums[0]) ++ans;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size(), m = numsDivide.size();
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            int g = numsDivide[i];
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (g % nums[j] == 0) {
+                    cnt++;
+                }
+            }
+            if (cnt == 0) {
+                return -1;
+            }
+            ans += n - cnt;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = numsDivide.size();
+        vector<int> cnt(1e9 + 1);
+        for (int x : numsDivide) {
+            cnt[x]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int g = __gcd(nums[i], numsDivide[0]);
+            for (int j = 1; j < m; j++) {
+                g = __gcd(g, numsDivide[j]);
+            }
+            if (g != nums[i]) {
+                ans++;
+                continue;
+            }
+            for (int j = nums[i]; j <= 1e9; j += nums[i]) {
+                cnt[j]--;
+            }
+        }
+        for (int i = 1; i <= 1e9; i++) {
+            if (cnt[i] > 0) {
+                return -1;
+            }
+        }
+        return ans;
+
+=======
+
+        map<int, int> m;
+        for (auto &n : nums) m[n]++;
+        int res = 0;
+        for (auto &n : numsDivide) {
+            int t = n;
+            for (auto it = m.rbegin(); it != m.rend(); ++it) {
+                int k = it->first;
+                while (t % k == 0 && it->second > 0) {
+                    t /= k;
+                    it->second--;
+                }
+            }
+            if (t > 1) return -1;
+        }
+        for (auto &it : m) res += it.second;
+        return res;

@@ -1,0 +1,205 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            List<Integer> list = map.getOrDefault(arr[i], new ArrayList<>());
+            list.add(i);
+            map.put(arr[i], list);
+        }
+        long[] res = new long[arr.length];
+        for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
+            List<Integer> list = entry.getValue();
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    res[list.get(i)] += list.get(j) - list.get(i);
+                    res[list.get(j)] += list.get(j) - list.get(i);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        long[] result = new long[arr.length];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            List<Integer> list = map.getOrDefault(arr[i], new ArrayList<>());
+            list.add(i);
+            map.put(arr[i], list);
+        }
+        for (int i = 0; i < arr.length; i++) {
+            List<Integer> list = map.get(arr[i]);
+            long distance = 0;
+            for (int j = 0; j < list.size() - 1; j++) {
+                distance += Math.abs(list.get(j) - list.get(j + 1));
+            }
+            result[i] = distance;
+        }
+        return result;
+
+=======
+
+        int n = arr.length;
+        long[] ans = new long[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+        for (int i = 0; i < n; i++) {
+            List<Integer> list = map.get(arr[i]);
+            long sum = 0;
+            for (int j = 1; j < list.size(); j++) {
+                sum += list.get(j) - list.get(j - 1);
+            }
+            ans[i] = sum;
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        long[] ans = new long[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(arr[i], new ArrayList<>());
+            map.get(arr[i]).add(i);
+        }
+        for (int i = 0; i < n; i++) {
+            List<Integer> list = map.get(arr[i]);
+            int m = list.size();
+            for (int j = 0; j < m; j++) {
+                ans[i] += Math.abs(list.get(j) - i);
+            }
+        }
+        return ans;
+
+=======
+
+        long[] result = new long[arr.length];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+        for (Integer key : map.keySet()) {
+            List<Integer> list = map.get(key);
+            int n = list.size();
+            long[] left = new long[n];
+            long[] right = new long[n];
+            left[0] = list.get(0);
+            right[n - 1] = arr.length - list.get(n - 1) - 1;
+            for (int i = 1; i < n; i++) {
+                left[i] = left[i - 1] + (list.get(i) - list.get(i - 1)) * i;
+                right[n - i - 1] = right[n - i] + (list.get(n - i) - list.get(n - i - 1)) * i;
+            }
+            for (int i = 0; i < n; i++) {
+                result[list.get(i)] = left[i] + right[i];
+            }
+        }
+        return result;
+
+=======
+
+        long[] ans = new long[arr.length];
+        HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (map.containsKey(arr[i])) {
+                map.get(arr[i]).add(i);
+            } else {
+                ArrayList<Integer> list = new ArrayList<>();
+                list.add(i);
+                map.put(arr[i], list);
+            }
+        }
+        for (int i = 0; i < arr.length; i++) {
+            ArrayList<Integer> list = map.get(arr[i]);
+            long sum = 0;
+            for (int j = 0; j < list.size(); j++) {
+                sum += Math.abs(i - list.get(j));
+            }
+            ans[i] = sum;
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        long[] result = new long[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            List<Integer> indices = map.getOrDefault(arr[i], new ArrayList<>());
+            indices.add(i);
+            map.put(arr[i], indices);
+        }
+        for (int i = 0; i < n; i++) {
+            List<Integer> indices = map.get(arr[i]);
+            long sum = 0;
+            for (int j = 0; j < indices.size(); j++) {
+                sum += Math.abs(i - indices.get(j));
+            }
+            result[i] = sum;
+        }
+        return result;
+
+=======
+
+        int n = arr.length;
+        long[] res = new long[n];
+        int[] prev = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            prev[i] = -1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (prev[arr[i]] != -1) {
+                res[i] += i - prev[arr[i]];
+                res[prev[arr[i]]] += i - prev[arr[i]];
+            }
+            prev[arr[i]] = i;
+        }
+        return res;
+
+=======
+
+        int n = arr.length;
+        long[] ans = new long[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for(int i = 0; i < n; i++) {
+            List<Integer> l = map.getOrDefault(arr[i], new ArrayList<>());
+            l.add(i);
+            map.put(arr[i], l);
+        }
+        for(int i = 0; i < n; i++) {
+            List<Integer> l = map.get(arr[i]);
+            long sum = 0;
+            for(int j = 1; j < l.size(); j++) {
+                sum += l.get(j) - l.get(j - 1);
+            }
+            for(int j = 0; j < l.size(); j++) {
+                ans[l.get(j)] = sum;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        long[] res = new long[n];
+        int[] count = new int[100001];
+        int[] last = new int[100001];
+        for (int i = 0; i < n; i++) {
+            int v = arr[i];
+            count[v]++;
+            res[i] = (long) i - last[v];
+            last[v] = i;
+        }
+        Arrays.fill(last, n);
+        for (int i = n - 1; i >= 0; i--) {
+            int v = arr[i];
+            count[v]--;
+            res[i] += last[v] - i;
+            if (count[v] > 0) {
+                last[v] = i;
+            }
+        }
+        return res;

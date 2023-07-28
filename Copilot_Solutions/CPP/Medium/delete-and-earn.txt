@@ -1,0 +1,168 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int maxVal = 0;
+        for (int num : nums) {
+            maxVal = max(maxVal, num);
+        }
+        vector<int> sum(maxVal + 1);
+        for (int num : nums) {
+            sum[num] += num;
+        }
+        return rob(sum);
+    }
+    int rob(vector<int>& nums) {
+        int size = nums.size();
+        if (size == 1) {
+            return nums[0];
+        }
+        vector<int> dp(size);
+        dp[0] = nums[0];
+        dp[1] = max(nums[0], nums[1]);
+        for (int i = 2; i < size; i++) {
+            dp[i] = max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+        return dp[size - 1];
+
+=======
+
+        int maxVal = 0;
+        for (int num: nums) {
+            maxVal = max(maxVal, num);
+        }
+        vector<int> sum(maxVal + 1);
+        for (int num: nums) {
+            sum[num] += num;
+        }
+        return rob(sum);
+    }
+    int rob(vector<int>& nums) {
+        int size = nums.size();
+        int first = nums[0], second = max(nums[0], nums[1]);
+        for (int i = 2; i < size; i++) {
+            int temp = second;
+            second = max(first + nums[i], second);
+            first = temp;
+        }
+        return second;
+
+=======
+
+        int maxNum = 0;
+        for (int num : nums) {
+            maxNum = max(maxNum, num);
+        }
+        vector<int> sum(maxNum + 1, 0);
+        for (int num : nums) {
+            sum[num] += num;
+        }
+        int first = sum[0], second = max(sum[0], sum[1]);
+        for (int i = 2; i <= maxNum; i++) {
+            int temp = second;
+            second = max(first + sum[i], second);
+            first = temp;
+        }
+        return second;
+
+=======
+
+        int maxVal = *max_element(nums.begin(), nums.end());
+        vector<int> sum(maxVal + 1);
+        for (int x: nums) sum[x] += x;
+        return rob(sum);
+    }
+    int rob(vector<int>& nums) {
+        int pre = 0, cur = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            int temp = cur;
+            cur = max(pre + nums[i], cur);
+            pre = temp;
+        }
+        return cur;
+
+=======
+
+        vector<int> count(10001, 0);
+        for (int i = 0; i < nums.size(); i++) {
+            count[nums[i]]++;
+        }
+        vector<int> sum(10001, 0);
+        sum[1] = count[1];
+        for (int i = 2; i <= 10000; i++) {
+            sum[i] = max(sum[i-1], sum[i-2] + count[i]*i);
+        }
+        return sum[10000];
+
+=======
+
+        int n = nums.size();
+        vector<int> count(10001);
+        for (int i = 0; i < n; i++) {
+            count[nums[i]]++;
+        }
+        vector<int> dp(10001);
+        dp[1] = count[1];
+        for (int i = 2; i <= 10000; i++) {
+            dp[i] = max(dp[i - 1], dp[i - 2] + count[i] * i);
+        }
+        return dp[10000];
+
+=======
+
+        int n = nums.size();
+        int maxn = 0;
+        for (int i = 0; i < n; i++) {
+            maxn = max(maxn, nums[i]);
+        }
+        vector<int> sum(maxn + 1, 0);
+        for (int i = 0; i < n; i++) {
+            sum[nums[i]] += nums[i];
+        }
+        int dp[2][maxn + 1];
+        memset(dp, 0, sizeof(dp));
+        for (int i = 1; i <= maxn; i++) {
+            dp[0][i] = max(dp[0][i - 1], dp[1][i - 1]);
+            dp[1][i] = dp[0][i - 1] + sum[i];
+        }
+        return max(dp[0][maxn], dp[1][maxn]);
+
+=======
+
+        int n = nums.size();
+        if (n == 0) return 0;
+        if (n == 1) return nums[0];
+        sort(nums.begin(), nums.end());
+        int dp[n];
+        dp[0] = nums[0];
+        int i = 1;
+        while (i < n && nums[i] == nums[i - 1]) {
+            dp[i] = dp[i - 1] + nums[i];
+            i++;
+        }
+        if (i == n) return dp[n - 1];
+        dp[i] = max(dp[i - 1], nums[i]);
+        for (int j = i + 1; j < n; j++) {
+            if (nums[j] == nums[j - 1]) {
+                dp[j] = dp[j - 1] + nums[j];
+            } else if (nums[j] == nums[j - 1] + 1) {
+                dp[j] = max(dp[j - 1], dp[j - 2] + nums[j]);
+            } else {
+                dp[j] = dp[j - 1] + nums[j];
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        vector<int> count(10001, 0);
+        for (int num : nums) {
+            count[num]++;
+        }
+        int use = 0, avoid = 0;
+        for (int i = 1; i <= 10000; i++) {
+            int m = max(use, avoid);
+            use = i * count[i] + avoid;
+            avoid = m;
+        }
+        return max(use, avoid);

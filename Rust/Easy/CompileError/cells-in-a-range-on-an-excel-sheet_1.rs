@@ -1,0 +1,59 @@
+impl Solution {
+    pub fn cells_in_range(s: String) -> Vec<String> {
+        
+        let mut v = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = 0;
+        let mut l = 0;
+        while i < s.len() {
+            if s.chars().nth(i) == Some(':') {
+                break;
+            }
+            i += 1;
+        }
+        while j < s.len() {
+            if s.chars().nth(j) == Some('1') {
+                break;
+            }
+            j += 1;
+        }
+        while k < s.len() {
+            if s.chars().nth(k) == Some('A') {
+                break;
+            }
+            k += 1;
+        }
+        while l < s.len() {
+            if s.chars().nth(l) == Some('Z') {
+                break;
+            }
+            l += 1;
+        }
+        let mut c1 = s[k..i].to_string();
+        let mut c2 = s[i + 1..l].to_string();
+        let mut r1 = s[j..i].parse::<i32>().unwrap();
+        let mut r2 = s[l..].parse::<i32>().unwrap();
+        let mut c1c = c1.chars().nth(0).unwrap() as i32 - 64;
+        let mut c2c = c2.chars().nth(0).unwrap() as i32 - 64;
+        if c1c > c2c {
+            let t = c1c;
+            c1c = c2c;
+            c2c = t;
+        }
+        if r1 > r2 {
+            let t = r1;
+            r1 = r2;
+            r2 = t;
+        }
+        for i in r1..=r2 {
+            for j in c1c..=c2c {
+                let mut c = String::new();
+                c.push(char::from_u32(j + 64).unwrap());
+                c.push_str(&i.to_string());
+                v.push(c);
+            }
+        }
+        v
+    }
+}

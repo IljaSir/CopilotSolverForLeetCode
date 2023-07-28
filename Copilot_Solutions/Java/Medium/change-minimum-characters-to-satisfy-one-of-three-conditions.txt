@@ -1,0 +1,291 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] countA = new int[26];
+        int[] countB = new int[26];
+        for (int i = 0; i < a.length(); i++) {
+            countA[a.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < b.length(); i++) {
+            countB[b.charAt(i) - 'a']++;
+        }
+        int ans = a.length() + b.length();
+        for (int i = 0; i < 26; i++) {
+            ans = Math.min(ans, a.length() + b.length() - countA[i] - countB[i]);
+            if (i > 0) {
+                countA[i] += countA[i - 1];
+                countB[i] += countB[i - 1];
+            }
+            if (i < 25) {
+                ans = Math.min(ans, a.length() - countA[i] + countB[i]);
+                ans = Math.min(ans, b.length() - countB[i] + countA[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int[] countA = new int[26];
+        int[] countB = new int[26];
+        for (char c : a.toCharArray()) {
+            countA[c - 'a']++;
+        }
+        for (char c : b.toCharArray()) {
+            countB[c - 'a']++;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < 26; i++) {
+            int cur = 0;
+            for (int j = 0; j < 26; j++) {
+                if (j <= i) {
+                    cur += countA[j];
+                } else {
+                    cur += countB[j];
+                }
+            }
+            res = Math.min(res, cur);
+        }
+        for (int i = 0; i < 26; i++) {
+            int cur = 0;
+            for (int j = 0; j < 26; j++) {
+                if (j <= i) {
+                    cur += countB[j];
+                } else {
+                    cur += countA[j];
+                }
+            }
+            res = Math.min(res, cur);
+        }
+        int[] preA = new int[26];
+        int[] preB = new int[26];
+        preA[0] = countA[0];
+        preB[0] = countB[0];
+        for (int i = 1; i < 26; i++) {
+            preA[i] = preA[i - 1] + countA[i];
+            preB[i] = preB[i - 1] + countB[i];
+        }
+        for (int i = 0; i < 25; i++) {
+            res = Math.min(res, a.length() + b.length() - preA[i] - preB[25] + preB[i]);
+            res = Math.min(res, a.length() + b.length() - preB[i] - preA[25] + preA[i]);
+        }
+        return res;
+
+=======
+
+        int[] countA = new int[26];
+        int[] countB = new int[26];
+        for (char c : a.toCharArray()) {
+            countA[c - 'a']++;
+        }
+        for (char c : b.toCharArray()) {
+            countB[c - 'a']++;
+        }
+        int n = a.length(), m = b.length();
+        int res = n + m;
+        for (int i = 0; i < 26; i++) {
+            res = Math.min(res, n + m - countA[i] - countB[i]);
+            if (i > 0) {
+                countA[i] += countA[i - 1];
+                countB[i] += countB[i - 1];
+            }
+            if (i < 25) {
+                res = Math.min(res, n - countA[i] + countB[i]);
+                res = Math.min(res, m - countB[i] + countA[i]);
+            }
+        }
+        return res;
+
+=======
+
+        int[] freqA = new int[26];
+        int[] freqB = new int[26];
+        for (char c : a.toCharArray()) {
+            freqA[c - 'a']++;
+        }
+        for (char c : b.toCharArray()) {
+            freqB[c - 'a']++;
+        }
+        int res = Integer.MAX_VALUE;
+        // condition 1
+        for (int i = 1; i < 26; i++) {
+            int count = 0;
+            for (int j = 0; j < i; j++) {
+                count += freqA[j] + freqB[j];
+            }
+            res = Math.min(res, count);
+        }
+        // condition 2
+        for (int i = 1; i < 26; i++) {
+            int count = 0;
+            for (int j = i; j < 26; j++) {
+                count += freqA[j] + freqB[j];
+            }
+            res = Math.min(res, count);
+        }
+        // condition 3
+        int countA = 0, countB = 0;
+        for (int i = 0; i < 26; i++) {
+            countA += freqA[i];
+            countB += freqB[i];
+        }
+        res = Math.min(res, a.length() - countA + b.length() - countB);
+        return res;
+
+=======
+
+        int[] cntA = new int[26];
+        int[] cntB = new int[26];
+        for (char c : a.toCharArray()) cntA[c - 'a']++;
+        for (char c : b.toCharArray()) cntB[c - 'a']++;
+        int n = a.length(), m = b.length();
+        int res = n + m;
+        // condition 1
+        for (int i = 1; i < 26; i++) {
+            res = Math.min(res, n - cntA[i] + m - cntB[i - 1]);
+        }
+        // condition 2
+        for (int i = 1; i < 26; i++) {
+            res = Math.min(res, n - cntA[i - 1] + m - cntB[i]);
+        }
+        // condition 3
+        int maxA = 0, maxB = 0;
+        for (int i = 0; i < 26; i++) {
+            maxA = Math.max(maxA, cntA[i]);
+            maxB = Math.max(maxB, cntB[i]);
+        }
+        res = Math.min(res, n + m - maxA - maxB);
+        return res;
+
+=======
+
+        int[] cnt1 = new int[26];
+        int[] cnt2 = new int[26];
+        for (char c : a.toCharArray()) {
+            cnt1[c - 'a']++;
+        }
+        for (char c : b.toCharArray()) {
+            cnt2[c - 'a']++;
+        }
+        int n = a.length();
+        int m = b.length();
+        int res = n + m;
+        for (int i = 0; i < 25; i++) {
+            res = Math.min(res, n + m - cnt1[i] - cnt2[i]);
+            res = Math.min(res, n - cnt1[i] + cnt2[i]);
+            res = Math.min(res, m - cnt2[i] + cnt1[i]);
+        }
+        return res;
+
+=======
+
+        int[] aChar = new int[26];
+        int[] bChar = new int[26];
+        int aLen = a.length();
+        int bLen = b.length();
+        for (int i = 0; i < aLen; i++) {
+            aChar[a.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < bLen; i++) {
+            bChar[b.charAt(i) - 'a']++;
+        }
+        int min = aLen + bLen;
+        for (int i = 0; i < 25; i++) {
+            aChar[i + 1] += aChar[i];
+            bChar[i + 1] += bChar[i];
+            min = Math.min(min, aLen + bLen - aChar[i] - bChar[25] + bChar[i]);
+            min = Math.min(min, aLen + bLen - bChar[i] - aChar[25] + aChar[i]);
+        }
+        for (int i = 0; i < 26; i++) {
+            min = Math.min(min, aLen + bLen - aChar[i] - bChar[i]);
+        }
+        return min;
+
+=======
+
+        int[] aFreq = new int[26];
+        int[] bFreq = new int[26];
+        for(char c : a.toCharArray()) {
+            aFreq[c-'a']++;
+        }
+        for(char c : b.toCharArray()) {
+            bFreq[c-'a']++;
+        }
+        int n = a.length();
+        int m = b.length();
+        int res = n+m;
+        for(int i=0; i<25; i++) {
+            res = Math.min(res, n+m-aFreq[i]-bFreq[i]);
+            res = Math.min(res, n-m+aFreq[i]-bFreq[i]);
+            res = Math.min(res, m-n+bFreq[i]-aFreq[i]);
+        }
+        return res;
+
+=======
+
+        int[] cntA = new int[26];
+        int[] cntB = new int[26];
+        int n = a.length(), m = b.length();
+        for (char c: a.toCharArray()) cntA[c - 'a']++;
+        for (char c: b.toCharArray()) cntB[c - 'a']++;
+        int ans = n + m;
+        for (int i = 0; i < 26; i++) {
+            int cur = n + m - cntA[i] - cntB[i];
+            if (i > 0) {
+                cur += cntA[i - 1] + cntB[i - 1];
+            }
+            ans = Math.min(ans, cur);
+        }
+        for (int i = 0; i < 26; i++) {
+            int cur = n + m - cntA[i] - cntB[i];
+            if (i < 25) {
+                cur += cntA[i + 1] + cntB[i + 1];
+            }
+            ans = Math.min(ans, cur);
+        }
+        int cnt = 0;
+        for (int i = 0; i < 26; i++) {
+            cnt += cntA[i];
+            ans = Math.min(ans, n - cnt);
+        }
+        cnt = 0;
+        for (int i = 0; i < 26; i++) {
+            cnt += cntB[i];
+            ans = Math.min(ans, m - cnt);
+        }
+        return ans;
+
+=======
+
+        int[] ca = new int[26];
+        int[] cb = new int[26];
+        int totalA = 0;
+        int totalB = 0;
+        for (int i = 0; i < a.length(); i++) {
+            ca[a.charAt(i) - 'a']++;
+            totalA++;
+        }
+        for (int i = 0; i < b.length(); i++) {
+            cb[b.charAt(i) - 'a']++;
+            totalB++;
+        }
+        int min = Integer.MAX_VALUE;
+        // condition 1
+        for (int i = 0; i < 25; i++) {
+            int t = totalA - ca[i] + totalB - cb[i + 1];
+            min = Math.min(min, t);
+        }
+        // condition 2
+        for (int i = 1; i < 26; i++) {
+            int t = totalA - ca[i] + totalB - cb[i - 1];
+            min = Math.min(min, t);
+        }
+        // condition 3
+        int maxA = 0;
+        int maxB = 0;
+        for (int i = 0; i < 26; i++) {
+            maxA = Math.max(maxA, ca[i]);
+            maxB = Math.max(maxB, cb[i]);
+        }
+        min = Math.min(min, totalA - maxA + totalB - maxB);
+        return min;

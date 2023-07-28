@@ -1,0 +1,534 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        unordered_map<string, vector<int>> emailToIndex;
+        for (int i = 0; i < accounts.size(); ++i) {
+            for (int j = 1; j < accounts[i].size(); ++j) {
+                emailToIndex[accounts[i][j]].push_back(i);
+            }
+        }
+        vector<int> visited(accounts.size(), 0);
+        vector<vector<string>> res;
+        for (int i = 0; i < accounts.size(); ++i) {
+            if (visited[i]) continue;
+            visited[i] = 1;
+            vector<string> emails;
+            for (int j = 1; j < accounts[i].size(); ++j) {
+                emails.push_back(accounts[i][j]);
+            }
+            queue<int> q;
+            q.push(i);
+            while (!q.empty()) {
+                int index = q.front(); q.pop();
+                for (int j = 1; j < accounts[index].size(); ++j) {
+                    string email = accounts[index][j];
+                    for (auto k : emailToIndex[email]) {
+                        if (visited[k]) continue;
+                        visited[k] = 1;
+                        q.push(k);
+                        for (int l = 1; l < accounts[k].size(); ++l) {
+                            emails.push_back(accounts[k][l]);
+                        }
+                    }
+                }
+            }
+            sort(emails.begin(), emails.end());
+            emails.insert(emails.begin(), accounts[i][0]);
+            res.push_back(emails);
+        }
+        return res;
+
+=======
+
+        unordered_map<string, string> emailToName;
+        unordered_map<string, vector<string>> graph;
+        for (auto account : accounts) {
+            string name = account[0];
+            for (int i = 1; i < account.size(); i++) {
+                emailToName[account[i]] = name;
+                graph[account[1]].push_back(account[i]);
+                graph[account[i]].push_back(account[1]);
+            }
+        }
+        vector<vector<string>> ans;
+        unordered_set<string> seen;
+        for (auto p : graph) {
+            if (!seen.count(p.first)) {
+                seen.insert(p.first);
+                queue<string> q;
+                q.push(p.first);
+                vector<string> component;
+                while (!q.empty()) {
+                    string node = q.front();
+                    q.pop();
+                    component.push_back(node);
+                    for (string neighbor : graph[node]) {
+                        if (!seen.count(neighbor)) {
+                            seen.insert(neighbor);
+                            q.push(neighbor);
+                        }
+                    }
+                }
+                sort(component.begin(), component.end());
+                component.insert(component.begin(), emailToName[p.first]);
+                ans.push_back(component);
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, string> owner;
+        unordered_map<string, string> parents;
+        unordered_map<string, set<string>> unions;
+        vector<vector<string>> res;
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                parents[account[i]] = account[i];
+                owner[account[i]] = account[0];
+            }
+        }
+        for (auto& account : accounts) {
+            string p = find(account[1], parents);
+            for (int i = 2; i < account.size(); i++) {
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& a : unions) {
+            vector<string> emails (a.second.begin(), a.second.end());
+            emails.insert(emails.begin(), owner[a.first]);
+            res.push_back(emails);
+        }
+        return res;
+
+=======
+
+        map<string, string> emailToName;
+        map<string, vector<string>> graph;
+        for (auto account : accounts) {
+            string name = account[0];
+            for (int i = 1; i < account.size(); i++) {
+                emailToName[account[i]] = name;
+                graph[account[i]].push_back(account[1]);
+                graph[account[1]].push_back(account[i]);
+            }
+        }
+        set<string> visited;
+        vector<vector<string>> result;
+        for (auto email : emailToName) {
+            if (visited.find(email.first) == visited.end()) {
+                vector<string> emails;
+                dfs(email.first, graph, visited, emails);
+                sort(emails.begin(), emails.end());
+                emails.insert(emails.begin(), email.second);
+                result.push_back(emails);
+            }
+        }
+        return result;
+    }
+    
+    void dfs(string email, map<string, vector<string>> &graph, set<string> &visited, vector<string> &emails) {
+        emails.push_back(email);
+        visited.insert(email);
+        for (auto next : graph[email]) {
+            if (visited.find(next) == visited.end()) {
+                dfs(next, graph, visited, emails);
+            }
+        }
+
+=======
+
+        map<string, string> owner;
+        map<string, string> parents;
+        map<string, set<string>> unions;
+        vector<vector<string>> res;
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                parents[account[i]] = account[i];
+                owner[account[i]] = account[0];
+            }
+        }
+        for (auto& account : accounts) {
+            string p = find(account[1], parents);
+            for (int i = 2; i < account.size(); i++) {
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& it : unions) {
+            vector<string> emails(it.second.begin(), it.second.end());
+            emails.insert(emails.begin(), owner[it.first]);
+            res.push_back(emails);
+        }
+        return res;
+
+=======
+
+        vector<vector<string>> res;
+        unordered_map<string, string> emailName;
+        unordered_map<string, string> parents;
+        unordered_map<string, set<string>> unions;
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                parents[account[i]] = account[i];
+                emailName[account[i]] = account[0];
+            }
+        }
+        for (auto& account : accounts) {
+            string p = find(account[1], parents);
+            for (int i = 2; i < account.size(); i++) {
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& it : unions) {
+            vector<string> emails(it.second.begin(), it.second.end());
+            emails.insert(emails.begin(), emailName[it.first]);
+            res.push_back(emails);
+        }
+        return res;
+    }
+    string find(string s, unordered_map<string, string>& parents) {
+        return parents[s] == s ? s : find(parents[s], parents);
+
+=======
+
+        unordered_map<string, int> email2id;
+        unordered_map<int, string> id2name;
+        vector<vector<int>> graph(accounts.size());
+        int id = 0;
+        for (int i = 0; i < accounts.size(); i++) {
+            for (int j = 1; j < accounts[i].size(); j++) {
+                if (email2id.find(accounts[i][j]) == email2id.end()) {
+                    email2id[accounts[i][j]] = id++;
+                    id2name[email2id[accounts[i][j]]] = accounts[i][0];
+                }
+                graph[i].push_back(email2id[accounts[i][j]]);
+            }
+        }
+        vector<bool> visited(id, false);
+        vector<vector<string>> ans;
+        for (int i = 0; i < accounts.size(); i++) {
+            if (visited[graph[i][0]]) continue;
+            vector<string> emails;
+            dfs(graph, i, visited, emails);
+            sort(emails.begin(), emails.end());
+            emails.insert(emails.begin(), id2name[graph[i][0]]);
+            ans.push_back(emails);
+        }
+        return ans;
+    }
+    void dfs(vector<vector<int>>& graph, int i, vector<bool>& visited, vector<string>& emails) {
+        if (visited[graph[i][0]]) return;
+        visited[graph[i][0]] = true;
+        for (int j = 1; j < graph[i].size(); j++) {
+            emails.push_back(to_string(graph[i][j]));
+            for (int k = 0; k < graph.size(); k++) {
+                if (k == i) continue;
+                for (int l = 1; l < graph[k].size(); l++) {
+                    if (graph[i][j] == graph[k][l]) {
+                        dfs(graph, k, visited, emails);
+                    }
+                }
+            }
+        }
+
+=======
+
+        vector<vector<string>> result;
+        unordered_map<string, int> emailToIndex;
+        unordered_map<string, string> emailToName;
+        int N = accounts.size();
+        vector<int> parent(N, 0);
+        for (int i = 0; i < N; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < N; i++) {
+            for (int j = 1; j < accounts[i].size(); j++) {
+                if (emailToIndex.count(accounts[i][j]) == 0) {
+                    emailToIndex[accounts[i][j]] = i;
+                    emailToName[accounts[i][j]] = accounts[i][0];
+                } else {
+                    Union(i, emailToIndex[accounts[i][j]], parent);
+                }
+            }
+        }
+        unordered_map<int, set<string>> indexToEmails;
+        for (int i = 0; i < N; i++) {
+            int root = Find(i, parent);
+            for (int j = 1; j < accounts[i].size(); j++) {
+                indexToEmails[root].insert(accounts[i][j]);
+            }
+        }
+        for (auto it = indexToEmails.begin(); it != indexToEmails.end(); it++) {
+            vector<string> emails;
+            emails.push_back(emailToName[*(it->second.begin())]);
+            for (auto email : it->second) {
+                emails.push_back(email);
+            }
+            result.push_back(emails);
+        }
+        return result;
+    }
+    int Find(int i, vector<int>& parent) {
+        if (i != parent[i]) {
+            parent[i] = Find(parent[i], parent);
+        }
+        return parent[i];
+
+=======
+
+        unordered_map<string, string> emailToName;
+        unordered_map<string, int> emailToParent;
+        unordered_map<string, set<string>> parentToEmails;
+        vector<vector<string>> ans;
+        for (auto& account : accounts) {
+            string name = account[0];
+            for (int i = 1; i < account.size(); ++i) {
+                string email = account[i];
+                if (!emailToName.count(email)) {
+                    emailToName[email] = name;
+                }
+                if (!emailToParent.count(email)) {
+                    emailToParent[email] = email;
+                }
+                unionFind(email, account[1], emailToParent);
+            }
+        }
+        for (auto& account : accounts) {
+            string parent = find(account[1], emailToParent);
+            for (int i = 1; i < account.size(); ++i) {
+                string email = account[i];
+                parentToEmails[parent].insert(email);
+            }
+        }
+        for (auto& p : parentToEmails) {
+            vector<string> emails(p.second.begin(), p.second.end());
+            emails.insert(emails.begin(), emailToName[p.first]);
+            ans.push_back(emails);
+        }
+        return ans;
+    }
+
+    string find(string email, unordered_map<string, int>& emailToParent) {
+        while (email != emailToParent[email]) {
+            email = emailToParent[email];
+        }
+        return email;
+    }
+
+    void unionFind(string email1, string email2, unordered_map<string, int>& emailToParent) {
+        emailToParent[find(email1, emailToParent)] = find(email2, emailToParent);
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& a : unions) {
+            vector<string> emails (a.second.begin(), a.second.end());
+            emails.insert(emails.begin(), owner[a.first]);
+            res.push_back(emails);
+        }
+        return res;
+
+=======
+
+        map<string, string> emailToName;
+        map<string, vector<string>> graph;
+        for (auto account : accounts) {
+            string name = account[0];
+            for (int i = 1; i < account.size(); i++) {
+                emailToName[account[i]] = name;
+                graph[account[i]].push_back(account[1]);
+                graph[account[1]].push_back(account[i]);
+            }
+        }
+        set<string> visited;
+        vector<vector<string>> result;
+        for (auto email : emailToName) {
+            if (visited.find(email.first) == visited.end()) {
+                vector<string> emails;
+                dfs(email.first, graph, visited, emails);
+                sort(emails.begin(), emails.end());
+                emails.insert(emails.begin(), email.second);
+                result.push_back(emails);
+            }
+        }
+        return result;
+    }
+    
+    void dfs(string email, map<string, vector<string>> &graph, set<string> &visited, vector<string> &emails) {
+        emails.push_back(email);
+        visited.insert(email);
+        for (auto next : graph[email]) {
+            if (visited.find(next) == visited.end()) {
+                dfs(next, graph, visited, emails);
+            }
+        }
+
+=======
+
+        map<string, string> owner;
+        map<string, string> parents;
+        map<string, set<string>> unions;
+        vector<vector<string>> res;
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                parents[account[i]] = account[i];
+                owner[account[i]] = account[0];
+            }
+        }
+        for (auto& account : accounts) {
+            string p = find(account[1], parents);
+            for (int i = 2; i < account.size(); i++) {
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& it : unions) {
+            vector<string> emails(it.second.begin(), it.second.end());
+            emails.insert(emails.begin(), owner[it.first]);
+            res.push_back(emails);
+        }
+        return res;
+
+=======
+
+        vector<vector<string>> res;
+        unordered_map<string, string> emailName;
+        unordered_map<string, string> parents;
+        unordered_map<string, set<string>> unions;
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                parents[account[i]] = account[i];
+                emailName[account[i]] = account[0];
+            }
+        }
+        for (auto& account : accounts) {
+            string p = find(account[1], parents);
+            for (int i = 2; i < account.size(); i++) {
+                parents[find(account[i], parents)] = p;
+            }
+        }
+        for (auto& account : accounts) {
+            for (int i = 1; i < account.size(); i++) {
+                unions[find(account[i], parents)].insert(account[i]);
+            }
+        }
+        for (auto& it : unions) {
+            vector<string> emails(it.second.begin(), it.second.end());
+            emails.insert(emails.begin(), emailName[it.first]);
+            res.push_back(emails);
+        }
+        return res;
+    }
+    string find(string s, unordered_map<string, string>& parents) {
+        return parents[s] == s ? s : find(parents[s], parents);
+
+=======
+
+        vector<vector<string>> result;
+        unordered_map<string, int> emailToIndex;
+        unordered_map<string, string> emailToName;
+        int N = accounts.size();
+        vector<int> parent(N, 0);
+        for (int i = 0; i < N; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < N; i++) {
+            for (int j = 1; j < accounts[i].size(); j++) {
+                if (emailToIndex.count(accounts[i][j]) == 0) {
+                    emailToIndex[accounts[i][j]] = i;
+                    emailToName[accounts[i][j]] = accounts[i][0];
+                } else {
+                    Union(i, emailToIndex[accounts[i][j]], parent);
+                }
+            }
+        }
+        unordered_map<int, set<string>> indexToEmails;
+        for (int i = 0; i < N; i++) {
+            int root = Find(i, parent);
+            for (int j = 1; j < accounts[i].size(); j++) {
+                indexToEmails[root].insert(accounts[i][j]);
+            }
+        }
+        for (auto it = indexToEmails.begin(); it != indexToEmails.end(); it++) {
+            vector<string> emails;
+            emails.push_back(emailToName[*(it->second.begin())]);
+            for (auto email : it->second) {
+                emails.push_back(email);
+            }
+            result.push_back(emails);
+        }
+        return result;
+    }
+    int Find(int i, vector<int>& parent) {
+        if (i != parent[i]) {
+            parent[i] = Find(parent[i], parent);
+        }
+        return parent[i];
+
+=======
+
+        unordered_map<string, string> emailToName;
+        unordered_map<string, int> emailToParent;
+        unordered_map<string, set<string>> parentToEmails;
+        vector<vector<string>> ans;
+        for (auto& account : accounts) {
+            string name = account[0];
+            for (int i = 1; i < account.size(); ++i) {
+                string email = account[i];
+                if (!emailToName.count(email)) {
+                    emailToName[email] = name;
+                }
+                if (!emailToParent.count(email)) {
+                    emailToParent[email] = email;
+                }
+                unionFind(email, account[1], emailToParent);
+            }
+        }
+        for (auto& account : accounts) {
+            string parent = find(account[1], emailToParent);
+            for (int i = 1; i < account.size(); ++i) {
+                string email = account[i];
+                parentToEmails[parent].insert(email);
+            }
+        }
+        for (auto& p : parentToEmails) {
+            vector<string> emails(p.second.begin(), p.second.end());
+            emails.insert(emails.begin(), emailToName[p.first]);
+            ans.push_back(emails);
+        }
+        return ans;
+    }
+
+    string find(string email, unordered_map<string, int>& emailToParent) {
+        while (email != emailToParent[email]) {
+            email = emailToParent[email];
+        }
+        return email;
+    }
+
+    void unionFind(string email1, string email2, unordered_map<string, int>& emailToParent) {
+        emailToParent[find(email1, emailToParent)] = find(email2, emailToParent);

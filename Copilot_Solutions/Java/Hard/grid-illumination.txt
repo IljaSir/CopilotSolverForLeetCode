@@ -1,0 +1,275 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int[] ans = new int[queries.length];
+        Map<Integer, Integer> row = new HashMap<>();
+        Map<Integer, Integer> col = new HashMap<>();
+        Map<Integer, Integer> diag1 = new HashMap<>();
+        Map<Integer, Integer> diag2 = new HashMap<>();
+        Set<Long> lampSet = new HashSet<>();
+        for (int[] lamp : lamps) {
+            int r = lamp[0], c = lamp[1];
+            row.put(r, row.getOrDefault(r, 0) + 1);
+            col.put(c, col.getOrDefault(c, 0) + 1);
+            diag1.put(r - c, diag1.getOrDefault(r - c, 0) + 1);
+            diag2.put(r + c, diag2.getOrDefault(r + c, 0) + 1);
+            lampSet.add(((long) r << 32) | c);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int r = queries[i][0], c = queries[i][1];
+            if (row.getOrDefault(r, 0) > 0 || col.getOrDefault(c, 0) > 0 ||
+                diag1.getOrDefault(r - c, 0) > 0 || diag2.getOrDefault(r + c, 0) > 0) {
+                ans[i] = 1;
+            }
+            for (int nr = r - 1; nr <= r + 1; nr++) {
+                for (int nc = c - 1; nc <= c + 1; nc++) {
+                    if (lampSet.remove(((long) nr << 32) | nc)) {
+                        row.put(nr, row.get(nr) - 1);
+                        col.put(nc, col.get(nc) - 1);
+                        diag1.put(nr - nc, diag1.get(nr - nc) - 1);
+                        diag2.put(nr + nc, diag2.get(nr + nc) - 1);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Map<Integer, Integer> row = new HashMap<>();
+        Map<Integer, Integer> col = new HashMap<>();
+        Map<Integer, Integer> diag1 = new HashMap<>();
+        Map<Integer, Integer> diag2 = new HashMap<>();
+        Set<Integer> lampSet = new HashSet<>();
+        for (int[] lamp : lamps) {
+            int x = lamp[0];
+            int y = lamp[1];
+            row.put(x, row.getOrDefault(x, 0) + 1);
+            col.put(y, col.getOrDefault(y, 0) + 1);
+            diag1.put(x + y, diag1.getOrDefault(x + y, 0) + 1);
+            diag2.put(x - y, diag2.getOrDefault(x - y, 0) + 1);
+            lampSet.add(x * n + y);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int x = queries[i][0];
+            int y = queries[i][1];
+            if (row.getOrDefault(x, 0) > 0 || col.getOrDefault(y, 0) > 0 || diag1.getOrDefault(x + y, 0) > 0 || diag2.getOrDefault(x - y, 0) > 0) {
+                ans[i] = 1;
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if (lampSet.contains(nx * n + ny)) {
+                        row.put(nx, row.getOrDefault(nx, 0) - 1);
+                        col.put(ny, col.getOrDefault(ny, 0) - 1);
+                        diag1.put(nx + ny, diag1.getOrDefault(nx + ny, 0) - 1);
+                        diag2.put(nx - ny, diag2.getOrDefault(nx - ny, 0) - 1);
+                        lampSet.remove(nx * n + ny);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Map<Integer, Integer> row = new HashMap<>();
+        Map<Integer, Integer> col = new HashMap<>();
+        Map<Integer, Integer> diag = new HashMap<>();
+        Map<Integer, Integer> antidiag = new HashMap<>();
+        Set<Long> lampSet = new HashSet<>();
+        for (int[] lamp : lamps) {
+            int x = lamp[0], y = lamp[1];
+            row.put(x, row.getOrDefault(x, 0) + 1);
+            col.put(y, col.getOrDefault(y, 0) + 1);
+            diag.put(x - y, diag.getOrDefault(x - y, 0) + 1);
+            antidiag.put(x + y, antidiag.getOrDefault(x + y, 0) + 1);
+            lampSet.add(((long) x << 32) + y);
+        }
+        int[][] dirs = {{0, 0}, {0, 1}, {0, -1}, {1, 0}, {-1, 0}, {-1, -1}, {1, 1}, {-1, 1}, {1, -1}};
+        for (int i = 0; i < queries.length; i++) {
+            int x = queries[i][0], y = queries[i][1];
+            if (row.getOrDefault(x, 0) > 0 || col.getOrDefault(y, 0) > 0 || diag.getOrDefault(x - y, 0) > 0 || antidiag.getOrDefault(x + y, 0) > 0) {
+                ans[i] = 1;
+            }
+            for (int[] dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                long code = ((long) nx << 32) + ny;
+                if (lampSet.contains(code)) {
+                    row.put(nx, row.get(nx) - 1);
+                    col.put(ny, col.get(ny) - 1);
+                    diag.put(nx - ny, diag.get(nx - ny) - 1);
+                    antidiag.put(nx + ny, antidiag.get(nx + ny) - 1);
+                    lampSet.remove(code);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Map<Integer, Integer> row = new HashMap<>();
+        Map<Integer, Integer> col = new HashMap<>();
+        Map<Integer, Integer> diag = new HashMap<>();
+        Map<Integer, Integer> antiDiag = new HashMap<>();
+        Set<Integer> lampsSet = new HashSet<>();
+        for (int[] lamp : lamps) {
+            int x = lamp[0], y = lamp[1];
+            row.put(x, row.getOrDefault(x, 0) + 1);
+            col.put(y, col.getOrDefault(y, 0) + 1);
+            diag.put(x - y, diag.getOrDefault(x - y, 0) + 1);
+            antiDiag.put(x + y, antiDiag.getOrDefault(x + y, 0) + 1);
+            lampsSet.add(x * n + y);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int x = queries[i][0], y = queries[i][1];
+            if (row.getOrDefault(x, 0) > 0 || col.getOrDefault(y, 0) > 0 || diag.getOrDefault(x - y, 0) > 0 || antiDiag.getOrDefault(x + y, 0) > 0) {
+                ans[i] = 1;
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    int xx = x + dx, yy = y + dy;
+                    int code = xx * n + yy;
+                    if (lampsSet.contains(code)) {
+                        row.put(xx, row.get(xx) - 1);
+                        col.put(yy, col.get(yy) - 1);
+                        diag.put(xx - yy, diag.get(xx - yy) - 1);
+                        antiDiag.put(xx + yy, antiDiag.get(xx + yy) - 1);
+                        lampsSet.remove(code);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Map<Integer, Integer> row = new HashMap();
+        Map<Integer, Integer> col = new HashMap();
+        Map<Integer, Integer> diag1 = new HashMap();
+        Map<Integer, Integer> diag2 = new HashMap();
+        Set<Integer> lamp = new HashSet();
+
+        for (int[] l: lamps) {
+            int r = l[0], c = l[1];
+            row.put(r, row.getOrDefault(r, 0) + 1);
+            col.put(c, col.getOrDefault(c, 0) + 1);
+            diag1.put(r - c, diag1.getOrDefault(r - c, 0) + 1);
+            diag2.put(r + c, diag2.getOrDefault(r + c, 0) + 1);
+            lamp.add(r * n + c);
+        }
+
+        for (int i = 0; i < queries.length; i++) {
+            int r = queries[i][0], c = queries[i][1];
+            if (row.containsKey(r) || col.containsKey(c) ||
+                    diag1.containsKey(r - c) || diag2.containsKey(r + c))
+                ans[i] = 1;
+            for (int j = r - 1; j <= r + 1; j++) {
+                for (int k = c - 1; k <= c + 1; k++) {
+                    if (lamp.remove(j * n + k)) {
+                        row.put(j, row.get(j) - 1);
+                        col.put(k, col.get(k) - 1);
+                        diag1.put(j - k, diag1.get(j - k) - 1);
+                        diag2.put(j + k, diag2.get(j + k) - 1);
+                        if (row.get(j) == 0) row.remove(j);
+                        if (col.get(k) == 0) col.remove(k);
+                        if (diag1.get(j - k) == 0) diag1.remove(j - k);
+                        if (diag2.get(j + k) == 0) diag2.remove(j + k);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Integer> row = new HashMap<>();
+        Map<Integer, Integer> col = new HashMap<>();
+        Map<Integer, Integer> diag = new HashMap<>();
+        Map<Integer, Integer> anti = new HashMap<>();
+        Set<Long> lampSet = new HashSet<>();
+        for (int[] lamp : lamps) {
+            int x = lamp[0];
+            int y = lamp[1];
+            row.put(x, row.getOrDefault(x, 0) + 1);
+            col.put(y, col.getOrDefault(y, 0) + 1);
+            diag.put(x - y, diag.getOrDefault(x - y, 0) + 1);
+            anti.put(x + y, anti.getOrDefault(x + y, 0) + 1);
+            lampSet.add(((long) x << 32) | y);
+        }
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int x = queries[i][0];
+            int y = queries[i][1];
+            if (row.getOrDefault(x, 0) > 0
+                    || col.getOrDefault(y, 0) > 0
+                    || diag.getOrDefault(x - y, 0) > 0
+                    || anti.getOrDefault(x + y, 0) > 0) {
+                ans[i] = 1;
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    long code = ((long) nx << 32) | ny;
+                    if (lampSet.contains(code)) {
+                        row.put(nx, row.get(nx) - 1);
+                        col.put(ny, col.get(ny) - 1);
+                        diag.put(nx - ny, diag.get(nx - ny) - 1);
+                        anti.put(nx + ny, anti.get(nx + ny) - 1);
+                        lampSet.remove(code);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] ans = new int[queries.length];
+        Set<Integer> lampSet = new HashSet<>();
+        Map<Integer, Integer> rowMap = new HashMap<>();
+        Map<Integer, Integer> colMap = new HashMap<>();
+        Map<Integer, Integer> diagMap = new HashMap<>();
+        Map<Integer, Integer> antiDiagMap = new HashMap<>();
+        for (int[] lamp : lamps) {
+            int row = lamp[0], col = lamp[1];
+            int key = row * n + col;
+            if (lampSet.contains(key)) {
+                continue;
+            }
+            lampSet.add(key);
+            rowMap.put(row, rowMap.getOrDefault(row, 0) + 1);
+            colMap.put(col, colMap.getOrDefault(col, 0) + 1);
+            diagMap.put(row - col, diagMap.getOrDefault(row - col, 0) + 1);
+            antiDiagMap.put(row + col, antiDiagMap.getOrDefault(row + col, 0) + 1);
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int[] query = queries[i];
+            int row = query[0], col = query[1];
+            if (rowMap.containsKey(row) || colMap.containsKey(col) || diagMap.containsKey(row - col) || antiDiagMap.containsKey(row + col)) {
+                ans[i] = 1;
+            }
+            for (int r = row - 1; r <= row + 1; r++) {
+                for (int c = col - 1; c <= col + 1; c++) {
+                    int key = r * n + c;
+                    if (lampSet.contains(key)) {
+                        lampSet.remove(key);
+                        rowMap.put(r, rowMap.get(r) - 1);
+                        colMap.put(c, colMap.get(c) - 1);
+                        diagMap.put(r - c, diagMap.get(r - c) - 1);
+                        antiDiagMap.put(r + c, antiDiagMap.get(r + c) - 1);
+                        if (rowMap.get(r) == 0) {
+                            rowMap.remove(r);
+                        }
+                        if (colMap.get(c) == 0) {
+                            colMap.remove(c);
+                        }
+                        if (diagMap.get(r - c) == 0) {
+                            diagMap.remove(r -

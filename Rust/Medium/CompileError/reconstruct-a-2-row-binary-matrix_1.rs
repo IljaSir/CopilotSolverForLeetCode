@@ -1,0 +1,39 @@
+impl Solution {
+    pub fn reconstruct_matrix(upper: i32, lower: i32, colsum: Vec<i32>) -> Vec<Vec<i32>> {
+        
+        let mut a = vec![vec![0; colsum.len()]; 2];
+        let mut s = 0;
+        for i in 0..colsum.len() {
+            s += colsum[i];
+        }
+        if upper + lower != s {
+            return vec![];
+        }
+        for i in 0..colsum.len() {
+            if colsum[i] == 2 {
+                a[0][i] = 1;
+                a[1][i] = 1;
+                if upper > 0 {
+                    upper -= 1;
+                } else {
+                    lower -= 1;
+                }
+            }
+        }
+        for i in 0..colsum.len() {
+            if colsum[i] == 1 {
+                if upper > 0 {
+                    a[0][i] = 1;
+                    upper -= 1;
+                } else {
+                    a[1][i] = 1;
+                    lower -= 1;
+                }
+            }
+        }
+        if upper != 0 || lower != 0 {
+            return vec![];
+        }
+        a
+    }
+}

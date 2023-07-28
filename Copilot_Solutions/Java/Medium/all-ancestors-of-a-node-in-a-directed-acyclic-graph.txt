@@ -1,0 +1,258 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[1]).add(edge[0]);
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            Set<Integer> ancestors = new HashSet<>();
+            dfs(graph, i, ancestors);
+            res.add(new ArrayList<>(ancestors));
+        }
+        return res;
+    }
+    private void dfs(List<List<Integer>> graph, int i, Set<Integer> ancestors) {
+        for (int j : graph.get(i)) {
+            ancestors.add(j);
+            dfs(graph, j, ancestors);
+        }
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[1]).add(edge[0]);
+        }
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ans.add(new ArrayList<>());
+            dfs(graph, i, ans.get(i));
+        }
+        return ans;
+    }
+    
+    private void dfs(Map<Integer, Set<Integer>> graph, int node, List<Integer> list) {
+        if (graph.get(node).isEmpty()) {
+            return;
+        }
+        for (int child : graph.get(node)) {
+            list.add(child);
+            dfs(graph, child, list);
+        }
+
+=======
+
+        List<List<Integer>> ancestors = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ancestors.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            ancestors.get(edge[1]).add(edge[0]);
+        }
+        for (int i = 0; i < n; i++) {
+            List<Integer> ancestor = ancestors.get(i);
+            for (int j = 0; j < ancestor.size(); j++) {
+                ancestor.addAll(ancestors.get(ancestor.get(j)));
+            }
+            Collections.sort(ancestor);
+        }
+        return ancestors;
+
+=======
+
+        List<List<Integer>> ancestors = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ancestors.add(new ArrayList<>());
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[1]).add(edge[0]);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(graph, i, ancestors);
+        }
+        return ancestors;
+    }
+
+    private void dfs(Map<Integer, List<Integer>> graph, int node, List<List<Integer>> ancestors) {
+        for (int neighbor : graph.get(node)) {
+            ancestors.get(node).add(neighbor);
+            dfs(graph, neighbor, ancestors);
+            ancestors.get(node).addAll(ancestors.get(neighbor));
+        }
+    }
+}
+
+=======
+
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            res.add(new ArrayList<>());
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            if (!map.containsKey(edge[1])) {
+                map.put(edge[1], new ArrayList<>());
+            }
+            map.get(edge[1]).add(edge[0]);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(i, map, res);
+        }
+        return res;
+    }
+    private void dfs(int node, Map<Integer, List<Integer>> map, List<List<Integer>> res) {
+        if (map.containsKey(node)) {
+            for (int next : map.get(node)) {
+                res.get(node).add(next);
+                dfs(next, map, res);
+            }
+        }
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            result.add(new ArrayList<>());
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            if (!map.containsKey(edges[i][1])) {
+                map.put(edges[i][1], new ArrayList<>());
+            }
+            map.get(edges[i][1]).add(edges[i][0]);
+        }
+        for (int i = 0; i < n; i++) {
+            getAncestors(i, map, result);
+        }
+        return result;
+    }
+    public void getAncestors(int node, Map<Integer, List<Integer>> map, List<List<Integer>> result) {
+        if (map.containsKey(node)) {
+            List<Integer> list = map.get(node);
+            for (int i = 0; i < list.size(); i++) {
+                int val = list.get(i);
+                result.get(node).add(val);
+                getAncestors(val, map, result);
+            }
+        }
+
+=======
+
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ans.add(new ArrayList<>());
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], x -> new ArrayList<>()).add(edge[1]);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(graph, i, ans);
+        }
+        return ans;
+    }
+    private void dfs(Map<Integer, List<Integer>> graph, int node, List<List<Integer>> ans) {
+        if (graph.containsKey(node)) {
+            for (int child : graph.get(node)) {
+                ans.get(child).add(node);
+                dfs(graph, child, ans);
+            }
+        }
+
+=======
+
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ans.add(new ArrayList<>());
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.get(edge[0]).add(edge[1]);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(i, graph, ans, new HashSet<>());
+        }
+        return ans;
+    }
+    private void dfs(int i, Map<Integer, List<Integer>> graph, List<List<Integer>> ans, Set<Integer> visited) {
+        if (visited.contains(i)) {
+            return;
+        }
+        visited.add(i);
+        for (int j : graph.getOrDefault(i, new ArrayList<>())) {
+            ans.get(j).add(i);
+            dfs(j, graph, ans, visited);
+        }
+
+=======
+
+        List<List<Integer>> ancestors = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            ancestors.add(new ArrayList<>());
+        }
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+        }
+        for (int i = 0; i < n; i++) {
+            dfs(i, graph, ancestors);
+        }
+        return ancestors;
+    }
+    private void dfs(int node, List<List<Integer>> graph, List<List<Integer>> ancestors) {
+        for (int neighbor : graph.get(node)) {
+            ancestors.get(neighbor).add(node);
+            ancestors.get(neighbor).addAll(ancestors.get(node));
+            dfs(neighbor, graph, ancestors);
+        }
+
+=======
+
+        List<List<Integer>> result = new ArrayList<>();
+        int[] indegree = new int[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            result.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            map.putIfAbsent(edge[0], new ArrayList<>());
+            map.get(edge[0]).add(edge[1]);
+            indegree[edge[1]]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            if (map.containsKey(node)) {
+                for (int next : map.get(node)) {
+                    indegree[next]--;
+                    result.get(next).addAll(result.get(node));
+                    result.get(next).add(node);
+                    if (indegree[next] == 0) {
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        return result;

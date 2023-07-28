@@ -1,0 +1,217 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        return Math.max(maxSizeSlices(slices, 0, n - 2, m), maxSizeSlices(slices, 1, n - 1, m));
+    }
+    
+    int maxSizeSlices(int[] slices, int l, int r, int m) {
+        int n = r - l + 1;
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j - 1] + slices[l + j - 1]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j - 2] + slices[j - 1]);
+            }
+        }
+        int res = dp[m][n - 1];
+        dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i - 1][j - 2] + slices[j - 1]);
+            }
+        }
+        return Math.max(res, dp[m][n]);
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        int[][] dp = new int[m + 1][n];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = j + 2; k < j + n - 1; k++) {
+                    dp[i][j] = Math.max(dp[i][j], slices[j] + dp[i - 1][k % n]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[m][i]);
+        }
+        return ans;
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        int[] a = new int[n - 1];
+        int[] b = new int[n - 1];
+        for (int i = 0; i < n - 1; i++) {
+            a[i] = slices[i];
+            b[i] = slices[i + 1];
+        }
+        return Math.max(solve(a, m), solve(b, m));
+    }
+    
+    public int solve(int[] a, int m) {
+        int n = a.length;
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i - 2][j - 1] + a[i - 1]);
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        return Math.max(
+            maxSum(slices, 0, n - 2, m),
+            maxSum(slices, 1, n - 1, m)
+        );
+    }
+    
+    private int maxSum(int[] slices, int start, int end, int m) {
+        int n = end - start + 1;
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], slices[start + j - 1] + dp[i - 1][j - 2]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        return Math.max(
+            maxSum(slices, 0, n - 2, m),
+            maxSum(slices, 1, n - 1, m)
+        );
+    }
+    
+    private int maxSum(int[] slices, int start, int end, int m) {
+        int n = end - start + 1;
+        int[] dp = new int[m + 1];
+        for (int i = 1; i <= n; i++) {
+            int[] temp = Arrays.copyOf(dp, dp.length);
+            for (int j = 1; j <= m; j++) {
+                temp[j] = Math.max(dp[j], dp[j - 1] + slices[start + i - 1]);
+            }
+            dp = temp;
+        }
+        return dp[m];
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        int[] a = new int[n - 1];
+        for (int i = 0; i < n - 1; i++) {
+            a[i] = slices[i];
+        }
+        int[] b = new int[n - 1];
+        for (int i = 0; i < n - 1; i++) {
+            b[i] = slices[i + 1];
+        }
+        return Math.max(solve(a, m), solve(b, m));
+    }
+
+    public int solve(int[] a, int m) {
+        int n = a.length;
+        int[][] f = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                f[i][j] = Math.max(f[i - 1][j], f[i - 2][j - 1] + a[i - 1]);
+            }
+        }
+        return f[n][m];
+
+=======
+
+        int n = slices.length;
+        int[][] dp = new int[n][n / 3 + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= n / 3; j++) {
+                if (j == 0) {
+                    dp[i][j] = 0;
+                } else if (i == 0) {
+                    dp[i][j] = slices[i];
+                } else if (i == 1) {
+                    dp[i][j] = Math.max(slices[i], dp[i - 1][j]);
+                } else {
+                    dp[i][j] = Math.max(dp[i - 2][j - 1] + slices[i], dp[i - 1][j]);
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, dp[i][n / 3]);
+        }
+        return max;
+
+=======
+
+        int n = slices.length;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int[] s = new int[n - 1];
+            for (int j = 0; j < n - 1; j++) {
+                s[j] = slices[(i + j + 1) % n];
+            }
+            max = Math.max(max, max(s));
+        }
+        return max;
+    }
+
+    private int max(int[] slices) {
+        int n = slices.length;
+        int[][] dp = new int[n + 1][n / 3 + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n / 3; j++) {
+                if (i == 1) {
+                    dp[i][j] = slices[i - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], slices[i - 1] + dp[i - 2][j - 1]);
+                }
+            }
+        }
+        return dp[n][n / 3];
+
+=======
+
+        int n = slices.length;
+        int m = n / 3;
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            int[] a = new int[n];
+            int[] b = new int[n];
+            for (int j = 0; j < n; j++) {
+                if (j == 0) {
+                    a[j] = slices[i];
+                    b[j] = 0;
+                } else {
+                    a[j] = Math.max(a[j - 1], (j >= 2 ? a[j - 2] : 0) + slices[(i + j) % n]);
+                    b[j] = Math.max(b[j - 1], (j >= 2 ? b[j - 2] : 0) + slices[(i + j + 1) % n]);
+                }
+            }
+            result = Math.max(result, Math.max(a[n - 2], b[n - 1]));
+        }
+        return result;

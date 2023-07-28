@@ -1,0 +1,387 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        dist[0][0] = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{0, 0});
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            int x = cell[0];
+            int y = cell[1];
+            int d = dist[x][y];
+            if (x > 0 && grid[x - 1][y] != 2) {
+                int d2 = d + (grid[x - 1][y] == 1 ? 1 : 0);
+                if (d2 < dist[x - 1][y]) {
+                    dist[x - 1][y] = d2;
+                    queue.offer(new int[]{x - 1, y});
+                }
+            }
+            if (x + 1 < m && grid[x + 1][y] != 2) {
+                int d2 = d + (grid[x + 1][y] == 1 ? 1 : 0);
+                if (d2 < dist[x + 1][y]) {
+                    dist[x + 1][y] = d2;
+                    queue.offer(new int[]{x + 1, y});
+                }
+            }
+            if (y > 0 && grid[x][y - 1] != 2) {
+                int d2 = d + (grid[x][y - 1] == 1 ? 1 : 0);
+                if (d2 < dist[x][y - 1]) {
+                    dist[x][y - 1] = d2;
+                    queue.offer(new int[]{x, y - 1});
+                }
+            }
+            if (y + 1 < n && grid[x][y + 1] != 2) {
+                int d2 = d + (grid[x][y + 1] == 1 ? 1 : 0);
+                if (d2 < dist[x][y + 1]) {
+                    dist[x][y + 1] = d2;
+                    queue.offer(new int[]{x, y + 1});
+                }
+            }
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        dist[0][0] = 0;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int x = cur[0];
+            int y = cur[1];
+            for (int[] dir : dirs) {
+                int nx = x + dir[0];
+                int ny = y + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] != 2) {
+                    if (dist[nx][ny] > dist[x][y] + 1) {
+                        dist[nx][ny] = dist[x][y] + 1;
+                        q.offer(new int[]{nx, ny});
+                    }
+                }
+            }
+        }
+        if (dist[m - 1][n - 1] == Integer.MAX_VALUE) {
+            return -1;
+        }
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    for (int[] dir : dirs) {
+                        int nx = i + dir[0];
+                        int ny = j + dir[1];
+                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] != 2) {
+                            ans = Math.max(ans, dist[nx][ny] + 1);
+                        }
+                    }
+                }
+            }
+        }
+        return ans == 0 ? 1000000000 : ans;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        dist[0][0] = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{0, 0});
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            int x = cell[0], y = cell[1];
+            if (grid[x][y] == 1) {
+                continue;
+            }
+            int d = dist[x][y];
+            for (int[] dir : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                int i = x + dir[0], j = y + dir[1];
+                if (i >= 0 && i < m && j >= 0 && j < n && grid[i][j] != 1 && d + 1 < dist[i][j]) {
+                    dist[i][j] = d + 1;
+                    queue.offer(new int[]{i, j});
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int d = Integer.MAX_VALUE;
+                    for (int[] dir : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                        int x = i + dir[0], y = j + dir[1];
+                        if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] != 1) {
+                            d = Math.min(d, dist[x][y]);
+                        }
+                    }
+                    if (d < Integer.MAX_VALUE) {
+                        max = Math.max(max, d + 1);
+                    }
+                }
+            }
+        }
+        return max == 0 ? -1 : max;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dist[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dist[0][0] = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{0, 0});
+        int[][] d = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            for (int[] dir : d) {
+                int x = cur[0] + dir[0];
+                int y = cur[1] + dir[1];
+                if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] != 2) {
+                    if (grid[x][y] == 1) {
+                        dist[x][y] = 0;
+                        queue.offer(new int[]{x, y});
+                    } else {
+                        if (dist[x][y] > dist[cur[0]][cur[1]] + 1) {
+                            dist[x][y] = dist[cur[0]][cur[1]] + 1;
+                            queue.offer(new int[]{x, y});
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                ans = Math.max(ans, dist[i][j]);
+            }
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] distance = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(distance[i], Integer.MAX_VALUE);
+        }
+        distance[0][0] = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{0, 0});
+        int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            for (int[] direction : directions) {
+                int x = current[0] + direction[0];
+                int y = current[1] + direction[1];
+                if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] != 2 && distance[x][y] > distance[current[0]][current[1]] + 1) {
+                    distance[x][y] = distance[current[0]][current[1]] + 1;
+                    queue.offer(new int[]{x, y});
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    result = Math.max(result, distance[i][j]);
+                }
+            }
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for (int[] row: dist)
+            Arrays.fill(row, Integer.MAX_VALUE);
+        dist[0][0] = 0;
+        Queue<int[]> queue = new LinkedList();
+        queue.add(new int[]{0, 0});
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!queue.isEmpty()) {
+            int[] node = queue.remove();
+            int r = node[0], c = node[1];
+            for (int[] dir: dirs) {
+                int r1 = r + dir[0], c1 = c + dir[1];
+                if (0 <= r1 && r1 < m && 0 <= c1 && c1 < n && grid[r1][c1] == 0 && dist[r1][c1] > dist[r][c] + 1) {
+                    dist[r1][c1] = dist[r][c] + 1;
+                    queue.add(new int[]{r1, c1});
+                }
+            }
+        }
+        int ans = 0;
+        for (int r = 0; r < m; ++r)
+            for (int c = 0; c < n; ++c)
+                if (grid[r][c] == 1)
+                    for (int[] dir: dirs) {
+                        int r1 = r + dir[0], c1 = c + dir[1];
+                        if (0 <= r1 && r1 < m && 0 <= c1 && c1 < n && grid[r1][c1] == 0)
+                            ans = Math.max(ans, dist[r1][c1]);
+                    }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dist = new int[m][n];
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                dist[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dist[0][0] = 0;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{0, 0});
+        while(!queue.isEmpty()) {
+            int[] point = queue.poll();
+            int x = point[0];
+            int y = point[1];
+            int d = dist[x][y];
+            if(x > 0 && grid[x - 1][y] != 2 && d + 1 < dist[x - 1][y]) {
+                dist[x - 1][y] = d + 1;
+                queue.add(new int[]{x - 1, y});
+            }
+            if(x < m - 1 && grid[x + 1][y] != 2 && d + 1 < dist[x + 1][y]) {
+                dist[x + 1][y] = d + 1;
+                queue.add(new int[]{x + 1, y});
+            }
+            if(y > 0 && grid[x][y - 1] != 2 && d + 1 < dist[x][y - 1]) {
+                dist[x][y - 1] = d + 1;
+                queue.add(new int[]{x, y - 1});
+            }
+            if(y < n - 1 && grid[x][y + 1] != 2 && d + 1 < dist[x][y + 1]) {
+                dist[x][y + 1] = d + 1;
+                queue.add(new int[]{x, y + 1});
+            }
+        }
+        int max = 0;
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(grid[i][j] == 1) {
+                    int d = dist[i][j];
+                    if(d == Integer.MAX_VALUE) return -1;
+                    max = Math.max(max, d);
+                }
+            }
+        }
+        return max;
+
+=======
+
+        Queue<int[]> q = new LinkedList<>();
+        int m = grid.length, n = grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    q.add(new int[]{i, j});
+                    visited[i][j] = true;
+                }
+            }
+        }
+        int[][] dirs = new int[][] {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int minutes = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                for (int[] dir : dirs) {
+                    int nr = cur[0] + dir[0];
+                    int nc = cur[1] + dir[1];
+                    if (nr < 0 || nc < 0 || nr >= m || nc >= n || visited[nr][nc] || grid[nr][nc] == 2) {
+                        continue;
+                    }
+                    q.add(new int[]{nr, nc});
+                    visited[nr][nc] = true;
+                }
+            }
+            minutes++;
+        }
+        return minutes == 0 ? 0 : minutes - 1;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[][] time = new int[m][n];
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    q.offer(new int[]{i, j});
+                    time[i][j] = 1;
+                }
+            }
+        }
+        int res = 0;
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            for (int[] dir : dirs) {
+                int nx = cur[0] + dir[0], ny = cur[1] + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0 && time[nx][ny] == 0) {
+                    q.offer(new int[]{nx, ny});
+                    time[nx][ny] = time[cur[0]][cur[1]] + 1;
+                    res = Math.max(res, time[nx][ny]);
+                }
+            }
+        }
+        return res - 1;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        int[][] dist = new int[m][n];
+        int res = 0;
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    q.offer(new int[]{i, j});
+                    dist[i][j] = 1;
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            for (int[] dir : dirs) {
+                int x = cur[0] + dir[0];
+                int y = cur[1] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || grid[x][y] != 0 || dist[x][y] != 0) {
+                    continue;
+                }
+                dist[x][y] = dist[cur[0]][cur[1]] + 1;
+                q.offer(new int[]{x, y});
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0) {
+                    res = Math.max(res, dist[i][j] - 1);
+                }
+            }
+        }
+        return res;

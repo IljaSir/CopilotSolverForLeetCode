@@ -1,0 +1,237 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.length;
+        long[] sum = new long[n];
+        sum[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + arr[i];
+        }
+        long[] diff = new long[n];
+        for (int i = 0; i < n; i++) {
+            diff[i] = sum[i] - i / k * k;
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = 0; i < k; i++) {
+            long cur = 0;
+            for (int j = i; j < n; j += k) {
+                cur += Math.abs(diff[j] - diff[i]);
+            }
+            res = Math.min(res, cur);
+        }
+        return res;
+
+=======
+
+        long sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        if (sum % k != 0) {
+            return -1;
+        }
+        long target = sum / k;
+        long[] diffs = new long[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            diffs[i] = arr[i] - target;
+        }
+        long[] prefixSums = new long[arr.length];
+        prefixSums[0] = diffs[0];
+        for (int i = 1; i < arr.length; i++) {
+            prefixSums[i] = prefixSums[i - 1] + diffs[i];
+        }
+        long minOperations = Long.MAX_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            long targetPrefixSum = i == 0 ? 0 : prefixSums[i - 1];
+            int left = i;
+            int right = arr.length - 1;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                long prefixSum = prefixSums[mid] - targetPrefixSum;
+                if (prefixSum == 0) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            long prefixSum = prefixSums[left] - targetPrefixSum;
+            if (prefixSum == 0) {
+                long operations = 0;
+                for (int j = i; j <= left; j++) {
+                    operations += Math.abs(diffs[j]);
+                }
+                minOperations = Math.min(minOperations, operations);
+            }
+        }
+        return minOperations;
+
+=======
+
+        int n = arr.length;
+        long[] sum = new long[n];
+        long total = 0;
+        for (int i = 0; i < n; i++) {
+            total += arr[i];
+            sum[i] = total;
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int j = i + k - 1;
+            if (j >= n) {
+                j -= n;
+            }
+            long cur = 0;
+            if (i == 0) {
+                cur = sum[j];
+            } else {
+                cur = sum[j] - sum[i - 1];
+            }
+            ans = Math.min(ans, total - cur);
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        int[] subSum = new int[n];
+        subSum[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            subSum[i] = subSum[i - 1] + arr[i];
+        }
+        int[] mod = new int[n];
+        for (int i = 0; i < n; i++) {
+            mod[i] = subSum[i] % k;
+        }
+        long ans = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int modVal = mod[i];
+            if (map.containsKey(modVal)) {
+                ans = Math.max(ans, i - map.get(modVal));
+            } else {
+                map.put(modVal, i);
+            }
+        }
+        return n - ans;
+
+=======
+
+        int n = arr.length;
+        long[] sum = new long[n];
+        sum[0] = arr[0];
+        for(int i = 1; i < n; i++) {
+            sum[i] = sum[i-1] + arr[i];
+        }
+        long[] sub = new long[n];
+        for(int i = 0; i < n; i++) {
+            sub[i] = sum[(i+k-1)%n] - (i == 0 ? 0 : sum[i-1]);
+        }
+        long[] diff = new long[n];
+        for(int i = 0; i < n; i++) {
+            diff[i] = sub[i] - sub[(i+1)%n];
+        }
+        long res = 0;
+        for(int i = 0; i < n; i++) {
+            res += Math.abs(diff[i]);
+        }
+        return res/2;
+
+=======
+
+        long[] sum = new long[arr.length];
+        sum[0] = arr[0];
+        for(int i = 1; i < arr.length; i++){
+            sum[i] = sum[i-1] + arr[i];
+        }
+        long[] modSum = new long[arr.length];
+        for(int i = 0; i < arr.length; i++){
+            modSum[i] = sum[i] % k;
+        }
+        long ans = modSum[0];
+        long[] map = new long[k];
+        map[(int)modSum[0]]++;
+        for(int i = 1; i < arr.length; i++){
+            ans += map[(int)modSum[i]];
+            map[(int)modSum[i]]++;
+        }
+        return ans;
+
+=======
+
+        int n = arr.length;
+        long[] sums = new long[n];
+        for (int i = 0; i < n; i++) {
+            sums[i] = arr[i] + (i > 0 ? sums[i - 1] : 0);
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            long sum = sums[i] - (i >= k ? sums[i - k] : 0);
+            ans = Math.min(ans, Math.abs((sums[n - 1] - sum) - sum));
+        }
+        return ans;
+
+=======
+
+        long sum = 0;
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+            min = Math.min(min, sum);
+        }
+        long result = 0;
+        long[] preSum = new long[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            preSum[i] = sum;
+            sum -= arr[i];
+        }
+        for (int i = 0; i < arr.length; i++) {
+            result += Math.abs(preSum[i] - (min + (long)k * i));
+        }
+        return result;
+
+=======
+
+        long sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        long mod = sum % k;
+        long target = sum / k;
+        long ans = 0;
+        long[] cnt = new long[(int)k];
+        cnt[0] = 1;
+        long cur = 0;
+        for (int i = 0; i < arr.length; i++) {
+            cur = (cur + arr[i]) % k;
+            if (cur < 0) {
+                cur += k;
+            }
+            long need = (cur - mod + k) % k;
+            ans += cnt[(int)need];
+            cnt[(int)cur]++;
+        }
+        return ans;
+
+=======
+
+        long ans=0;
+        int n=arr.length;
+        long[] prefix=new long[n];
+        prefix[0]=arr[0];
+        for(int i=1;i<n;i++){
+            prefix[i]=prefix[i-1]+arr[i];
+        }
+        long sum=prefix[k-1];
+        for(int i=0;i<n;i++){
+            int j=(i+k)%n;
+            long curr=sum;
+            if(i>0){
+                curr=curr-prefix[i-1];
+            }
+            if(j>0){
+                curr=curr+prefix[j-1];
+            }
+            ans=Math.max(ans,curr);
+        }
+        return ans;

@@ -1,0 +1,246 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        unordered_set<int> forbid(forbidden.begin(), forbidden.end());
+        unordered_set<int> visited;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        visited.insert(0);
+        while (!q.empty()) {
+            auto [pos, step] = q.front();
+            q.pop();
+            if (pos == x) {
+                return step;
+            }
+            int next = pos + a;
+            if (next <= 6000 && !forbid.count(next) && !visited.count(next)) {
+                visited.insert(next);
+                q.push({next, step + 1});
+            }
+            next = pos - b;
+            if (next >= 0 && !forbid.count(next) && !visited.count(next)) {
+                visited.insert(next);
+                q.push({next, step + 1});
+            }
+        }
+        return -1;
+
+=======
+
+        unordered_set<int> f(forbidden.begin(), forbidden.end());
+        unordered_set<int> visited;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        visited.insert(0);
+        while (!q.empty()) {
+            auto [pos, step] = q.front();
+            q.pop();
+            if (pos == x) return step;
+            vector<int> nextPos = {pos + a, pos - b};
+            for (auto p : nextPos) {
+                if (p < 0 || f.count(p) || visited.count(p)) continue;
+                visited.insert(p);
+                q.push({p, step + 1});
+            }
+        }
+        return -1;
+
+=======
+
+        unordered_set<int> forb(forbidden.begin(), forbidden.end());
+        if (forb.count(0)) return -1;
+        if (x == 0) return 0;
+        queue<int> q;
+        q.push(0);
+        int step = 0;
+        while (!q.empty()) {
+            int n = q.size();
+            while (n--) {
+                int cur = q.front();
+                q.pop();
+                int next = cur + a;
+                if (next == x) return step + 1;
+                if (next < x && !forb.count(next)) {
+                    q.push(next);
+                    forb.insert(next);
+                }
+                next = cur - b;
+                if (next >= 0 && !forb.count(next)) {
+                    q.push(next);
+                    forb.insert(next);
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        unordered_set<int> forb(forbidden.begin(), forbidden.end());
+        queue<pair<int, bool>> q;
+        q.push({0, false});
+        unordered_set<int> visited;
+        visited.insert(0);
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto p = q.front();
+                q.pop();
+                if (p.first == x) {
+                    return step;
+                }
+                int next = p.first + a;
+                if (next <= 6000 && !forb.count(next) && !visited.count(next)) {
+                    q.push({next, false});
+                    visited.insert(next);
+                }
+                if (!p.second) {
+                    next = p.first - b;
+                    if (next >= 0 && !forb.count(next) && !visited.count(next)) {
+                        q.push({next, true});
+                        visited.insert(next);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        unordered_set<int> seen(forbidden.begin(), forbidden.end());
+        queue<pair<int, bool>> q;
+        q.push({0, false});
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto [pos, back] = q.front();
+                q.pop();
+                if (pos == x) return step;
+                if (seen.count(pos)) continue;
+                seen.insert(pos);
+                if (pos + a <= 6000) q.push({pos + a, false});
+                if (!back && pos - b >= 0) q.push({pos - b, true});
+            }
+            ++step;
+        }
+        return -1;
+
+=======
+
+        unordered_set<int> forb(forbidden.begin(), forbidden.end());
+        if (forb.count(0) > 0) return -1;
+        if (x == 0) return 0;
+        queue<int> q;
+        q.push(0);
+        int step = 0;
+        unordered_set<int> visited;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                if (forb.count(cur) > 0) continue;
+                if (cur == x) return step;
+                visited.insert(cur);
+                // forward
+                int next = cur + a;
+                if (next <= x && visited.count(next) == 0) q.push(next);
+                // backward
+                next = cur - b;
+                if (next > 0 && visited.count(next) == 0) q.push(next);
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        set<int> forb(forbidden.begin(), forbidden.end());
+        if (forb.count(0) || forb.count(x)) return -1;
+        if (x == 0) return 0;
+        map<int, int> dist;
+        dist[0] = 0;
+        queue<int> q;
+        q.push(0);
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            int d = dist[cur];
+            int next = cur + a;
+            if (next == x) return d + 1;
+            if (next < x && !forb.count(next)) {
+                if (!dist.count(next) || d + 1 < dist[next]) {
+                    dist[next] = d + 1;
+                    q.push(next);
+                }
+            }
+            next = cur - b;
+            if (next == x) return d + 1;
+            if (next > 0 && !forb.count(next)) {
+                if (!dist.count(next) || d + 1 < dist[next]) {
+                    dist[next] = d + 1;
+                    q.push(next);
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int minJump = INT_MAX;
+        queue<pair<int, bool>> q;
+        unordered_set<int> visited;
+        for (int i = 0; i < forbidden.size(); i++) {
+            visited.insert(forbidden[i]);
+        }
+        q.push({0, false});
+        visited.insert(0);
+        int jump = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto cur = q.front();
+                q.pop();
+                if (cur.first == x) {
+                    minJump = min(minJump, jump);
+                }
+                if (cur.first + a <= 6000 && visited.find(cur.first + a) == visited.end()) {
+                    q.push({cur.first + a, false});
+                    visited.insert(cur.first + a);
+                }
+                if (cur.first - b >= 0 && !cur.second && visited.find(cur.first - b) == visited.end()) {
+                    q.push({cur.first - b, true});
+                    visited.insert(cur.first - b);
+                }
+            }
+            jump++;
+        }
+        return minJump == INT_MAX ? -1 : minJump;
+
+=======
+
+        int max_pos = x + *max_element(forbidden.begin(), forbidden.end()) + a + b;
+        vector<int> dp(max_pos, INT_MAX);
+        unordered_set<int> forbidden_set(forbidden.begin(), forbidden.end());
+        queue<pair<int, bool>> q;
+        q.push({0, false});
+        dp[0] = 0;
+        while (!q.empty()) {
+            auto [pos, back] = q.front(); q.pop();
+            if (pos == x) return dp[pos];
+            int next_pos = pos + a;
+            if (next_pos < max_pos && dp[next_pos] > dp[pos] + 1 && forbidden_set.find(next_pos) == forbidden_set.end()) {
+                dp[next_pos] = dp[pos] + 1;
+                q.push({next_pos, false});
+            }
+            next_pos = pos - b;
+            if (next_pos >= 0 && !back && dp[next_pos] > dp[pos] + 1 && forbidden_set.find(next_pos) == forbidden_set.end()) {
+                dp[next_pos] = dp[pos] + 1;
+                q.push({next_pos, true});
+            }
+        }
+        return -1;

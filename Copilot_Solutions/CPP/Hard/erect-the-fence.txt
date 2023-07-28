@@ -1,0 +1,138 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        int n = trees.size();
+        if (n < 4) return trees;
+        sort(trees.begin(), trees.end(), [](auto &a, auto &b) {
+            return a[0] == b[0] ? a[1] < b[1] : a[0] < b[0];
+        });
+        vector<vector<int>> hull;
+        for (int i = 0; i < n; ++i) {
+            while (hull.size() >= 2 && cross(hull[hull.size() - 2], hull.back(), trees[i]) < 0) {
+                hull.pop_back();
+            }
+            hull.push_back(trees[i]);
+        }
+        for (int i = n - 2; i >= 0; --i) {
+            while (hull.size() >= 2 && cross(hull[hull.size() - 2], hull.back(), trees[i]) < 0) {
+                hull.pop_back();
+            }
+            hull.push_back(trees[i]);
+        }
+        hull.pop_back();
+        sort(hull.begin(), hull.end());
+        hull.erase(unique(hull.begin(), hull.end()), hull.end());
+        return hull;
+
+=======
+
+        int n = trees.size();
+        vector<vector<int>> res;
+        if (n < 4) {
+            return trees;
+        }
+        sort(trees.begin(), trees.end());
+        vector<vector<int>> up;
+        vector<vector<int>> down;
+        for (int i = 0; i < n; ++i) {
+            while (up.size() >= 2 && cross(up[up.size() - 2], up[up.size() - 1], trees[i]) > 0) {
+                up.pop_back();
+            }
+            up.push_back(trees[i]);
+            while (down.size() >= 2 && cross(down[down.size() - 2], down[down.size() - 1], trees[i]) < 0) {
+                down.pop_back();
+            }
+            down.push_back(trees[i]);
+        }
+        for (int i = 0; i < up.size(); ++i) {
+            res.push_back(up[i]);
+        }
+        for (int i = down.size() - 2; i > 0; --i) {
+            res.push_back(down[i]);
+        }
+        return res;
+
+=======
+
+        int n = trees.size();
+        vector<vector<int>> res;
+        if (n <= 1) return trees;
+        sort(trees.begin(), trees.end(), [](const vector<int>& a, const vector<int>& b) { return a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]); });
+        for (int i = 0; i < n; ++i) {
+            while (res.size() >= 2 && cross(res[res.size() - 2], res[res.size() - 1], trees[i]) < 0) {
+                res.pop_back();
+            }
+            res.push_back(trees[i]);
+        }
+        for (int i = n - 2, t = res.size() + 1; i >= 0; --i) {
+            while (res.size() >= t && cross(res[res.size() - 2], res[res.size() - 1], trees[i]) < 0) {
+                res.pop_back();
+            }
+            res.push_back(trees[i]);
+        }
+        res.pop_back();
+        return res;
+
+=======
+
+        vector<vector<int>> res;
+        if (trees.empty()) return res;
+        int n = trees.size();
+        if (n <= 3) return trees;
+        sort(trees.begin(), trees.end());
+        vector<vector<int>> up, down;
+        for (int i = 0; i < n; ++i) {
+            while (up.size() >= 2 && cross(up[up.size() - 2], up[up.size() - 1], trees[i]) > 0) {
+                up.pop_back();
+            }
+            up.push_back(trees[i]);
+            while (down.size() >= 2 && cross(down[down.size() - 2], down[down.size() - 1], trees[i]) < 0) {
+                down.pop_back();
+            }
+            down.push_back(trees[i]);
+        }
+        for (int i = 0; i < up.size(); ++i) {
+            res.push_back(up[i]);
+        }
+        for (int i = down.size() - 2; i >= 1; --i) {
+            res.push_back(down[i]);
+        }
+        sort(res.begin(), res.end());
+        res.erase(unique(res.begin(), res.end()), res.end());
+        return res;
+
+=======
+
+        vector<vector<int>> ans;
+        int n = trees.size();
+        if (n <= 3) return trees;
+        vector<int> leftMost = trees[0];
+        int leftMostIndex = 0;
+        for (int i = 1; i < n; i++) {
+            if (trees[i][0] < leftMost[0]) {
+                leftMost = trees[i];
+                leftMostIndex = i;
+            }
+        }
+        ans.push_back(leftMost);
+        int curIndex = leftMostIndex;
+        do {
+            int nextIndex = 0;
+            for (int i = 1; i < n; i++) {
+                if (i == curIndex) continue;
+                int crossProduct = cross(trees[curIndex], trees[i], trees[nextIndex]);
+                if (nextIndex == curIndex || crossProduct > 0 || (crossProduct == 0 && distance(trees[curIndex], trees[i]) > distance(trees[curIndex], trees[nextIndex]))) {
+                    nextIndex = i;
+                }
+            }
+            for (int i = 0; i < n; i++) {
+                if (i == curIndex) continue;
+                int crossProduct = cross(trees[curIndex], trees[i], trees[nextIndex]);
+                if (crossProduct == 0) {
+                    ans.push_back(trees[i]);
+                }
+            }
+            curIndex = nextIndex;
+        } while (curIndex != leftMostIndex);
+        return ans;

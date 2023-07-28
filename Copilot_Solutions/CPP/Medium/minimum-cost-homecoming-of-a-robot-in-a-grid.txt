@@ -1,0 +1,228 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = rowCosts.size(), n = colCosts.size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[startPos[0]][startPos[1]] = 0;
+        for (int i = startPos[0]; i < m; ++i) {
+            for (int j = startPos[1]; j < n; ++j) {
+                if (i > 0) dp[i][j] = min(dp[i][j], dp[i - 1][j] + rowCosts[i]);
+                if (j > 0) dp[i][j] = min(dp[i][j], dp[i][j - 1] + colCosts[j]);
+            }
+        }
+        return dp[homePos[0]][homePos[1]];
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[startPos[0]][startPos[1]] = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i > 0) dp[i][j] = min(dp[i][j], dp[i - 1][j] + rowCosts[i]);
+                if (j > 0) dp[i][j] = min(dp[i][j], dp[i][j - 1] + colCosts[j]);
+            }
+        }
+        return dp[homePos[0]][homePos[1]];
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[startPos[0]][startPos[1]] = 0;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {startPos[0], startPos[1]}});
+        while (!pq.empty()) {
+            auto [cost, pos] = pq.top(); pq.pop();
+            int r = pos.first;
+            int c = pos.second;
+            if (r + 1 < m && dp[r + 1][c] > cost + rowCosts[r + 1]) {
+                dp[r + 1][c] = cost + rowCosts[r + 1];
+                pq.push({dp[r + 1][c], {r + 1, c}});
+            }
+            if (c + 1 < n && dp[r][c + 1] > cost + colCosts[c + 1]) {
+                dp[r][c + 1] = cost + colCosts[c + 1];
+                pq.push({dp[r][c + 1], {r, c + 1}});
+            }
+            if (r - 1 >= 0 && dp[r - 1][c] > cost + rowCosts[r]) {
+                dp[r - 1][c] = cost + rowCosts[r];
+                pq.push({dp[r - 1][c], {r - 1, c}});
+            }
+            if (c - 1 >= 0 && dp[r][c - 1] > cost + colCosts[c]) {
+                dp[r][c - 1] = cost + colCosts[c];
+                pq.push({dp[r][c - 1], {r, c - 1}});
+            }
+        }
+        return dp[homePos[0]][homePos[1]];
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[startPos[0]][startPos[1]] = 0;
+        for (int i = startPos[0]; i < m; i++) {
+            for (int j = startPos[1]; j < n; j++) {
+                if (i == startPos[0] && j == startPos[1]) continue;
+                if (i > 0) dp[i][j] = min(dp[i][j], dp[i - 1][j] + rowCosts[i]);
+                if (j > 0) dp[i][j] = min(dp[i][j], dp[i][j - 1] + colCosts[j]);
+            }
+        }
+        return dp[homePos[0]][homePos[1]];
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        vector<int> rowCostsSorted = rowCosts;
+        vector<int> colCostsSorted = colCosts;
+        sort(rowCostsSorted.begin(), rowCostsSorted.end());
+        sort(colCostsSorted.begin(), colCostsSorted.end());
+        vector<int> rowCostsAcc(m);
+        vector<int> colCostsAcc(n);
+        rowCostsAcc[0] = rowCostsSorted[0];
+        for (int i = 1; i < m; i++) {
+            rowCostsAcc[i] = rowCostsAcc[i - 1] + rowCostsSorted[i];
+        }
+        colCostsAcc[0] = colCostsSorted[0];
+        for (int i = 1; i < n; i++) {
+            colCostsAcc[i] = colCostsAcc[i - 1] + colCostsSorted[i];
+        }
+        int r1 = startPos[0];
+        int c1 = startPos[1];
+        int r2 = homePos[0];
+        int c2 = homePos[1];
+        int cost = 0;
+        if (r1 < r2) {
+            cost += rowCostsAcc[r2 - 1];
+            if (r1 > 0) {
+                cost -= rowCostsAcc[r1 - 1];
+            }
+        } else {
+            cost += rowCostsAcc[r1 - 1];
+            if (r2 > 0) {
+                cost -= rowCostsAcc[r2 - 1];
+            }
+        }
+        if (c1 < c2) {
+            cost += colCostsAcc[c2 - 1];
+            if (c1 > 0) {
+                cost -= colCostsAcc[c1 - 1];
+            }
+        } else {
+            cost += colCostsAcc[c1 - 1];
+            if (c2 > 0) {
+                cost -= colCostsAcc[c2 - 1];
+            }
+        }
+        return cost;
+
+=======
+
+        int m = rowCosts.size(), n = colCosts.size();
+        vector<int> row(m), col(n);
+        row[0] = rowCosts[0];
+        col[0] = colCosts[0];
+        for (int i = 1; i < m; i++) {
+            row[i] = row[i - 1] + rowCosts[i];
+        }
+        for (int i = 1; i < n; i++) {
+            col[i] = col[i - 1] + colCosts[i];
+        }
+        int res = 0;
+        if (startPos[0] != homePos[0]) {
+            res += row[min(startPos[0], homePos[0])];
+        }
+        if (startPos[1] != homePos[1]) {
+            res += col[min(startPos[1], homePos[1])];
+        }
+        return res;
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        auto cmp = [](vector<int> a, vector<int> b) { return a[2] > b[2]; };
+        priority_queue<vector<int>, vector<vector<int>>, decltype(cmp)> pq(cmp);
+        vector<vector<int>> costs(m, vector<int>(n, INT_MAX));
+        pq.push({startPos[0], startPos[1], 0});
+        costs[startPos[0]][startPos[1]] = 0;
+        while (!pq.empty()) {
+            auto [x, y, cost] = pq.top(); pq.pop();
+            if (x == homePos[0] && y == homePos[1]) return cost;
+            if (x > 0) {
+                int newCost = cost + rowCosts[x];
+                if (newCost < costs[x - 1][y]) {
+                    costs[x - 1][y] = newCost;
+                    pq.push({x - 1, y, newCost});
+                }
+            }
+            if (x < m - 1) {
+                int newCost = cost + rowCosts[x + 1];
+                if (newCost < costs[x + 1][y]) {
+                    costs[x + 1][y] = newCost;
+                    pq.push({x + 1, y, newCost});
+                }
+            }
+            if (y > 0) {
+                int newCost = cost + colCosts[y];
+                if (newCost < costs[x][y - 1]) {
+                    costs[x][y - 1] = newCost;
+                    pq.push({x, y - 1, newCost});
+                }
+            }
+            if (y < n - 1) {
+                int newCost = cost + colCosts[y + 1];
+                if (newCost < costs[x][y + 1]) {
+                    costs[x][y + 1] = newCost;
+                    pq.push({x, y + 1, newCost});
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        int startR = startPos[0];
+        int startC = startPos[1];
+        int homeR = homePos[0];
+        int homeC = homePos[1];
+        for (int i = startR; i < m; i++) {
+            if (i == startR) {
+                dp[i][startC] = rowCosts[i];
+            } else {
+                dp[i][startC] = dp[i - 1][startC] + rowCosts[i];
+            }
+        }
+        for (int i = startC; i < n; i++) {
+            if (i == startC) {
+                dp[startR][i] = colCosts[i];
+            } else {
+                dp[startR][i] = dp[startR][i - 1] + colCosts[i];
+            }
+        }
+        for (int i = startR + 1; i < m; i++) {
+            for (int j = startC + 1; j < n; j++) {
+                dp[i][j] = min(dp[i - 1][j] + rowCosts[i], dp[i][j - 1] + colCosts[j]);
+            }
+        }
+        return dp[homeR][homeC];
+
+=======
+
+        int m = rowCosts.size();
+        int n = colCosts.size();
+        int totalCost = 0;
+        for (int i = 0; i < m; ++i) {
+            totalCost += rowCosts[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            totalCost += colCosts[i];
+        }
+        return totalCost - min(rowCosts[startPos[0]], rowCosts[homePos[0]]) - min(colCosts[startPos[1]], colCosts[homePos[1]]);

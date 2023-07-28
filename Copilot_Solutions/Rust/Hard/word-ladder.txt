@@ -1,0 +1,328 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let begin_word = begin_word.as_bytes();
+        let end_word = end_word.as_bytes();
+        let word_list = word_list
+            .into_iter()
+            .map(|s| s.as_bytes().to_vec())
+            .collect::<Vec<_>>();
+        let mut res = 0;
+        let mut q = vec![(begin_word.to_vec(), 1)];
+        let mut visited = vec![false; word_list.len()];
+        while let Some((w, c)) = q.pop() {
+            if w == end_word {
+                res = c;
+                break;
+            }
+            for (i, w2) in word_list.iter().enumerate() {
+                if visited[i] {
+                    continue;
+                }
+                let mut diff = 0;
+                for j in 0..w.len() {
+                    if w[j] != w2[j] {
+                        diff += 1;
+                    }
+                }
+                if diff == 1 {
+                    visited[i] = true;
+                    q.push((w2.to_vec(), c + 1));
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut dict: HashSet<String> = HashSet::new();
+        for word in word_list {
+            dict.insert(word);
+        }
+        if !dict.contains(&end_word) {
+            return 0;
+        }
+        let mut q1: VecDeque<String> = VecDeque::new();
+        let mut q2: VecDeque<String> = VecDeque::new();
+        let mut step = 1;
+        q1.push_back(begin_word);
+        while !q1.is_empty() {
+            let word = q1.pop_front().unwrap();
+            let mut chars: Vec<char> = word.chars().collect();
+            for i in 0..chars.len() {
+                let old = chars[i];
+                for c in 'a' as u8..'z' as u8 + 1 {
+                    chars[i] = c as char;
+                    let new_word = chars.iter().collect();
+                    if new_word == end_word {
+                        return step + 1;
+                    }
+                    if dict.contains(&new_word) {
+                        q2.push_back(new_word.clone());
+                        dict.remove(&new_word);
+                    }
+                }
+                chars[i] = old;
+            }
+            if q1.is_empty() {
+                step += 1;
+                std::mem::swap(&mut q1, &mut q2);
+            }
+        }
+        0
+
+=======
+
+        let mut word_list: Vec<String> = word_list;
+        word_list.push(begin_word);
+        let mut graph = vec![vec![]; word_list.len()];
+        for i in 0..word_list.len() {
+            for j in i+1..word_list.len() {
+                if Solution::one_char_diff(&word_list[i], &word_list[j]) {
+                    graph[i].push(j);
+                    graph[j].push(i);
+                }
+            }
+        }
+        let mut visited = vec![false; word_list.len()];
+        let mut queue = VecDeque::new();
+        let mut level = 0;
+        queue.push_back((word_list.len()-1, 1));
+        visited[word_list.len()-1] = true;
+        while let Some((node, l)) = queue.pop_front() {
+            if word_list[node] == end_word {
+                level = l;
+                break;
+            }
+            for &next in &graph[node] {
+                if !visited[next] {
+                    queue.push_back((next, l+1));
+                    visited[next] = true;
+                }
+            }
+        }
+        level
+    }
+    fn one_char_diff(word1: &str, word2: &str) -> bool {
+        let mut diff = 0;
+        for i in 0..word1.len() {
+            if word1.chars().nth(i).unwrap() != word2.chars().nth(i).unwrap() {
+                diff += 1;
+            }
+        }
+        diff == 1
+
+=======
+
+        let mut word_list = word_list;
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((begin_word, 1));
+        while let Some((word, step)) = q.pop_front() {
+            if word == end_word {
+                return step;
+            }
+            let mut i = 0;
+            while i < word_list.len() {
+                if Solution::is_adjacent(&word, &word_list[i]) {
+                    let word = word_list.remove(i);
+                    q.push_back((word, step + 1));
+                } else {
+                    i += 1;
+                }
+            }
+        }
+        0
+    }
+    fn is_adjacent(word1: &str, word2: &str) -> bool {
+        let mut diff = 0;
+        for (c1, c2) in word1.chars().zip(word2.chars()) {
+            if c1 != c2 {
+                diff += 1;
+            }
+        }
+        diff == 1
+
+=======
+
+        let mut word_list = word_list;
+        let mut word_set = std::collections::HashSet::new();
+        for word in word_list.iter() {
+            word_set.insert(word);
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((begin_word, 1));
+        while let Some((word, step)) = queue.pop_front() {
+            if word == end_word {
+                return step;
+            }
+            for i in 0..word.len() {
+                let mut chars = word.chars().collect::<Vec<char>>();
+                for c in b'a'..=b'z' {
+                    chars[i] = c as char;
+                    let next_word = chars.iter().collect();
+                    if word_set.contains(&next_word) {
+                        queue.push_back((next_word, step + 1));
+                        word_set.remove(&next_word);
+                    }
+                }
+            }
+        }
+        0
+    }
+}
+
+=======
+
+        let mut visited = vec![false; word_list.len()];
+        let mut queue = Vec::new();
+        let mut level = 1;
+        queue.push(begin_word);
+        while !queue.is_empty() {
+            let size = queue.len();
+            for _ in 0..size {
+                let word = queue.remove(0);
+                if word == end_word {
+                    return level;
+                }
+                for i in 0..word_list.len() {
+                    if !visited[i] && Self::is_adjacent(&word, &word_list[i]) {
+                        queue.push(word_list[i].clone());
+                        visited[i] = true;
+                    }
+                }
+            }
+            level += 1;
+        }
+        0
+    }
+    fn is_adjacent(word1: &str, word2: &str) -> bool {
+        let mut diff = 0;
+        for i in 0..word1.len() {
+            if word1.chars().nth(i).unwrap() != word2.chars().nth(i).unwrap() {
+                diff += 1;
+                if diff > 1 {
+                    return false;
+                }
+            }
+        }
+        diff == 1
+
+=======
+
+        let mut word_list = word_list;
+        let mut queue = VecDeque::new();
+        queue.push_back((begin_word, 0));
+        while let Some((word, level)) = queue.pop_front() {
+            if word == end_word {
+                return level + 1;
+            }
+            for i in 0..word.len() {
+                for j in 0..26 {
+                    let mut new_word = word.clone();
+                    new_word.replace_range(i..i + 1, &('a' as u8 + j).to_string());
+                    if let Some(pos) = word_list.iter().position(|x| x == &new_word) {
+                        queue.push_back((word_list.remove(pos), level + 1));
+                    }
+                }
+            }
+        }
+        0
+    }
+}
+
+=======
+
+        if begin_word == end_word {
+            return 1;
+        }
+        let mut word_list = word_list;
+        word_list.push(begin_word.clone());
+        let mut map = std::collections::HashMap::new();
+        for (i, word) in word_list.iter().enumerate() {
+            for j in 0..word.len() {
+                let mut s = word.clone();
+                s.replace_range(j..j+1, "*");
+                map.entry(s).or_insert(vec![]).push(i);
+            }
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, begin_word.clone()));
+        let mut visited = vec![false; word_list.len()];
+        while let Some((step, word)) = queue.pop_front() {
+            for j in 0..word.len() {
+                let mut s = word.clone();
+                s.replace_range(j..j+1, "*");
+                if let Some(list) = map.get(&s) {
+                    for &i in list {
+                        if word_list[i] == end_word {
+                            return step + 2;
+                        }
+                        if !visited[i] {
+                            visited[i] = true;
+                            queue.push_back((step + 1, word_list[i].clone()));
+                        }
+                    }
+                }
+            }
+        }
+        0
+
+=======
+
+        let mut word_list = word_list;
+        let mut queue = vec![begin_word];
+        let mut visited = vec![false; word_list.len()];
+        let mut result = 0;
+        while !queue.is_empty() {
+            let mut new_queue = vec![];
+            result += 1;
+            for word in queue {
+                if word == end_word {
+                    return result;
+                }
+                for i in 0..word_list.len() {
+                    if visited[i] {
+                        continue;
+                    }
+                    if is_adjacent(&word, &word_list[i]) {
+                        new_queue.push(word_list[i].clone());
+                        visited[i] = true;
+                    }
+                }
+            }
+            queue = new_queue;
+        }
+        0
+    }
+}
+
+=======
+
+        let mut word_list: Vec<_> = word_list.into_iter().map(|s| s.as_bytes()).collect();
+        let mut queue = Vec::new();
+        let mut vis = vec![false; word_list.len()];
+        let mut ans = 0;
+        queue.push((begin_word.as_bytes(), 1));
+        while !queue.is_empty() {
+            let (word, step) = queue.remove(0);
+            if word == end_word.as_bytes() {
+                ans = step;
+                break;
+            }
+            for i in 0..word_list.len() {
+                if !vis[i] && word_list[i].len() == word.len() {
+                    let mut diff = 0;
+                    for j in 0..word.len() {
+                        if word[j] != word_list[i][j] {
+                            diff += 1;
+                        }
+                    }
+                    if diff == 1 {
+                        vis[i] = true;
+                        queue.push((word_list[i], step + 1));
+                    }
+                }
+            }
+        }
+        ans

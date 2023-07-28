@@ -1,0 +1,157 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut sum = 0;
+        for i in 0..n {
+            let mut min = nums[i];
+            let mut max = nums[i];
+            for j in i..n {
+                min = min.min(nums[j]);
+                max = max.max(nums[j]);
+                sum += (max - min) as i64;
+            }
+        }
+        sum
+
+=======
+
+        let mut sum = 0;
+        let n = nums.len();
+        for i in 0..n {
+            let mut min = nums[i];
+            let mut max = nums[i];
+            for j in i..n {
+                min = min.min(nums[j]);
+                max = max.max(nums[j]);
+                sum += (max - min) as i64;
+            }
+        }
+        sum
+    }
+}
+
+=======
+
+        let mut res = 0;
+        let n = nums.len();
+        for i in 0..n {
+            let mut min = nums[i];
+            let mut max = nums[i];
+            for j in i+1..n {
+                min = min.min(nums[j]);
+                max = max.max(nums[j]);
+                res += (max - min) as i64;
+            }
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let n = nums.len() as i64;
+        for i in 0..n {
+            res += (i + 1) * (n - i) * (nums[i as usize] as i64);
+        }
+        res
+
+=======
+
+        let mut sum = 0;
+        let mut n = nums.len();
+        for i in 0..n {
+            for j in i..n {
+                let mut min = nums[i];
+                let mut max = nums[i];
+                for k in i..=j {
+                    min = min.min(nums[k]);
+                    max = max.max(nums[k]);
+                }
+                sum += (max - min) as i64;
+            }
+        }
+        sum
+    }
+}
+
+=======
+
+        let mut result = 0;
+        let mut left = vec![0; nums.len()];
+        let mut right = vec![0; nums.len()];
+        for i in 0..nums.len() {
+            let mut j = i - 1;
+            while j >= 0 && nums[j] > nums[i] {
+                j = left[j] - 1;
+            }
+            left[i] = j + 1;
+        }
+        for i in (0..nums.len()).rev() {
+            let mut j = i + 1;
+            while j < nums.len() && nums[j] >= nums[i] {
+                j = right[j];
+            }
+            right[i] = j;
+            result += (i - left[i] + 1) as i64 * (right[i] - i) as i64 * nums[i] as i64;
+        }
+        result
+
+=======
+
+        let mut res = 0;
+        let n = nums.len() as i64;
+        for i in 0..nums.len() {
+            let l = i as i64;
+            let r = n - 1 - i as i64;
+            let x = nums[i] as i64;
+            res += x * (l + 1) * (r + 1);
+        }
+        res
+
+=======
+
+        let mut ans = 0;
+        let mut l = 0;
+        let mut r = 0;
+        let mut s = std::collections::BTreeSet::new();
+        for &x in &nums {
+            s.insert(x);
+            while s.len() >= 2 {
+                let min = *s.iter().next().unwrap();
+                let max = *s.iter().next_back().unwrap();
+                if max - min > r - l {
+                    l = min;
+                    r = max;
+                }
+                s.remove(&nums[l]);
+                l += 1;
+            }
+            ans += (r - l + 1) as i64;
+        }
+        ans
+
+=======
+
+        let mut result = 0;
+        let mut stack = vec![];
+        let mut prev = 0;
+        for i in 0..nums.len() {
+            while let Some(&x) = stack.last() {
+                if nums[x] <= nums[i] {
+                    break;
+                }
+                stack.pop();
+            }
+            let left = if let Some(&x) = stack.last() {
+                x + 1
+            } else {
+                0
+            };
+            result += (i - left + 1) as i64 * (nums[i] - prev) as i64;
+            prev = nums[i];
+            stack.push(i);
+        }
+        result
+    }
+}

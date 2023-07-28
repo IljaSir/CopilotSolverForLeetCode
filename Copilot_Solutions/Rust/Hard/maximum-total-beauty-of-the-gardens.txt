@@ -1,0 +1,80 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut complete = 0;
+        let mut incomplete = 0;
+        let mut min = std::i32::MAX;
+        for f in flowers {
+            if f >= target {
+                complete += 1;
+            } else {
+                incomplete += 1;
+                min = min.min(f);
+            }
+        }
+        let mut ans = complete as i64 * full as i64;
+        if incomplete > 0 {
+            ans += min as i64 * partial as i64;
+        }
+        if new_flowers > 0 {
+            let mut new = flowers.clone();
+            new.sort();
+            let mut i = new_flowers;
+            let mut j = 0;
+            while j < new.len() && i > 0 {
+                let f = new[j];
+                if f < target {
+                    let k = (target - f) as i64;
+                    if k <= i {
+                        ans += full as i64 - partial as i64 * f as i64;
+                        i -= k;
+                    } else {
+                        ans += full as i64 - partial as i64 * (f as i64 + i);
+                        i = 0;
+                    }
+                }
+                j += 1;
+            }
+            if i > 0 {
+                ans += full as i64 * (i / (target as i64));
+            }
+        }
+        ans
+
+=======
+
+        let mut v = flowers;
+        v.sort();
+        let mut ans = 0;
+        for i in 0..v.len() {
+            if v[i] >= target {
+                ans += full as i64;
+            }
+        }
+        let mut a = 0;
+        let mut b = 0;
+        for i in 0..v.len() {
+            if v[i] < target {
+                a += 1;
+                b += v[i];
+                if b >= target {
+                    ans += full as i64;
+                    ans += (a - 1) as i64 * partial as i64;
+                    b = 0;
+                    a = 0;
+                }
+            }
+        }
+        ans += (a * partial) as i64;
+        ans += (b * partial) as i64;
+        ans += (new_flowers - a as i64 * target as i64 - b as i64) / target as i64 * full as i64;
+        ans
+    }
+}

@@ -1,0 +1,204 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![0; n];
+        let mut ans = 0;
+        for i in 1..n {
+            if s[i] == b')' {
+                if s[i - 1] == b'(' {
+                    dp[i] = if i >= 2 { dp[i - 2] } else { 0 } + 2;
+                } else if i > dp[i - 1] && s[i - dp[i - 1] - 1] == b'(' {
+                    dp[i] = dp[i - 1] + 2 + if i > dp[i - 1] + 1 { dp[i - dp[i - 1] - 2] } else { 0 };
+                }
+                ans = ans.max(dp[i]);
+            }
+        }
+        ans as i32
+
+=======
+
+        let mut stack = vec![-1];
+        let mut max_len = 0;
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i as i32);
+            } else {
+                stack.pop();
+                if stack.is_empty() {
+                    stack.push(i as i32);
+                } else {
+                    max_len = max_len.max(i as i32 - stack[stack.len()-1]);
+                }
+            }
+        }
+        max_len
+
+=======
+
+        let mut stack = vec![-1];
+        let mut res = 0;
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i as i32);
+            } else {
+                stack.pop();
+                if stack.len() == 0 {
+                    stack.push(i as i32);
+                } else {
+                    res = res.max(i as i32 - stack[stack.len() - 1]);
+                }
+            }
+        }
+        res as i32
+
+=======
+
+        let mut res = 0;
+        let mut stack = vec![-1];
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i as i32);
+            } else {
+                stack.pop();
+                if stack.is_empty() {
+                    stack.push(i as i32);
+                } else {
+                    res = res.max(i as i32 - stack[stack.len() - 1]);
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut stack: Vec<i32> = vec![-1];
+        let mut max = 0;
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i as i32);
+            } else {
+                stack.pop();
+                if stack.is_empty() {
+                    stack.push(i as i32);
+                } else {
+                    max = max.max(i as i32 - stack[stack.len() - 1]);
+                }
+            }
+        }
+        max
+
+=======
+
+        let mut stack = vec![-1];
+        let mut max_len = 0;
+        for (i, c) in s.chars().enumerate() {
+            let i = i as i32;
+            if c == '(' {
+                stack.push(i);
+            } else {
+                stack.pop();
+                if let Some(&j) = stack.last() {
+                    max_len = max_len.max(i - j);
+                } else {
+                    stack.push(i);
+                }
+            }
+        }
+        max_len
+    }
+}
+
+=======
+
+        let mut stack: Vec<usize> = vec![0];
+        let mut max = 0;
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i + 1);
+            } else {
+                stack.pop();
+                if stack.is_empty() {
+                    stack.push(i + 1);
+                } else {
+                    max = max.max(i + 1 - stack[stack.len() - 1]);
+                }
+            }
+        }
+        max as i32
+
+=======
+
+        let mut max = 0;
+        let mut stack = vec![];
+        let mut start = 0;
+        for (i, c) in s.chars().enumerate() {
+            if c == '(' {
+                stack.push(i);
+            } else {
+                if stack.is_empty() {
+                    start = i + 1;
+                } else {
+                    stack.pop();
+                    let tmp = if stack.is_empty() {
+                        i - start + 1
+                    } else {
+                        i - stack.last().unwrap()
+                    };
+                    max = max.max(tmp);
+                }
+            }
+        }
+        max as i32
+
+=======
+
+        let mut stack: Vec<usize> = Vec::new();
+        let mut longest = 0;
+        let mut start = 0;
+        for (i, c) in s.chars().enumerate() {
+            match c {
+                '(' => stack.push(i),
+                ')' => {
+                    if let Some(j) = stack.pop() {
+                        if stack.is_empty() {
+                            longest = std::cmp::max(longest, i - start + 1);
+                        } else {
+                            longest = std::cmp::max(longest, i - stack[stack.len() - 1]);
+                        }
+                    } else {
+                        start = i + 1;
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }
+        longest as i32
+    }
+}
+
+=======
+
+        let s = s.as_bytes();
+        let mut stack = vec![];
+        let mut max = 0;
+        let mut left = -1;
+        for (i, &c) in s.iter().enumerate() {
+            if c == b'(' {
+                stack.push(i as i32);
+            } else {
+                if let Some(&j) = stack.last() {
+                    stack.pop();
+                    if let Some(&k) = stack.last() {
+                        max = max.max(i as i32 - k);
+                    } else {
+                        max = max.max(i as i32 - left);
+                    }
+                } else {
+                    left = i as i32;
+                }
+            }
+        }
+        max as i32

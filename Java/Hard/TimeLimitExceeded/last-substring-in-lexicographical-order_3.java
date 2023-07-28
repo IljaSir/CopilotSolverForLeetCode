@@ -1,0 +1,23 @@
+class Solution {
+    public String lastSubstring(String s) {
+        
+        int n = s.length();
+        int i = 0, j = 1, k = 0;
+        while (i + k < n && j + k < n) {
+            if (s.charAt(i + k) == s.charAt(j + k)) {
+                k++;
+            } else {
+                if (s.charAt(i + k) < s.charAt(j + k)) {
+                    i = j;
+                } else {
+                    j = i + 1;
+                }
+                if (i == j) {
+                    j++;
+                }
+                k = 0;
+            }
+        }
+        return s.substring(i);
+    }
+}

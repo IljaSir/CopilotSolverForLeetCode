@@ -1,0 +1,226 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let k = k as usize;
+        let mut q = std::collections::VecDeque::new();
+        let mut res = Vec::new();
+        for i in 0..nums.len() {
+            while !q.is_empty() && q.front().unwrap() < &(i + 1 - k) {
+                q.pop_front();
+            }
+            while !q.is_empty() && nums[q.back().unwrap()] < nums[i] {
+                q.pop_back();
+            }
+            q.push_back(i);
+            if i + 1 >= k {
+                res.push(nums[q.front().unwrap()]);
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut q = std::collections::VecDeque::new();
+        for i in 0..nums.len() {
+            while !q.is_empty() && nums[*q.back().unwrap()] < nums[i] {
+                q.pop_back();
+            }
+            q.push_back(i);
+            if i >= k as usize - 1 {
+                while *q.front().unwrap() <= i - k as usize {
+                    q.pop_front();
+                }
+                res.push(nums[*q.front().unwrap()]);
+            }
+        }
+        res
+
+=======
+
+        let mut ans = vec![];
+        let mut q = std::collections::VecDeque::new();
+        for i in 0..nums.len() {
+            while let Some(&j) = q.back() {
+                if nums[j] < nums[i] {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back(i);
+            if let Some(&j) = q.front() {
+                if i >= j + k as usize {
+                    q.pop_front();
+                }
+            }
+            if i >= k as usize - 1 {
+                ans.push(nums[*q.front().unwrap()]);
+            }
+        }
+        ans
+
+=======
+
+        let mut res = Vec::new();
+        let mut deque = std::collections::VecDeque::new();
+        for (i, &num) in nums.iter().enumerate() {
+            while !deque.is_empty() && num >= nums[*deque.back().unwrap()] {
+                deque.pop_back();
+            }
+            deque.push_back(i);
+            if i as i32 + 1 >= k {
+                while !deque.is_empty() && *deque.front().unwrap() < i - k as usize + 1 {
+                    deque.pop_front();
+                }
+                res.push(nums[*deque.front().unwrap()]);
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        if nums.len() == 0 {
+            return vec![];
+        }
+        let mut res = vec![0; nums.len() - k as usize + 1];
+        let mut max = nums[0];
+        for i in 0..k as usize {
+            max = max.max(nums[i]);
+        }
+        res[0] = max;
+        for i in 1..res.len() {
+            if nums[i-1] == max {
+                max = nums[i];
+                for j in i..i+k as usize {
+                    max = max.max(nums[j]);
+                }
+            } else {
+                max = max.max(nums[i+k as usize - 1]);
+            }
+            res[i] = max;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut max = nums.iter().take(k as usize).max().unwrap();
+        let mut res = vec![*max];
+        for i in k as usize..nums.len() {
+            if nums[i] > *max {
+                max = &nums[i];
+            } else if nums[i - k as usize] == *max {
+                max = nums.iter().skip(i - k as usize + 1).take(k as usize).max().unwrap();
+            }
+            res.push(*max);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut max = Vec::new();
+        let mut queue = Vec::new();
+        let k = k as usize;
+        for i in 0..nums.len() {
+            while !queue.is_empty() && nums[queue[queue.len() - 1]] < nums[i] {
+                queue.pop();
+            }
+            queue.push(i);
+            if queue[0] == i - k {
+                queue.remove(0);
+            }
+            if i >= k - 1 {
+                max.push(nums[queue[0]]);
+            }
+        }
+        max
+
+=======
+
+        let k = k as usize;
+        let mut res = Vec::with_capacity(nums.len()-k+1);
+        let mut deque = std::collections::VecDeque::with_capacity(k);
+        for (i, &n) in nums.iter().enumerate() {
+            while let Some(&last) = deque.back() {
+                if last < n {
+                    deque.pop_back();
+                } else {
+                    break;
+                }
+            }
+            deque.push_back(n);
+            if i >= k {
+                if let Some(&first) = deque.front() {
+                    if first == nums[i-k] {
+                        deque.pop_front();
+                    }
+                }
+            }
+            if i >= k-1 {
+                res.push(*deque.front().unwrap());
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut max = std::i32::MIN;
+        let mut max_index = 0;
+        let mut result = Vec::new();
+        for i in 0..nums.len() {
+            if i >= k as usize {
+                if max_index == i - k as usize {
+                    max = std::i32::MIN;
+                    for j in i - k as usize + 1..i {
+                        if nums[j] > max {
+                            max = nums[j];
+                            max_index = j;
+                        }
+                    }
+                }
+            }
+            if nums[i] > max {
+                max = nums[i];
+                max_index = i;
+            }
+            if i >= k as usize - 1 {
+                result.push(max);
+            }
+        }
+        result
+
+=======
+
+        let mut ans = Vec::new();
+        let mut max = std::i32::MIN;
+        let mut max_index = 0;
+        for i in 0..nums.len() {
+            if i >= k as usize {
+                if max_index == i - k as usize {
+                    max = std::i32::MIN;
+                    for j in i - k as usize..i {
+                        if nums[j] > max {
+                            max = nums[j];
+                            max_index = j;
+                        }
+                    }
+                }
+            }
+            if nums[i] >= max {
+                max = nums[i];
+                max_index = i;
+            }
+            if i >= k as usize - 1 {
+                ans.push(max);
+            }
+        }
+        ans

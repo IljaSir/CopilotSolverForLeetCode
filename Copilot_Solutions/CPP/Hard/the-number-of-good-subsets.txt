@@ -1,0 +1,93 @@
+Synthesizing 4/10 solutions (Duplicates hidden)
+
+=======
+
+        int MOD = 1e9+7;
+        vector<int> primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+        vector<int> cnt(31);
+        for (int x: nums) cnt[x]++;
+        vector<int> dp(1024, 0);
+        dp[0] = 1;
+        for (int x: primes) {
+            int mask = 1 << (x - 1);
+            for (int i = 1023; i >= 0; i--) {
+                if (i & mask) continue;
+                dp[i | mask] += dp[i];
+                if (dp[i | mask] >= MOD) dp[i | mask] -= MOD;
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= 30; i++) {
+            int mask = 0;
+            for (int j = 1; j <= 30; j++) {
+                if (j % i == 0) mask |= 1 << (j - 1);
+            }
+            int ways = 1;
+            for (int j = 1; j <= cnt[i]; j++) {
+                ways = ways * 1ll * j % MOD;
+            }
+            ans += dp[mask] * 1ll * ways % MOD;
+            if (ans >= MOD) ans -= MOD;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31};
+        vector<int> cnt(32, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<int> dp(1<<11, 0);
+        dp[0] = 1;
+        for (int i = 0; i < 32; i++) {
+            if (cnt[i] == 0) continue;
+            int mask = 0;
+            for (int j = 0; j < 11; j++) {
+                if (i % primes[j] == 0) {
+                    mask |= 1 << j;
+                }
+            }
+            for (int j = 0; j < 1 << 11; j++) {
+                if (j & mask) continue;
+                dp[j | mask] += dp[j] * cnt[i];
+                dp[j | mask] %= 1000000007;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 1 << 11; i++) {
+            int cnt = 0;
+            for (int j = 0; j < 11; j++) {
+                if (i & (1 << j)) cnt++;
+            }
+            if (cnt & 1) {
+                ans -= dp[i];
+            }
+            else {
+                ans += dp[i];
+            }
+            ans %= 1000000007;
+        }
+        return (ans + 1000000007) % 1000000007;
+
+=======
+
+        int MOD = 1e9 + 7;
+        int N = 31;
+        vector<int> primes = {2,3,5,7,11,13,17,19,23,29};
+        vector<int> cnt(N, 0);
+        for (int x: nums) cnt[x]++;
+        vector<int> dp(N, 0);
+        dp[1] = 1;
+        for (int p: primes) {
+            for (int i = N - 1; i >= p; --i) {
+                dp[i] = (dp[i] + dp[i - p]) % MOD;
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < N; ++i) {
+            int sign = __builtin_popcount(i) % 2 == 1 ? 1 : -1;
+            ans = (ans + sign * dp[i] * cnt[i]) % MOD;
+        }
+        return (ans + MOD) % MOD;

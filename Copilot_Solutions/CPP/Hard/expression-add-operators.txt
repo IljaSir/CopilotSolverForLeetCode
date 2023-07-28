@@ -1,0 +1,204 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        vector<string> res;
+        helper(res, "", num, target, 0, 0, 0);
+        return res;
+    }
+    void helper(vector<string>& res, string out, string num, int target, int pos, long eval, long multed) {
+        if (pos == num.size()) {
+            if (target == eval) res.push_back(out);
+            return;
+        }
+        for (int i = pos; i < num.size(); ++i) {
+            if (i != pos && num[pos] == '0') break;
+            long cur = stol(num.substr(pos, i - pos + 1));
+            if (pos == 0) {
+                helper(res, out + to_string(cur), num, target, i + 1, cur, cur);
+            } else {
+                helper(res, out + "+" + to_string(cur), num, target, i + 1, eval + cur, cur);
+                helper(res, out + "-" + to_string(cur), num, target, i + 1, eval - cur, -cur);
+                helper(res, out + "*" + to_string(cur), num, target, i + 1, eval - multed + multed * cur, multed * cur);
+            }
+        }
+
+=======
+
+        vector<string> res;
+        string path;
+        dfs(num, target, 0, 0, 0, path, res);
+        return res;
+    }
+    void dfs(string& num, int target, int pos, long long pre, long long cur, string path, vector<string>& res) {
+        if (pos == num.size()) {
+            if (cur == target) res.push_back(path);
+            return;
+        }
+        for (int i = pos; i < num.size(); i++) {
+            if (i != pos && num[pos] == '0') break;
+            string t = num.substr(pos, i - pos + 1);
+            long long val = stoll(t);
+            if (pos == 0) {
+                dfs(num, target, i + 1, val, val, t, res);
+            } else {
+                dfs(num, target, i + 1, val, cur + val, path + "+" + t, res);
+                dfs(num, target, i + 1, -val, cur - val, path + "-" + t, res);
+                dfs(num, target, i + 1, pre * val, cur - pre + pre * val, path + "*" + t, res);
+            }
+        }
+
+=======
+
+        vector<string> res;
+        int n = num.size();
+        for (int i = 1; i <= n; i++) {
+            string s = num.substr(0, i);
+            if (s.size() > 1 && s[0] == '0') break;
+            long long n = stoll(s);
+            dfs(num, target, i, to_string(n), n, n, res);
+        }
+        return res;
+    }
+    void dfs(string num, int target, int i, string path, long long cur, long long last, vector<string>& res) {
+        if (i == num.size() && cur == target) {
+            res.push_back(path);
+            return;
+        }
+        for (int j = i + 1; j <= num.size(); j++) {
+            string s = num.substr(i, j - i);
+            if (s.size() > 1 && s[0] == '0') break;
+            long long n = stoll(s);
+            dfs(num, target, j, path + '+' + s, cur + n, n, res);
+            dfs(num, target, j, path + '-' + s, cur - n, -n, res);
+            dfs(num, target, j, path + '*' + s, cur - last + last * n, last * n, res);
+        }
+
+=======
+
+        vector<string> res;
+        string exp;
+        dfs(res, exp, num, target, 0, 0, 0);
+        return res;
+    }
+    void dfs(vector<string>& res, string& exp, string& num, int target, int pos, long diff, long curNum) {
+        if (pos == num.size()) {
+            if (curNum == target) {
+                res.push_back(exp);
+            }
+            return;
+        }
+        for (int i = pos; i < num.size(); i++) {
+            if (i != pos && num[pos] == '0') {
+                break;
+            }
+            long cur = stol(num.substr(pos, i - pos + 1));
+            int len = exp.size();
+            if (pos == 0) {
+                exp += to_string(cur);
+                dfs(res, exp, num, target, i + 1, cur, cur);
+                exp.erase(len);
+            } else {
+                exp += "+" + to_string(cur);
+                dfs(res, exp, num, target, i + 1, cur, curNum + cur);
+                exp.erase(len);
+                exp += "-" + to_string(cur);
+                dfs(res, exp, num, target, i + 1, -cur, curNum - cur);
+                exp.erase(len);
+                exp += "*" + to_string(cur);
+                dfs(res, exp, num, target, i + 1, diff * cur, curNum - diff + diff * cur);
+                exp.erase(len);
+            }
+        }
+
+=======
+
+        vector<string> res;
+        if(num.empty()) return res;
+        dfs(num, target, 0, "", 0, 0, res);
+        return res;
+    }
+    void dfs(string num, int target, int pos, string path, long long prev, long long cur, vector<string>& res) {
+        if(pos == num.size()) {
+            if(cur == target) {
+                res.push_back(path);
+            }
+            return;
+        }
+        for(int i = pos; i < num.size(); i++) {
+            string t = num.substr(pos, i-pos+1);
+            if(t.size() > 1 && t[0] == '0') return;
+            long long n = stoll(t);
+            if(pos == 0) {
+                dfs(num, target, i+1, t, n, n, res);
+            } else {
+                dfs(num, target, i+1, path + "+" + t, n, cur + n, res);
+                dfs(num, target, i+1, path + "-" + t, -n, cur - n, res);
+                dfs(num, target, i+1, path + "*" + t, prev * n, cur - prev + prev * n, res);
+            }
+        }
+
+=======
+
+        vector<string> ret;
+        string tmp;
+        dfs(num, target, 0, 0, 0, tmp, ret);
+        return ret;
+    }
+    void dfs(const string &num, int target, int pos, long long prev, long long cur, string &tmp, vector<string> &ret) {
+        if (pos == num.size()) {
+            if (cur == target) {
+                ret.push_back(tmp);
+            }
+            return;
+        }
+        int n = num.size();
+        for (int i = pos; i < n; ++i) {
+            string s = num.substr(pos, i - pos + 1);
+            long long val = stoll(s);
+            if (to_string(val).size() != s.size()) {
+                continue;
+            }
+            if (pos == 0) {
+                tmp += s;
+                dfs(num, target, i + 1, val, val, tmp, ret);
+                tmp.resize(tmp.size() - s.size());
+            } else {
+                tmp += "+" + s;
+                dfs(num, target, i + 1, val, cur + val, tmp, ret);
+                tmp.resize(tmp.size() - s.size() - 1);
+                tmp += "-" + s;
+                dfs(num, target, i + 1, -val, cur - val, tmp, ret);
+                tmp.resize(tmp.size() - s.size() - 1);
+                tmp += "*" + s;
+                dfs(num, target, i + 1, prev * val, cur - prev + prev * val, tmp, ret);
+                tmp.resize(tmp.size() - s.size() - 1);
+            }
+        }
+
+=======
+
+        vector<string> result;
+        string cur = num.substr(0,1);
+        long long curNum = stoll(cur);
+        string curOp = "";
+        dfs(result, cur, curNum, curOp, num, 1, target);
+        return result;
+    }
+
+    void dfs(vector<string>& result, string cur, long long curNum, string curOp, string num, int pos, int target) {
+        if (pos == num.size()) {
+            if (curNum == target) {
+                result.push_back(cur);
+            }
+            return;
+        }
+        string next = num.substr(pos,1);
+        long long nextNum = stoll(next);
+        dfs(result, cur + "+" + next, curNum + nextNum, "+", num, pos + 1, target);
+        dfs(result, cur + "-" + next, curNum - nextNum, "-", num, pos + 1, target);
+        if (curOp == "+" || curOp == "-") {
+            dfs(result, cur + "*" + next, curNum - (curOp == "+" ? 1 : -1) * (curNum % nextNum) + (curOp == "+" ? 1 : -1) * (curNum % nextNum) * nextNum, curOp, num, pos + 1, target);
+        } else {
+            dfs(result, cur + "*" + next, curNum * nextNum, "*", num, pos + 1, target);
+        }

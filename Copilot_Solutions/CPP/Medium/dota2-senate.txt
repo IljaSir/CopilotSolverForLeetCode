@@ -1,0 +1,316 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = senate.size();
+        queue<int> qR, qD;
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') {
+                qR.push(i);
+            } else {
+                qD.push(i);
+            }
+        }
+        while (!qR.empty() && !qD.empty()) {
+            int r = qR.front();
+            qR.pop();
+            int d = qD.front();
+            qD.pop();
+            if (r < d) {
+                qR.push(r + n);
+            } else {
+                qD.push(d + n);
+            }
+        }
+        return qR.size() > qD.size() ? "Radiant" : "Dire";
+
+=======
+
+        queue<int> q;
+        int n = senate.size();
+        int r = 0, d = 0;
+        for (int i = 0; i < n; i++) {
+            if (senate[i] == 'R') {
+                r++;
+            } else {
+                d++;
+            }
+            q.push(senate[i]);
+        }
+        while (r > 0 && d > 0) {
+            int c = q.front();
+            q.pop();
+            if (c == 'R') {
+                if (d > 0) {
+                    d--;
+                } else {
+                    r--;
+                    q.push(c);
+                }
+            } else {
+                if (r > 0) {
+                    r--;
+                } else {
+                    d--;
+                    q.push(c);
+                }
+            }
+        }
+        return r > 0 ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        int r = 0, d = 0;
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') ++r;
+            else ++d;
+        }
+        while (r > 0 && d > 0) {
+            for (int i = 0; i < n; ++i) {
+                if (senate[i] == 'R') {
+                    if (d > 0) {
+                        --d;
+                        senate[i] = 'r';
+                    }
+                } else if (senate[i] == 'D') {
+                    if (r > 0) {
+                        --r;
+                        senate[i] = 'd';
+                    }
+                }
+            }
+            for (int i = 0; i < n; ++i) {
+                if (senate[i] == 'r') senate[i] = 'R';
+                else if (senate[i] == 'd') senate[i] = 'D';
+            }
+        }
+        return r > 0 ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        int r = 0, d = 0;
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') ++r;
+            else ++d;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            q.push(i);
+        }
+        while (r != 0 && d != 0) {
+            int i = q.front();
+            q.pop();
+            if (senate[i] == 'R') {
+                if (d > 0) {
+                    --d;
+                    senate[i] = 'X';
+                } else {
+                    q.push(i);
+                }
+            } else {
+                if (r > 0) {
+                    --r;
+                    senate[i] = 'X';
+                } else {
+                    q.push(i);
+                }
+            }
+        }
+        return r > d ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        queue<int> q;
+        int r = 0, d = 0;
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') {
+                ++r;
+                q.push(1);
+            } else {
+                ++d;
+                q.push(-1);
+            }
+        }
+        while (r > 0 && d > 0) {
+            int x = q.front();
+            q.pop();
+            if (x > 0) {
+                if (d > 0) {
+                    --d;
+                    q.push(x);
+                } else {
+                    --r;
+                }
+            } else {
+                if (r > 0) {
+                    --r;
+                    q.push(x);
+                } else {
+                    --d;
+                }
+            }
+        }
+        return r > 0 ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        int r = 0, d = 0;
+        vector<int> ban(n, 0);
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') {
+                ++r;
+            } else {
+                ++d;
+            }
+        }
+        while (r > 0 && d > 0) {
+            for (int i = 0; i < n; ++i) {
+                if (!ban[i]) {
+                    if (senate[i] == 'R') {
+                        --d;
+                        ban[i] = 1;
+                        for (int j = i + 1; j < n; ++j) {
+                            if (!ban[j] && senate[j] == 'D') {
+                                ban[j] = 1;
+                                break;
+                            }
+                        }
+                    } else {
+                        --r;
+                        ban[i] = 1;
+                        for (int j = i + 1; j < n; ++j) {
+                            if (!ban[j] && senate[j] == 'R') {
+                                ban[j] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return r > 0 ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            q.push(i);
+        }
+        int ban[2] = {0, 0};
+        while (q.size() > 1) {
+            int i = q.front();
+            q.pop();
+            if (senate[i] == 'R') {
+                if (ban[1] > 0) {
+                    ban[1]--;
+                } else {
+                    ban[0]++;
+                    q.push(i);
+                }
+            } else {
+                if (ban[0] > 0) {
+                    ban[0]--;
+                } else {
+                    ban[1]++;
+                    q.push(i);
+                }
+            }
+        }
+        return senate[q.front()] == 'R' ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        queue<int> q;
+        int ban[2] = {0, 0};
+        int cnt[2] = {0, 0};
+        for (int i = 0; i < n; ++i) {
+            int x = senate[i] == 'R' ? 0 : 1;
+            q.push(x);
+            ++cnt[x];
+        }
+        while (cnt[0] > 0 && cnt[1] > 0) {
+            int x = q.front();
+            q.pop();
+            if (ban[x] > 0) {
+                --ban[x];
+                --cnt[x];
+            } else {
+                ++ban[x ^ 1];
+                q.push(x);
+            }
+        }
+        return cnt[0] > 0 ? "Radiant" : "Dire";
+
+=======
+
+        int n = senate.size();
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            q.push(i);
+        }
+        int cnt[2] = {0};
+        for (int i = 0; i < n; ++i) {
+            if (senate[i] == 'R') {
+                cnt[0]++;
+            } else {
+                cnt[1]++;
+            }
+        }
+        while (cnt[0] > 0 && cnt[1] > 0) {
+            int x = q.front();
+            q.pop();
+            if (senate[x] == 'R') {
+                if (cnt[1] > 0) {
+                    cnt[1]--;
+                    senate[x] = '0';
+                } else {
+                    q.push(x);
+                }
+            } else {
+                if (cnt[0] > 0) {
+                    cnt[0]--;
+                    senate[x] = '0';
+                } else {
+                    q.push(x);
+                }
+            }
+        }
+        if (cnt[0] > 0) {
+            return "Radiant";
+        }
+        return "Dire";
+
+=======
+
+        int n = senate.size();
+        int r = 0, d = 0;
+        for (auto c : senate) {
+            if (c == 'R') r++;
+            else d++;
+        }
+        int r2 = r, d2 = d;
+        int i = 0;
+        while (r2 > 0 && d2 > 0) {
+            if (senate[i] == 'R') {
+                if (d > 0) {
+                    d--;
+                    d2--;
+                    senate[i] = '0';
+                }
+            } else if (senate[i] == 'D') {
+                if (r > 0) {
+                    r--;
+                    r2--;
+                    senate[i] = '0';
+                }
+            }
+            i++;
+            if (i == n) i = 0;
+        }
+        return r2 > 0 ? "Radiant" : "Dire";

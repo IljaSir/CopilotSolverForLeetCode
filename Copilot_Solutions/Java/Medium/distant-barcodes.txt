@@ -1,0 +1,277 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < barcodes.length; i++) {
+            map.put(barcodes[i], map.getOrDefault(barcodes[i], 0) + 1);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            pq.offer(new int[]{entry.getKey(), entry.getValue()});
+        }
+        int[] res = new int[barcodes.length];
+        int index = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            for (int i = 0; i < cur[1]; i++) {
+                res[index] = cur[0];
+                index += 2;
+                if (index >= barcodes.length) {
+                    index = 1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = barcodes.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int barcode : barcodes) {
+            map.put(barcode, map.getOrDefault(barcode, 0) + 1);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (b[1] - a[1]));
+        for (int key : map.keySet()) {
+            pq.offer(new int[] {key, map.get(key)});
+        }
+        int[] res = new int[n];
+        int i = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            while (cur[1] > 0) {
+                res[i] = cur[0];
+                cur[1]--;
+                i += 2;
+                if (i >= n) {
+                    i = 1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] count = new int[10001];
+        for (int b : barcodes) {
+            count[b]++;
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> count[b] - count[a]);
+        for (int i = 1; i <= 10000; i++) {
+            if (count[i] > 0) {
+                pq.add(i);
+            }
+        }
+        int[] ans = new int[barcodes.length];
+        int t = 0;
+        while (pq.size() >= 2) {
+            int a = pq.poll();
+            int b = pq.poll();
+            ans[t++] = a;
+            ans[t++] = b;
+            count[a]--;
+            count[b]--;
+            if (count[a] > 0) {
+                pq.add(a);
+            }
+            if (count[b] > 0) {
+                pq.add(b);
+            }
+        }
+        if (pq.size() > 0) {
+            ans[t] = pq.poll();
+        }
+        return ans;
+
+=======
+
+        int n = barcodes.length;
+        int[] count = new int[10001];
+        for (int i = 0; i < n; i++) {
+            count[barcodes[i]]++;
+        }
+        int max = 0;
+        int maxIndex = 0;
+        for (int i = 0; i < 10001; i++) {
+            if (count[i] > max) {
+                max = count[i];
+                maxIndex = i;
+            }
+        }
+        int[] ans = new int[n];
+        int index = 0;
+        while (count[maxIndex] > 0) {
+            ans[index] = maxIndex;
+            index += 2;
+            count[maxIndex]--;
+        }
+        for (int i = 0; i < 10001; i++) {
+            while (count[i] > 0) {
+                if (index >= n) {
+                    index = 1;
+                }
+                ans[index] = i;
+                index += 2;
+                count[i]--;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] counts = new int[10001];
+        for (int barcode : barcodes) {
+            counts[barcode]++;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        for (int i = 0; i < 10001; i++) {
+            if (counts[i] > 0) {
+                pq.add(new int[] {i, counts[i]});
+            }
+        }
+        int[] res = new int[barcodes.length];
+        int idx = 0;
+        while (pq.size() > 1) {
+            int[] first = pq.poll();
+            int[] second = pq.poll();
+            res[idx++] = first[0];
+            res[idx++] = second[0];
+            if (--first[1] > 0) {
+                pq.add(first);
+            }
+            if (--second[1] > 0) {
+                pq.add(second);
+            }
+        }
+        if (!pq.isEmpty()) {
+            res[idx] = pq.poll()[0];
+        }
+        return res;
+
+=======
+
+        int[] counts = new int[10001];
+        int max = 0;
+        for (int barcode : barcodes) {
+            counts[barcode]++;
+            if (counts[barcode] > counts[max]) {
+                max = barcode;
+            }
+        }
+        int[] result = new int[barcodes.length];
+        int index = 0;
+        while (counts[max] > 0) {
+            result[index] = max;
+            index += 2;
+            counts[max]--;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            while (counts[i] > 0) {
+                if (index >= result.length) {
+                    index = 1;
+                }
+                result[index] = i;
+                index += 2;
+                counts[i]--;
+            }
+        }
+        return result;
+
+=======
+
+        int[] count = new int[10001];
+        int max = 0;
+        int maxCount = 0;
+        for (int barcode : barcodes) {
+            count[barcode]++;
+            if (count[barcode] > maxCount) {
+                maxCount = count[barcode];
+                max = barcode;
+            }
+        }
+        int[] result = new int[barcodes.length];
+        int i = 0;
+        while (count[max] > 0) {
+            result[i] = max;
+            count[max]--;
+            i += 2;
+        }
+        for (int j = 0; j < count.length; j++) {
+            while (count[j] > 0) {
+                if (i >= result.length) {
+                    i = 1;
+                }
+                result[i] = j;
+                count[j]--;
+                i += 2;
+            }
+        }
+        return result;
+
+=======
+
+        int[] arr = new int[10001];
+        for(int i=0; i<barcodes.length; i++){
+            arr[barcodes[i]]++;
+        }
+        int max = 0;
+        int maxInd = 0;
+        for(int i=0; i<arr.length; i++){
+            if(arr[i] > max){
+                max = arr[i];
+                maxInd = i;
+            }
+        }
+        int[] result = new int[barcodes.length];
+        int index = 0;
+        while(arr[maxInd] > 0){
+            result[index] = maxInd;
+            arr[maxInd]--;
+            index += 2;
+        }
+        for(int i=0; i<arr.length; i++){
+            while(arr[i] > 0){
+                if(index >= barcodes.length){
+                    index = 1;
+                }
+                result[index] = i;
+                arr[i]--;
+                index += 2;
+            }
+        }
+        return result;
+
+=======
+
+        // 1. count the frequency of each number
+        // 2. sort the frequency
+        // 3. fill the array
+        int[] count = new int[10001];
+        for (int barcode : barcodes) {
+            count[barcode]++;
+        }
+        List<Integer>[] buckets = new List[barcodes.length + 1];
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] > 0) {
+                if (buckets[count[i]] == null) {
+                    buckets[count[i]] = new ArrayList<>();
+                }
+                buckets[count[i]].add(i);
+            }
+        }
+        int[] res = new int[barcodes.length];
+        int index = 0;
+        for (int i = buckets.length - 1; i >= 0; i--) {
+            if (buckets[i] != null) {
+                for (int num : buckets[i]) {
+                    for (int j = 0; j < i; j++) {
+                        res[index] = num;
+                        index += 2;
+                        if (index >= res.length) {
+                            index = 1;
+                        }
+                    }
+                }
+            }
+        }
+        return res;

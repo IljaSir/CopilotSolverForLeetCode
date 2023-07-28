@@ -1,0 +1,217 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for s in allowed {
+            map.entry(s[0..2].to_string()).or_insert(Vec::new()).push(s[2..3].to_string());
+        }
+        let mut stack = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = 0;
+        let mut s = bottom;
+        while !s.is_empty() {
+            if i == s.len() - 1 {
+                i = 0;
+                j += 1;
+                k = 0;
+                s = stack.pop().unwrap();
+                continue;
+            }
+            let key = s[i..i+2].to_string();
+            if map.contains_key(&key) {
+                let mut new_s = s.clone();
+                new_s.replace_range(i..i+2, &map[&key][k]);
+                if j == 0 {
+                    if new_s.len() == 1 {
+                        return true;
+                    }
+                    i = 0;
+                    j = 0;
+                    k = 0;
+                    s = new_s;
+                    continue;
+                }
+                stack.push(new_s);
+            }
+            k += 1;
+            if k == map[&key].len() {
+                k = 0;
+                i += 1;
+            }
+        }
+        false
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for s in allowed {
+            let (a, b, c) = (s.as_bytes()[0], s.as_bytes()[1], s.as_bytes()[2]);
+            map.entry((a, b)).or_insert(Vec::new()).push(c);
+        }
+        let mut bottom = bottom.as_bytes().to_vec();
+        let mut next = Vec::new();
+        loop {
+            next.clear();
+            for i in 0..bottom.len() - 1 {
+                let (a, b) = (bottom[i], bottom[i + 1]);
+                if !map.contains_key(&(a, b)) {
+                    return false;
+                }
+                if next.is_empty() {
+                    next = map[&(a, b)].clone();
+                } else {
+                    let mut tmp = Vec::new();
+                    for c in &next {
+                        for d in &map[&(a, b)] {
+                            tmp.push(vec![*c, *d]);
+                        }
+                    }
+                    next = tmp.into_iter().flatten().collect();
+                }
+            }
+            if next.len() == 1 {
+                return true;
+            }
+            bottom = next;
+        }
+    }
+}
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for s in allowed {
+            let mut chars = s.chars();
+            let c1 = chars.next().unwrap();
+            let c2 = chars.next().unwrap();
+            let c3 = chars.next().unwrap();
+            map.entry((c1, c2)).or_insert(Vec::new()).push(c3);
+        }
+        let mut bottom = bottom.chars().collect::<Vec<_>>();
+        let mut top = Vec::new();
+        for _ in 0..bottom.len() - 1 {
+            top.push(' ');
+        }
+        Self::dfs(&bottom, &mut top, &map)
+    }
+    fn dfs(bottom: &[char], top: &mut [char], map: &std::collections::HashMap<(char, char), Vec<char>>) -> bool {
+        if bottom.len() == 1 {
+            return true;
+        }
+        if top.len() == 1 {
+            return Self::dfs(top, bottom, map);
+        }
+        let c1 = bottom[0];
+        let c2 = bottom[1];
+        if let Some(v) = map.get(&(c1, c2)) {
+            for &c3 in v {
+                top[0] = c3;
+                if Self::dfs(bottom, top, map) {
+                    return true;
+                }
+            }
+        }
+        false
+
+=======
+
+        let mut map: Vec<Vec<Vec<char>>> = vec![vec![vec![]; 7]; 7];
+        for s in allowed {
+            let chars: Vec<char> = s.chars().collect();
+            map[(chars[0] as usize) - 65][(chars[1] as usize) - 65].push(chars[2]);
+        }
+        let mut stack: Vec<(usize, usize)> = Vec::new();
+        let mut top = 0;
+        let mut bottom = bottom.chars().collect::<Vec<char>>();
+        while bottom.len() > 1 {
+            stack.clear();
+            top = 0;
+            for i in 0..bottom.len() - 1 {
+                stack.push((bottom[i] as usize - 65, bottom[i + 1] as usize - 65));
+            }
+            bottom.clear();
+            for i in 0..stack.len() {
+                if map[stack[i].0][stack[i].1].len() == 0 {
+                    return false;
+                }
+                if top < map[stack[i].0][stack[i].1].len() {
+                    bottom.push(map[stack[i].0][stack[i].1][top]);
+                } else {
+                    top = 0;
+                    bottom.push(map[stack[i].0][stack[i].1][top]);
+                }
+                top += 1;
+            }
+        }
+        true
+
+=======
+
+        let mut map: HashMap<(char, char), Vec<char>> = HashMap::new();
+        for s in allowed {
+            let mut chars = s.chars();
+            let c1 = chars.next().unwrap();
+            let c2 = chars.next().unwrap();
+            let c3 = chars.next().unwrap();
+            map.entry((c1, c2)).or_insert(vec![]).push(c3);
+        }
+        Self::dfs(bottom, &map)
+    }
+    fn dfs(s: String, map: &HashMap<(char, char), Vec<char>>) -> bool {
+        if s.len() == 1 {
+            true
+        } else {
+            let mut res = false;
+            for i in 0..s.len() - 1 {
+                if !map.contains_key(&(s.chars().nth(i).unwrap(), s.chars().nth(i + 1).unwrap())) {
+                    return false;
+                }
+            }
+            for i in 0..s.len() - 1 {
+                for &c in map.get(&(s.chars().nth(i).unwrap(), s.chars().nth(i + 1).unwrap())).unwrap() {
+                    let mut s2 = s.clone();
+                    s2.remove(i);
+                    s2.insert(i, c);
+                    res |= Self::dfs(s2, map);
+                }
+            }
+            res
+        }
+
+=======
+
+        let mut m: HashMap<(char, char), Vec<char>> = HashMap::new();
+        for s in allowed {
+            let mut it = s.chars();
+            let c1 = it.next().unwrap();
+            let c2 = it.next().unwrap();
+            let c3 = it.next().unwrap();
+            m.entry((c1, c2)).or_insert(vec![]).push(c3);
+        }
+        let mut v: Vec<char> = bottom.chars().collect();
+        Self::dfs(&mut v, &m)
+    }
+    fn dfs(v: &mut Vec<char>, m: &HashMap<(char, char), Vec<char>>) -> bool {
+        let n = v.len();
+        if n == 1 {
+            return true;
+        }
+        let mut v2 = vec![];
+        for i in 0..n-1 {
+            let c1 = v[i];
+            let c2 = v[i+1];
+            if let Some(v3) = m.get(&(c1, c2)) {
+                v2.extend(v3.iter().map(|&c| c));
+            } else {
+                return false;
+            }
+        }
+        Self::dfs(&mut v2, m)

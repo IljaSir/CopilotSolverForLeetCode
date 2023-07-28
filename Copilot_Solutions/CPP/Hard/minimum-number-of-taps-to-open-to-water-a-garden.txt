@@ -1,0 +1,169 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> dp(n + 1, n + 2);
+        dp[0] = 0;
+        for (int i = 0; i <= n; ++i) {
+            int l = max(0, i - ranges[i]), r = min(n, i + ranges[i]);
+            for (int j = l + 1; j <= r; ++j) {
+                dp[j] = min(dp[j], dp[l] + 1);
+            }
+        }
+        return dp[n] < n + 2 ? dp[n] : -1;
+
+=======
+
+        vector<int> dp(n+1, n+2);
+        dp[0] = 0;
+        for (int i = 0; i <= n; ++i) {
+            for (int j = max(i - ranges[i] + 1, 0); j <= min(i + ranges[i], n); ++j) {
+                dp[j] = min(dp[j], dp[max(0, i - ranges[i])] + 1);
+            }
+        }
+        return dp[n] < n+2 ? dp[n] : -1;
+
+=======
+
+        vector<pair<int, int>> intervals;
+        for (int i = 0; i < ranges.size(); i++) {
+            if (ranges[i] > 0) {
+                intervals.push_back({i - ranges[i], i + ranges[i]});
+            }
+        }
+        sort(intervals.begin(), intervals.end(), [](const pair<int, int>& a, const pair<int, int>& b) {
+            return a.first < b.first;
+        });
+        int count = 0;
+        int start = 0;
+        while (start < intervals.size()) {
+            int maxEnd = INT_MIN;
+            int i = start;
+            while (i < intervals.size() && intervals[i].first <= intervals[start].first) {
+                maxEnd = max(maxEnd, intervals[i].second);
+                i++;
+            }
+            count++;
+            if (maxEnd >= n) {
+                return count;
+            }
+            if (i == start) {
+                return -1;
+            }
+            start = i;
+        }
+        return -1;
+
+=======
+
+        vector<int> dp(n+1, INT_MAX);
+        dp[0] = 0;
+        for (int i = 0; i <= n; ++i) {
+            int left = max(0, i - ranges[i]);
+            int right = min(n, i + ranges[i]);
+            for (int j = left; j <= right; ++j) {
+                dp[j] = min(dp[j], dp[left] + 1);
+            }
+        }
+        return dp[n] == INT_MAX ? -1 : dp[n];
+
+=======
+
+        vector<int> dp(n+1, n+2);
+        dp[0] = 0;
+        for(int i=0; i<=n; i++){
+            for(int j=max(0, i-ranges[i]); j<=min(n, i+ranges[i]); j++){
+                dp[j] = min(dp[j], dp[max(0, i-ranges[i])] + 1);
+            }
+        }
+        return dp[n] < n+2 ? dp[n] : -1;
+
+=======
+
+        vector<int> dp(n + 1, 1000000);
+        dp[0] = 0;
+        for (int i = 0; i <= n; ++i) {
+            int l = max(0, i - ranges[i]), r = min(n, i + ranges[i]);
+            for (int j = l; j < r; ++j) {
+                dp[j + 1] = min(dp[j + 1], dp[l] + 1);
+            }
+        }
+        return dp[n] == 1000000 ? -1 : dp[n];
+
+=======
+
+        int dp[n + 1];
+        memset(dp, 0, sizeof(dp));
+        for (int i = 0; i < ranges.size(); i++) {
+            int l = max(0, i - ranges[i]);
+            int r = min(n, i + ranges[i]);
+            dp[l] = max(dp[l], r);
+        }
+        int ans = 0;
+        int last = 0;
+        int cur = 0;
+        for (int i = 0; i < n; i++) {
+            cur = max(cur, dp[i]);
+            if (i == last) {
+                ans++;
+                last = cur;
+            }
+            if (last >= n) {
+                return ans;
+            }
+        }
+        return last >= n ? ans : -1;
+
+=======
+
+        vector<pair<int, int>> intervals;
+        for (int i = 0; i <= n; i++) {
+            if (ranges[i] > 0) intervals.push_back({i - ranges[i], i + ranges[i]});
+        }
+        sort(intervals.begin(), intervals.end());
+        int ans = 0, left = 0, right = 0, i = 0;
+        while (left <= n) {
+            while (i < intervals.size() && intervals[i].first <= left) {
+                right = max(right, intervals[i++].second);
+            }
+            if (left == right) return -1;
+            left = right;
+            ans++;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> intervals;
+        for(int i = 0; i < ranges.size(); i++) {
+            int l = max(0, i - ranges[i]);
+            int r = min(n, i + ranges[i]);
+            intervals.push_back({l, r});
+        }
+        sort(intervals.begin(), intervals.end());
+        int ans = 0;
+        int max_right = 0;
+        int i = 0;
+        while(i < intervals.size() && max_right < n) {
+            int cur_right = max_right;
+            while(i < intervals.size() && intervals[i][0] <= max_right) {
+                cur_right = max(cur_right, intervals[i][1]);
+                i++;
+            }
+            if(cur_right == max_right) return -1;
+            max_right = cur_right;
+            ans++;
+        }
+        return max_right >= n ? ans : -1;
+
+=======
+
+        int m = ranges.size();
+        vector<int> dp(m, m);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = max(0, i - ranges[i]); j <= min(m - 1, i + ranges[i]); j++) {
+                dp[j] = min(dp[j], dp[max(0, i - ranges[i])] + 1);
+            }
+        }
+        return dp[n] == m ? -1 : dp[n];

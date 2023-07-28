@@ -1,0 +1,265 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = strs.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (isSimilar(strs[i], strs[j])) {
+                    int p1 = find(parent, i);
+                    int p2 = find(parent, j);
+                    if (p1 != p2) {
+                        parent[p1] = p2;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) {
+                ++res;
+            }
+        }
+        return res;
+    }
+    
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    
+    bool isSimilar(string& s1, string& s2) {
+        int n = s1.size();
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (s1[i] != s2[i]) {
+                ++cnt;
+            }
+        }
+        return cnt == 2 || cnt == 0;
+
+=======
+
+        int n = strs.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (find(parent, i) == find(parent, j)) continue;
+                if (isSimilar(strs[i], strs[j])) {
+                    parent[find(parent, i)] = find(parent, j);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) ans++;
+        }
+        return ans;
+    }
+    
+    int find(vector<int>& parent, int i) {
+        if (parent[i] == i) return i;
+        return parent[i] = find(parent, parent[i]);
+    }
+    
+    bool isSimilar(string& a, string& b) {
+        int n = a.size();
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (a[i] != b[i]) cnt++;
+        }
+        return cnt == 2;
+
+=======
+
+        int n = strs.size();
+        vector<int> p(n);
+        for (int i = 0; i < n; ++i) p[i] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (p[i] == p[j] && isSimilar(strs[i], strs[j])) {
+                    p[j] = p[i];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (p[i] == i) ++ans;
+        }
+        return ans;
+
+=======
+
+        int n = strs.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (isSimilar(strs[i], strs[j])) {
+                    strs[j] = strs[n - 1];
+                    n--;
+                    j--;
+                }
+            }
+        }
+        return n;
+
+=======
+
+        vector<int> p(strs.size(), 0);
+        for (int i = 0; i < p.size(); ++i) {
+            p[i] = i;
+        }
+        for (int i = 0; i < strs.size(); ++i) {
+            for (int j = i + 1; j < strs.size(); ++j) {
+                if (isSimilar(strs[i], strs[j])) {
+                    int pi = find(p, i);
+                    int pj = find(p, j);
+                    if (pi != pj) {
+                        p[pi] = pj;
+                    }
+                }
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < p.size(); ++i) {
+            if (p[i] == i) {
+                ++count;
+            }
+        }
+        return count;
+    }
+    bool isSimilar(const string& s1, const string& s2) {
+        int count = 0;
+        for (int i = 0; i < s1.size(); ++i) {
+            if (s1[i] != s2[i]) {
+                ++count;
+            }
+        }
+        return count == 2 || count == 0;
+    }
+    int find(vector<int>& p, int i) {
+        while (i != p[i]) {
+            p[i] = p[p[i]];
+            i = p[i];
+        }
+        return i;
+
+=======
+
+        int n = strs.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return parent[x] == x ? x : parent[x] = find(parent[x]);
+        };
+        auto unite = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            if (x != y) parent[x] = y;
+        };
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                int diff = 0;
+                for (int k = 0; k < strs[i].size(); ++k) {
+                    if (strs[i][k] != strs[j][k]) {
+                        ++diff;
+                        if (diff > 2) break;
+                    }
+                }
+                if (diff <= 2) unite(i, j);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) ++ans;
+        }
+        return ans;
+
+=======
+
+        int N = strs.size();
+        vector<int> parent(N, -1);
+        for (int i = 0; i < N; ++i) {
+            for (int j = i + 1; j < N; ++j) {
+                if (isSimilar(strs[i], strs[j])) {
+                    unionSet(parent, i, j);
+                }
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < N; ++i) {
+            if (parent[i] < 0) {
+                ++count;
+            }
+        }
+        return count;
+
+=======
+
+        int n = strs.size();
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            if (p[x] != x) {
+                p[x] = find(p[x]);
+            }
+            return p[x];
+        };
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (strs[i].size() != strs[j].size()) {
+                    continue;
+                }
+                int diff = 0;
+                for (int k = 0; k < strs[i].size(); ++k) {
+                    if (strs[i][k] != strs[j][k]) {
+                        ++diff;
+                    }
+                }
+                if (diff == 2) {
+                    p[find(i)] = find(j);
+                }
+            }
+        }
+        unordered_set<int> s;
+        for (int i = 0; i < n; ++i) {
+            s.insert(find(i));
+        }
+        return s.size();
+
+=======
+
+        int n = strs.size();
+        int g = n;
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return p[x] == x ? x : p[x] = find(p[x]);
+        };
+        auto unite = [&](int x, int y) {
+            int px = find(x), py = find(y);
+            if (px != py) {
+                p[px] = py;
+                g--;
+            }
+        };
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int diff = 0;
+                for (int k = 0; k < strs[i].size(); k++) {
+                    if (strs[i][k] != strs[j][k]) {
+                        diff++;
+                    }
+                }
+                if (diff == 2 || diff == 0) {
+                    unite(i, j);
+                }
+            }
+        }
+        return g;

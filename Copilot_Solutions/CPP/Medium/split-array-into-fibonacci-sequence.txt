@@ -1,0 +1,234 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> res;
+        int n = num.size();
+        for (int i = 1; i <= n / 2; ++i) {
+            for (int j = 1; j <= (n - i) / 2; ++j) {
+                if (check(num, i, j, res)) return res;
+            }
+        }
+        return {};
+    }
+    
+    bool check(const string& num, int i, int j, vector<int>& res) {
+        if (i > 1 && num[0] == '0' || j > 1 && num[i] == '0') return false;
+        long a = stol(num.substr(0, i));
+        long b = stol(num.substr(i, j));
+        if (a > INT_MAX || b > INT_MAX) return false;
+        res = {int(a), int(b)};
+        for (int start = i + j; start < num.size(); ) {
+            b = a + b;
+            a = b - a;
+            string t = to_string(b);
+            if (t != num.substr(start, t.size())) return false;
+            start += t.size();
+            res.push_back(int(b));
+        }
+        return res.size() >= 3;
+
+=======
+
+        vector<int> ans;
+        dfs(ans, num, 0);
+        return ans;
+    }
+    bool dfs(vector<int>& ans, string& num, int start) {
+        if (start == num.size() && ans.size() >= 3) return true;
+        for (int i = start; i < num.size(); ++i) {
+            if (i > start && num[start] == '0') break;
+            long long n = stoll(num.substr(start, i - start + 1));
+            if (n > INT_MAX) break;
+            int sz = ans.size();
+            if (sz >= 2 && n > ans[sz - 1] + ans[sz - 2]) break;
+            if (sz <= 1 || n == ans[sz - 1] + ans[sz - 2]) {
+                ans.push_back(n);
+                if (dfs(ans, num, i + 1)) return true;
+                ans.pop_back();
+            }
+        }
+        return false;
+
+=======
+
+        vector<int> res;
+        dfs(res, num, 0, 0, 0);
+        return res;
+    }
+    bool dfs(vector<int>& res, string& num, int pos, int sum, int prev) {
+        if (pos == num.size()) return res.size() >= 3;
+        long long curr = 0;
+        for (int i = pos; i < num.size(); ++i) {
+            if (i > pos && num[pos] == '0') break;
+            curr = curr * 10 + num[i] - '0';
+            if (curr > INT_MAX) break;
+            if (res.size() >= 2) {
+                if (curr < sum) continue;
+                else if (curr > sum) break;
+            }
+            res.push_back(curr);
+            if (dfs(res, num, i + 1, prev + curr, curr)) return true;
+            res.pop_back();
+        }
+        return false;
+
+=======
+
+        vector<int> res;
+        backtracking(num, res, 0);
+        return res;
+    }
+    
+    bool backtracking(string& num, vector<int>& res, int index) {
+        if (index == num.size() && res.size() >= 3) return true;
+        long long cur = 0;
+        for (int i = index; i < num.size(); ++i) {
+            cur = cur * 10 + num[i] - '0';
+            if (cur > INT_MAX) return false;
+            if (res.size() < 2 || cur == res[res.size() - 2] + res[res.size() - 1]) {
+                res.push_back(cur);
+                if (backtracking(num, res, i + 1)) return true;
+                res.pop_back();
+            }
+            if (num[index] == '0') break;
+        }
+        return false;
+
+=======
+
+        vector<int> result;
+        int n = num.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                long long a = stoll(num.substr(0, i + 1));
+                long long b = stoll(num.substr(i + 1, j - i));
+                if (a > INT_MAX || b > INT_MAX) break;
+                result.push_back(a);
+                result.push_back(b);
+                int k = j + 1;
+                while (k < n) {
+                    long long c = a + b;
+                    string s = to_string(c);
+                    if (k + s.size() > n || s != num.substr(k, s.size())) break;
+                    result.push_back(c);
+                    a = b;
+                    b = c;
+                    k += s.size();
+                }
+                if (k == n) return result;
+                result.clear();
+            }
+            if (num[0] == '0') break;
+        }
+        return result;
+
+=======
+
+        vector<int> res;
+        backtrack(res, num, 0);
+        return res;
+
+=======
+
+        vector<int> ans;
+        if (num.size() < 3) return ans;
+        int n = num.size();
+        for (int i = 1; i <= n / 2; ++i) {
+            if (num[0] == '0' && i > 1) break;
+            long x = stol(num.substr(0, i));
+            if (x > INT_MAX) break;
+            for (int j = 1; j <= (n - i) / 2; ++j) {
+                if (num[i] == '0' && j > 1) break;
+                long y = stol(num.substr(i, j));
+                if (y > INT_MAX) break;
+                ans = {int(x), int(y)};
+                int k = i + j;
+                while (k < n) {
+                    long z = ans[ans.size() - 1] + ans[ans.size() - 2];
+                    if (z > INT_MAX) break;
+                    string s = to_string(z);
+                    if (num.substr(k, s.size()) != s) break;
+                    ans.push_back(int(z));
+                    k += s.size();
+                }
+                if (k == n) return ans;
+            }
+        }
+        return {};
+
+=======
+
+        vector<int> result;
+        if (num.size() < 3) return result;
+        int n = num.size();
+        for (int i = 1; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                string str1 = num.substr(0, i);
+                string str2 = num.substr(i, j - i);
+                if (str1.size() > 1 && str1[0] == '0') continue;
+                if (str2.size() > 1 && str2[0] == '0') continue;
+                long long n1 = stoll(str1);
+                long long n2 = stoll(str2);
+                if (n1 > INT_MAX || n2 > INT_MAX) break;
+                result.push_back(n1);
+                result.push_back(n2);
+                if (dfs(num, j, n1, n2, result)) return result;
+                result.clear();
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> res;
+        int n = num.size();
+        function<bool(int, int, int)> dfs = [&](int i, int j, int k) {
+            if (i == n) return res.size() >= 3;
+            long long x = stoll(num.substr(i, j - i + 1));
+            if (x > INT_MAX) return false;
+            if (res.size() < 2 || res[k] + res[k + 1] == x) {
+                res.push_back(x);
+                if (dfs(j + 1, j + 1, k + 1)) return true;
+                res.pop_back();
+            }
+            return false;
+        };
+        for (int j = 0; j < n; ++j) {
+            if (num[0] == '0' && j > 0) break;
+            res.clear();
+            if (dfs(0, j, -1)) return res;
+        }
+        return {};
+
+=======
+
+        vector<int> res;
+        if (num.size() < 3) return res;
+
+        vector<int> tmp;
+        dfs(num, 0, tmp, res);
+        return res;
+    }
+
+    void dfs(const string& num, int start, vector<int>& tmp, vector<int>& res) {
+        if (start == num.size()) {
+            if (tmp.size() >= 3) {
+                res = tmp;
+            }
+            return;
+        }
+
+        for (int i = start; i < num.size(); ++i) {
+            auto sub = num.substr(start, i - start + 1);
+            if (sub.size() > 1 && sub[0] == '0') break;
+            int n = stoi(sub);
+            if (n > INT_MAX) break;
+            if (tmp.size() < 2 || tmp[tmp.size() - 2] + tmp[tmp.size() - 1] == n) {
+                tmp.push_back(n);
+                dfs(num, i + 1, tmp, res);
+                tmp.pop_back();
+            } else if (tmp[tmp.size() - 2] + tmp[tmp.size() - 1] < n) {
+                break;
+            }
+        }

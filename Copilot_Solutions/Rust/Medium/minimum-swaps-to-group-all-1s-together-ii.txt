@@ -1,0 +1,255 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = 0;
+        for i in 0..nums.len() {
+            if nums[i] == 1 {
+                count += 1;
+            }
+        }
+        let mut i = 0;
+        let mut j = 0;
+        let mut max = 0;
+        while j < nums.len() {
+            if nums[j] == 1 {
+                max += 1;
+            }
+            if j - i + 1 > count {
+                if nums[i] == 1 {
+                    max -= 1;
+                }
+                i += 1;
+            }
+            j += 1;
+        }
+        (count - max) as i32
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let mut ones = 0;
+        for i in 0..n {
+            if nums[i] == 1 {
+                ones += 1;
+            }
+        }
+        let mut left = 0;
+        let mut right = ones;
+        let mut sum = 0;
+        for i in 0..right {
+            if nums[i] == 1 {
+                sum += 1;
+            }
+        }
+        let mut min = ones - sum;
+        while right < n {
+            if nums[left] == 1 {
+                sum -= 1;
+            }
+            if nums[right] == 1 {
+                sum += 1;
+            }
+            min = min.min(ones - sum);
+            left += 1;
+            right += 1;
+        }
+        min as i32
+    }
+}
+
+=======
+
+        let mut one_count = 0;
+        for i in 0..nums.len() {
+            if nums[i] == 1 {
+                one_count += 1;
+            }
+        }
+        let mut left = 0;
+        let mut right = 0;
+        let mut max_one_count = 0;
+        while right < nums.len() {
+            if nums[right] == 1 {
+                max_one_count += 1;
+            }
+            if right - left + 1 == one_count {
+                break;
+            }
+            right += 1;
+        }
+        let mut result = one_count - max_one_count;
+        while right < nums.len() {
+            if nums[left] == 1 {
+                max_one_count -= 1;
+            }
+            left += 1;
+            right += 1;
+            if right < nums.len() && nums[right] == 1 {
+                max_one_count += 1;
+            }
+            result = std::cmp::min(result, one_count - max_one_count);
+        }
+        result as i32
+
+=======
+
+        let mut ones: Vec<usize> = Vec::new();
+        for (i, v) in nums.iter().enumerate() {
+            if *v == 1 {
+                ones.push(i);
+            }
+        }
+        if ones.len() == 0 {
+            return 0;
+        }
+        let mut max_ones = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut count = 0;
+        while j < ones.len() {
+            if ones[j] - ones[i] <= nums.len() - 1 {
+                count += 1;
+                j += 1;
+            } else {
+                count -= 1;
+                i += 1;
+            }
+            max_ones = max_ones.max(count);
+        }
+        (ones.len() - max_ones) as i32
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let mut ones = 0;
+        for i in 0..n {
+            ones += nums[i];
+        }
+        let mut cur = 0;
+        for i in 0..ones {
+            cur += nums[i];
+        }
+        let mut res = ones - cur;
+        for i in 1..n {
+            cur += nums[(i + ones - 1) % n] - nums[i - 1];
+            res = res.min(ones - cur);
+        }
+        res as i32
+
+=======
+
+        let mut ones = nums.iter().filter(|&&x| x == 1).count();
+        let mut i = 0;
+        for j in 0..nums.len() {
+            if nums[j] == 1 {
+                ones -= 1;
+            }
+            if ones == 0 {
+                break;
+            }
+            i += 1;
+        }
+        let mut zero = 0;
+        for j in 0..nums.len() {
+            if nums[j] == 0 {
+                zero += 1;
+            }
+            if j >= i {
+                if nums[j - i] == 0 {
+                    zero -= 1;
+                }
+            }
+            if j >= i - 1 {
+                ones = std::cmp::max(ones, zero);
+            }
+        }
+        (i - ones) as i32
+
+=======
+
+        let mut ones = 0;
+        for n in &nums {
+            if *n == 1 {
+                ones += 1;
+            }
+        }
+        let mut max_ones = 0;
+        let mut cur_ones = 0;
+        let mut i = 0;
+        while i < nums.len() {
+            if nums[i] == 1 {
+                cur_ones += 1;
+            }
+            if i >= ones {
+                if nums[i-ones] == 1 {
+                    cur_ones -= 1;
+                }
+            }
+            max_ones = max_ones.max(cur_ones);
+            i += 1;
+        }
+        ones as i32 - max_ones
+
+=======
+
+        let n = nums.len();
+        let mut ones = nums.iter().filter(|&&x| x == 1).count();
+        let mut i = 0;
+        let mut j = 0;
+        let mut max_ones = 0;
+        while j < n {
+            if nums[j] == 1 {
+                ones -= 1;
+            }
+            if j - i + 1 - ones > max_ones {
+                max_ones = j - i + 1 - ones;
+            }
+            if j - i + 1 > ones {
+                if nums[i] == 1 {
+                    ones += 1;
+                }
+                i += 1;
+            }
+            j += 1;
+        }
+        (n - max_ones) as i32
+
+=======
+
+        let mut ones = nums.iter().filter(|&&i| i == 1).count();
+        let mut i = 0;
+        let mut j = 0;
+        let mut ans = 0;
+        while j < nums.len() {
+            if nums[j] == 1 { ones -= 1; }
+            if j - i + 1 > ones {
+                if nums[i] == 1 { ones += 1; }
+                i += 1;
+            }
+            ans = ans.max(j - i + 1);
+            j += 1;
+        }
+        (ones - ans) as i32
+
+=======
+
+        let mut n = nums.len();
+        let mut c = nums.iter().filter(|&&x| x == 1).count();
+        let mut i = 0;
+        let mut j = c;
+        let mut k = nums.iter().filter(|&&x| x == 1).take(c).collect::<Vec<_>>();
+        let mut ans = n - c;
+        while j < n {
+            if k[i] == &1 {
+                ans -= 1;
+            }
+            i += 1;
+            k.push(&nums[j]);
+            j += 1;
+        }
+        ans as i32

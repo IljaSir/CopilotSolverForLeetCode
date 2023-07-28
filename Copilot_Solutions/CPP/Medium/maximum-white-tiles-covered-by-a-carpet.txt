@@ -1,0 +1,52 @@
+Synthesizing 2/10 solutions
+
+=======
+
+        int n = tiles.size();
+        vector<int> L(n), R(n);
+        for (int i = 0; i < n; ++i) {
+            L[i] = tiles[i][0];
+            R[i] = tiles[i][1];
+        }
+        sort(L.begin(), L.end());
+        sort(R.begin(), R.end());
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int l = L[i], r = l + carpetLen - 1;
+            int j = upper_bound(R.begin(), R.end(), r) - R.begin();
+            ans = max(ans, j - i);
+        }
+        return ans;
+
+=======
+
+        int n = tiles.size();
+        vector<int> ends;
+        for (auto &tile : tiles) {
+            ends.push_back(tile[0]);
+            ends.push_back(tile[1] + 1);
+        }
+        sort(ends.begin(), ends.end());
+        ends.resize(unique(ends.begin(), ends.end()) - ends.begin());
+        int m = ends.size();
+        vector<int> sum(m + 1);
+        for (auto &tile : tiles) {
+            int l = lower_bound(ends.begin(), ends.end(), tile[0]) - ends.begin();
+            int r = lower_bound(ends.begin(), ends.end(), tile[1] + 1) - ends.begin();
+            sum[l]++;
+            sum[r]--;
+        }
+        for (int i = 1; i < m; ++i) {
+            sum[i] += sum[i - 1];
+        }
+        int res = 0;
+        for (int i = 0; i < m; ++i) {
+            if (sum[i] > 0) {
+                int l = ends[i];
+                int r = ends[i] + carpetLen - 1;
+                int j = lower_bound(ends.begin(), ends.end(), r + 1) - ends.begin() - 1;
+                res += sum[i] * (ends[j] - l);
+                i = j - 1;
+            }
+        }
+        return res;

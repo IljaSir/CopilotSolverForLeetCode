@@ -1,0 +1,382 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int x = startPos[0], y = startPos[1];
+        vector<int> ans(s.size());
+        for (int i = s.size() - 1; i >= 0; i--) {
+            if (s[i] == 'L') {
+                y = min(y + 1, n - 1);
+            } else if (s[i] == 'R') {
+                y = max(y - 1, 0);
+            } else if (s[i] == 'U') {
+                x = min(x + 1, n - 1);
+            } else {
+                x = max(x - 1, 0);
+            }
+            ans[i] = abs(x - startPos[0]) + abs(y - startPos[1]);
+        }
+        return ans;
+
+=======
+
+        int x = startPos[0];
+        int y = startPos[1];
+        vector<int> res(s.size(), 0);
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == 'U') {
+                if (x == 0) {
+                    res[i] = 0;
+                    break;
+                } else {
+                    x--;
+                }
+            } else if (s[i] == 'D') {
+                if (x == n - 1) {
+                    res[i] = 0;
+                    break;
+                } else {
+                    x++;
+                }
+            } else if (s[i] == 'L') {
+                if (y == 0) {
+                    res[i] = 0;
+                    break;
+                } else {
+                    y--;
+                }
+            } else if (s[i] == 'R') {
+                if (y == n - 1) {
+                    res[i] = 0;
+                    break;
+                } else {
+                    y++;
+                }
+            }
+        }
+        for (int i = s.size() - 2; i >= 0; --i) {
+            if (res[i + 1] != 0) {
+                res[i] = res[i + 1] - 1;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res(s.size(), 0);
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i > 0) dp[i][j] += dp[i - 1][j];
+                if (j > 0) dp[i][j] += dp[i][j - 1];
+                if (i > 0 && j > 0) dp[i][j] -= dp[i - 1][j - 1];
+                dp[i][j] += 1;
+            }
+        }
+        int x = startPos[0];
+        int y = startPos[1];
+        for (int i = s.size() - 1; i >= 0; --i) {
+            if (s[i] == 'L') {
+                res[i] = dp[x][y] - dp[x][0];
+                y = 0;
+            }
+            if (s[i] == 'R') {
+                res[i] = dp[x][n - 1] - dp[x][y];
+                y = n - 1;
+            }
+            if (s[i] == 'U') {
+                res[i] = dp[x][y] - dp[0][y];
+                x = 0;
+            }
+            if (s[i] == 'D') {
+                res[i] = dp[n - 1][y] - dp[x][y];
+                x = n - 1;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        int m = s.size();
+        for (int i = 0; i < m; ++i) {
+            int x = startPos[0], y = startPos[1];
+            int count = 0;
+            for (int j = i; j < m; ++j) {
+                if (s[j] == 'L' && y > 0) {
+                    --y;
+                    ++count;
+                } else if (s[j] == 'R' && y < n - 1) {
+                    ++y;
+                    ++count;
+                } else if (s[j] == 'U' && x > 0) {
+                    --x;
+                    ++count;
+                } else if (s[j] == 'D' && x < n - 1) {
+                    ++x;
+                    ++count;
+                } else {
+                    break;
+                }
+            }
+            result.push_back(count);
+        }
+        return result;
+
+=======
+
+        int m = s.length();
+        vector<int> res(m, 0);
+        vector<int> d = {0, 1, 0, -1, 0};
+        for (int i = 0; i < m; i++) {
+            int x = startPos[0], y = startPos[1];
+            int k = 0;
+            for (; k < 4; k++) {
+                if (s[i + k] == 'L') {
+                    y += d[k];
+                } else if (s[i + k] == 'R') {
+                    y += d[k + 1];
+                } else if (s[i + k] == 'U') {
+                    x += d[k + 2];
+                } else if (s[i + k] == 'D') {
+                    x += d[k + 3];
+                }
+                if (x < 0 || x >= n || y < 0 || y >= n) {
+                    break;
+                }
+            }
+            res[i] = k;
+        }
+        return res;
+
+=======
+
+        int m = s.size();
+        vector<int> res(m, 0);
+        int x = startPos[0], y = startPos[1];
+        int left = y, right = n - y - 1, up = n - x - 1, down = x;
+        for (int i = m - 1; i >= 0; i--) {
+            if (s[i] == 'L' && left > 0) {
+                left--;
+                res[i]++;
+            } else if (s[i] == 'R' && right > 0) {
+                right--;
+                res[i]++;
+            } else if (s[i] == 'U' && up > 0) {
+                up--;
+                res[i]++;
+            } else if (s[i] == 'D' && down > 0) {
+                down--;
+                res[i]++;
+            }
+        }
+        for (int i = m - 2; i >= 0; i--) {
+            res[i] += res[i + 1];
+        }
+        return res;
+
+=======
+
+        vector<int> res(s.size(), 0);
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        int row = startPos[0], col = startPos[1];
+        for(int i = 0; i < s.size(); ++i) {
+            switch(s[i]) {
+                case 'U':
+                    row = max(row - 1, 0);
+                    break;
+                case 'D':
+                    row = min(row + 1, n - 1);
+                    break;
+                case 'L':
+                    col = max(col - 1, 0);
+                    break;
+                case 'R':
+                    col = min(col + 1, n - 1);
+                    break;
+            }
+            dp[row][col] = i + 1;
+        }
+        row = startPos[0], col = startPos[1];
+        for(int i = 0; i < s.size(); ++i) {
+            res[i] = dp[row][col] - i;
+            switch(s[i]) {
+                case 'U':
+                    row = max(row - 1, 0);
+                    break;
+                case 'D':
+                    row = min(row + 1, n - 1);
+                    break;
+                case 'L':
+                    col = max(col - 1, 0);
+                    break;
+                case 'R':
+                    col = min(col + 1, n - 1);
+                    break;
+            }
+        }
+        return res;
+
+=======
+
+        int m = s.size();
+        vector<int> res(m, 0);
+        int x = startPos[0], y = startPos[1];
+        vector<vector<int>> dp(m + 1, vector<int>(n * n, 0));
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = 0; j < n * n; ++j) {
+                if (i == m - 1) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                int x = j / n;
+                int y = j % n;
+                if (s[i] == 'U') {
+                    if (x - 1 < 0) {
+                        dp[i][j] = 0;
+                    } else {
+                        dp[i][j] = dp[i + 1][(x - 1) * n + y];
+                    }
+                } else if (s[i] == 'D') {
+                    if (x + 1 >= n) {
+                        dp[i][j] = 0;
+                    } else {
+                        dp[i][j] = dp[i + 1][(x + 1) * n + y];
+                    }
+                } else if (s[i] == 'L') {
+                    if (y - 1 < 0) {
+                        dp[i][j] = 0;
+                    } else {
+                        dp[i][j] = dp[i + 1][x * n + y - 1];
+                    }
+                } else if (s[i] == 'R') {
+                    if (y + 1 >= n) {
+                        dp[i][j] = 0;
+                    } else {
+                        dp[i][j] = dp[i + 1][x * n + y + 1];
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            res[i] = dp[i][x * n + y];
+        }
+        return res;
+
+=======
+
+        vector<int> res(s.size(), 0);
+        int row = startPos[0];
+        int col = startPos[1];
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int l = 0;
+        while (i < s.size()) {
+            if (s[i] == 'L') {
+                if (col == 0) {
+                    break;
+                }
+                col--;
+            } else if (s[i] == 'R') {
+                if (col == n - 1) {
+                    break;
+                }
+                col++;
+            } else if (s[i] == 'U') {
+                if (row == 0) {
+                    break;
+                }
+                row--;
+            } else {
+                if (row == n - 1) {
+                    break;
+                }
+                row++;
+            }
+            i++;
+            res[0]++;
+        }
+        j = s.size() - 1;
+        row = startPos[0];
+        col = startPos[1];
+        while (j >= 0) {
+            if (s[j] == 'L') {
+                if (col == n - 1) {
+                    break;
+                }
+                col++;
+            } else if (s[j] == 'R') {
+                if (col == 0) {
+                    break;
+                }
+                col--;
+            } else if (s[j] == 'U') {
+                if (row == n - 1) {
+                    break;
+                }
+                row++;
+            } else {
+                if (row == 0) {
+                    break;
+                }
+                row--;
+            }
+            j--;
+            res[s.size() - 1]++;
+        }
+        for (k = 1; k < s.size(); k++) {
+            res[k] = res[k - 1];
+            if (s[k - 1] == 'L') {
+                if (col == n - 1) {
+                    res[k]--;
+                }
+                col++;
+            } else if (s[k - 1] == 'R') {
+                if (col == 0) {
+                    res[k]--;
+                }
+                col--;
+            } else if (s[k - 1] == 'U') {
+                if (row == n - 1) {
+                    res[k]--;
+                }
+                row++;
+            } else {
+                if (row == 0) {
+                    res[k]--;
+
+=======
+
+        vector<int> res(s.size(), 0);
+        int x = startPos[0], y = startPos[1];
+        int r = s.size() - 1;
+        for (int i = s.size() - 1; i >= 0; i--) {
+            if (s[i] == 'L') {
+                if (y == 0) {
+                    r = i - 1;
+                } else {
+                    y--;
+                }
+            } else if (s[i] == 'R') {
+                if (y == n - 1) {
+                    r = i - 1;
+                } else {
+                    y++;
+                }
+            } else if (s[i] == 'U') {
+                if (x == 0) {
+                    r = i - 1;
+                } else {
+                    x--;
+                }
+            } else {
+                if (x == n - 1) {
+                    r = i - 1;
+                } else {
+                    x++;
+                }
+            }
+            res[i] = r - i + 1;
+        }
+        return res;

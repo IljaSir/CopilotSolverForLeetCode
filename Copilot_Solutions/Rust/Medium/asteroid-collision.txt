@@ -1,0 +1,215 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut stack: Vec<i32> = Vec::new();
+        for asteroid in asteroids {
+            if asteroid > 0 {
+                stack.push(asteroid);
+            } else {
+                while !stack.is_empty() && stack[stack.len() - 1] > 0 && stack[stack.len() - 1] < -asteroid {
+                    stack.pop();
+                }
+                if stack.is_empty() || stack[stack.len() - 1] < 0 {
+                    stack.push(asteroid);
+                } else if stack[stack.len() - 1] == -asteroid {
+                    stack.pop();
+                }
+            }
+        }
+        stack
+    }
+}
+
+=======
+
+        let mut stack: Vec<i32> = Vec::new();
+        for asteroid in asteroids {
+            if asteroid > 0 {
+                stack.push(asteroid);
+            } else {
+                while let Some(top) = stack.last() {
+                    if *top > 0 && -*top < asteroid {
+                        break;
+                    }
+                    if *top > 0 && -*top > asteroid {
+                        stack.pop();
+                        continue;
+                    }
+                    if *top > 0 && -*top == asteroid {
+                        stack.pop();
+                    }
+                    break;
+                }
+                if stack.is_empty() || *stack.last().unwrap() < 0 {
+                    stack.push(asteroid);
+                }
+            }
+        }
+        stack
+
+=======
+
+        let mut stack = Vec::new();
+        for a in asteroids {
+            if a > 0 {
+                stack.push(a);
+            } else {
+                while let Some(&b) = stack.last() {
+                    if b < 0 {
+                        stack.push(a);
+                        break;
+                    } else if b > -a {
+                        break;
+                    } else if b == -a {
+                        stack.pop();
+                        break;
+                    } else {
+                        stack.pop();
+                    }
+                }
+                if stack.is_empty() {
+                    stack.push(a);
+                }
+            }
+        }
+        stack
+
+=======
+
+        let mut stack = Vec::new();
+        for &a in asteroids.iter() {
+            if a > 0 {
+                stack.push(a);
+            } else {
+                while let Some(&s) = stack.last() {
+                    if s < 0 {
+                        stack.push(a);
+                        break;
+                    } else if s < -a {
+                        stack.pop();
+                    } else if s == -a {
+                        stack.pop();
+                        break;
+                    } else {
+                        break;
+                    }
+                }
+                if stack.is_empty() {
+                    stack.push(a);
+                }
+            }
+        }
+        stack
+    }
+}
+
+=======
+
+        let mut stack = vec![];
+        for a in asteroids {
+            if a > 0 {
+                stack.push(a);
+            } else {
+                while let Some(&b) = stack.last() {
+                    if b > 0 && b + a < 0 {
+                        break;
+                    } else if b > 0 && b + a > 0 {
+                        stack.pop();
+                    } else {
+                        stack.push(a);
+                        break;
+                    }
+                }
+                if stack.is_empty() || *stack.last().unwrap() < 0 {
+                    stack.push(a);
+                }
+            }
+        }
+        stack
+
+=======
+
+        let mut stack: Vec<i32> = Vec::with_capacity(asteroids.len());
+        for asteroid in asteroids {
+            if asteroid > 0 {
+                stack.push(asteroid);
+            } else {
+                let mut exploded = false;
+                while let Some(&top) = stack.last() {
+                    if top < 0 {
+                        stack.push(asteroid);
+                        break;
+                    } else if top == -asteroid {
+                        stack.pop();
+                        exploded = true;
+                        break;
+                    } else if top > -asteroid {
+                        exploded = true;
+                        break;
+                    } else {
+                        stack.pop();
+                    }
+                }
+                if !exploded && stack.is_empty() {
+                    stack.push(asteroid);
+                }
+            }
+        }
+        stack
+
+=======
+
+        let mut stack: Vec<i32> = Vec::new();
+        for asteroid in asteroids {
+            if asteroid > 0 {
+                stack.push(asteroid);
+            } else {
+                let mut flag = true;
+                while stack.len() > 0 {
+                    let top = stack.pop().unwrap();
+                    if top < 0 {
+                        stack.push(top);
+                        stack.push(asteroid);
+                        flag = false;
+                        break;
+                    } else if top > -asteroid {
+                        stack.push(top);
+                        flag = false;
+                        break;
+                    } else if top == -asteroid {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    stack.push(asteroid);
+                }
+            }
+        }
+        stack
+
+=======
+
+        let mut stack = Vec::new();
+        for i in asteroids {
+            if i > 0 {
+                stack.push(i);
+            } else {
+                let mut flag = true;
+                while let Some(j) = stack.pop() {
+                    if j > -i {
+                        stack.push(j);
+                        flag = false;
+                        break;
+                    } else if j == -i {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    stack.push(i);
+                }
+            }
+        }
+        stack

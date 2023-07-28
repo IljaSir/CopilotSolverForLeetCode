@@ -1,0 +1,31 @@
+impl Solution {
+    pub fn most_profitable_path(edges: Vec<Vec<i32>>, bob: i32, amount: Vec<i32>) -> i32 {
+        
+        let n = amount.len();
+        let mut adj = vec![vec![]; n];
+        for edge in edges {
+            let u = edge[0] as usize;
+            let v = edge[1] as usize;
+            adj[u].push(v);
+            adj[v].push(u);
+        }
+        let mut visited = vec![false; n];
+        let mut dp = vec![vec![0; n]; n];
+        let mut ans = 0;
+        Self::dfs(0, bob as usize, &mut visited, &mut dp, &adj, &amount, &mut ans);
+        ans
+    }
+    fn dfs(u: usize, bob: usize, visited: &mut Vec<bool>, dp: &mut Vec<Vec<i32>>, adj: &Vec<Vec<usize>>, amount: &Vec<i32>, ans: &mut i32) {
+        visited[u] = true;
+        for &v in &adj[u] {
+            if !visited[v] {
+                Self::dfs(v, bob, visited, dp, adj, amount, ans);
+                for i in 0..bob {
+                    dp[u][i] += dp[v][i + 1];
+                }
+            }
+        }
+        dp[u][bob] += amount[u];
+        *ans = ans.max(dp[u][0]);
+    }
+}

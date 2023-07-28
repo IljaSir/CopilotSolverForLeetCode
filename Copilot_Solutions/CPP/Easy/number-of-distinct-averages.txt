@@ -1,0 +1,107 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            dp[i][i] = nums[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                dp[i][j] = dp[i][j - 1] + nums[j];
+            }
+        }
+        unordered_set<double> s;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                s.insert(dp[i][j] * 1.0 / (j - i + 1));
+            }
+        }
+        return s.size();
+
+=======
+
+        int n = nums.size();
+        set<double> s;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = n / 2; j < n; j++) {
+                s.insert((nums[i] + nums[j]) / 2.0);
+            }
+        }
+        return s.size();
+
+=======
+
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        set<double> res;
+        for (int i = 0; i < n / 2; i++) {
+            for (int j = n / 2; j < n; j++) {
+                res.insert((nums[i] + nums[j]) / 2.0);
+            }
+        }
+        return res.size();
+
+=======
+
+        unordered_set<double> st;
+        for (int i = 0; i < nums.size(); i++) {
+            for (int j = i + 1; j < nums.size(); j++) {
+                st.insert((double)(nums[i] + nums[j]) / 2);
+            }
+        }
+        return st.size();
+
+=======
+
+        int n = nums.size();
+        int m = n / 2;
+        int maxn = 100;
+        vector<vector<bool>> dp(m + 1, vector<bool>(maxn * m + 1, false));
+        dp[0][0] = true;
+        for (int i = 0; i < n; i++) {
+            for (int j = m; j >= 1; j--) {
+                for (int k = maxn * m; k >= nums[i]; k--) {
+                    dp[j][k] |= dp[j - 1][k - nums[i]];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= maxn * m; j++) {
+                if (dp[i][j]) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        map<int, int> mp;
+        for (const auto& num : nums) {
+            mp[num]++;
+        }
+        set<float> ave;
+        for (const auto& [num, cnt] : mp) {
+            vector<int> tmp;
+            for (const auto& [num2, cnt2] : mp) {
+                if (num2 == num) {
+                    if (cnt2 > 1) {
+                        tmp.push_back(num2);
+                        tmp.push_back(num2);
+                    }
+                } else {
+                    tmp.push_back(num2);
+                    tmp.push_back(num2);
+                }
+            }
+            for (int i = 0; i < tmp.size(); ++i) {
+                for (int j = i + 1; j < tmp.size(); ++j) {
+                    ave.insert((tmp[i] + tmp[j]) / 2.0);
+                }
+            }
+        }
+        return ave.size();

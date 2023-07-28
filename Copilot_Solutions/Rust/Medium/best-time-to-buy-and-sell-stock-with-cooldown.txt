@@ -1,0 +1,132 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let n = prices.len();
+        let mut dp = vec![vec![0; 3]; n];
+        dp[0][0] = -prices[0];
+        for i in 1..n {
+            dp[i][0] = std::cmp::max(dp[i - 1][0], dp[i - 1][2] - prices[i]);
+            dp[i][1] = dp[i - 1][0] + prices[i];
+            dp[i][2] = std::cmp::max(dp[i - 1][2], dp[i - 1][1]);
+        }
+        std::cmp::max(dp[n - 1][1], dp[n - 1][2])
+    }
+}
+
+=======
+Suggestion 2
+
+        let mut dp = vec![vec![0; 3]; prices.len()];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        dp[0][2] = 0;
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i - 1][0].max(dp[i - 1][2]);
+            dp[i][1] = dp[i - 1][1].max(dp[i - 1][0] - prices[i]);
+            dp[i][2] = dp[i - 1][1] + prices[i];
+        }
+        dp[prices.len() - 1][0].max(dp[prices.len() - 1][2])
+
+=======
+Suggestion 3
+
+        let mut dp = vec![vec![0; 2]; prices.len()];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i - 1][0].max(dp[i - 1][1] + prices[i]);
+            dp[i][1] = (dp[i - 1][1].max(if i >= 2 { dp[i - 2][0] } else { 0 }) - prices[i]).max(dp[i - 1][1]);
+        }
+        dp[prices.len() - 1][0]
+
+=======
+Suggestion 4
+
+        let mut dp = vec![vec![0; 3]; prices.len()];
+        dp[0][0] = -prices[0];
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i - 1][0].max(dp[i - 1][2] - prices[i]);
+            dp[i][1] = dp[i - 1][0] + prices[i];
+            dp[i][2] = dp[i - 1][1].max(dp[i - 1][2]);
+        }
+        dp[prices.len() - 1][1].max(dp[prices.len() - 1][2])
+
+=======
+Suggestion 5
+
+        let mut dp = vec![vec![0, 0, 0]; prices.len()];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        dp[0][2] = 0;
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i-1][0].max(dp[i-1][1] + prices[i]);
+            dp[i][1] = dp[i-1][1].max(dp[i-1][2] - prices[i]);
+            dp[i][2] = dp[i-1][0];
+        }
+        dp[prices.len()-1][0]
+
+=======
+Suggestion 6
+
+        let mut dp = vec![vec![0, 0, 0]; prices.len()];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        dp[0][2] = 0;
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i-1][0].max(dp[i-1][2]);
+            dp[i][1] = dp[i-1][1].max(dp[i-1][0] - prices[i]);
+            dp[i][2] = dp[i-1][1] + prices[i];
+        }
+        dp[prices.len()-1][0].max(dp[prices.len()-1][2])
+
+=======
+Suggestion 7
+
+        let mut dp = vec![vec![0; 3]; prices.len()];
+        dp[0][0] = -prices[0];
+        for i in 1..prices.len() {
+            dp[i][0] = std::cmp::max(dp[i - 1][0], dp[i - 1][2] - prices[i]);
+            dp[i][1] = dp[i - 1][0] + prices[i];
+            dp[i][2] = std::cmp::max(dp[i - 1][1], dp[i - 1][2]);
+        }
+        std::cmp::max(dp[prices.len() - 1][1], dp[prices.len() - 1][2])
+
+=======
+Suggestion 8
+
+        let mut buy = vec![-prices[0]; prices.len()];
+        let mut sell = vec![0; prices.len()];
+        let mut cooldown = vec![0; prices.len()];
+        for i in 1..prices.len() {
+            buy[i] = buy[i - 1].max(cooldown[i - 1] - prices[i]);
+            sell[i] = sell[i - 1].max(buy[i - 1] + prices[i]);
+            cooldown[i] = cooldown[i - 1].max(sell[i - 1]);
+        }
+        sell[prices.len() - 1]
+
+=======
+Suggestion 9
+
+        if prices.len() == 0 {
+            return 0;
+        }
+        let mut dp = vec![vec![0; 2]; prices.len()];
+        dp[0][1] = -prices[0];
+        for i in 1..prices.len() {
+            dp[i][0] = dp[i-1][0].max(dp[i-1][1] + prices[i]);
+            dp[i][1] = dp[i-1][1].max((if i > 1 { dp[i-2][0] } else { 0 }) - prices[i]);
+        }
+        dp[prices.len()-1][0]
+
+=======
+Suggestion 10
+
+        let (mut sold, mut hold, mut rest) = (0, std::i32::MIN, 0);
+        for p in prices {
+            sold = std::cmp::max(sold, hold + p);
+            hold = std::cmp::max(hold, rest - p);
+            rest = std::cmp::max(rest, sold);
+        }
+        sold

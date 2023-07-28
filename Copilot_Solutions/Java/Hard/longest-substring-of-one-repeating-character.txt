@@ -1,0 +1,231 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] result = new int[queryCharacters.length()];
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            result[i] = longestRepeating(s, queryCharacters.charAt(i), queryIndices[i]);
+        }
+        return result;
+    }
+
+    private int longestRepeating(String s, char queryCharacter, int queryIndex) {
+        int result = 0;
+        int left = queryIndex;
+        int right = queryIndex;
+        while (left >= 0 && s.charAt(left) == queryCharacter) {
+            left--;
+        }
+        while (right < s.length() && s.charAt(right) == queryCharacter) {
+            right++;
+        }
+        result = right - left - 1;
+        return result;
+
+=======
+
+        int[] res = new int[queryCharacters.length()];
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            res[i] = longestRepeating(s, queryCharacters.charAt(i), queryIndices[i]);
+        }
+        return res;
+    }
+    private int longestRepeating(String s, char c, int index) {
+        int res = 0;
+        int i = index, j = index;
+        while (i >= 0 && s.charAt(i) == c) {
+            i--;
+        }
+        while (j < s.length() && s.charAt(j) == c) {
+            j++;
+        }
+        res = j - i - 1;
+        return res;
+
+=======
+
+        int[] result = new int[queryCharacters.length()];
+        Map<Character, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            List<Integer> list = map.getOrDefault(c, new ArrayList<>());
+            list.add(i);
+            map.put(c, list);
+        }
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            char c = queryCharacters.charAt(i);
+            int index = queryIndices[i];
+            List<Integer> list = map.get(c);
+            if (list == null) {
+                result[i] = 1;
+                continue;
+            }
+            int left = 0;
+            int right = list.size();
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (list.get(mid) < index) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            int l = 0;
+            int r = 0;
+            if (left < list.size() && list.get(left) == index) {
+                l = left;
+                r = left;
+            } else if (left < list.size() && list.get(left) > index) {
+                l = left - 1;
+                r = left;
+            } else if (left > 0) {
+                l = left - 1;
+                r = left - 1;
+            }
+            int count = 1;
+            while (l >= 0 && list.get(l) > index - count) {
+                count++;
+                l--;
+            }
+            while (r < list.size() && list.get(r) < index + count) {
+                count++;
+                r++;
+            }
+            result[i] = count;
+        }
+        return result;
+
+=======
+
+        int[] result = new int[queryIndices.length];
+        int[] count = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < queryIndices.length; i++) {
+            int index = queryIndices[i];
+            char c = queryCharacters.charAt(i);
+            count[s.charAt(index) - 'a']--;
+            count[c - 'a']++;
+            s = s.substring(0, index) + c + s.substring(index + 1);
+            result[i] = findMax(count);
+        }
+        return result;
+    }
+    
+    private int findMax(int[] count) {
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            max = Math.max(max, count[i]);
+        }
+        return max;
+
+=======
+
+        int[] result = new int[queryIndices.length];
+        for (int i = 0; i < queryIndices.length; i++) {
+            char c = queryCharacters.charAt(i);
+            int index = queryIndices[i];
+            s = s.substring(0, index) + c + s.substring(index + 1);
+            int count = 1;
+            int max = 1;
+            for (int j = 1; j < s.length(); j++) {
+                if (s.charAt(j) == s.charAt(j - 1)) {
+                    count++;
+                    max = Math.max(max, count);
+                } else {
+                    count = 1;
+                }
+            }
+            result[i] = max;
+        }
+        return result;
+    }
+}
+
+=======
+
+        int[] res = new int[queryCharacters.length()];
+        int[] chars = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            chars[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            int index = queryIndices[i];
+            chars[s.charAt(index) - 'a']--;
+            res[i] = chars[queryCharacters.charAt(i) - 'a'];
+            chars[s.charAt(index) - 'a']++;
+        }
+        return res;
+
+=======
+
+        int[] lengths = new int[queryCharacters.length()];
+        int[] counts = new int[26];
+        int max = 0;
+        for (int i = 0; i < s.length(); i++) {
+            counts[s.charAt(i) - 'a']++;
+            max = Math.max(max, counts[s.charAt(i) - 'a']);
+            for (int j = 0; j < queryCharacters.length(); j++) {
+                if (i == queryIndices[j]) {
+                    counts[s.charAt(i) - 'a']--;
+                    max = Math.max(max, counts[s.charAt(i) - 'a']);
+                    lengths[j] = max;
+                }
+            }
+        }
+        return lengths;
+
+=======
+
+        int[] res = new int[queryCharacters.length()];
+        int[] charCount = new int[26];
+        int max = 0;
+        for (int i = 0; i < s.length(); i++) {
+            charCount[s.charAt(i) - 'a']++;
+            max = Math.max(max, charCount[s.charAt(i) - 'a']);
+            for (int j = 0; j < queryCharacters.length(); j++) {
+                if (queryIndices[j] == i) {
+                    if (charCount[queryCharacters.charAt(j) - 'a'] == 0) {
+                        res[j] = 0;
+                    } else {
+                        res[j] = max;
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] result = new int[queryCharacters.length()];
+        int[] count = new int[26];
+        int max = 0;
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            int index = queryIndices[i];
+            char c = s.charAt(index);
+            char query = queryCharacters.charAt(i);
+            count[c - 'a']--;
+            count[query - 'a']++;
+            max = Math.max(max, count[query - 'a']);
+            result[i] = max;
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[queryCharacters.length()];
+        int[] last = new int[26];
+        int[] len = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i) - 'a';
+            len[c] = i - last[c] + 1;
+            last[c] = i + 1;
+        }
+        for (int i = 0; i < queryCharacters.length(); i++) {
+            int c = queryCharacters.charAt(i) - 'a';
+            ans[i] = len[c];
+            len[c] = Math.max(len[c], queryIndices[i] - last[c] + 1);
+            last[c] = queryIndices[i] + 1;
+        }
+        return ans;

@@ -1,0 +1,354 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] pair : pairs) {
+            map.putIfAbsent(pair[0], new ArrayList<>());
+            map.putIfAbsent(pair[1], new ArrayList<>());
+            map.get(pair[0]).add(pair[1]);
+            map.get(pair[1]).add(pair[0]);
+        }
+        int[] count = new int[1];
+        int[] root = new int[1];
+        boolean[] visited = new boolean[501];
+        dfs(map, 1, visited, count, root);
+        if (count[0] != pairs.length + 1) {
+            return 0;
+        }
+        return root[0] == 1 ? 1 : 2;
+    }
+    
+    private void dfs(Map<Integer, List<Integer>> map, int node, boolean[] visited, int[] count, int[] root) {
+        visited[node] = true;
+        count[0]++;
+        for (int next : map.getOrDefault(node, new ArrayList<>())) {
+            if (visited[next]) {
+                continue;
+            }
+            dfs(map, next, visited, count, root);
+            root[0]++;
+        }
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] pair : pairs) {
+            map.computeIfAbsent(pair[0], key -> new ArrayList<>()).add(pair[1]);
+            map.computeIfAbsent(pair[1], key -> new ArrayList<>()).add(pair[0]);
+        }
+        int[] res = new int[1];
+        dfs(map, 1, new HashSet<>(), res);
+        return res[0];
+    }
+
+    private int dfs(Map<Integer, List<Integer>> map, int root, Set<Integer> visited, int[] res) {
+        if (visited.contains(root)) {
+            return 0;
+        }
+        visited.add(root);
+        int children = 0;
+        for (int child : map.getOrDefault(root, new ArrayList<>())) {
+            children += dfs(map, child, visited, res);
+        }
+        if (children == 0) {
+            res[0]++;
+        }
+        visited.remove(root);
+        return children + 1;
+
+=======
+
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] pair : pairs) {
+            map.putIfAbsent(pair[0], new ArrayList<>());
+            map.putIfAbsent(pair[1], new ArrayList<>());
+            map.get(pair[0]).add(pair[1]);
+            map.get(pair[1]).add(pair[0]);
+        }
+        int[] visited = new int[501];
+        int res = 0;
+        for (int i = 1; i <= 500; i++) {
+            if (visited[i] == 0 && map.containsKey(i)) {
+                int[] count = new int[1];
+                count[0] = 0;
+                dfs(map, i, visited, count);
+                res += count[0];
+            }
+        }
+        return res > 1 ? 2 : res;
+    }
+    private void dfs(HashMap<Integer, List<Integer>> map, int cur, int[] visited, int[] count) {
+        visited[cur] = 1;
+        count[0]++;
+        if (map.containsKey(cur)) {
+            for (int next : map.get(cur)) {
+                if (visited[next] == 0) {
+                    dfs(map, next, visited, count);
+                }
+            }
+        }
+
+=======
+
+        int n = 500;
+        int[] parent = new int[n + 1];
+        int[] size = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        for (int[] pair : pairs) {
+            int x = pair[0], y = pair[1];
+            int px = find(parent, x);
+            int py = find(parent, y);
+            if (px != py) {
+                parent[px] = py;
+                size[py] += size[px];
+            }
+        }
+        int[] degree = new int[n + 1];
+        for (int[] pair : pairs) {
+            int x = pair[0], y = pair[1];
+            int px = find(parent, x);
+            int py = find(parent, y);
+            if (px != py) {
+                degree[px]++;
+                degree[py]++;
+            }
+        }
+        int[] roots = new int[n + 1];
+        int rootCount = 0;
+        for (int i = 1; i <= n; i++) {
+            if (parent[i] == i) {
+                roots[rootCount++] = i;
+            }
+        }
+        if (rootCount > 1) {
+            return 2;
+        }
+        int root = roots[0];
+        if (degree[root] != size[root] - 1) {
+            return 0;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (parent[i] != root && degree[i] != 1) {
+                return 0;
+            }
+        }
+        return 1;
+
+=======
+
+        int[] parent = new int[501];
+        for (int i = 0; i < parent.length; i++) {
+            parent[i] = i;
+        }
+        for (int[] pair : pairs) {
+            int x = pair[0];
+            int y = pair[1];
+            int px = find(x, parent);
+            int py = find(y, parent);
+            if (px != py) {
+                parent[py] = px;
+            }
+        }
+        int root = find(pairs[0][0], parent);
+        int count = 0;
+        for (int i = 1; i < parent.length; i++) {
+            if (find(i, parent) == root) {
+                count++;
+            }
+        }
+        if (count != pairs.length + 1) {
+            return 0;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int[] pair : pairs) {
+            set.add(find(pair[0], parent));
+            set.add(find(pair[1], parent));
+        }
+        return set.size() == pairs.length + 1 ? 1 : 2;
+    }
+
+    private int find(int x, int[] parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+
+=======
+
+        int n = 501;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] pair : pairs) {
+            int p1 = find(parent, pair[0]);
+            int p2 = find(parent, pair[1]);
+            if (p1 != p2) {
+                parent[p1] = p2;
+            }
+        }
+        int[] count = new int[n];
+        int[] degree = new int[n];
+        for (int i = 1; i < n; i++) {
+            count[find(parent, i)]++;
+        }
+        for (int[] pair : pairs) {
+            degree[pair[0]]++;
+            degree[pair[1]]++;
+        }
+        int res = 0;
+        for (int i = 1; i < n; i++) {
+            if (degree[i] == count[i] - 1) {
+                res++;
+            }
+        }
+        return res == 0 ? 0 : (res == 1 ? 1 : 2);
+    }
+    int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = pairs.length;
+        int[] parent = new int[501];
+        int[] rank = new int[501];
+        for (int i = 0; i < 501; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+        for (int[] pair : pairs) {
+            union(pair[0], pair[1], parent, rank);
+        }
+        int[] size = new int[501];
+        for (int i = 0; i < 501; i++) {
+            size[find(i, parent)]++;
+        }
+        int max = 0;
+        int count = 0;
+        for (int i = 0; i < 501; i++) {
+            if (size[i] > 0) {
+                count++;
+                max = Math.max(max, size[i]);
+            }
+        }
+        if (count == 1) {
+            return 1;
+        }
+        if (max == n) {
+            return 2;
+        }
+        return 0;
+    }
+    
+    private int find(int x, int[] parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+    }
+    
+    private void union(int x, int y, int[] parent, int[] rank) {
+        int px = find(x, parent);
+        int py = find(y, parent);
+        if (px == py) {
+            return;
+        }
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[py] = px;
+            rank[px]++;
+        }
+
+=======
+
+        int n = pairs.length;
+        if (n == 1) {
+            return 1;
+        }
+        Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
+        int max = pairs[n - 1][1];
+        int[] degree = new int[max + 1];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] pair : pairs) {
+            int u = pair[0];
+            int v = pair[1];
+            degree[v]++;
+            map.computeIfAbsent(u, x -> new ArrayList<>()).add(v);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 1; i <= max; i++) {
+            if (degree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int root = -1;
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            count++;
+            if (count > 1) {
+                return 2;
+            }
+            for (int i = 0; i < size; i++) {
+                int u = queue.poll();
+                if (map.containsKey(u)) {
+                    for (int v : map.get(u)) {
+                        degree[v]--;
+                        if (degree[v] == 0) {
+                            queue.offer(v);
+                        }
+                    }
+                }
+            }
+        }
+        return count == 1 ? 1 : 0;
+
+=======
+
+        int N = 500;
+        int[] parent = new int[N + 1];
+        Arrays.fill(parent, -1);
+        for (int[] pair: pairs) {
+            int x = find(parent, pair[0]);
+            int y = find(parent, pair[1]);
+            if (x != y) {
+                parent[x] = y;
+            }
+        }
+        int[] count = new int[N + 1];
+        for (int i = 1; i <= N; ++i) {
+            if (parent[i] == -1) {
+                continue;
+            }
+            int root = find(parent, i);
+            count[root]++;
+        }
+        int ans = 1;
+        for (int i = 1; i <= N; ++i) {
+            if (parent[i] == -1) {
+                continue;
+            }
+            int root = find(parent, i);
+            if (count[root] > 1) {
+                ans = 2;
+                break;
+            }
+        }
+        return ans;
+    }
+
+    public int find(int[] parent, int x) {
+        if (parent[x] == -1) {
+            return x;
+        }
+        return parent[x] = find(parent, parent[x]);

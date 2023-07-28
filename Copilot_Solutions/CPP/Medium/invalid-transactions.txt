@@ -1,0 +1,238 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        vector<string> res;
+        unordered_map<string, vector<vector<string>>> m;
+        for (auto& t : transactions) {
+            int i = t.find(',');
+            int j = t.find(',', i + 1);
+            int k = t.find(',', j + 1);
+            m[t.substr(0, i)].push_back({t.substr(i + 1, j - i - 1), t.substr(j + 1, k - j - 1), t.substr(k + 1)});
+        }
+        for (auto& v : m) {
+            for (int i = 0; i < v.second.size(); i++) {
+                if (stoi(v.second[i][1]) > 1000) {
+                    res.push_back(v.first + ',' + v.second[i][0] + ',' + v.second[i][1] + ',' + v.second[i][2]);
+                    continue;
+                }
+                for (int j = 0; j < v.second.size(); j++) {
+                    if (i != j && v.second[i][2] != v.second[j][2] && abs(stoi(v.second[i][0]) - stoi(v.second[j][0])) <= 60) {
+                        res.push_back(v.first + ',' + v.second[i][0] + ',' + v.second[i][1] + ',' + v.second[i][2]);
+                        break;
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        unordered_map<string, vector<string>> mp;
+        for (auto &t : transactions) {
+            int i = 0;
+            string name, time, amount, city;
+            while (i < t.size() && t[i] != ',') name += t[i++];
+            i++;
+            while (i < t.size() && t[i] != ',') time += t[i++];
+            i++;
+            while (i < t.size() && t[i] != ',') amount += t[i++];
+            i++;
+            while (i < t.size() && t[i] != ',') city += t[i++];
+            mp[name].push_back(time + "," + amount + "," + city);
+        }
+        for (auto &p : mp) {
+            vector<string> &v = p.second;
+            sort(v.begin(), v.end(), [](const string &a, const string &b) {
+                int i = 0;
+                while (i < a.size() && a[i] != ',') i++;
+                int j = 0;
+                while (j < b.size() && b[j] != ',') j++;
+                return stoi(a.substr(0, i)) < stoi(b.substr(0, j));
+            });
+            for (int i = 0; i < v.size(); i++) {
+                int j = i + 1;
+                while (j < v.size()) {
+                    int k = 0;
+                    while (k < v[i].size() && v[i][k] != ',') k++;
+                    int l = 0;
+                    while (l < v[j].size() && v[j][l] != ',') l++;
+                    if (stoi(v[j].substr(l + 1)) > 1000) {
+                        res.push_back(p.first + "," + v[j]);
+                        break;
+                    }
+                    if (stoi(v[j].substr(0, l)) - stoi(v[i].substr(0, k)) > 60) break;
+                    if (v[i].substr(k + 1) != v[j].substr(l + 1)) {
+                        res.push_back(p.first + "," + v[i]);
+                        res.push_back(p.first + "," + v[j]);
+                        break;
+                    }
+                    j++;
+                }
+                if (j == v.size() && stoi(v[i].substr(k + 1)) > 1000) {
+
+=======
+
+        vector<string> res;
+        unordered_map<string, vector<string>> m;
+        for (auto& t : transactions) {
+            int i = 0;
+            for (; i < t.size(); ++i) {
+                if (t[i] == ',') break;
+            }
+            string name = t.substr(0, i);
+            m[name].push_back(t);
+        }
+        for (auto& t : transactions) {
+            int i = 0;
+            for (; i < t.size(); ++i) {
+                if (t[i] == ',') break;
+            }
+            int j = i + 1;
+            for (; j < t.size(); ++j) {
+                if (t[j] == ',') break;
+            }
+            int time = stoi(t.substr(i + 1, j - i - 1));
+            int k = j + 1;
+            for (; k < t.size(); ++k) {
+                if (t[k] == ',') break;
+            }
+            int amount = stoi(t.substr(j + 1, k - j - 1));
+            string city = t.substr(k + 1);
+            if (amount > 1000) {
+                res.push_back(t);
+                continue;
+            }
+            string name = t.substr(0, i);
+            for (auto& s : m[name]) {
+                int l = 0;
+                for (; l < s.size(); ++l) {
+                    if (s[l] == ',') break;
+                }
+                int m = l + 1;
+                for (; m < s.size(); ++m) {
+                    if (s[m] == ',') break;
+                }
+                int sTime = stoi(s.substr(l + 1, m - l - 1));
+                int n = m + 1;
+                for (; n < s.size(); ++n) {
+                    if (s[n] == ',') break;
+                }
+                int sAmount = stoi(s.substr(m + 1, n - m - 1));
+                string sCity = s.substr(n + 1);
+                if (abs(sTime - time) <= 60 && sCity != city) {
+                    res.push_back(t);
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<string> ans;
+        map<string, vector<tuple<string, string, string, string>>> m;
+        for (auto& t : transactions) {
+            auto i1 = t.find(',');
+            auto i2 = t.find(',', i1 + 1);
+            auto i3 = t.find(',', i2 + 1);
+            m[t.substr(i1 + 1, i2 - i1 - 1)].emplace_back(t.substr(0, i1), t.substr(i1 + 1, i2 - i1 - 1), t.substr(i2 + 1, i3 - i2 - 1), t.substr(i3 + 1));
+        }
+        for (auto& [k, v] : m) {
+            sort(v.begin(), v.end());
+            for (int i = 0; i < v.size(); ++i) {
+                if (stoi(get<2>(v[i])) > 1000) {
+                    ans.push_back(get<0>(v[i]) + ',' + get<1>(v[i]) + ',' + get<2>(v[i]) + ',' + get<3>(v[i]));
+                    continue;
+                }
+                for (int j = i + 1; j < v.size(); ++j) {
+                    if (get<3>(v[i]) != get<3>(v[j]) && abs(stoi(get<1>(v[i])) - stoi(get<1>(v[j]))) <= 60) {
+                        ans.push_back(get<0>(v[i]) + ',' + get<1>(v[i]) + ',' + get<2>(v[i]) + ',' + get<3>(v[i]));
+                        ans.push_back(get<0>(v[j]) + ',' + get<1>(v[j]) + ',' + get<2>(v[j]) + ',' + get<3>(v[j]));
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<string> res;
+        map<string, vector<pair<int, int>>> m;
+        for (auto& t : transactions) {
+            int i = 0;
+            int n = t.length();
+            string name;
+            int time;
+            int amount;
+            string city;
+            while (i < n) {
+                int j = t.find(',', i);
+                if (j == string::npos) {
+                    j = n;
+                }
+                if (name.empty()) {
+                    name = t.substr(i, j - i);
+                } else if (time == 0) {
+                    time = stoi(t.substr(i, j - i));
+                } else if (amount == 0) {
+                    amount = stoi(t.substr(i, j - i));
+                } else {
+                    city = t.substr(i, j - i);
+                }
+                i = j + 1;
+            }
+            if (amount > 1000) {
+                res.push_back(t);
+            }
+            m[name].push_back({time, amount});
+        }
+        for (auto& [name, v] : m) {
+            sort(v.begin(), v.end());
+            for (int i = 0; i < v.size(); ++i) {
+                if (v[i].second > 1000) {
+                    for (int j = 0; j < v.size(); ++j) {
+                        if (j != i && abs(v[j].first - v[i].first) <= 60) {
+                            res.push_back(name + "," + to_string(v[i].first) + "," + to_string(v[i].second) + "," + city);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<string> ret;
+        map<string,vector<vector<string>>> m;
+        for(auto& t: transactions){
+            istringstream is(t);
+            vector<string> v;
+            string s;
+            while(getline(is, s, ',')){
+                v.push_back(s);
+            }
+            m[v[0]].push_back(v);
+        }
+        for(auto& it: m){
+            auto& v = it.second;
+            for(int i = 0; i < v.size(); i++){
+                bool flag = false;
+                if(stoi(v[i][2]) > 1000){
+                    flag = true;
+                }else{
+                    for(int j = 0; j < v.size(); j++){
+                        if(i != j && v[i][3] != v[j][3] && abs(stoi(v[i][1]) - stoi(v[j][1])) <= 60){
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if(flag){
+                    ret.push_back(v[i][0] + "," + v[i][1] + "," + v[i][2] + "," + v[i][3]);
+                }
+            }
+        }
+        return ret;

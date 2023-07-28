@@ -1,0 +1,27 @@
+Synthesizing 1/10 solutions
+
+=======
+
+        let mut busy = std::collections::HashSet::new();
+        let mut free = std::collections::BinaryHeap::new();
+        let mut events = std::collections::BinaryHeap::new();
+        for i in 0..k {
+            free.push(std::cmp::Reverse(i));
+        }
+        for (i, &a) in arrival.iter().enumerate() {
+            while let Some(std::cmp::Reverse(t)) = events.peek() {
+                if *t > a {
+                    break;
+                }
+                let std::cmp::Reverse(t) = events.pop().unwrap();
+                let i = busy.take(&t).unwrap();
+                free.push(std::cmp::Reverse(i));
+            }
+            if let Some(std::cmp::Reverse(i)) = free.pop() {
+                busy.insert(i);
+                events.push(std::cmp::Reverse(a + load[i as usize]));
+            }
+        }
+        let mut busy = busy.into_iter().collect::<Vec<_>>();
+        busy.sort();
+        busy

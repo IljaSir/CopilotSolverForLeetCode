@@ -1,0 +1,171 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[] rows = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rows[i] = (rows[i] << 1) + matrix[i][j];
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int row : rows) {
+            for (int mask = (1 << n) - 1; mask >= 0; mask--) {
+                if ((mask & row) == row) {
+                    dp[mask | row] = Math.max(dp[mask | row], dp[mask] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[] rows = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rows[i] = (rows[i] << 1) + matrix[i][j];
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int row : rows) {
+            for (int i = (1 << n) - 1; i >= 0; i--) {
+                dp[i | row] = Math.max(dp[i | row], dp[i] + 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < m; i++) {
+            int mask = 0;
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    mask |= 1 << j;
+                }
+            }
+            for (int j = 0; j < 1 << n; j++) {
+                dp[j | mask] = Math.max(dp[j | mask], dp[j] + 1);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < m; i++) {
+            int mask = 0;
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    mask |= (1 << j);
+                }
+            }
+            for (int j = 0; j < (1 << n); j++) {
+                if ((j & mask) == mask) {
+                    dp[j] += 1;
+                }
+            }
+        }
+        int[] dp2 = new int[1 << n];
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = i; j > 0; j = (j - 1) & i) {
+                if (Integer.bitCount(j) == numSelect) {
+                    dp2[i] = Math.max(dp2[i], dp2[i ^ j] + dp[j]);
+                }
+            }
+        }
+        return dp2[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[] rowMask = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                rowMask[i] |= matrix[i][j] << j;
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int mask = 0; mask < (1 << n); mask++) {
+            for (int i = 0; i < m; i++) {
+                if ((rowMask[i] & mask) == rowMask[i]) {
+                    dp[mask]++;
+                }
+            }
+        }
+        int[] max = new int[1 << n];
+        for (int mask = 0; mask < (1 << n); mask++) {
+            max[mask] = dp[mask];
+            for (int sub = mask; sub > 0; sub = (sub - 1) & mask) {
+                if (Integer.bitCount(sub) == numSelect) {
+                    max[mask] = Math.max(max[mask], max[mask ^ sub] + dp[sub]);
+                }
+            }
+        }
+        return max[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] row = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                row[i] = (row[i] << 1) + matrix[i][j];
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < m; i++) {
+            int[] next = new int[1 << n];
+            for (int j = 0; j < (1 << n); j++) {
+                next[j] = dp[j];
+                if ((j & row[i]) == row[i]) {
+                    next[j] = Math.max(next[j], dp[j ^ row[i]] + 1);
+                }
+            }
+            dp = next;
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[][] dp = new int[m][1 << n];
+        for (int j = 0; j < n; j++) {
+            if (matrix[0][j] == 1) {
+                dp[0][1 << j] = 1;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    for (int k = 0; k < (1 << n); k++) {
+                        if ((k & (1 << j)) != 0) {
+                            dp[i][k] = dp[i - 1][k];
+                        } else {
+                            dp[i][k] = Math.max(dp[i - 1][k], dp[i - 1][k | (1 << j)] + 1);
+                        }
+                    }
+                } else {
+                    for (int k = 0; k < (1 << n); k++) {
+                        dp[i][k] = dp[i - 1][k];
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            if (Integer.bitCount(i) == numSelect) {
+                res = Math.max(res, dp[m - 1][i]);
+            }
+        }
+        return res;
+
+=======
+
+//         int m = matrix.length;

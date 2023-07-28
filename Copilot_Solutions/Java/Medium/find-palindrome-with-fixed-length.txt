@@ -1,0 +1,380 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long[] result = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = kthPalindrome(queries[i], intLength);
+        }
+        return result;
+    }
+    
+    private long kthPalindrome(int k, int intLength) {
+        long min = (long) Math.pow(10, intLength - 1);
+        long max = (long) Math.pow(10, intLength) - 1;
+        long mid = 0;
+        long count = 0;
+        while (min <= max) {
+            mid = min + (max - min) / 2;
+            count = countPalindrome(mid, intLength);
+            if (count == k) {
+                return mid;
+            } else if (count < k) {
+                min = mid + 1;
+            } else {
+                max = mid - 1;
+            }
+        }
+        return -1;
+    }
+    
+    private long countPalindrome(long n, int intLength) {
+        long count = 0;
+        for (int i = 1; i <= intLength / 2; i++) {
+            count += (n / (long) Math.pow(10, i)) * (long) Math.pow(10, i - 1);
+        }
+        for (int i = 1; i <= intLength / 2; i++) {
+            count += (n / (long) Math.pow(10, i)) * (long) Math.pow(10, i - 1);
+        }
+        if (intLength % 2 == 1) {
+            count += (n / (long) Math.pow(10, intLength / 2)) * (long) Math.pow(10, intLength / 2);
+        }
+        return count;
+
+=======
+
+        long[] result = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = kthPalindrome(queries[i], intLength);
+        }
+        return result;
+    }
+    public long kthPalindrome(int query, int intLength) {
+        int halfLength = intLength / 2;
+        long[] result = new long[query];
+        int index = 0;
+        for (int i = 1; i < Math.pow(10, halfLength); i++) {
+            String str = String.valueOf(i);
+            String strReverse = new StringBuffer(str).reverse().toString();
+            String palindrome = str + strReverse;
+            if (palindrome.length() == intLength) {
+                result[index++] = Long.parseLong(palindrome);
+            }
+        }
+        Arrays.sort(result);
+        return query > result.length ? -1 : result[query - 1];
+
+=======
+
+        long[] answer = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            answer[i] = kthPalindrome(queries[i], intLength);
+        }
+        return answer;
+    }
+
+    private long kthPalindrome(int query, int intLength) {
+        if (intLength == 1) {
+            return query;
+        }
+        if (intLength == 2) {
+            if (query > 9) {
+                return -1;
+            }
+            return query * 10 + query;
+        }
+        int half = intLength / 2;
+        int halfQuery = (int) Math.pow(10, half - 1);
+        int base = (int) Math.pow(10, half);
+        int halfBase = base / 10;
+        int firstHalf = query / halfBase;
+        int secondHalf = query % halfBase;
+        long palindrome = 0;
+        if (secondHalf > 0) {
+            palindrome = firstHalf * base + secondHalf;
+        } else {
+            palindrome = firstHalf * base;
+        }
+        if (palindrome < query) {
+            palindrome += base;
+        }
+        long firstHalfPalindrome = palindrome / base;
+        long secondHalfPalindrome = palindrome % base;
+        if (secondHalfPalindrome == 0) {
+            secondHalfPalindrome = halfBase;
+        }
+        if (firstHalfPalindrome == secondHalfPalindrome) {
+            return palindrome;
+        }
+        if (firstHalfPalindrome > secondHalfPalindrome) {
+            palindrome -= base;
+            firstHalfPalindrome = palindrome / base;
+            secondHalfPalindrome = palindrome % base;
+        }
+        if (firstHalfPalindrome == secondHalfPalindrome) {
+            return palindrome;
+        }
+        palindrome -= firstHalfPalindrome * halfBase;
+        palindrome += secondHalfPalindrome * halfBase;
+        return palindrome;
+
+=======
+
+        long[] result = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = findKthPalindrome(queries[i], intLength);
+        }
+        return result;
+    }
+    
+    private long findKthPalindrome(int k, int intLength) {
+        if (k > 10 * intLength) return -1;
+        long base = (long) Math.pow(10, intLength - 1);
+        long result = base;
+        for (int i = 1; i < k; i++) {
+            result = findNextPalindrome(result);
+        }
+        return result;
+    }
+    
+    private long findNextPalindrome(long num) {
+        long result = num + 1;
+        int length = (int) Math.log10(result) + 1;
+        long[] digits = new long[length];
+        for (int i = 0; i < length; i++) {
+            digits[i] = result % 10;
+            result /= 10;
+        }
+        for (int i = 0; i < length / 2; i++) {
+            if (digits[i] != digits[length - 1 - i]) {
+                result = num + (long) Math.pow(10, length / 2 - i);
+                return result;
+            }
+        }
+        return result;
+
+=======
+
+        long[] result = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            result[i] = getKthPalindrome(queries[i], intLength);
+        }
+        return result;
+    }
+    private long getKthPalindrome(int k, int len) {
+        if (len == 1) {
+            return k;
+        }
+        int mid = len / 2;
+        long firstHalf = 1;
+        for (int i = 0; i < mid; i++) {
+            firstHalf *= 10;
+        }
+        long result = 0;
+        if (len % 2 == 0) {
+            result = firstHalf + getKthPalindrome(k, len - 2);
+        } else {
+            long secondHalf = getKthPalindrome(k, len - 1);
+            if (secondHalf == -1) {
+                return -1;
+            }
+            result = firstHalf + secondHalf / 10;
+        }
+        if (result > Integer.MAX_VALUE) {
+            return -1;
+        }
+        return result;
+
+=======
+
+        long[] answer = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            answer[i] = findPalindrome(queries[i], intLength);
+        }
+        return answer;
+    }
+    public long findPalindrome(int query, int intLength) {
+        long[] palindromes = new long[1000000];
+        int index = 0;
+        for (int i = 1; i <= 999999; i++) {
+            String str = String.valueOf(i);
+            String strReverse = new StringBuilder(str).reverse().toString();
+            if (str.equals(strReverse)) {
+                palindromes[index++] = Long.valueOf(str);
+            }
+        }
+        Arrays.sort(palindromes);
+        long result = -1;
+        for (int i = 0; i < palindromes.length; i++) {
+            if (palindromes[i] >= Math.pow(10, intLength - 1)) {
+                result = palindromes[i + query - 1];
+                break;
+            }
+        }
+        return result;
+
+=======
+
+        long[] arr = new long[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            arr[i] = getKthPalindrome(queries[i], intLength);
+        }
+        return arr;
+    }
+
+    private long getKthPalindrome(int k, int intLength) {
+        if (intLength == 1) {
+            return k;
+        }
+        long base = (long) Math.pow(10, intLength / 2);
+        long left = (k - 1) / 25;
+        long right = (k - 1) % 25;
+        long mid = base + left;
+        long pal = mid;
+        long tmp = mid;
+        while (tmp > 0) {
+            pal = pal * 10 + tmp % 10;
+            tmp /= 10;
+        }
+        if (intLength % 2 == 0) {
+            return pal * (long) Math.pow(10, intLength / 2) + right;
+        } else {
+            return pal * (long) Math.pow(10, intLength / 2) + right / 5;
+        }
+
+=======
+
+        int intQueryLength = queries.length;
+        long[] lngResult = new long[intQueryLength];
+        for (int intIndex = 0; intIndex < intQueryLength; intIndex++) {
+            int intQuery = queries[intIndex];
+            lngResult[intIndex] = kthPalindrome(intQuery, intLength);
+        }
+        return lngResult;
+    }
+    private long kthPalindrome(int intQuery, int intLength) {
+        if (intLength == 1) {
+            return intQuery;
+        }
+        int intHalfLength = (intLength + 1) / 2;
+        int intHalfMax = (int)Math.pow(10, intHalfLength) - 1;
+        int intHalfMin = (int)Math.pow(10, intHalfLength - 1);
+        int intHalf = intQuery;
+        if (intHalf > intHalfMax) {
+            intHalf = intHalfMax;
+        }
+        if (intHalf < intHalfMin) {
+            intHalf = intHalfMin;
+        }
+        long lngResult = palindrome(intHalf, intLength);
+        while (lngResult < intQuery) {
+            intHalf++;
+            lngResult = palindrome(intHalf, intLength);
+        }
+        return lngResult;
+    }
+    private long palindrome(int intHalf, int intLength) {
+        int intHalfLength = (intLength + 1) / 2;
+        int intHalfMax = (int)Math.pow(10, intHalfLength) - 1;
+        int intHalfMin = (int)Math.pow(10, intHalfLength - 1);
+        if (intHalf > intHalfMax) {
+            return -1;
+        }
+        if (intHalf < intHalfMin) {
+            return -1;
+        }
+        long lngResult = intHalf;
+        for (int intIndex = intHalfLength - 1; intIndex >= 0; intIndex--) {
+            lngResult = lngResult * 10 + (intHalf / (int)Math.pow(10, intIndex)) % 10;
+        }
+        return lngResult;
+
+=======
+
+        long[] ret = new long[queries.length];
+        long[] palindromes = new long[1000000];
+        int count = 0;
+        for (int i = 1; i < 10; i++) {
+            palindromes[count] = i;
+            count++;
+        }
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                palindromes[count] = i * 10 + j;
+                count++;
+            }
+        }
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    palindromes[count] = i * 100 + j * 10 + k;
+                    count++;
+                }
+            }
+        }
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    for (int l = 0; l < 10; l++) {
+                        palindromes[count] = i * 1000 + j * 100 + k * 10 + l;
+                        count++;
+                    }
+                }
+            }
+        }
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    for (int l = 0; l < 10; l++) {
+                        for (int m = 0; m < 10; m++) {
+                            palindromes[count] = i * 10000 + j * 1000 + k * 100 + l * 10 + m;
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 1; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    for (int l = 0; l <
+
+=======
+
+        long[] result = new long[queries.length];
+        int index = 0;
+        for (int query : queries) {
+            int length = intLength;
+            long firstHalf = 0;
+            long secondHalf = 0;
+            long palindrom = 0;
+            if (length % 2 == 0) {
+                firstHalf = (long) Math.pow(10, length/2) - 1;
+                secondHalf = firstHalf;
+            } else {
+                firstHalf = (long) Math.pow(10, length/2) - 1;
+                secondHalf = firstHalf / 10;
+            }
+            long step = 0;
+            while (step < query) {
+                if (secondHalf == 0) {
+                    firstHalf--;
+                    secondHalf = firstHalf;
+                    if (length % 2 == 0) {
+                        palindrom = firstHalf * (long) Math.pow(10, length/2) + secondHalf;
+                    } else {
+                        palindrom = firstHalf * (long) Math.pow(10, length/2 + 1) + secondHalf;
+                    }
+                } else {
+                    secondHalf--;
+                    if (length % 2 == 0) {
+                        palindrom = firstHalf * (long) Math.pow(10, length/2) + secondHalf;
+                    } else {
+                        palindrom = firstHalf * (long) Math.pow(10, length/2 + 1) + secondHalf;
+                    }
+                }
+                step++;
+            }
+            result[index++] = palindrom;
+        }
+        return result;

@@ -1,0 +1,333 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int m = pizza.length;
+        int n = pizza[0].length();
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + (pizza[i - 1].charAt(j - 1) == 'A' ? 1 : 0);
+            }
+        }
+        int[][][] dp = new int[m][n][k];
+        return dfs(sum, dp, 0, 0, k);
+    }
+
+    private int dfs(int[][] sum, int[][][] dp, int i, int j, int k) {
+        int m = sum.length - 1;
+        int n = sum[0].length - 1;
+        if (sum[m][n] - sum[i][n] - sum[m][j] + sum[i][j] == 0) {
+            return 0;
+        }
+        if (k == 1) {
+            return 1;
+        }
+        if (dp[i][j][k] != 0) {
+            return dp[i][j][k];
+        }
+        int res = 0;
+        for (int x = i + 1; x < m; x++) {
+            if (sum[x][n] - sum[i][n] - sum[x][j] + sum[i][j] > 0) {
+                res = (res + dfs(sum, dp, x, j, k - 1)) % 1000000007;
+            }
+        }
+        for (int y = j + 1; y < n; y++) {
+            if (sum[m][y] - sum[i][y] - sum[m][j] + sum[i][j] > 0) {
+                res = (res + dfs(sum, dp, i, y, k - 1)) % 1000000007;
+            }
+        }
+        dp[i][j][k] = res;
+        return res;
+
+=======
+
+        int m = pizza.length, n = pizza[0].length();
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i - 1][j] + sum[i][j - 1] - sum[i - 1][j - 1] + (pizza[i - 1].charAt(j - 1) == 'A' ? 1 : 0);
+            }
+        }
+        int[][][] dp = new int[m][n][k];
+        return dfs(pizza, k - 1, 0, 0, sum, dp);
+    }
+    private int dfs(String[] pizza, int k, int i, int j, int[][] sum, int[][][] dp) {
+        if (k == 0) {
+            return sum[pizza.length][pizza[0].length()] - sum[i][pizza[0].length()] - sum[pizza.length][j] + sum[i][j] > 0 ? 1 : 0;
+        }
+        if (dp[i][j][k] > 0) {
+            return dp[i][j][k];
+        }
+        int res = 0;
+        for (int p = i + 1; p < pizza.length; p++) {
+            if (sum[p][pizza[0].length()] - sum[i][pizza[0].length()] - sum[p][j] + sum[i][j] > 0) {
+                res = (res + dfs(pizza, k - 1, p, j, sum, dp)) % 1000000007;
+            }
+        }
+        for (int p = j + 1; p < pizza[0].length(); p++) {
+            if (sum[pizza.length][p] - sum[pizza.length][j] - sum[i][p] + sum[i][j] > 0) {
+                res = (res + dfs(pizza, k - 1, i, p, sum, dp)) % 1000000007;
+            }
+        }
+        dp[i][j][k] = res;
+        return res;
+
+=======
+
+        int m = pizza.length, n = pizza[0].length();
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + (pizza[i].charAt(j) == 'A' ? 1 : 0);
+            }
+        }
+        int[][][] dp = new int[m][n][k + 1];
+        for (int[][] d : dp) {
+            for (int[] d1 : d) {
+                Arrays.fill(d1, -1);
+            }
+        }
+        return dfs(pizza, m, n, k, 0, 0, sum, dp);
+    }
+    private int dfs(String[] pizza, int m, int n, int k, int i, int j, int[][] sum, int[][][] dp) {
+        if (sum[m][n] - sum[i][n] - sum[m][j] + sum[i][j] == 0) {
+            return 0;
+        }
+        if (k == 1) {
+            return 1;
+        }
+        if (dp[i][j][k] != -1) {
+            return dp[i][j][k];
+        }
+        int res = 0;
+        for (int a = i + 1; a < m; ++a) {
+            if (sum[a][n] - sum[i][n] - sum[a][j] + sum[i][j] > 0) {
+                res = (res + dfs(pizza, m, n, k - 1, a, j, sum, dp)) % 1000000007;
+            }
+        }
+        for (int b = j + 1; b < n; ++b) {
+            if (sum[m][b] - sum[i][b] - sum[m][j] + sum[i][j] > 0) {
+                res = (res + dfs(pizza, m, n, k - 1, i, b, sum, dp)) % 1000000007;
+            }
+        }
+        return dp
+
+=======
+
+        int[][] prefixSum = new int[pizza.length + 1][pizza[0].length() + 1];
+        for (int i = 0; i < pizza.length; i++) {
+            for (int j = 0; j < pizza[0].length(); j++) {
+                prefixSum[i + 1][j + 1] = prefixSum[i][j + 1] + prefixSum[i + 1][j] - prefixSum[i][j];
+                if (pizza[i].charAt(j) == 'A') {
+                    prefixSum[i + 1][j + 1]++;
+                }
+            }
+        }
+        int[][][] dp = new int[pizza.length][pizza[0].length()][k + 1];
+        return dfs(prefixSum, dp, 0, 0, k);
+    }
+    private int dfs(int[][] prefixSum, int[][][] dp, int row, int col, int k) {
+        int mod = 1000000007;
+        if (k == 1) {
+            return hasApple(prefixSum, row, col, prefixSum.length - 1, prefixSum[0].length - 1) ? 1 : 0;
+        }
+        if (dp[row][col][k] > 0) {
+            return dp[row][col][k];
+        }
+        int count = 0;
+        for (int i = row + 1; i < prefixSum.length - 1; i++) {
+            if (hasApple(prefixSum, row, col, i - 1, prefixSum[0].length - 1)) {
+                count = (count + dfs(prefixSum, dp, i, col, k - 1)) % mod;
+            }
+        }
+        for (int i = col + 1; i < prefixSum[0].length - 1; i++) {
+            if (hasApple(prefixSum, row, col, prefixSum.length - 1, i - 1)) {
+                count = (count + dfs(prefixSum, dp, row, i, k - 1)) % mod;
+            }
+        }
+        dp[row][col][k] = count;
+        return count;
+
+=======
+
+        int rows = pizza.length;
+        int cols = pizza[0].length();
+        int[][] sum = new int[rows + 1][cols + 1];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + (pizza[i].charAt(j) == 'A' ? 1 : 0);
+            }
+        }
+        int[][][] dp = new int[rows][cols][k];
+        return dfs(pizza, k, 0, 0, sum, dp);
+    }
+    private int dfs(String[] pizza, int k, int row, int col, int[][] sum, int[][][] dp) {
+        if (sum[row][col] == 0) {
+            return 0;
+        }
+        if (k == 1) {
+            return 1;
+        }
+        if (dp[row][col][k - 1] != 0) {
+            return dp[row][col][k - 1];
+        }
+        int rows = pizza.length;
+        int cols = pizza[0].length();
+        int res = 0;
+        for (int i = row + 1; i < rows; i++) {
+            if (sum[i][col] - sum[row][col] > 0) {
+                res = (res + dfs(pizza, k - 1, i, col, sum, dp)) % 1000000007;
+            }
+        }
+        for (int j = col + 1; j < cols; j++) {
+            if (sum[row][j] - sum[row][col] > 0) {
+                res = (res + dfs(pizza, k - 1, row, j, sum, dp)) % 1000000007;
+            }
+        }
+        dp[row][col][k - 1] = res;
+        return res;
+
+=======
+
+        int mod = 1_000_000_007;
+        int m = pizza.length, n = pizza[0].length();
+        int[][] sum = new int[m + 1][n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + (pizza[i].charAt(j) == 'A' ? 1 : 0);
+            }
+        }
+        int[][][] dp = new int[m][n][k];
+        return ways(pizza, k, 0, 0, sum, dp, mod);
+    }
+    
+    private int ways(String[] pizza, int k, int x, int y, int[][] sum, int[][][] dp, int mod) {
+        if (sum[x + 1][y + 1] == 0) {
+            return 0;
+        }
+        if (k == 1) {
+            return 1;
+        }
+        if (dp[x][y][k - 1] > 0) {
+            return dp[x][y][k - 1];
+        }
+        int res = 0;
+        for (int i = x + 1; i < pizza.length; i++) {
+            if (sum[i + 1][y + 1] - sum[i + 1][x] - sum[y][i + 1] + sum[x][y] > 0) {
+                res = (res + ways(pizza, k - 1, i, y, sum, dp, mod)) % mod;
+            }
+        }
+        for (int i = y + 1; i < pizza[0].length(); i++) {
+            if (sum[x + 1][i + 1] - sum[x + 1][y] - sum[x][i + 1] + sum[x][y] > 0) {
+                res = (res + ways(pizza, k - 1, x, i, sum, dp, mod)) % mod;
+            }
+        }
+        dp[x][y][k - 1] = res;
+        return res;
+
+=======
+
+        int row = pizza.length;
+        int col = pizza[0].length();
+        int[][] sum = new int[row][col];
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (pizza[i].charAt(j) == 'A') {
+                    sum[i][j] = 1;
+                }
+                if (i > 0) {
+                    sum[i][j] += sum[i - 1][j];
+                }
+                if (j > 0) {
+                    sum[i][j] += sum[i][j - 1];
+                }
+                if (i > 0 && j > 0) {
+                    sum[i][j] -= sum[i - 1][j - 1];
+                }
+            }
+        }
+        int[][][] dp = new int[k][row][col];
+        return dfs(0, 0, 0, sum, dp);
+    }
+    
+    private int dfs(int x, int y, int k, int[][] sum, int[][][] dp) {
+        if (dp[k][x][y] > 0) {
+            return dp[k][x][y];
+        }
+        if (k == dp.length - 1) {
+            if (sum[sum.length - 1][sum[0].length - 1] - sum[x][sum[0].length - 1] - sum[sum.length - 1][y] + sum[x][y] > 0) {
+                dp[k][x][y] = 1;
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        int count = 0;
+        for (int i = x + 1; i < sum.length; i++) {
+            if (sum[i - 1][sum[0].length - 1] - sum[x][sum[0].length - 1] - sum[i - 1][y] + sum[x][y] > 0) {
+                count = (count + dfs(i, y, k + 1, sum, dp)) % 1000000007;
+            }
+        }
+        for (int i = y + 1; i < sum[0].length; i++) {
+            if (sum[sum.length - 1][i -
+
+=======
+
+        int m = pizza.length;
+        int n = pizza[0].length();
+        int mod = 1000000007;
+        int[][] apple = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (pizza[i].charAt(j) == 'A') {
+                    apple[i][j] = 1;
+                }
+                if (i > 0) {
+                    apple[i][j] += apple[i - 1][j];
+                }
+                if (j > 0) {
+                    apple[i][j] += apple[i][j - 1];
+                }
+                if (i > 0 && j > 0) {
+                    apple[i][j] -= apple[i - 1][j - 1];
+                }
+            }
+        }
+        int[][][] dp = new int[m][n][k];
+        return dfs(0, 0, k - 1, apple, dp, mod);
+    }
+
+    public int dfs(int i, int j, int k, int[][] apple, int[][][] dp, int mod) {
+        if (apple[i][j] == 0) {
+            return 0;
+        }
+        if (k == 0) {
+            return 1;
+        }
+        if (dp[i][j][k] > 0) {
+            return dp[i][j][k];
+        }
+        int m = apple.length;
+        int n = apple[0].length;
+        int total = apple[m - 1][n - 1];
+        int count = 0;
+        for (int x = i + 1; x < m; x++) {
+            int cur = apple[x][n - 1];
+            if (j > 0) {
+                cur -= apple[x][j - 1];
+            }
+            if (total - cur > 0) {
+                count = (count + dfs(x, j, k - 1, apple, dp, mod)) % mod;
+            }
+        }
+        for (int y = j + 1; y < n; y++) {
+            int cur = apple[m - 1][y];
+            if (i > 0) {
+                cur -= apple[i - 1][y];
+            }
+            if (total - cur
+
+=======
+
+        return 0;

@@ -1,0 +1,266 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int i = 0;
+        while (i < sentence.size()) {
+            if (sentence[i] == '$') {
+                int j = i + 1;
+                while (j < sentence.size() && isdigit(sentence[j])) ++j;
+                int price = stoi(sentence.substr(i + 1, j - i - 1));
+                double discountedPrice = price - (price * discount) / 100.0;
+                sentence.replace(i, j - i, "$" + to_string(discountedPrice));
+                i += 5;
+            }
+            ++i;
+        }
+        return sentence;
+
+=======
+
+        string res;
+        int i = 0;
+        while (i < sentence.size()) {
+            if (sentence[i] == '$') {
+                int j = i + 1;
+                while (j < sentence.size() && sentence[j] >= '0' && sentence[j] <= '9') {
+                    ++j;
+                }
+                double price = stod(sentence.substr(i, j - i));
+                double newPrice = price - price * discount / 100;
+                string newPriceStr = to_string(newPrice);
+                res += newPriceStr.substr(0, newPriceStr.find('.') + 3);
+                i = j;
+            } else {
+                res.push_back(sentence[i]);
+                ++i;
+            }
+            if (i < sentence.size() && sentence[i] != ' ') {
+                res.push_back(' ');
+            }
+        }
+        return res;
+
+=======
+
+        int n = sentence.size();
+        int i = 0;
+        while (i < n) {
+            if (sentence[i] == '$') {
+                int j = i+1;
+                while (j < n && sentence[j] >= '0' && sentence[j] <= '9') {
+                    j++;
+                }
+                int price = stoi(sentence.substr(i+1, j-i-1));
+                int newPrice = price * (100 - discount) / 100;
+                string newPriceStr = to_string(newPrice);
+                while (newPriceStr.size() < 2) {
+                    newPriceStr = "0" + newPriceStr;
+                }
+                newPriceStr = "$" + newPriceStr;
+                sentence = sentence.substr(0, i) + newPriceStr + sentence.substr(j);
+                n = sentence.size();
+                i += newPriceStr.size();
+            } else {
+                i++;
+            }
+        }
+        return sentence;
+
+=======
+
+        string result;
+        string word;
+        for (int i = 0; i < sentence.size(); i++) {
+            if (sentence[i] == ' ') {
+                if (word.size() > 0 && word[0] == '$') {
+                    word.erase(word.begin());
+                    double price = stod(word);
+                    price = price * (100 - discount) / 100;
+                    string priceStr = to_string(price);
+                    priceStr = priceStr.substr(0, priceStr.find('.') + 3);
+                    word = "$" + priceStr;
+                }
+                result += word + " ";
+                word = "";
+            } else {
+                word += sentence[i];
+            }
+        }
+        if (word.size() > 0 && word[0] == '$') {
+            word.erase(word.begin());
+            double price = stod(word);
+            price = price * (100 - discount) / 100;
+            string priceStr = to_string(price);
+            priceStr = priceStr.substr(0, priceStr.find('.') + 3);
+            word = "$" + priceStr;
+        }
+        result += word;
+        return result;
+
+=======
+
+        string ans = "";
+        string temp = "";
+        int price = 0;
+        for (auto c : sentence) {
+            if (c == ' ') {
+                if (temp[0] == '$') {
+                    price = stoi(temp.substr(1, temp.length() - 1));
+                    price = price * (100 - discount) / 100;
+                    ans += "$" + to_string(price) + ".00 ";
+                } else {
+                    ans += temp + " ";
+                }
+                temp = "";
+            } else {
+                temp += c;
+            }
+        }
+        if (temp[0] == '$') {
+            price = stoi(temp.substr(1, temp.length() - 1));
+            price = price * (100 - discount) / 100;
+            ans += "$" + to_string(price) + ".00 ";
+        } else {
+            ans += temp;
+        }
+        return ans;
+
+=======
+
+        string res;
+        string price;
+        int i = 0;
+        int n = sentence.length();
+        while (i < n) {
+            if (sentence[i] == ' ') {
+                res += ' ';
+                i++;
+            } else if (sentence[i] == '$') {
+                price.clear();
+                i++;
+                while (i < n && sentence[i] >= '0' && sentence[i] <= '9') {
+                    price += sentence[i];
+                    i++;
+                }
+                double d = stod(price);
+                d *= (100 - discount);
+                d /= 100;
+                stringstream ss;
+                ss << fixed << setprecision(2) << d;
+                res += "$" + ss.str();
+            } else {
+                res += sentence[i];
+                i++;
+            }
+        }
+        return res;
+    }
+    string applyDiscountToPrices(string sentence, int discount) {
+        string res;
+        string price;
+        int i = 0;
+        int n = sentence.length();
+        while (i < n) {
+            if (sentence[i] == ' ') {
+                res += ' ';
+                i++;
+            } else if (sentence[i] == '$') {
+                price.clear();
+                i++;
+                while (i < n && sentence[i] >= '0' && sentence[i] <= '9') {
+                    price += sentence[i];
+                    i++;
+                }
+                double d = stod(price);
+                d *= (100 - discount);
+                d /= 100;
+                stringstream ss;
+                ss << fixed << setprecision(2) << d;
+                res += "$" + ss.str();
+            } else {
+                res += sentence[i];
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        std::string s;
+        auto it = sentence.begin();
+        while (it != sentence.end()) {
+            if (*it == '$') {
+                auto it2 = it + 1;
+                while (it2 != sentence.end() && *it2 >= '0' && *it2 <= '9') {
+                    ++it2;
+                }
+                int price = std::stoi(std::string(it + 1, it2));
+                int newPrice = price * (100 - discount) / 100;
+                s += "$" + std::to_string(newPrice / 100) + "." + std::to_string(newPrice % 100);
+                it = it2;
+            } else {
+                s += *it;
+                ++it;
+            }
+        }
+        return s;
+
+=======
+
+        string ans;
+        string num;
+        for (char c : sentence) {
+            if (c == '$') num = c;
+            else if (isdigit(c)) num += c;
+            else {
+                if (!num.empty()) {
+                    if (num.size() > 1) {
+                        int n = stoi(num.substr(1));
+                        n = n * (100 - discount) / 100;
+                        ans += "$" + to_string(n/100) + "." + to_string(n%100);
+                    }
+                    num.clear();
+                }
+                ans += c;
+            }
+        }
+        if (!num.empty()) {
+            if (num.size() > 1) {
+                int n = stoi(num.substr(1));
+                n = n * (100 - discount) / 100;
+                ans += "$" + to_string(n/100) + "." + to_string(n%100);
+            }
+            num.clear();
+        }
+        return ans;
+
+=======
+
+        string result;
+        string number;
+        int s = sentence.size();
+        for (int i = 0; i < s; i++) {
+            if (sentence[i] == '$') {
+                number = "";
+                while (i + 1 < s && isdigit(sentence[i + 1])) {
+                    number += sentence[i + 1];
+                    i++;
+                }
+                if (number.size() > 0) {
+                    int num = stoi(number);
+                    num = num * (100 - discount) / 100;
+                    number = to_string(num);
+                    result += "$";
+                    if (num < 10) {
+                        result += "0";
+                    }
+                    result += number;
+                } else {
+                    result += sentence[i];
+                }
+            } else {
+                result += sentence[i];
+            }
+        }
+        return result;

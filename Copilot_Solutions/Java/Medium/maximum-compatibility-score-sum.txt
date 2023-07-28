@@ -1,0 +1,300 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = students.length;
+        int n = students[0].length;
+        int[][] scores = new int[m][m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < n; k++) {
+                    scores[i][j] += students[i][k] == mentors[j][k] ? 1 : 0;
+                }
+            }
+        }
+        int[] dp = new int[1 << m];
+        for (int i = 0; i < m; i++) {
+            dp[1 << i] = scores[i][0];
+        }
+        for (int i = 1; i < (1 << m); i++) {
+            int count = Integer.bitCount(i);
+            for (int j = 0; j < m; j++) {
+                if (((i >> j) & 1) == 1) {
+                    for (int k = 0; k < m; k++) {
+                        if (((i >> k) & 1) == 0) {
+                            dp[i | (1 << k)] = Math.max(dp[i | (1 << k)], dp[i] + scores[j][count]);
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << m) - 1];
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] score = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++) {
+                    score[i][j] += students[i][k] == mentors[j][k] ? 1 : 0;
+                }
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 1; i < 1 << n; i++) {
+            int x = Integer.bitCount(i) - 1;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) != 0) {
+                    dp[i] = Math.max(dp[i], dp[i ^ (1 << j)] + score[x][j]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] score = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++) {
+                    if (students[i][k] == mentors[j][k]) {
+                        score[i][j]++;
+                    }
+                }
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < n; i++) {
+            dp[1 << i] = score[i][0];
+        }
+        for (int i = 1; i < (1 << n); i++) {
+            int[] bits = getBits(i);
+            int x = bits[bits.length - 1];
+            for (int j = 0; j < bits.length - 1; j++) {
+                int y = bits[j];
+                dp[i] = Math.max(dp[i], dp[i ^ (1 << x)] + score[x][y]);
+            }
+        }
+        return dp[(1 << n) - 1];
+    }
+
+    private int[] getBits(int x) {
+        int[] bits = new int[Integer.bitCount(x)];
+        int idx = 0;
+        while (x != 0) {
+            if ((x & 1) == 1) {
+                bits[idx++] = Integer.numberOfTrailingZeros(x);
+            }
+            x >>= 1;
+        }
+        return bits;
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] score = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++) {
+                    score[i][j] += students[i][k] == mentors[j][k] ? 1 : 0;
+                }
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 1; i < (1 << n); i++) {
+            int last = Integer.bitCount(i) - 1;
+            int x = i ^ (1 << last);
+            for (int j = 0; j < n; j++) {
+                if (((x >> j) & 1) == 1) {
+                    dp[i] = Math.max(dp[i], dp[x] + score[last][j]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = students.length;
+        int n = students[0].length;
+        int[][] compat = new int[m][m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                int c = 0;
+                for (int k = 0; k < n; k++) {
+                    if (students[i][k] == mentors[j][k]) {
+                        c++;
+                    }
+                }
+                compat[i][j] = c;
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            int[] visited = new int[m];
+            visited[i] = 1;
+            int sum = compat[i][i];
+            for (int j = 0; j < m; j++) {
+                if (j != i) {
+                    int maxCompat = 0;
+                    int maxCompatIndex = -1;
+                    for (int k = 0; k < m; k++) {
+                        if (k != i && visited[k] == 0 && compat[j][k] > maxCompat) {
+                            maxCompat = compat[j][k];
+                            maxCompatIndex = k;
+                        }
+                    }
+                    sum += maxCompat;
+                    visited[maxCompatIndex] = 1;
+                }
+            }
+            max = Math.max(max, sum);
+        }
+        return max;
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] compat = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int score = 0;
+                for (int k = 0; k < m; k++) {
+                    if (students[i][k] == mentors[j][k]) {
+                        score++;
+                    }
+                }
+                compat[i][j] = score;
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < (1 << n); i++) {
+            int cnt = Integer.bitCount(i);
+            if (cnt == 1) {
+                for (int j = 0; j < n; j++) {
+                    if ((i & (1 << j)) > 0) {
+                        dp[i] = compat[j][cnt - 1];
+                        break;
+                    }
+                }
+            } else {
+                for (int j = 0; j < n; j++) {
+                    if ((i & (1 << j)) > 0) {
+                        dp[i] = Math.max(dp[i], dp[i - (1 << j)] + compat[j][cnt - 1]);
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] compat = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++) {
+                    if (students[i][k] == mentors[j][k]) {
+                        compat[i][j]++;
+                    }
+                }
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < n; i++) {
+            dp[1 << i] = compat[0][i];
+        }
+        for (int i = 1; i < (1 << n); i++) {
+            int k = Integer.bitCount(i) - 1;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) > 0) {
+                    dp[i] = Math.max(dp[i], dp[i ^ (1 << j)] + compat[k][j]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = students.length;
+        int m = students[0].length;
+        int[][] compat = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < m; k++) {
+                    compat[i][j] += students[i][k] == mentors[j][k] ? 1 : 0;
+                }
+            }
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 0; i < n; i++) {
+            dp[1 << i] = compat[0][i];
+        }
+        for (int i = 1; i < (1 << n); i++) {
+            int c = Integer.bitCount(i);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] = Math.max(dp[i | (1 << j)], dp[i] + compat[c][j]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int m = students.length;
+        int n = students[0].length;
+        int[][] comp = new int[m][m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (students[i][k] == mentors[j][k]) {
+                        comp[i][j]++;
+                    }
+                }
+            }
+        }
+        int[] dp = new int[1 << m];
+        for (int i = 1; i < 1 << m; i++) {
+            int c = Integer.bitCount(i) - 1;
+            int p = i ^ (1 << c);
+            for (int j = 0; j < m; j++) {
+                if ((p & (1 << j)) > 0) {
+                    dp[i] = Math.max(dp[i], dp[p] + comp[j][c]);
+                }
+            }
+        }
+        return dp[(1 << m) - 1];
+
+=======
+
+        int m = students.length;
+        int n = students[0].length;
+        int[] score = new int[1];
+        boolean[] used = new boolean[m];
+        dfs(students, mentors, m, n, 0, 0, used, score);
+        return score[0];
+    }
+
+    private void dfs(int[][] students, int[][] mentors, int m, int n, int s, int index, boolean[] used, int[] score) {
+        if (index == m) {
+            score[0] = Math.max(score[0], s);
+            return;
+        }
+        for (int i = 0; i < m; i++) {
+            if (!used[i]) {
+                int tmp = 0;
+                for (int j = 0; j < n; j++) {
+                    tmp += students[index][j] == mentors[i][j] ? 1 : 0;
+                }
+                used[i] = true;
+                dfs(students, mentors, m, n, s + tmp, index + 1, used, score);
+                used[i] = false;
+            }
+        }

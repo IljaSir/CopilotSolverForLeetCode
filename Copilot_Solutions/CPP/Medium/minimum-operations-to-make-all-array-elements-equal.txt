@@ -1,0 +1,253 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size(), m = queries.size();
+        vector<long long> pre(n + 1);
+        for (int i = 0; i < n; ++i) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        vector<int> cnt(100001);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[nums[i]];
+        }
+        vector<long long> ans(m);
+        for (int i = 0; i < m; ++i) {
+            int x = queries[i];
+            for (int j = 1; j * j <= x; ++j) {
+                if (x % j == 0) {
+                    ans[i] += 1LL * j * cnt[j];
+                    if (j * j != x) {
+                        ans[i] += 1LL * (x / j) * cnt[x / j];
+                    }
+                }
+            }
+            ans[i] -= pre[upper_bound(nums.begin(), nums.end(), x) - nums.begin()];
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = queries.size();
+        vector<long long> cnt(100001, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<long long> pre(100001, 0);
+        for (int i = 1; i <= 100000; i++) {
+            pre[i] = pre[i - 1] + cnt[i];
+        }
+        vector<long long> ans(m, 0);
+        for (int i = 0; i < m; i++) {
+            long long x = queries[i];
+            int l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (pre[mid] * mid < x) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int a = l;
+            l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (pre[mid] * mid <= x) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int b = l;
+            if (a > b) {
+                swap(a, b);
+            }
+            ans[i] = pre[a - 1] * (a - 1) + (x - pre[a - 1] * a) + (pre[b - 1] * b - pre[a - 1] * a) + (pre[100000] - pre[b - 1]) * b - (pre[b - 1] - pre[a - 1]) * x;
+        }
+        return ans;
+
+=======
+
+        vector<long long> res;
+        for (int i = 0; i < queries.size(); ++i) {
+            int count = 0;
+            for (int j = 0; j < nums.size(); ++j) {
+                if (nums[j] < queries[i]) {
+                    count += queries[i] - nums[j];
+                }
+            }
+            res.push_back(count);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> cnt(100001, 0);
+        for (int i = 0; i < n; ++i) {
+            ++cnt[nums[i]];
+        }
+        vector<long long> sum(100001, 0);
+        for (int i = 1; i <= 100000; ++i) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        vector<long long> ans;
+        for (int i = 0; i < queries.size(); ++i) {
+            int q = queries[i];
+            int l = 1, r = 100000;
+            while (l < r) {
+                int m = (l + r) / 2;
+                if (m >= q) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            long long res = (sum[100000] - sum[l - 1]) * (q - l + 1);
+            l = 1, r = 100000;
+            while (l < r) {
+                int m = (l + r + 1) / 2;
+                if (m <= q) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            res += (sum[l] - sum[0]) * (l - q + 1);
+            ans.push_back(res);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = queries.size();
+        vector<int> freq(100010, 0);
+        for (int i = 0; i < n; i++) {
+            freq[nums[i]]++;
+        }
+        vector<long long> prefix(100010, 0);
+        for (int i = 1; i < 100010; i++) {
+            prefix[i] = prefix[i - 1] + freq[i];
+        }
+        vector<long long> answer(m, 0);
+        for (int i = 0; i < m; i++) {
+            int x = queries[i];
+            int pos = lower_bound(prefix.begin(), prefix.end(), x) - prefix.begin();
+            if (pos == 100010) {
+                answer[i] = 0;
+            }
+            else {
+                answer[i] = prefix[pos] - x;
+            }
+        }
+        return answer;
+
+=======
+
+        vector<long long> res;
+        int n = nums.size();
+        int m = queries.size();
+        vector<int> cnt(100001, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<int> prefix(100001, 0);
+        for (int i = 1; i <= 100000; i++) {
+            prefix[i] = prefix[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < m; i++) {
+            int x = queries[i];
+            long long ans = 0;
+            for (int j = 1; j <= 100000; j++) {
+                ans += abs(x - j) * 1LL * (prefix[min(100000, j + x - 1)] - prefix[j - 1]);
+            }
+            res.push_back(ans);
+        }
+        return res;
+
+=======
+
+        vector<long long> res;
+        vector<long long> cnt(100001, 0);
+        vector<long long> pre(100001, 0);
+        for (int i = 0; i < nums.size(); i++) {
+            cnt[nums[i]]++;
+        }
+        for (int i = 1; i <= 100000; i++) {
+            pre[i] = pre[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < queries.size(); i++) {
+            int target = queries[i];
+            int left = 1, right = 100000;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (mid >= target) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            int l = left;
+            left = 1, right = 100000;
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (mid <= target) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            int r = right;
+            res.push_back(pre[l - 1] * (l - target) + pre[100000] - pre[r - 1] * (r - target));
+        }
+        return res;
+
+=======
+
+        long long n = nums.size();
+        long long m = queries.size();
+        vector<long long> res(m, 0);
+        vector<long long> cnt(100001, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        vector<long long> sum(100001, 0);
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < m; i++) {
+            int x = queries[i];
+            int l = 1;
+            int r = 100000;
+            int pos = 0;
+            while (l <= r) {
+                int mid = (l + r) / 2;
+                if (mid > x) {
+                    r = mid - 1;
+                } else {
+                    pos = mid;
+                    l = mid + 1;
+                }
+            }
+            res[i] += sum[pos] * x - sum[1] + sum[100000] - sum[pos];
+        }
+        return res;
+
+=======
+
+        vector<long long> res;
+        vector<int> hash(100001, 0);
+        for (auto n: nums) hash[n]++;
+        vector<long long> prefix(100001, 0);
+        for (int i = 1; i <= 100000; i++) prefix[i] = prefix[i-1] + hash[i];
+        for (auto q: queries) {
+            long long sum = 0;
+            for (int i = 1; i <= 100000; i++) {
+                sum += abs(i - q) * (prefix[i] - prefix[i-1]);
+            }
+            res.push_back(sum);
+        }
+        return res;

@@ -1,0 +1,280 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] c : connections) {
+            graph[c[0]][c[1]] = 1;
+            graph[c[1]][c[0]] = -1;
+        }
+        return dfs(graph, 0, new boolean[n]);
+    }
+    public int dfs(int[][] graph, int node, boolean[] visited) {
+        visited[node] = true;
+        int count = 0;
+        for (int i = 0; i < graph.length; i++) {
+            if (graph[node][i] == 1 && !visited[i]) {
+                count += 1 + dfs(graph, i, visited);
+            } else if (graph[node][i] == -1 && !visited[i]) {
+                count += dfs(graph, i, visited);
+            }
+        }
+        return count;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] connection : connections) {
+            graph[connection[0]][connection[1]] = 1;
+            graph[connection[1]][connection[0]] = -1;
+        }
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        return dfs(graph, visited, 0);
+    }
+    int dfs(int[][] graph, boolean[] visited, int node) {
+        int res = 0;
+        for (int i = 0; i < graph[node].length; i++) {
+            if (graph[node][i] == 1 && !visited[i]) {
+                visited[i] = true;
+                res += 1 + dfs(graph, visited, i);
+            }
+            if (graph[node][i] == -1 && !visited[i]) {
+                visited[i] = true;
+                res += dfs(graph, visited, i);
+            }
+        }
+        return res;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new ArrayList<>());
+        }
+        for (int[] con : connections) {
+            map.get(con[0]).add(con[1]);
+            map.get(con[1]).add(-con[0]);
+        }
+        int ret = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        Set<Integer> visited = new HashSet<>();
+        visited.add(0);
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            for (int next : map.get(cur)) {
+                if (next > 0) {
+                    if (visited.add(next)) {
+                        q.add(next);
+                        ret++;
+                    }
+                } else {
+                    if (visited.add(-next)) {
+                        q.add(-next);
+                    }
+                }
+            }
+        }
+        return ret;
+
+=======
+
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; ++i) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] c : connections) {
+            graph[c[0]].add(c[1]);
+            graph[c[1]].add(-c[0]);
+        }
+        boolean[] visited = new boolean[n];
+        Deque<Integer> stack = new ArrayDeque<>();
+        stack.push(0);
+        int res = 0;
+        while (!stack.isEmpty()) {
+            int cur = stack.pop();
+            if (visited[cur]) {
+                continue;
+            }
+            visited[cur] = true;
+            for (int next : graph[cur]) {
+                if (next < 0) {
+                    next = -next;
+                } else {
+                    ++res;
+                }
+                stack.push(next);
+            }
+        }
+        return res;
+
+=======
+
+        int res = 0;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] c : connections) {
+            graph[c[0]].add(c[1]);
+            graph[c[1]].add(-c[0]);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            visited[cur] = true;
+            for (int next : graph[cur]) {
+                if (visited[Math.abs(next)]) continue;
+                queue.offer(Math.abs(next));
+                if (next > 0) res++;
+            }
+        }
+        return res;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] connection : connections) {
+            int from = connection[0];
+            int to = connection[1];
+            graph.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+            graph.computeIfAbsent(to, k -> new ArrayList<>()).add(-from);
+        }
+        int[] visited = new int[n];
+        return dfs(graph, visited, 0);
+    }
+
+    private int dfs(Map<Integer, List<Integer>> graph, int[] visited, int node) {
+        visited[node] = 1;
+        int count = 0;
+        for (int next : graph.getOrDefault(node, new ArrayList<>())) {
+            if (visited[Math.abs(next)] == 1) {
+                continue;
+            }
+            if (next > 0) {
+                count++;
+            }
+            count += dfs(graph, visited, Math.abs(next));
+        }
+        return count;
+
+=======
+
+        int ans = 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] conn : connections) {
+            map.computeIfAbsent(conn[0], k -> new ArrayList<>()).add(conn[1]);
+            map.computeIfAbsent(conn[1], k -> new ArrayList<>()).add(-conn[0]);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        Set<Integer> visited = new HashSet<>();
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            if (visited.contains(cur)) continue;
+            visited.add(cur);
+            if (map.containsKey(cur)) {
+                for (int next : map.get(cur)) {
+                    if (next > 0) {
+                        ans++;
+                        queue.offer(next);
+                    } else {
+                        queue.offer(-next);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] c : connections) {
+            int x = c[0], y = c[1];
+            map.computeIfAbsent(x, k -> new ArrayList<>()).add(y);
+            map.computeIfAbsent(y, k -> new ArrayList<>()).add(-x);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        int res = 0;
+        while (!q.isEmpty()) {
+            int x = q.poll();
+            visited[x] = true;
+            for (int y : map.getOrDefault(x, new ArrayList<>())) {
+                if (y > 0 && !visited[y]) {
+                    q.add(y);
+                } else if (y < 0 && !visited[-y]) {
+                    q.add(-y);
+                    res++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] visited = new int[n];
+        int[][] graph = new int[n][n];
+        int count = 0;
+        for (int[] c : connections) {
+            graph[c[0]][c[1]] = 1;
+            graph[c[1]][c[0]] = -1;
+        }
+        dfs(graph, visited, 0);
+        for (int v : visited) {
+            if (v == 1) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private void dfs(int[][] graph, int[] visited, int city) {
+        visited[city] = 1;
+        for (int i = 0; i < graph[city].length; i++) {
+            if (graph[city][i] == 1 && visited[i] == 0) {
+                dfs(graph, visited, i);
+            }
+            if (graph[city][i] == -1 && visited[i] == 0) {
+                dfs(graph, visited, i);
+                graph[city][i] = 1;
+                graph[i][city] = 0;
+            }
+        }
+
+=======
+
+        // Create a graph
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] connection : connections) {
+            graph[connection[0]].add(connection[1]);
+            graph[connection[1]].add(-connection[0]);
+        }
+
+        // BFS
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        visited[0] = true;
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            for (int next : graph[curr]) {
+                if (visited[Math.abs(next)]) {
+                    continue;
+                }
+                if (next > 0) {
+                    res++;
+                }
+                queue.offer(Math.abs(next));
+                visited[Math.abs(next)] = true;
+            }
+        }
+        return res;

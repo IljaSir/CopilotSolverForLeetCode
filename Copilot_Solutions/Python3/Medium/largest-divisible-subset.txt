@@ -1,0 +1,186 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums:
+            return []
+        nums.sort()
+        n = len(nums)
+        dp = [1] * n
+        for i in range(1, n):
+            for j in range(i):
+                if nums[i] % nums[j] == 0:
+                    dp[i] = max(dp[i], dp[j] + 1)
+        max_idx = 0
+        for i in range(n):
+            if dp[i] > dp[max_idx]:
+                max_idx = i
+        result = []
+        while max_idx != -1:
+            result.append(nums[max_idx])
+            max_idx = dp[max_idx] - 1
+        return result
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        dp = [[num] for num in nums]
+        for i in range(len(nums)):
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and len(dp[j]) + 1 > len(dp[i]):
+                    dp[i] = dp[j] + [nums[i]]
+        return max(dp, key=len)
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums: return []
+        nums.sort()
+        dp = [[num] for num in nums]
+        for i in range(1, len(nums)):
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and len(dp[j])+1 > len(dp[i]):
+                    dp[i] = dp[j] + [nums[i]]
+        return max(dp, key=len)
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums: return []
+        nums.sort()
+        dp = [1] * len(nums)
+        for i in range(len(nums)):
+            for j in range(i):
+                if nums[i] % nums[j] == 0:
+                    dp[i] = max(dp[i], dp[j] + 1)
+        max_index = dp.index(max(dp))
+        res = []
+        while max_index >= 0 and dp[max_index] > 0:
+            res.append(nums[max_index])
+            for i in range(max_index, -1, -1):
+                if nums[max_index] % nums[i] == 0 and dp[i] == dp[max_index] - 1:
+                    max_index = i
+                    break
+        return res
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums:
+            return []
+        nums.sort()
+        n = len(nums)
+        dp = [1] * n
+        pre = [-1] * n
+        for i in range(n):
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and dp[i] < dp[j] + 1:
+                    dp[i] = dp[j] + 1
+                    pre[i] = j
+        idx = dp.index(max(dp))
+        res = []
+        while idx != -1:
+            res.append(nums[idx])
+            idx = pre[idx]
+        return res
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums:
+            return []
+        nums.sort()
+        dp = [[nums[i]] for i in range(len(nums))]
+        for i in range(len(nums)):
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and len(dp[i]) < len(dp[j]) + 1:
+                    dp[i] = dp[j] + [nums[i]]
+        return max(dp, key=len)
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        n = len(nums)
+        dp = [1] * n
+        prev = [-1] * n
+        for i in range(1, n):
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and dp[j] + 1 > dp[i]:
+                    dp[i] = dp[j] + 1
+                    prev[i] = j
+        max_idx = dp.index(max(dp))
+        ans = []
+        while max_idx != -1:
+            ans.append(nums[max_idx])
+            max_idx = prev[max_idx]
+        return ans
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        dp = [0] * len(nums)
+        prev = [-1] * len(nums)
+        for i in range(len(nums)):
+            dp[i] = 1
+            for j in range(i):
+                if nums[i] % nums[j] == 0 and dp[j] + 1 > dp[i]:
+                    dp[i] = dp[j] + 1
+                    prev[i] = j
+        max_idx = dp.index(max(dp))
+        ans = []
+        while max_idx != -1:
+            ans.append(nums[max_idx])
+            max_idx = prev[max_idx]
+        return ans
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        if not nums:
+            return []
+        nums.sort()
+        n = len(nums)
+        dp = [1] * n
+        pre = [-1] * n
+        max_length = max_index = 0
+        for i in range(n):
+            for j in range(i):
+                if nums[i] % nums[j] == 0:
+                    if dp[j] + 1 > dp[i]:
+                        dp[i] = dp[j] + 1
+                        pre[i] = j
+            if dp[i] > max_length:
+                max_length = dp[i]
+                max_index = i
+        res = []
+        while max_index != -1:
+            res.append(nums[max_index])
+            max_index = pre[max_index]
+        return res
+
+=======
+
+def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        dp = [1] * len(nums)
+        pre = [-1] * len(nums)
+        max_len = 0
+        max_index = 0
+        for i in range(len(nums)):
+            for j in range(i):
+                if nums[i] % nums[j] == 0:
+                    if dp[i] < dp[j] + 1:
+                        dp[i] = dp[j] + 1
+                        pre[i] = j
+            if dp[i] > max_len:
+                max_len = dp[i]
+                max_index = i
+        res = []
+        while max_index != -1:
+            res.append(nums[max_index])
+            max_index = pre[max_index]
+        return res

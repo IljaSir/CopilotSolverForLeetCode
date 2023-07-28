@@ -1,0 +1,333 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = parents.size();
+        int root = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parents[i] == -1) {
+                root = i;
+                break;
+            }
+        }
+        vector<int> children(n, 0);
+        for (int i = 0; i < n; ++i) {
+            if (i != root) {
+                ++children[parents[i]];
+            }
+        }
+        vector<int> score(n, 1);
+        for (int i = 0; i < n; ++i) {
+            if (i != root && children[i] == 0) {
+                int j = i;
+                while (j != root) {
+                    ++score[j];
+                    j = parents[j];
+                }
+                ++score[j];
+            }
+        }
+        int maxScore = 0;
+        for (int i = 0; i < n; ++i) {
+            maxScore = max(maxScore, score[i]);
+        }
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            if (score[i] == maxScore) {
+                ++count;
+            }
+        }
+        return count;
+
+=======
+
+        int n = parents.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; ++i) {
+            children[parents[i]].push_back(i);
+        }
+        vector<int> size(n, 1);
+        for (int i = n - 1; i >= 0; --i) {
+            for (int child : children[i]) {
+                size[i] += size[child];
+            }
+        }
+        vector<int> score(n, 1);
+        for (int i = n - 1; i >= 0; --i) {
+            for (int child : children[i]) {
+                score[i] *= size[child] + 1;
+            }
+        }
+        int max_score = 0;
+        for (int i = 0; i < n; ++i) {
+            max_score = max(max_score, score[i]);
+        }
+        int result = 0;
+        for (int i = 0; i < n; ++i) {
+            if (score[i] == max_score) {
+                ++result;
+            }
+        }
+        return result;
+
+=======
+
+        int n = parents.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; i++) {
+            children[parents[i]].push_back(i);
+        }
+        vector<int> score(n, 1);
+        vector<int> maxScore(n, 1);
+        vector<int> count(n, 1);
+        for (int i = n - 1; i >= 0; i--) {
+            for (int child : children[i]) {
+                score[i] += score[child];
+                if (maxScore[child] > maxScore[i]) {
+                    maxScore[i] = maxScore[child];
+                    count[i] = count[child];
+                } else if (maxScore[child] == maxScore[i]) {
+                    count[i] += count[child];
+                }
+            }
+            if (score[i] > maxScore[i]) {
+                maxScore[i] = score[i];
+                count[i] = 1;
+            } else if (score[i] == maxScore[i]) {
+                count[i]++;
+            }
+        }
+        return count[0];
+
+=======
+
+        int n = parents.size();
+        vector<vector<int>> children(n);
+        for (int i = 1; i < n; ++i) {
+            children[parents[i]].push_back(i);
+        }
+        vector<int> sz(n, 1);
+        vector<int> best(n, 0);
+        vector<int> bestCount(n, 1);
+        for (int i = n - 1; i > 0; --i) {
+            int p = parents[i];
+            sz[p] += sz[i];
+            int s = sz[i] * best[i] + best[p];
+            if (s > best[p]) {
+                best[p] = s;
+                bestCount[p] = bestCount[i];
+            } else if (s == best[p]) {
+                bestCount[p] += bestCount[i];
+            }
+        }
+        return bestCount[0];
+
+=======
+
+        int n = parents.size();
+        vector<int> tree[n];
+        int root = 0;
+        for(int i = 0; i < n; i++) {
+            if(parents[i] == -1) {
+                root = i;
+                continue;
+            }
+            tree[parents[i]].push_back(i);
+        }
+        vector<int> size(n, 1);
+        vector<int> score(n, 1);
+        vector<int> maxScore(n, 1);
+        vector<int> maxScoreNodes(n, 0);
+        for(int i = n - 1; i >= 0; i--) {
+            for(int child : tree[i]) {
+                size[i] += size[child];
+                score[i] *= size[child];
+            }
+            if(score[i] > maxScore[parents[i]]) {
+                maxScore[parents[i]] = score[i];
+                maxScoreNodes[parents[i]] = 1;
+            } else if(score[i] == maxScore[parents[i]]) {
+                maxScoreNodes[parents[i]]++;
+            }
+        }
+        return maxScoreNodes[root];
+
+=======
+
+        int n = parents.size();
+        vector<int> child(n, 0);
+        vector<int> score(n, 0);
+        for (int i = 1; i < n; ++i) {
+            child[parents[i]]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            if (child[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            if (parents[cur] != -1) {
+                score[parents[cur]] = max(score[parents[cur]], ++score[cur]);
+                if (--child[parents[cur]] == 0) {
+                    q.push(parents[cur]);
+                }
+            }
+        }
+        int maxScore = 0;
+        for (int i = 0; i < n; ++i) {
+            maxScore = max(maxScore, score[i]);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (score[i] == maxScore) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = parents.size();
+        vector<int> children(n, 0);
+        vector<int> size(n, 1);
+        vector<int> score(n, 1);
+        int root = 0;
+        for (int i = 0; i < parents.size(); i++) {
+            if (parents[i] == -1) {
+                root = i;
+            } else {
+                children[parents[i]]++;
+            }
+        }
+        vector<int> q;
+        q.push_back(root);
+        for (int i = 0; i < q.size(); i++) {
+            int x = q[i];
+            if (children[x] == 0) {
+                continue;
+            }
+            for (int j = 0; j < n; j++) {
+                if (parents[j] == x) {
+                    q.push_back(j);
+                }
+            }
+        }
+        for (int i = q.size() - 1; i >= 0; i--) {
+            int x = q[i];
+            if (x == root) {
+                continue;
+            }
+            size[parents[x]] += size[x];
+            score[parents[x]] *= score[x];
+            score[parents[x]] %= 1000000007;
+        }
+        int max_size = 0;
+        for (int i = 0; i < n; i++) {
+            if (size[i] > max_size) {
+                max_size = size[i];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (size[i] == max_size) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = parents.size();
+        vector<int> cnt(n);
+        vector<int> score(n);
+        for (int i = n - 1; i >= 0; --i) {
+            if (score[i] == 0) score[i] = 1;
+            if (parents[i] == -1) continue;
+            int p = parents[i];
+            if (score[p] == 0) score[p] = 1;
+            score[p] *= (cnt[i] + 1);
+            cnt[p] += (cnt[i] + 1);
+        }
+        int max_score = *max_element(score.begin(), score.end());
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (score[i] == max_score) ++ans;
+        }
+        return ans;
+
+=======
+
+        int n = parents.size();
+        vector<int> score(n, 1);
+        vector<int> count(n, 0);
+        int maxScore = 1;
+        for(int i = n - 1; i > 0; i--) {
+            int p = parents[i];
+            score[p] *= score[i] + 1;
+            maxScore = max(maxScore, score[p]);
+        }
+        int res = 0;
+        for(int i = 0; i < n; i++) {
+            if(score[i] == maxScore) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = parents.size();
+        vector<int> children(n);
+        vector<int> nodes(n);
+        vector<int> scores(n);
+        vector<int> subscores(n);
+        for (int i = 0; i < n; ++i) {
+            if (parents[i] != -1) {
+                ++children[parents[i]];
+            }
+        }
+        int root = 0;
+        for (int i = 0; i < n; ++i) {
+            if (children[i] == 0) {
+                nodes[i] = 1;
+                scores[i] = 1;
+                subscores[i] = 1;
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (children[i] > 0) {
+                root = i;
+                break;
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (children[i] == 0) {
+                int node = i;
+                while (node >= 0) {
+                    ++nodes[node];
+                    scores[node] *= subscores[node];
+                    subscores[node] = 1;
+                    if (children[node] == 1) {
+                        node = parents[node];
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        int maxScore = 0;
+        for (int i = 0; i < n; ++i) {
+            if (scores[i] > maxScore) {
+                maxScore = scores[i];
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            if (scores[i] == maxScore) {
+                ++count;
+            }
+        }
+        return count;

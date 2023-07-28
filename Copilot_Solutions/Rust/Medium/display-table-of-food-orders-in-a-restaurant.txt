@@ -1,0 +1,255 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut foods = std::collections::HashSet::new();
+        let mut tables = std::collections::HashSet::new();
+        for order in &orders {
+            foods.insert(&order[2]);
+            tables.insert(&order[1]);
+        }
+        let mut foods: Vec<_> = foods.into_iter().collect();
+        foods.sort();
+        let mut tables: Vec<_> = tables.into_iter().collect();
+        tables.sort();
+        let mut food_to_idx = std::collections::HashMap::new();
+        for (i, food) in foods.iter().enumerate() {
+            food_to_idx.insert(*food, i + 1);
+        }
+        let mut table_to_idx = std::collections::HashMap::new();
+        for (i, table) in tables.iter().enumerate() {
+            table_to_idx.insert(*table, i + 1);
+        }
+        let mut table = vec![vec![0; foods.len() + 1]; tables.len() + 1];
+        for (i, food) in foods.iter().enumerate() {
+            table[0][i + 1] = food.parse::<i32>().unwrap();
+        }
+        for (i, table) in tables.iter().enumerate() {
+            table[i + 1][0] = table.parse::<i32>().unwrap();
+        }
+        for order in orders {
+            let food_idx = food_to_idx[&order[2]];
+            let table_idx = table_to_idx[&order[1]];
+            table[table_idx][food_idx] += 1;
+        }
+        let mut table: Vec<_> = table.into_iter().map(|row| {
+            row.into_iter().map(|cell| cell.to_string()).collect()
+        }).collect();
+        table[0].insert(0, String::from("Table"));
+        table
+
+=======
+
+        let mut food = std::collections::HashSet::new();
+        let mut table = std::collections::HashSet::new();
+        for order in orders.iter() {
+            food.insert(&order[2]);
+            table.insert(&order[1]);
+        }
+        let mut food: Vec<&String> = food.into_iter().collect();
+        let mut table: Vec<&String> = table.into_iter().collect();
+        food.sort();
+        table.sort();
+        let mut result = vec![vec!["Table".to_string()]];
+        for f in food.iter() {
+            result[0].push(f.to_string());
+        }
+        for t in table.iter() {
+            let mut row = vec![t.to_string()];
+            for _ in 0..food.len() {
+                row.push("0".to_string());
+            }
+            result.push(row);
+        }
+        for order in orders.iter() {
+            let t = table.iter().position(|&x| x == &order[1]).unwrap();
+            let f = food.iter().position(|&x| x == &order[2]).unwrap();
+            let n = result[t+1][f+1].parse::<i32>().unwrap();
+            result[t+1][f+1] = (n+1).to_string();
+        }
+        result
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut tables = Vec::new();
+        let mut foods = Vec::new();
+        for order in orders {
+            let table = order[1].parse::<usize>().unwrap();
+            let food = order[2].clone();
+            if !foods.contains(&food) {
+                foods.push(food);
+            }
+            if table > tables.len() {
+                tables.resize(table, Vec::new());
+            }
+            if let Some(table) = tables.get_mut(table - 1) {
+                table.push(food);
+            }
+        }
+        foods.sort();
+        let mut result = Vec::new();
+        result.push(vec!["Table".to_string()]);
+        result[0].append(&mut foods.clone());
+        for (i, table) in tables.iter().enumerate() {
+            let mut row = Vec::new();
+            row.push((i + 1).to_string());
+            for food in &foods {
+                let mut count = 0;
+                for t in table {
+                    if t == food {
+                        count += 1;
+                    }
+                }
+                row.push(count.to_string());
+            }
+            result.push(row);
+        }
+        result
+    }
+}
+
+=======
+
+        let mut tables = Vec::new();
+        let mut foods = Vec::new();
+        for order in orders {
+            let table = order[1].parse::<usize>().unwrap();
+            let food = order[2].to_string();
+            if !foods.contains(&food) {
+                foods.push(food);
+            }
+            if table > tables.len() {
+                tables.resize(table, Vec::new());
+            }
+            tables[table - 1].push(food);
+        }
+        foods.sort();
+        let mut result = Vec::new();
+        let mut header = Vec::new();
+        header.push("Table".to_string());
+        header.append(&mut foods);
+        result.push(header);
+        for i in 0..tables.len() {
+            tables[i].sort();
+            let mut row = Vec::new();
+            row.push((i + 1).to_string());
+            let mut j = 0;
+            for k in 1..result[0].len() {
+                if j < tables[i].len() && result[0][k] == tables[i][j] {
+                    row.push("1".to_string());
+                    j += 1;
+                } else {
+                    row.push("0".to_string());
+                }
+            }
+            result.push(row);
+        }
+        result
+
+=======
+
+        let mut table = Vec::new();
+        let mut foods = std::collections::HashSet::new();
+        let mut tables = std::collections::HashSet::new();
+        for order in orders {
+            foods.insert(order[2].clone());
+            tables.insert(order[1].clone());
+        }
+        let mut foods: Vec<String> = foods.into_iter().collect();
+        let mut tables: Vec<String> = tables.into_iter().collect();
+        foods.sort();
+        tables.sort();
+        let mut map = std::collections::HashMap::new();
+        for table in tables {
+            let mut row = Vec::new();
+            row.push(table.clone());
+            for food in &foods {
+                map.insert((table.clone(), food.clone()), 0);
+                row.push("0".to_string());
+            }
+            table.push(row);
+        }
+        for order in orders {
+            let count = map.get(&(order[1].clone(), order[2].clone())).unwrap();
+            map.insert((order[1].clone(), order[2].clone()), count + 1);
+        }
+        for row in &mut table {
+            for i in 1..row.len() {
+                let count = map.get(&(row[0].clone(), foods[i - 1].clone())).unwrap();
+                row[i] = count.to_string();
+            }
+        }
+        let mut result = Vec::new();
+        let mut header = Vec::new();
+        header.push("Table".to_string());
+        for food in foods {
+            header.push(food);
+        }
+        result.push(header);
+        result.append(&mut table);
+        result
+
+=======
+
+        let mut tables: Vec<Vec<String>> = Vec::new();
+        let mut menu: Vec<String> = Vec::new();
+        let mut table: Vec<Vec<String>> = Vec::new();
+        for order in orders {
+            let mut found = false;
+            let mut i = 0;
+            while i < menu.len() {
+                if menu[i] == order[2] {
+                    found = true;
+                    break;
+                }
+                i += 1;
+            }
+            if !found {
+                menu.push(order[2].clone());
+            }
+            found = false;
+            i = 0;
+            while i < table.len() {
+                if table[i][0] == order[1] {
+                    found = true;
+                    break;
+                }
+                i += 1;
+            }
+            if !found {
+                table.push(vec![order[1].clone(), String::from("0")]);
+            }
+            let mut j = 1;
+            while j < table[i].len() {
+                if table[i][j] == order[2] {
+                    let count = table[i][j - 1].parse::<i32>().unwrap();
+                    table[i][j - 1] = (count + 1).to_string();
+                    break;
+                }
+                j += 2;
+            }
+            if j == table[i].len() {
+                table[i].push(String::from("1"));
+                table[i].push(order[2].clone());
+            }
+        }
+        menu.sort();
+        table.sort_by(|a, b| a[0].parse::<i32>().unwrap().cmp(&b[0].parse::<i32>().unwrap()));
+        tables.push(vec![String::from("Table")]);
+        for m in menu {
+            tables[0].push(m);
+        }
+        for t in table {
+            tables.push(t);
+        }
+        tables
+    }
+}

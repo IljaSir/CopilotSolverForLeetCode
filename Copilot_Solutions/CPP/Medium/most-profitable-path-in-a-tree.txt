@@ -1,0 +1,218 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = amount.size();
+        vector<vector<int>> g(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(2, -1e9));
+        dp[0][0] = 0;
+        function<void(int, int)> dfs = [&](int u, int p) {
+            for (int v: g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                dp[u][0] = max(dp[u][0], max(dp[v][0], dp[v][1]));
+                dp[u][1] = max(dp[u][1], dp[v][0]);
+            }
+            dp[u][0] += amount[u] / 2;
+            dp[u][1] += amount[u];
+        };
+        dfs(0, -1);
+        return max(dp[0][0], dp[0][1] - amount[bob]);
+
+=======
+
+        int n = amount.size();
+        vector<vector<int>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(2));
+        dfs(g, amount, dp, 0, -1);
+        return max(dp[0][0] - dp[bob][1], dp[0][1] - dp[bob][0]);
+    }
+    
+    void dfs(vector<vector<int>> &g, vector<int> &amount, vector<vector<int>> &dp, int u, int fa) {
+        dp[u][0] = dp[u][1] = amount[u];
+        for (int v : g[u]) {
+            if (v == fa) continue;
+            dfs(g, amount, dp, v, u);
+            dp[u][0] = max(dp[u][0], dp[v][0] + amount[u]);
+            dp[u][1] = max(dp[u][1], dp[v][1] + amount[u]);
+        }
+
+=======
+
+        int n = amount.size();
+        vector<vector<int>> adj(n);
+        for (auto& e: edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n, INT_MIN);
+        dp[0] = 0;
+        dfs(0, -1, adj, dp, amount);
+        return dp[bob];
+
+=======
+
+        vector<vector<int>> g(amount.size());
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(amount.size(), -1);
+        int ans = 0;
+        function<int(int, int)> dfs = [&](int u, int fa) {
+            int sum = 0;
+            for (int v : g[u]) {
+                if (v != fa) {
+                    sum += dfs(v, u);
+                }
+            }
+            if (u == bob) {
+                sum += amount[u];
+            }
+            if (sum > 0) {
+                ans += sum / 2;
+            }
+            return sum;
+        };
+        dfs(0, -1);
+        return ans;
+
+=======
+
+        int n = amount.size();
+        vector<vector<int>> tree(n);
+        for (auto& edge: edges) {
+            tree[edge[0]].push_back(edge[1]);
+            tree[edge[1]].push_back(edge[0]);
+        }
+        vector<int> dp(n, INT_MIN);
+        dp[0] = 0;
+        dfs(tree, 0, -1, dp, amount, bob);
+        return dp[bob];
+    }
+    void dfs(vector<vector<int>>& tree, int node, int parent, vector<int>& dp, vector<int>& amount, int bob) {
+        for (int child: tree[node]) {
+            if (child != parent) {
+                dfs(tree, child, node, dp, amount, bob);
+                dp[node] = max(dp[node], dp[child] + amount[node]);
+            }
+        }
+        if (node != bob) dp[node] -= amount[node] / 2;
+
+=======
+
+        int n = amount.size();
+        vector<vector<int>> adj(n);
+        for(auto e : edges){
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> visited(n, 0);
+        vector<int> dp(n, 0);
+        vector<int> path;
+        dfs(0, adj, visited, dp, path, amount, bob);
+        return dp[0];
+    }
+    void dfs(int node, vector<vector<int>>& adj, vector<int>& visited, vector<int>& dp, vector<int>& path, vector<int>& amount, int bob){
+        visited[node] = 1;
+        path.push_back(node);
+        if(node == bob){
+            int n = path.size();
+            int i = 0, j = n - 1;
+            while(i < j){
+                int temp = path[i];
+                path[i] = path[j];
+                path[j] = temp;
+                i++;
+                j--;
+            }
+        }
+        for(auto v : adj[node]){
+            if(!visited[v]){
+                dfs(v, adj, visited, dp, path, amount, bob);
+            }
+        }
+        if(node == bob){
+            int n = path.size();
+            int i = 0, j = n - 1;
+            while(i < j){
+                int temp = path[i];
+                path[i] = path[j];
+                path[j] = temp;
+                i++;
+                j--;
+            }
+        }
+        int max_val = INT_MIN;
+        for(auto v : adj[node]){
+            if(v != 0){
+                max_val = max(max_val, dp[v]);
+            }
+        }
+        if(amount[node] < 0){
+            dp[node] = -amount[node] + max_val;
+        }else{
+            dp[node] = amount[node] + max_val;
+        }
+        path.pop_back();
+
+=======
+
+        vector<vector<int>> adj(amount.size());
+        for (auto& e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(amount.size());
+        function<void(int, int)> dfs = [&](int u, int p) {
+            dp[u] = amount[u];
+            for (auto v : adj[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                if (dp[v] > 0) dp[u] += dp[v];
+            }
+        };
+        dfs(0, -1);
+        int res = amount[0];
+        for (auto v : adj[0]) {
+            if (dp[v] > 0) res += dp[v];
+        }
+        return res - amount[bob] / 2;
+
+=======
+
+        int n = amount.size();
+        vector<int> adj[n];
+        for (int i = 0; i < n - 1; i++) {
+            adj[edges[i][0]].push_back(edges[i][1]);
+            adj[edges[i][1]].push_back(edges[i][0]);
+        }
+        int dp[n][2];
+        memset(dp, 0, sizeof(dp));
+        dfs(adj, 0, -1, bob, amount, dp);
+        return dp[0][0];
+    }
+    void dfs(vector<int> adj[], int u, int p, int bob, vector<int>& amount, int dp[][2]) {
+        for (int v : adj[u]) {
+            if (v != p) {
+                dfs(adj, v, u, bob, amount, dp);
+                int sum = dp[v][0] + amount[u];
+                if (sum > dp[u][0]) {
+                    dp[u][1] = dp[u][0];
+                    dp[u][0] = sum;
+                } else if (sum > dp[u][1]) {
+                    dp[u][1] = sum;
+                }
+            }
+        }
+        if (u == bob) {
+            dp[u][0] = dp[u][1];
+        }

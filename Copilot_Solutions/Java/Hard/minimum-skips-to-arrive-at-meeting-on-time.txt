@@ -1,0 +1,255 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = dist.length;
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            int d = dist[i - 1];
+            for (int j = 0; j <= i; j++) {
+                if (dp[i - 1][j] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], (dp[i - 1][j] + d + speed - 1) / speed * speed);
+                }
+                if (j > 0 && dp[i - 1][j - 1] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], (dp[i - 1][j - 1] + d) / speed * speed + d % speed);
+                }
+            }
+        }
+        for (int i = 0; i <= n; i++) {
+            if (dp[n][i] <= hoursBefore * speed) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            int d = dist[i - 1];
+            for (int j = 0; j <= i; j++) {
+                if (dp[i - 1][j] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], (dp[i - 1][j] + d + speed - 1) / speed * speed);
+                }
+                if (j > 0 && dp[i - 1][j - 1] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1] + d);
+                }
+            }
+        }
+        for (int i = 0; i <= n; i++) {
+            if (dp[n][i] <= hoursBefore * speed) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        double[] dp = new double[n + 1];
+        Arrays.fill(dp, Double.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            double t = (double) dist[i] / speed;
+            double[] ndp = new double[n + 1];
+            Arrays.fill(ndp, Double.MAX_VALUE);
+            for (int j = 0; j <= i; j++) {
+                ndp[j] = Math.min(ndp[j], Math.ceil(dp[j] + t));
+                ndp[j + 1] = Math.min(ndp[j + 1], dp[j] + t);
+            }
+            dp = ndp;
+        }
+        for (int i = 0; i <= n; i++) {
+            if (dp[i] <= hoursBefore) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        int[][] dp = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; ++i) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            int d = (dist[i - 1] + speed - 1) / speed;
+            for (int j = 0; j <= i; ++j) {
+                if (dp[i - 1][j] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], (dp[i - 1][j] + d - 1) / d * d);
+                }
+                if (j > 0 && dp[i - 1][j - 1] != Integer.MAX_VALUE) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1] + d);
+                }
+            }
+        }
+        for (int i = 0; i <= n; ++i) {
+            if (dp[n][i] <= hoursBefore * (long) speed) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        int[][] dp = new int[n+1][n+1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[i-1][j] != Integer.MAX_VALUE) {
+                    int rest = (dp[i-1][j] + dist[i-1]) % speed == 0 ? 0 : 1;
+                    dp[i][j] = Math.min(dp[i][j], dp[i-1][j] + dist[i-1] + rest);
+                    if (j > 0) {
+                        dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1] + dist[i-1]);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i <= n; i++) {
+            if (dp[n][i] <= hoursBefore * speed) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        double[][] dp = new double[n][n+1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= n; j++) {
+                dp[i][j] = Double.MAX_VALUE;
+            }
+        }
+        dp[0][0] = (double)dist[0] / speed;
+        for (int i = 0; i < n-1; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (dp[i][j] == Double.MAX_VALUE) {
+                    continue;
+                }
+                dp[i+1][j] = Math.min(dp[i+1][j], Math.ceil(dp[i][j]) + (double)dist[i+1] / speed);
+                dp[i+1][j+1] = Math.min(dp[i+1][j+1], dp[i][j] + (double)dist[i+1] / speed);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (dp[n-1][i] <= hoursBefore) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        double[][] dp = new double[n][n+1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= n; j++) {
+                dp[i][j] = Double.MAX_VALUE;
+            }
+        }
+        dp[0][0] = (double) dist[0] / speed;
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = dp[i-1][0] + (double) dist[i] / speed;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j <= i; j++) {
+                dp[i][j] = Math.min(dp[i-1][j] + (double) dist[i] / speed, Math.ceil(dp[i-1][j-1]) + (double) dist[i] / speed);
+            }
+        }
+        for (int j = 0; j <= n; j++) {
+            if (dp[n-1][j] <= hoursBefore) {
+                return j;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        int[][] dp = new int[n+1][n+1];
+        for(int i = 0; i <= n; i++){
+            for(int j = 0; j <= n; j++){
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j <= n; j++){
+                if(dp[i][j] == Integer.MAX_VALUE)
+                    continue;
+                int t = dp[i][j] + dist[i];
+                int r = t % speed == 0 ? t / speed : t / speed + 1;
+                dp[i+1][j] = Math.min(dp[i+1][j], r);
+                if(j < n){
+                    t = dp[i][j] + (dist[i] + speed - 1) / speed * speed;
+                    r = t % speed == 0 ? t / speed : t / speed + 1;
+                    dp[i+1][j+1] = Math.min(dp[i+1][j+1], r);
+                }
+            }
+        }
+        for(int i = 0; i <= n; i++){
+            if(dp[n][i] <= hoursBefore * speed)
+                return i;
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        double[][] dp = new double[n+1][n+1];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], Double.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i][j] = Math.ceil(dp[i-1][j] + (double)dist[i-1]/speed) + (dp[i-1][j] + (double)dist[i-1]/speed - Math.ceil(dp[i-1][j] + (double)dist[i-1]/speed));
+                if (j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], Math.ceil(dp[i-1][j-1]) + (double)dist[i-1]/speed);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (dp[n][i] <= hoursBefore) {
+                return i;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = dist.length;
+        int[] dp = new int[n+1];
+        dp[0] = 0;
+        for(int i=1; i<=n; i++){
+            dp[i] = (int)Math.ceil((double)dist[i-1]/speed);
+        }
+        for(int i=0; i<n; i++){
+            for(int j=n; j>0; j--){
+                dp[j] = Math.min(dp[j], dp[j-1] + (int)Math.ceil((double)dist[i]/speed));
+            }
+            for(int j=1; j<=n; j++){
+                dp[j] = Math.min(dp[j], dp[j-1] + (int)Math.ceil((double)dist[i]/speed));
+            }
+        }
+        for(int i=0; i<=n; i++){
+            if(dp[i] <= hoursBefore*speed){
+                return i;
+            }
+        }
+        return -1;

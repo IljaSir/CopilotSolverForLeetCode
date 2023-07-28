@@ -1,0 +1,303 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        vector<int> indegree(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) indegree[leftChild[i]]++;
+            if (rightChild[i] != -1) indegree[rightChild[i]]++;
+        }
+        int root = -1;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                if (root == -1) {
+                    root = i;
+                } else {
+                    return false;
+                }
+            }
+        }
+        if (root == -1) return false;
+        queue<int> q;
+        q.push(root);
+        int count = 0;
+        while (!q.empty()) {
+            int cur = q.front(); q.pop();
+            count++;
+            if (leftChild[cur] != -1) q.push(leftChild[cur]);
+            if (rightChild[cur] != -1) q.push(rightChild[cur]);
+        }
+        return count == n;
+
+=======
+
+        vector<int> indegree(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) indegree[leftChild[i]]++;
+            if (rightChild[i] != -1) indegree[rightChild[i]]++;
+        }
+        int root = -1;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                if (root != -1) return false;
+                root = i;
+            }
+        }
+        if (root == -1) return false;
+        queue<int> q;
+        q.push(root);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            if (leftChild[u] != -1) {
+                q.push(leftChild[u]);
+            }
+            if (rightChild[u] != -1) {
+                q.push(rightChild[u]);
+            }
+        }
+        return q.size() == n;
+
+=======
+
+        vector<int> in(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) {
+                in[leftChild[i]]++;
+            }
+            if (rightChild[i] != -1) {
+                in[rightChild[i]]++;
+            }
+        }
+        int cnt = 0;
+        int root = -1;
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) {
+                cnt++;
+                root = i;
+            }
+        }
+        if (cnt != 1) {
+            return false;
+        }
+        queue<int> q;
+        q.push(root);
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            if (leftChild[cur] != -1) {
+                q.push(leftChild[cur]);
+            }
+            if (rightChild[cur] != -1) {
+                q.push(rightChild[cur]);
+            }
+        }
+        return q.size() == n;
+
+=======
+
+        vector<int> in(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) {
+                in[leftChild[i]]++;
+            }
+            if (rightChild[i] != -1) {
+                in[rightChild[i]]++;
+            }
+        }
+        int root = 0;
+        while (root < n && in[root] != 0) {
+            root++;
+        }
+        if (root == n) {
+            return false;
+        }
+        queue<int> q;
+        q.push(root);
+        int num = 0;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            num++;
+            if (leftChild[cur] != -1) {
+                q.push(leftChild[cur]);
+            }
+            if (rightChild[cur] != -1) {
+                q.push(rightChild[cur]);
+            }
+        }
+        return num == n;
+
+=======
+
+        vector<int> in(n, 0);
+        for (int i = 0; i < n; ++i) {
+            if (leftChild[i] != -1) {
+                in[leftChild[i]]++;
+            }
+            if (rightChild[i] != -1) {
+                in[rightChild[i]]++;
+            }
+        }
+        int root = -1;
+        for (int i = 0; i < n; ++i) {
+            if (in[i] == 0) {
+                if (root == -1) {
+                    root = i;
+                } else {
+                    return false;
+                }
+            } else if (in[i] > 1) {
+                return false;
+            }
+        }
+        if (root == -1) {
+            return false;
+        }
+        int cnt = 0;
+        queue<int> q;
+        q.push(root);
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            cnt++;
+            if (leftChild[i] != -1) {
+                q.push(leftChild[i]);
+            }
+            if (rightChild[i] != -1) {
+                q.push(rightChild[i]);
+            }
+        }
+        return cnt == n;
+
+=======
+
+        vector<int> in(n);
+        for (int i = 0; i < n; ++i) {
+            if (leftChild[i] != -1) {
+                ++in[leftChild[i]];
+            }
+            if (rightChild[i] != -1) {
+                ++in[rightChild[i]];
+            }
+        }
+        int root = -1;
+        for (int i = 0; i < n; ++i) {
+            if (in[i] == 0) {
+                if (root != -1) {
+                    return false;
+                }
+                root = i;
+            } else if (in[i] > 1) {
+                return false;
+            }
+        }
+        if (root == -1) {
+            return false;
+        }
+        vector<bool> vis(n);
+        queue<int> q;
+        q.push(root);
+        vis[root] = true;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            if (leftChild[u] != -1) {
+                if (vis[leftChild[u]]) {
+                    return false;
+                }
+                q.push(leftChild[u]);
+                vis[leftChild[u]] = true;
+            }
+            if (rightChild[u] != -1) {
+                if (vis[rightChild[u]]) {
+                    return false;
+                }
+                q.push(rightChild[u]);
+                vis[rightChild[u]] = true;
+            }
+        }
+        return accumulate(vis.begin(), vis.end(), 0) == n;
+
+=======
+
+        vector<int> degree(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) {
+                degree[i]++;
+                if (degree[leftChild[i]] == 2) {
+                    return false;
+                }
+                degree[leftChild[i]]++;
+            }
+            if (rightChild[i] != -1) {
+                degree[i]++;
+                if (degree[rightChild[i]] == 2) {
+                    return false;
+                }
+                degree[rightChild[i]]++;
+            }
+        }
+        int rootCount = 0;
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 0) {
+                rootCount++;
+            }
+        }
+        return rootCount == 1;
+
+=======
+
+        if (n == 1) return true;
+        vector<int> in(n, 0);
+        for (int i = 0; i < n; i++) {
+            if (leftChild[i] != -1) {
+                in[leftChild[i]]++;
+                if (in[leftChild[i]] > 1) {
+                    return false;
+                }
+            }
+            if (rightChild[i] != -1) {
+                in[rightChild[i]]++;
+                if (in[rightChild[i]] > 1) {
+                    return false;
+                }
+            }
+        }
+        int root = 0;
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) {
+                root = i;
+                break;
+            }
+        }
+        queue<int> q;
+        q.push(root);
+        int count = 0;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            count++;
+            if (leftChild[node] != -1) {
+                q.push(leftChild[node]);
+            }
+            if (rightChild[node] != -1) {
+                q.push(rightChild[node]);
+            }
+        }
+        return count == n;
+
+=======
+
+        unordered_set<int> s;
+        for (int i = 0; i < n; ++i) {
+            if (leftChild[i] != -1) {
+                if (s.count(leftChild[i])) return false;
+                s.insert(leftChild[i]);
+            }
+            if (rightChild[i] != -1) {
+                if (s.count(rightChild[i])) return false;
+                s.insert(rightChild[i]);
+            }
+        }
+        if (s.size() != n - 1) return false;
+        return true;

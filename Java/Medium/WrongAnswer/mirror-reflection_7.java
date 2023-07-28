@@ -1,0 +1,17 @@
+class Solution {
+    public int mirrorReflection(int p, int q) {
+        
+        int g = gcd(p, q);
+        p /= g;
+        p %= 2;
+        q /= g;
+        q %= 2;
+        return p + q;
+    }
+    public int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
+    }
+}

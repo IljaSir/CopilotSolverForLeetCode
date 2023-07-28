@@ -1,0 +1,238 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut k = k;
+        let mut i = nums.len() - 1;
+        while i > 0 && k >= nums.len() as i32 - i as i32 {
+            k -= nums.len() as i32 - i as i32;
+            i -= 1;
+        }
+        if k > 0 {
+            nums[i] += k;
+        }
+        nums[i]
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut k = k;
+        let mut i = nums.len() - 1;
+        while i > 0 && k >= nums[i] - nums[i - 1] {
+            k -= nums[i] - nums[i - 1];
+            i -= 1;
+        }
+        if k > 0 {
+            nums[i] - k
+        } else {
+            nums[i]
+        }
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let n = nums.len();
+        let mut i = 0;
+        while i < n && nums[i] == 0 {
+            i += 1;
+        }
+        if i as i32 > k {
+            return nums[k as usize];
+        }
+        if i == n {
+            return 0;
+        }
+        let k = k - i as i32;
+        let mut j = i;
+        while j < n && nums[j] == nums[i] {
+            j += 1;
+        }
+        let mut count = j - i;
+        let mut k = k;
+        while k >= count {
+            k -= count;
+            i = j;
+            while j < n && nums[j] == nums[i] {
+                j += 1;
+            }
+            count = j - i;
+        }
+        if k == 0 {
+            nums[i - 1]
+        } else {
+            nums[i - 1] + (k + count - 1) / count
+        }
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut i = 0;
+        let mut j = nums.len() - 1;
+        let mut k = k as usize;
+        while i < j {
+            let d = (j - i) * (nums[j] - nums[i]);
+            if k < d {
+                return nums[i] + k as i32 / (j - i) as i32;
+            } else {
+                k -= d;
+                i += 1;
+            }
+        }
+        nums[i]
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut count = 0;
+        let mut i = 0;
+        while i < nums.len() && nums[i] == 0 {
+            i += 1;
+        }
+        let mut j = i;
+        while j < nums.len() && count < k {
+            if j + 1 < nums.len() && nums[j] == nums[j + 1] {
+                j += 1;
+            } else {
+                let n = (j - i + 1) as i32;
+                if count + n > k {
+                    break;
+                }
+                count += n;
+                i = j + 1;
+                j = i;
+            }
+        }
+        if count < k {
+            nums[i - 1]
+        } else {
+            nums[j]
+        }
+
+=======
+
+        let mut nums = nums;
+        let mut k = k;
+        nums.sort_unstable();
+        let mut i = 0;
+        let mut n = nums.len();
+        while i < n && k >= nums[i] {
+            k -= nums[i];
+            i += 1;
+        }
+        if i < n {
+            nums[i] - k
+        } else {
+            -1
+        }
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut k = k;
+        let mut res = -1;
+        let n = nums.len();
+        for i in 0..n {
+            if i > 0 && nums[i] == nums[i - 1] {
+                continue;
+            }
+            let x = nums[i];
+            let mut cnt = 0;
+            for j in 0..n {
+                if nums[j] == x {
+                    cnt += 1;
+                }
+            }
+            let y = n - i;
+            let z = (k as usize) / y;
+            if z < cnt {
+                res = x + (k as i32) / (n - i) as i32;
+                break;
+            }
+            k -= (cnt * (n - i)) as i32;
+        }
+        if res == -1 && k > 0 {
+            res = nums[n - 1] + k / n as i32;
+        }
+        res
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut res = 0;
+        let mut i = nums.len() - 1;
+        let mut k = k;
+        while k > 0 {
+            if i == 0 {
+                heap.push(nums[i]);
+                i -= 1;
+            } else {
+                heap.push(nums[i]);
+                let diff = nums[i] - nums[i - 1];
+                let diff = diff * (nums.len() - i) as i32;
+                if diff <= k {
+                    k -= diff;
+                    i -= 1;
+                } else {
+                    let cnt = k / (nums.len() - i) as i32;
+                    k -= cnt * (nums.len() - i) as i32;
+                    nums[i] -= cnt;
+                    if k > 0 {
+                        heap.push(nums[i]);
+                        k -= 1;
+                        i -= 1;
+                    }
+                }
+            }
+        }
+        while let Some(n) = heap.pop() {
+            res = res.max(n);
+        }
+        res
+    }
+}
+
+=======
+
+        let (mut l, mut r) = (0, k as usize);
+        let mut res = -1;
+        while r < nums.len() {
+            res = res.max(nums[l..=r].iter().max().unwrap());
+            l += 1;
+            r += 1;
+        }
+        res
+
+=======
+
+        let mut nums = nums;
+        let mut k = k;
+        let mut max = 0;
+        nums.sort();
+        for i in 0..nums.len() {
+            if nums[i] > max {
+                let mut tmp = nums[i];
+                for j in (i+1)..nums.len() {
+                    if k > 0 {
+                        tmp += 1;
+                        k -= 1;
+                    } else {
+                        break;
+                    }
+                }
+                if tmp > max {
+                    max = tmp;
+                }
+            }
+        }
+        max

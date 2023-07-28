@@ -1,0 +1,242 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        Stack<Character> stack = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == ')') {
+                Set<Character> set = new HashSet<>();
+                while (stack.peek() != '(') {
+                    set.add(stack.pop());
+                }
+                stack.pop();
+                char operator = stack.pop();
+                if (operator == '&') {
+                    stack.push(set.contains('f') ? 'f' : 't');
+                } else if (operator == '|') {
+                    stack.push(set.contains('t') ? 't' : 'f');
+                } else {
+                    stack.push(set.contains('t') ? 'f' : 't');
+                }
+            } else if (c != ',') {
+                stack.push(c);
+            }
+        }
+        return stack.pop() == 't';
+
+=======
+
+        Stack<Character> stack = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == ')') {
+                Set<Character> set = new HashSet<>();
+                while (stack.peek() != '(') {
+                    set.add(stack.pop());
+                }
+                stack.pop();
+                char op = stack.pop();
+                if (op == '&') {
+                    stack.push(set.contains('f') ? 'f' : 't');
+                } else if (op == '|') {
+                    stack.push(set.contains('t') ? 't' : 'f');
+                } else {
+                    stack.push(set.contains('t') ? 'f' : 't');
+                }
+            } else if (c != ',') {
+                stack.push(c);
+            }
+        }
+        return stack.pop() == 't';
+
+=======
+
+        Stack<Character> stack = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == ')') {
+                Set<Character> set = new HashSet<>();
+                while (stack.peek() != '(') {
+                    set.add(stack.pop());
+                }
+                stack.pop();
+                char op = stack.pop();
+                if (op == '&') {
+                    stack.push(set.contains('f') ? 'f' : 't');
+                } else if (op == '|') {
+                    stack.push(set.contains('t') ? 't' : 'f');
+                } else {
+                    stack.push(set.contains('t') ? 'f' : 't');
+                }
+            } else if (c != ',') {
+                stack.push(c);
+            }
+        }
+        return stack.peek() == 't';
+
+=======
+
+        return parseBoolExpr(expression, 0, expression.length() - 1);
+    }
+    
+    private boolean parseBoolExpr(String expression, int start, int end) {
+        char c = expression.charAt(start);
+        if (c == 't') {
+            return true;
+        } else if (c == 'f') {
+            return false;
+        } else if (c == '!') {
+            return !parseBoolExpr(expression, start + 2, end - 1);
+        } else if (c == '&') {
+            for (int i = start + 2; i < end; i++) {
+                if (expression.charAt(i) == ',') {
+                    continue;
+                }
+                int j = i;
+                int count = 0;
+                while (count > 0 || expression.charAt(j) != ',') {
+                    if (expression.charAt(j) == '(') {
+                        count++;
+                    } else if (expression.charAt(j) == ')') {
+                        count--;
+                    }
+                    j++;
+                }
+                if (!parseBoolExpr(expression, i, j - 1)) {
+                    return false;
+                }
+                i = j;
+            }
+            return true;
+        } else {
+            for (int i = start + 2; i < end; i++) {
+                if (expression.charAt(i) == ',') {
+                    continue;
+                }
+                int j = i;
+                int count = 0;
+                while (count > 0 || expression.charAt(j) != ',') {
+                    if (expression.charAt(j) == '(') {
+                        count++;
+                    } else if (expression.charAt(j) == ')') {
+                        count--;
+                    }
+                    j++;
+                }
+                if (parseBoolExpr(expression, i, j - 1)) {
+                    return true;
+                }
+                i = j;
+            }
+            return false;
+        }
+
+=======
+
+        return parseBoolExpr(expression.toCharArray(), 0, expression.length() - 1);
+    }
+    
+    private boolean parseBoolExpr(char[] expression, int start, int end) {
+        if (start == end) {
+            return expression[start] == 't';
+        }
+        if (expression[start] == '!') {
+            return !parseBoolExpr(expression, start + 2, end - 1);
+        }
+        boolean result = expression[start] == '&';
+        int i = start + 2;
+        while (i < end) {
+            int j = i;
+            int count = 1;
+            while (count > 0) {
+                if (expression[j] == '(') {
+                    count++;
+                } else if (expression[j] == ')') {
+                    count--;
+                }
+                j++;
+            }
+            boolean value = parseBoolExpr(expression, i, j - 1);
+            if (expression[start] == '&') {
+                result &= value;
+            } else {
+                result |= value;
+            }
+            i = j + 1;
+        }
+        return result;
+
+=======
+
+        return parseBoolExpr(expression.toCharArray(), 0, expression.length() - 1);
+    }
+    private boolean parseBoolExpr(char[] expression, int start, int end) {
+        if (start == end) {
+            return expression[start] == 't';
+        }
+        char op = expression[start + 1];
+        if (op == '!') {
+            return !parseBoolExpr(expression, start + 2, end - 1);
+        }
+        int i = start + 2;
+        boolean result = op == '&';
+        while (i < end) {
+            int j = i + 1;
+            int count = 0;
+            while (j < end) {
+                if (expression[j] == '(') {
+                    count++;
+                } else if (expression[j] == ')') {
+                    count--;
+                }
+                if (count == 0) {
+                    break;
+                }
+                j++;
+            }
+            boolean subResult = parseBoolExpr(expression, i, j);
+            if (op == '&') {
+                result &= subResult;
+            } else if (op == '|') {
+                result |= subResult;
+            }
+            i = j + 2;
+        }
+        return result;
+
+=======
+
+        Stack<Boolean> stack = new Stack<>();
+        Stack<Character> op = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == 't') {
+                stack.push(true);
+            } else if (c == 'f') {
+                stack.push(false);
+            } else if (c == '(') {
+                continue;
+            } else if (c == ')') {
+                if (op.peek() == '&') {
+                    boolean b = true;
+                    while (!stack.isEmpty() && stack.peek() != null) {
+                        b &= stack.pop();
+                    }
+                    stack.pop();
+                    stack.push(b);
+                    op.pop();
+                } else if (op.peek() == '|') {
+                    boolean b = false;
+                    while (!stack.isEmpty() && stack.peek() != null) {
+                        b |= stack.pop();
+                    }
+                    stack.pop();
+                    stack.push(b);
+                    op.pop();
+                } else if (op.peek() == '!') {
+                    stack.push(!stack.pop());
+                    op.pop();
+                }
+            } else if (c == '&' || c == '|' || c == '!') {
+                stack.push(null);
+                op.push(c);
+            }
+        }
+        return stack.pop();

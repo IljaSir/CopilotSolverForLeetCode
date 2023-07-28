@@ -1,0 +1,286 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = statements.size();
+        vector<vector<int>> g(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (statements[i][j] == 2) continue;
+                g[i][j] = statements[i][j];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            vector<int> st(n, 0);
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) st[j] = 1;
+            }
+            bool flag = true;
+            for (int j = 0; j < n; ++j) {
+                if (!st[j]) continue;
+                for (int k = 0; k < n; ++k) {
+                    if (j == k) continue;
+                    if (g[j][k] == 1 && !st[k]) {
+                        flag = false;
+                        break;
+                    }
+                    if (g[j][k] == 0 && st[k]) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (flag) ans = max(ans, __builtin_popcount(i));
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        vector<int> good(n, 0);
+        vector<int> bad(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (statements[i][j] == 1) {
+                    good[i]++;
+                    good[j]++;
+                }
+                if (statements[i][j] == 0) {
+                    bad[i]++;
+                    bad[j]++;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (statements[i][j] == 1 || statements[i][j] == 0) {
+                    if (good[j] > bad[j]) {
+                        cnt++;
+                    }
+                }
+            }
+            ans = max(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        vector<int> good(n, 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (statements[i][j] == 2) {
+                    continue;
+                }
+                if (statements[i][j] == 1) {
+                    good[i] |= (1 << j);
+                } else {
+                    good[i] &= ~(1 << j);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            bool flag = true;
+            for (int j = 0; j < n; ++j) {
+                if ((i & (1 << j)) && ((i & good[j]) != good[j])) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                ans = max(ans, __builtin_popcount(i));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        vector<int> good(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (statements[i][j] == 2) {
+                    good[i] |= 1 << j;
+                } else if (statements[i][j] == 1) {
+                    good[i] |= 1 << j;
+                    good[j] |= 1 << i;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            bool flag = true;
+            for (int j = 0; j < n; j++) {
+                if ((i >> j) & 1) {
+                    if ((i & good[j]) != good[j]) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+            if (flag) {
+                ans = max(ans, __builtin_popcount(i));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        vector<vector<int>> g(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (statements[i][j] == 1)
+                    g[i][j] = 1;
+        int res = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            int cnt = 0;
+            for (int j = 0; j < n; ++j)
+                if (i & (1 << j)) ++cnt;
+            bool ok = true;
+            for (int j = 0; j < n; ++j)
+                if (i & (1 << j))
+                    for (int k = 0; k < n; ++k)
+                        if (i & (1 << k)) {
+                            if (g[j][k] == 0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+            if (ok) res = max(res, cnt);
+        }
+        return res;
+
+=======
+
+        int n = statements.size();
+        vector<vector<int>> m(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (statements[i][j] == 1) {
+                    m[i][j] = 1;
+                }
+            }
+        }
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (m[i][k] == 1 && m[k][j] == 1) {
+                        m[i][j] = 1;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int count = 0;
+            for (int j = 0; j < n; ++j) {
+                if (m[i][j] == 1) {
+                    ++count;
+                }
+            }
+            if (count == n - 1) {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        int n = statements.size();
+        int m = statements[0].size();
+        int ans = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) cnt++;
+            }
+            bool flag = true;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    for (int k = 0; k < m; k++) {
+                        if (statements[j][k] == 0) {
+                            if (i & (1 << k)) {
+                                flag = false;
+                                break;
+                            }
+                        } else if (statements[j][k] == 1) {
+                            if (!(i & (1 << k))) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!flag) break;
+            }
+            if (flag) ans = max(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            vector<int> good(n, 1);
+            good[i] = 0;
+            for (int j = 0; j < n; j++) {
+                if (statements[i][j] == 0) {
+                    good[j] = 0;
+                }
+                if (statements[i][j] == 2) {
+                    good[j] = -1;
+                }
+            }
+            for (int j = 0; j < n; j++) {
+                if (statements[j][i] == 1) {
+                    good[j] = 0;
+                }
+                if (statements[j][i] == 2) {
+                    good[j] = -1;
+                }
+            }
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                cnt += good[j];
+            }
+            ans = max(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = statements.size();
+        int m = statements[0].size();
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            vector<int> good(n, 1);
+            good[i] = 0;
+            for (int j = 0; j < m; j++) {
+                if (statements[i][j] == 0) {
+                    good[j] = 0;
+                }
+                if (statements[i][j] == 1) {
+                    good[j] = 1;
+                }
+            }
+            for (int j = 0; j < m; j++) {
+                if (statements[j][i] == 1) {
+                    good[j] = 1;
+                }
+                if (statements[j][i] == 0) {
+                    good[j] = 0;
+                }
+            }
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (good[j]) cnt++;
+            }
+            res = max(res, cnt);
+        }
+        return res;

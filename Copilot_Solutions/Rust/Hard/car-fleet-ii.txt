@@ -1,0 +1,150 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        let mut stack = Vec::new();
+        let mut res = vec![-1.0; cars.len()];
+        for i in (0..cars.len()).rev() {
+            let (pos, speed) = (cars[i][0] as f64, cars[i][1] as f64);
+            while let Some(&j) = stack.last() {
+                let (npos, nspeed) = (cars[j][0] as f64, cars[j][1] as f64);
+                if speed <= nspeed || (res[j] > 0.0 && (npos - pos) / (speed - nspeed) >= res[j]) {
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&j) = stack.last() {
+                let (npos, nspeed) = (cars[j][0] as f64, cars[j][1] as f64);
+                res[i] = (npos - pos) / (speed - nspeed);
+            }
+            stack.push(i);
+        }
+        res
+
+=======
+
+        let n = cars.len();
+        let mut ans = vec![-1.0; n];
+        let mut stack: Vec<usize> = vec![];
+        for i in (0..n).rev() {
+            let (pos_i, speed_i) = (cars[i][0], cars[i][1]);
+            while let Some(j) = stack.last() {
+                let (pos_j, speed_j) = (cars[*j][0], cars[*j][1]);
+                if speed_j >= speed_i || (pos_j - pos_i) as f64 * (speed_i - speed_j) as f64 <= (ans[*j] * speed_j as f64) {
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            if let Some(j) = stack.last() {
+                ans[i] = (pos_j - pos_i) as f64 / (speed_i - speed_j) as f64;
+            }
+            stack.push(i);
+        }
+        ans
+
+=======
+
+        let n = cars.len();
+        let mut ans = vec![-1.0; n];
+        let mut st = vec![];
+        for i in (0..n).rev() {
+            let (pos, speed) = (cars[i][0], cars[i][1]);
+            while !st.is_empty() {
+                let j = st[st.len() - 1];
+                let (pos2, speed2) = (cars[j][0], cars[j][1]);
+                if speed <= speed2 || (ans[j] > 0.0 && (pos2 - pos) as f64 / (speed - speed2) as f64 >= ans[j]) {
+                    st.pop();
+                } else {
+                    break;
+                }
+            }
+            if !st.is_empty() {
+                let j = st[st.len() - 1];
+                let (pos2, speed2) = (cars[j][0], cars[j][1]);
+                ans[i] = (pos2 - pos) as f64 / (speed - speed2) as f64;
+            }
+            st.push(i);
+        }
+        ans
+
+=======
+
+        let mut stack = Vec::new();
+        let mut res = vec![-1.0; cars.len()];
+        for i in (0..cars.len()).rev() {
+            let (pos_i, speed_i) = (cars[i][0], cars[i][1]);
+            while let Some(&j) = stack.last() {
+                let (pos_j, speed_j) = (cars[j][0], cars[j][1]);
+                if speed_i <= speed_j || (res[j] > 0.0 && (pos_j - pos_i) as f64 / (speed_i - speed_j) as f64 >= res[j]) {
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&j) = stack.last() {
+                let (pos_j, speed_j) = (cars[j][0], cars[j][1]);
+                res[i] = (pos_j - pos_i) as f64 / (speed_i - speed_j) as f64;
+            }
+            stack.push(i);
+        }
+        res
+
+=======
+
+        let mut st = vec![];
+        let mut ans = vec![-1.0; cars.len()];
+        for i in (0..cars.len()).rev() {
+            let pos = cars[i][0] as f64;
+            let speed = cars[i][1] as f64;
+            while st.len() > 0 {
+                let j = st[st.len() - 1];
+                let pos2 = cars[j][0] as f64;
+                let speed2 = cars[j][1] as f64;
+                if speed <= speed2 || (ans[j] > 0.0 && (pos2 - pos) / (speed - speed2) >= ans[j]) {
+                    st.pop();
+                } else {
+                    break;
+                }
+            }
+            if st.len() > 0 {
+                let j = st[st.len() - 1];
+                let pos2 = cars[j][0] as f64;
+                let speed2 = cars[j][1] as f64;
+                ans[i] = (pos2 - pos) / (speed - speed2);
+            }
+            st.push(i);
+        }
+        ans
+
+=======
+
+        let mut stack = vec![];
+        let mut res = vec![-1.0; cars.len()];
+        for i in (0..cars.len()).rev() {
+            let mut time = std::f64::MAX;
+            while !stack.is_empty() {
+                let (j, t) = stack.pop().unwrap();
+                if cars[i][1] <= cars[j][1] {
+                    if t > 0.0 {
+                        stack.push((j, t));
+                    }
+                    break;
+                } else {
+                    time = t;
+                    if t < 0.0 || (cars[j][0] - cars[i][0]) as f64 / (cars[i][1] - cars[j][1]) as f64 <= t {
+                        break;
+                    }
+                }
+            }
+            if !stack.is_empty() {
+                let (j, _) = stack.last().unwrap();
+                time = (cars[j][0] - cars[i][0]) as f64 / (cars[i][1] - cars[j][1]) as f64;
+            }
+            if time < std::f64::MAX {
+                res[i] = time;
+            }
+            stack.push((i, time));
+        }
+        res

@@ -1,0 +1,296 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = coins.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[] dp = new int[n];
+        dfs(graph, coins, dp, 0, -1);
+        return dp[0];
+    }
+    private void dfs(List<Integer>[] graph, int[] coins, int[] dp, int cur, int parent) {
+        dp[cur] = coins[cur];
+        for (int next : graph[cur]) {
+            if (next == parent) {
+                continue;
+            }
+            dfs(graph, coins, dp, next, cur);
+            dp[cur] += dp[next];
+        }
+
+=======
+
+        int n = coins.length;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        return dfs(graph, 0, -1, coins)[0];
+    }
+
+    // return [min path to collect all coins, min path to collect all coins with current node]
+    private int[] dfs(List<List<Integer>> graph, int node, int parent, int[] coins) {
+        int[] res = new int[2];
+        int count = coins[node];
+        for (int child : graph.get(node)) {
+            if (child == parent) {
+                continue;
+            }
+            int[] childRes = dfs(graph, child, node, coins);
+            res[0] += childRes[0];
+            count += childRes[1];
+        }
+        if (count == 0) {
+            return res;
+        }
+        res[0] += (count - 1) * 2;
+        res[1] = count;
+        return res;
+
+=======
+
+        int n = coins.length;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        boolean[] visited = new boolean[n];
+        return dfs(0, visited, coins, graph);
+    }
+    private int dfs(int u, boolean[] visited, int[] coins, List<List<Integer>> graph) {
+        int res = 0;
+        visited[u] = true;
+        for (int v : graph.get(u)) {
+            if (!visited[v]) {
+                res += dfs(v, visited, coins, graph);
+            }
+        }
+        if (u == 0) {
+            return res;
+        }
+        if (coins[u] == 1) {
+            if (coins[u - 1] == 0) {
+                coins[u - 1] = 1;
+                coins[u] = 0;
+                res++;
+            }
+        } else if (coins[u - 1] == 1) {
+            coins[u - 1] = 0;
+            coins[u] = 1;
+            res++;
+        }
+        return res;
+
+=======
+
+        int n = coins.length;
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[] dp = new int[n];
+        dfs(graph, dp, coins, 0, -1);
+        return dp[0];
+    }
+
+    private void dfs(List<Integer>[] graph, int[] dp, int[] coins, int u, int p) {
+        dp[u] = coins[u];
+        for (int v : graph[u]) {
+            if (v != p) {
+                dfs(graph, dp, coins, v, u);
+                dp[u] += dp[v];
+            }
+        }
+
+=======
+
+        int n = coins.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            int u = e[0];
+            int v = e[1];
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        int[] ans = new int[1];
+        boolean[] visited = new boolean[n];
+        dfs(0, coins, graph, ans, visited);
+        return ans[0];
+    }
+    
+    private int dfs(int u, int[] coins, List<Integer>[] graph, int[] ans, boolean[] visited) {
+        visited[u] = true;
+        int cur = coins[u];
+        for (int v : graph[u]) {
+            if (!visited[v]) {
+                cur += dfs(v, coins, graph, ans, visited);
+            }
+        }
+        ans[0] += Math.abs(cur);
+        return cur;
+
+=======
+
+        int n = coins.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] e : edges) {
+            graph[e[0]].add(e[1]);
+            graph[e[1]].add(e[0]);
+        }
+        int[] res = new int[1];
+        dfs(0, -1, coins, graph, res);
+        return res[0];
+    }
+    int dfs(int u, int p, int[] coins, List<Integer>[] graph, int[] res) {
+        int cnt = coins[u];
+        for (int v : graph[u]) {
+            if (v == p) continue;
+            cnt += dfs(v, u, coins, graph, res);
+        }
+        res[0] += Math.abs(cnt);
+        return cnt;
+
+=======
+
+        int n = coins.length;
+        int[] dp = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        dfs(graph, coins, dp, 0, -1);
+        return dp[0];
+    }
+    private void dfs(List<List<Integer>> graph, int[] coins, int[] dp, int cur, int parent) {
+        for (int next : graph.get(cur)) {
+            if (next != parent) {
+                dfs(graph, coins, dp, next, cur);
+                dp[cur] += dp[next];
+            }
+        }
+        dp[cur] += coins[cur];
+
+=======
+
+        int n = coins.length;
+        // build the tree
+        List<Integer>[] tree = new List[n];
+        for (int i = 0; i < n; i++) {
+            tree[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            tree[edge[0]].add(edge[1]);
+            tree[edge[1]].add(edge[0]);
+        }
+        // dp[i][j] = min #edges to collect coins in subtree i, and j = 0, 1, 2
+        // j = 0 means current vertex i has no coins
+        // j = 1 means current vertex i has a coin
+        // j = 2 means current vertex i has a coin, and we have already collected coins from its children
+        int[][] dp = new int[n][3];
+        // dp[i][0] = min{dp[child][0], dp[child][1], dp[child][2]} + 1
+        // dp[i][1] = min{dp[child][0], dp[child][1], dp[child][2]} + coins[i]
+        // dp[i][2] = min{dp[child][0], dp[child][1], dp[child][2]} + coins[i] - 1
+        dfs(tree, dp, 0, -1, coins);
+        return Math.min(dp[0][0], Math.min(dp[0][1], dp[0][2]));
+    }
+    
+    private void dfs(List<Integer>[] tree, int[][] dp, int i, int parent, int[] coins) {
+        int min0 = Integer.MAX_VALUE;
+        int min1 = Integer.MAX_VALUE;
+        int min2 = Integer.MAX_VALUE;
+        for (int child : tree[i]) {
+            if (child == parent) {
+                continue;
+            }
+            dfs(tree, dp, child, i, coins);
+            min0 = Math.min(min0, Math.min(dp[child][0], Math.min(dp[child][1], dp[child][2])));
+            min1 = Math.min(min1, Math.min(dp[child][0], dp[child][1]));
+            min2 = Math.min(min2, Math.min(dp[child][0], dp[child][1]));
+        }
+        dp[i][0] = min0 + 1;
+        dp[i][1] = min1 + coins[i];
+        dp[i][2] =
+
+=======
+
+        int n = coins.length;
+        int[] dp = new int[n];
+        int[] count = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        dfs(graph, count, dp, coins, 0, -1);
+        return dp[0];
+    }
+
+    private void dfs(List<List<Integer>> graph, int[] count, int[] dp, int[] coins, int u, int p) {
+        for (int v : graph.get(u)) {
+            if (v == p) {
+                continue;
+            }
+            dfs(graph, count, dp, coins, v, u);
+            count[u] += count[v];
+            dp[u] += dp[v];
+        }
+        count[u] += coins[u];
+        dp[u] += Math.abs(count[u] - 1);
+
+=======
+
+        int n = coins.length;
+        if (n == 1) return 0;
+        int[] dp = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n - 1; i++) {
+            graph.get(edges[i][0]).add(edges[i][1]);
+            graph.get(edges[i][1]).add(edges[i][0]);
+        }
+        return dfs(0, -1, coins, dp, graph);
+    }
+    private int dfs(int u, int f, int[] coins, int[] dp, List<List<Integer>> graph) {
+        dp[u] = coins[u];
+        int max = 0;
+        for (int v : graph.get(u)) {
+            if (v == f) continue;
+            int tmp = dfs(v, u, coins, dp, graph);
+            dp[u] += dp[v];
+            max = Math.max(max, tmp);
+        }
+        return max + dp[u] - 1;

@@ -1,0 +1,306 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end(), [](const vector<int>& a, const vector<int>& b) { return a[0] < b[0]; });
+        int m = robot.size();
+        int n = factory.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + factory[i][1];
+        }
+        vector<long long> dp(n + 1, 0);
+        int j = 0;
+        for (int i = 0; i < n; i++) {
+            while (j < m && robot[j] <= factory[i][0]) {
+                j++;
+            }
+            dp[i + 1] = dp[i] + (long long)j * factory[i][0] - sum[j];
+        }
+        long long ans = dp[n];
+        j = m - 1;
+        for (int i = n - 1; i >= 0; i--) {
+            while (j >= 0 && robot[j] >= factory[i][0]) {
+                j--;
+            }
+            ans = min(ans, dp[i] + sum[m] - (long long)(m - j - 1) * factory[i][0]);
+        }
+        return ans;
+
+=======
+
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end(), [](auto &a, auto &b) { return a[0] < b[0]; });
+        int n = robot.size(), m = factory.size();
+        vector<int> cnt(m, 0);
+        int i = 0, j = 0;
+        long long ans = 0;
+        while (i < n && j < m) {
+            if (robot[i] <= factory[j][0]) {
+                if (cnt[j] < factory[j][1]) {
+                    ans += factory[j][0] - robot[i];
+                    cnt[j]++;
+                }
+                i++;
+            } else {
+                j++;
+            }
+        }
+        i = n - 1, j = m - 1;
+        while (i >= 0 && j >= 0) {
+            if (robot[i] >= factory[j][0]) {
+                if (cnt[j] < factory[j][1]) {
+                    ans += robot[i] - factory[j][0];
+                    cnt[j]++;
+                }
+                i--;
+            } else {
+                j--;
+            }
+        }
+        return ans;
+
+=======
+
+        sort(robot.begin(), robot.end());
+        int n = robot.size();
+        vector<long long> sum(n);
+        sum[0] = robot[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + robot[i];
+        }
+        long long res = 0;
+        for (auto& f : factory) {
+            res += f[1] * (upper_bound(robot.begin(), robot.end(), f[0]) - lower_bound(robot.begin(), robot.end(), f[0]));
+            if (f[1] < n) {
+                int pos = lower_bound(robot.begin(), robot.end(), f[0]) - robot.begin();
+                if (pos > 0) {
+                    res += f[1] * f[0] - (sum[pos - 1] + f[1] * f[0]);
+                }
+                if (pos + f[1] < n) {
+                    res += sum[pos + f[1] - 1] - sum[pos - 1] - f[1] * f[0];
+                }
+            }
+        }
+        return res;
+
+=======
+
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end(), [](vector<int> &a, vector<int> &b) {
+            return a[0] < b[0];
+        });
+        long long total = 0;
+        int f = 0, r = 0, n = robot.size(), m = factory.size();
+        while (f < m) {
+            int j = f;
+            while (j < m && factory[j][0] <= robot[r]) j++;
+            if (j == m) {
+                total += (long long)(robot[n - 1] - robot[r]) * factory[f][1];
+                break;
+            }
+            int k = r;
+            while (k < n && robot[k] < factory[j][0]) k++;
+            if (k == n) {
+                total += (long long)(robot[r] - robot[0]) * factory[j][1];
+                break;
+            }
+            int x = (k - r) / factory[j][1];
+            int y = (n - k) / factory[f][1];
+            if (x < y) {
+                total += (long long)(robot[k - 1] - robot[r]) * factory[j][1];
+                r = k;
+                f = j;
+            } else {
+                total += (long long)(robot[n - 1] - robot[k]) * factory[f][1];
+                n = k;
+            }
+        }
+        return total;
+
+=======
+
+        int n = robot.size(), m = factory.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(m + 1, 0));
+        vector<long long> sum(n + 1, 0);
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end());
+        for (int i = 1; i <= n; i++) sum[i] = sum[i - 1] + robot[i - 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                dp[i][j] = dp[i - 1][j] + abs(robot[i - 1] - factory[j - 1][0]);
+                if (i > factory[j - 1][1]) dp[i][j] = min(dp[i][j], dp[i - factory[j - 1][1] - 1][j - 1] + sum[i] - sum[i - factory[j - 1][1]]);
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        vector<int> factories;
+        for (auto& f : factory) {
+            factories.push_back(f[0]);
+        }
+        sort(factories.begin(), factories.end());
+        sort(robot.begin(), robot.end());
+        long long ans = 0;
+        for (auto r : robot) {
+            auto it = lower_bound(factories.begin(), factories.end(), r);
+            if (it == factories.begin()) {
+                ans += abs(r - *it);
+            } else if (it == factories.end()) {
+                ans += abs(r - *(it - 1));
+            } else {
+                ans += min(abs(r - *it), abs(r - *(it - 1)));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = robot.size();
+        int m = factory.size();
+        vector<long long> cnt(m);
+        for (int i = 0; i < m; ++i) {
+            cnt[i] = factory[i][1];
+        }
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        });
+        long long ans = 0;
+        for (int i = 0, j = 0; i < n; ++i) {
+            while (j + 1 < m && abs(robot[i] - factory[j][0]) > abs(robot[i] - factory[j + 1][0])) {
+                ++j;
+            }
+            ans += abs(robot[i] - factory[j][0]);
+            --cnt[j];
+            if (cnt[j] == 0) {
+                ++j;
+            }
+        }
+        return ans;
+
+=======
+
+        sort(robot.begin(), robot.end());
+        vector<int> factoryPos;
+        for (auto& f : factory) {
+            factoryPos.push_back(f[0]);
+        }
+        sort(factoryPos.begin(), factoryPos.end());
+        vector<int> factoryCnt(factory.size());
+        int i = 0, j = 0;
+        long long ans = 0;
+        for (int robotPos : robot) {
+            while (j < factoryPos.size() && robotPos > factoryPos[j]) {
+                j++;
+            }
+            if (j == factoryPos.size()) {
+                ans += robotPos - factoryPos[j - 1];
+                factoryCnt[j - 1]++;
+            } else if (j == 0) {
+                ans += factoryPos[j] - robotPos;
+                factoryCnt[j]++;
+            } else {
+                if (robotPos - factoryPos[j - 1] <= factoryPos[j] - robotPos) {
+                    ans += robotPos - factoryPos[j - 1];
+                    factoryCnt[j - 1]++;
+                } else {
+                    ans += factoryPos[j] - robotPos;
+                    factoryCnt[j]++;
+                }
+            }
+        }
+        for (int i = 0; i < factory.size(); i++) {
+            if (factory[i][1] < factoryCnt[i]) {
+                ans += factoryCnt[i] - factory[i][1];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = robot.size();
+        int m = factory.size();
+        long long res = 0;
+        sort(robot.begin(), robot.end());
+        for (auto& f: factory) {
+            int pos = f[0];
+            int limit = f[1];
+            int l = 0, r = n - 1;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (robot[mid] >= pos) r = mid;
+                else l = mid + 1;
+            }
+            int cnt = 0;
+            if (robot[l] > pos) {
+                if (l < n) {
+                    if (cnt < limit) {
+                        cnt++;
+                        res += robot[l] - pos;
+                    }
+                    l++;
+                }
+            } else {
+                if (l > 0) {
+                    if (cnt < limit) {
+                        cnt++;
+                        res += pos - robot[l - 1];
+                    }
+                    l--;
+                }
+            }
+            while (cnt < limit && l >= 0 && l < n) {
+                cnt++;
+                res += abs(robot[l] - pos);
+                l++;
+            }
+        }
+        return res;
+
+=======
+
+        long long res = 0;
+        vector<int> factoryPos;
+        vector<int> factoryLimit;
+        for (auto &f : factory) {
+            factoryPos.push_back(f[0]);
+            factoryLimit.push_back(f[1]);
+        }
+        sort(factoryPos.begin(), factoryPos.end());
+        sort(factoryLimit.begin(), factoryLimit.end());
+        sort(robot.begin(), robot.end());
+        for (int i = 0; i < robot.size(); i++) {
+            int l = 0, r = factoryPos.size() - 1;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (robot[i] < factoryPos[mid]) {
+                    r = mid;
+                } else if (robot[i] > factoryPos[mid]) {
+                    l = mid + 1;
+                } else {
+                    l = mid;
+                    break;
+                }
+            }
+            int left = l, right = l;
+            while (left > 0 && factoryLimit[left - 1] == factoryLimit[left]) {
+                left--;
+            }
+            while (right < factoryLimit.size() - 1 && factoryLimit[right + 1] == factoryLimit[right]) {
+                right++;
+            }
+            int minD = robot[i] - factoryPos[left];
+            int minI = left;
+            for (int j = left + 1; j <= right; j++) {
+                if (robot[i] - factoryPos[j] < minD) {
+                    minD = robot[i] - factoryPos[j];
+                    minI = j;
+                }
+            }
+            res += minD;
+            factoryLimit[minI]--;
+        }
+        return res;

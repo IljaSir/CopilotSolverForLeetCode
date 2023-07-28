@@ -1,0 +1,268 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut banned = banned;
+        banned.sort();
+        let mut l = 1;
+        let mut r = n;
+        while l < r {
+            let m = (l + r + 1) / 2;
+            let sum = m * (m + 1) / 2;
+            let mut i = 0;
+            let mut j = m;
+            while i < banned.len() && banned[i] <= m {
+                if banned[i] <= j {
+                    j = banned[i] - 1;
+                }
+                i += 1;
+            }
+            let count = m - j;
+            if count + sum <= max_sum {
+                l = m;
+            } else {
+                r = m - 1;
+            }
+        }
+        l
+
+=======
+
+        let mut banned = banned;
+        banned.sort();
+        let mut left = 1;
+        let mut right = n;
+        let mut ans = 0;
+        while left <= right {
+            let mid = (left + right) / 2;
+            let mut sum = 0;
+            for i in 0..banned.len() {
+                if banned[i] > mid {
+                    break;
+                }
+                sum += banned[i];
+            }
+            sum += mid * (n - mid + 1);
+            if sum <= max_sum {
+                ans = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut banned = banned;
+        banned.sort();
+        let mut i = 0;
+        let mut j = 0;
+        let mut sum = 0;
+        let mut count = 0;
+        while i < banned.len() {
+            if banned[i] > n {
+                break;
+            }
+            while j < banned.len() && banned[j] <= banned[i] + i as i32 {
+                j += 1;
+            }
+            if banned[i] - i as i32 > 0 && sum + banned[i] - i as i32 <= max_sum {
+                sum += banned[i] - i as i32;
+                count += banned[i] - i as i32;
+            }
+            if sum + j as i32 - i as i32 <= max_sum {
+                sum += j as i32 - i as i32;
+                count += j as i32 - i as i32;
+            } else {
+                break;
+            }
+            i = j;
+        }
+        count + (n - i as i32).min(max_sum - sum)
+
+=======
+
+        let mut banned = banned;
+        banned.sort();
+        let mut l = 0;
+        let mut r = 0;
+        let mut res = 0;
+        let mut sum = 0;
+        while r < banned.len() {
+            if banned[r] - 1 - l > 0 {
+                let tmp = banned[r] - 1 - l;
+                let mut sum_tmp = tmp * (tmp + 1) / 2;
+                if sum + sum_tmp > max_sum {
+                    sum_tmp = max_sum - sum;
+                }
+                res += sum_tmp / (banned[r] - 1 - l);
+                sum += sum_tmp;
+                if sum >= max_sum {
+                    break;
+                }
+            }
+            l = banned[r] + 1;
+            r += 1;
+        }
+        if r == banned.len() {
+            let tmp = n - l + 1;
+            let mut sum_tmp = tmp * (tmp + 1) / 2;
+            if sum + sum_tmp > max_sum {
+                sum_tmp = max_sum - sum;
+            }
+            res += sum_tmp / (n - l + 1);
+        }
+        res
+
+=======
+
+        let mut sum = 0;
+        let mut count = 0;
+        let mut banned = banned;
+        banned.sort();
+        let mut i = 0;
+        while i < banned.len() {
+            if sum + banned[i] > max_sum {
+                break;
+            } else {
+                sum += banned[i];
+                count += 1;
+            }
+            i += 1;
+        }
+        let mut j = banned.len();
+        while j > 0 {
+            if sum + n - banned[j-1] + 1 <= max_sum {
+                sum += n - banned[j-1] + 1;
+                count += n - banned[j-1] + 1;
+            }
+            j -= 1;
+        }
+        count
+
+=======
+
+        let banned: Vec<i32> = banned.into_iter().filter(|&x| x <= n).collect();
+        let mut dp = vec![0; (max_sum + 1) as usize];
+        dp[0] = 1;
+        for i in 1..=n {
+            if banned.contains(&i) {
+                continue;
+            }
+            for j in (i..=max_sum).rev() {
+                dp[j as usize] += dp[(j - i) as usize];
+                dp[j as usize] %= 1000000007;
+            }
+        }
+        dp[max_sum as usize]
+
+=======
+
+        let mut res = 0;
+        let mut sum = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut banned = banned;
+        banned.sort();
+        while i < banned.len() && banned[i] <= n {
+            while j < banned.len() && banned[j] <= n {
+                if sum + banned[j] - banned[i] <= max_sum {
+                    sum += banned[j] - banned[i];
+                    j += 1;
+                } else {
+                    break;
+                }
+            }
+            res = res.max(j - i);
+            i += 1;
+        }
+        res.max(n - j as i32 + 1)
+
+=======
+
+        let mut banned = banned;
+        banned.sort();
+        let mut max = 0;
+        let mut min = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut sum = 0;
+        while i < banned.len() {
+            let mut x = banned[i];
+            while j < banned.len() && banned[j] == x {
+                j += 1;
+            }
+            let y = j - i;
+            if x > max_sum {
+                break;
+            }
+            if x + (n - y) <= max_sum {
+                max = n;
+                break;
+            }
+            if x > sum {
+                let t = x - sum - 1;
+                let m = t.min(n - i as i32);
+                if m > max {
+                    max = m;
+                    min = i as i32;
+                }
+            }
+            sum += y;
+            i = j;
+        }
+        if sum < max_sum {
+            let t = max_sum - sum;
+            let m = t.min(n - i as i32);
+            if m > max {
+                max = m;
+                min = i as i32;
+            }
+        }
+        max
+
+=======
+
+        let mut banned = banned;
+        banned.sort_unstable();
+        let mut ans = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut sum = 0;
+        let mut count = 0;
+        while i < n {
+            if j < banned.len() && banned[j] == i + 1 {
+                j += 1;
+                i += 1;
+                continue;
+            }
+            if sum + i + 1 > max_sum {
+                sum -= banned[j - 1] - 1;
+                j += 1;
+                count -= 1;
+            } else {
+                sum += i + 1;
+                i += 1;
+                count += 1;
+            }
+            ans = ans.max(count);
+        }
+        ans
+
+=======
+
+        let mut max = max_sum;
+        for i in 0..banned.len() {
+            max -= banned[i];
+        }
+        let mut count = 0;
+        for i in 1..=n {
+            if max - i >= 0 {
+                count += 1;
+                max -= i;
+            } else {
+                break;
+            }
+        }
+        count

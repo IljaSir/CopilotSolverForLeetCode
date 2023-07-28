@@ -1,0 +1,402 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << (n / 2)];
+        int[] right = new int[1 << (n - n / 2)];
+        for (int i = 0; i < 1 << (n / 2); i++) {
+            for (int j = 0; j < n / 2; j++) {
+                if ((i >> j & 1) > 0) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < 1 << (n - n / 2); i++) {
+            for (int j = 0; j < n - n / 2; j++) {
+                if ((i >> j & 1) > 0) {
+                    right[i] += nums[j + n / 2];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0, j = right.length - 1; i < left.length && j >= 0;) {
+            int sum = left[i] + right[j];
+            if (sum == goal) {
+                return 0;
+            }
+            ans = Math.min(ans, Math.abs(sum - goal));
+            if (sum > goal) {
+                j--;
+            } else {
+                i++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << (n / 2)];
+        int[] right = new int[1 << (n - n / 2)];
+        for (int i = 0; i < (1 << (n / 2)); i++) {
+            for (int j = 0; j < n / 2; j++) {
+                if (((i >> j) & 1) == 1) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < (1 << (n - n / 2)); i++) {
+            for (int j = 0; j < n - n / 2; j++) {
+                if (((i >> j) & 1) == 1) {
+                    right[i] += nums[j + n / 2];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < left.length; i++) {
+            int index = Arrays.binarySearch(right, goal - left[i]);
+            if (index >= 0) {
+                return 0;
+            } else {
+                index = -index - 1;
+                if (index < right.length) {
+                    ans = Math.min(ans, Math.abs(goal - left[i] - right[index]));
+                }
+                if (index > 0) {
+                    ans = Math.min(ans, Math.abs(goal - left[i] - right[index - 1]));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << (n / 2)];
+        int[] right = new int[1 << (n - n / 2)];
+        for (int i = 0; i < 1 << (n / 2); i++) {
+            for (int j = 0; j < n / 2; j++) {
+                if ((i >> j & 1) == 1) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < 1 << (n - n / 2); i++) {
+            for (int j = 0; j < n - n / 2; j++) {
+                if ((i >> j & 1) == 1) {
+                    right[i] += nums[j + n / 2];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int res = Integer.MAX_VALUE;
+        int l = 0, r = right.length - 1;
+        while (l < left.length && r >= 0) {
+            int sum = left[l] + right[r];
+            if (sum == goal) {
+                return 0;
+            } else if (sum > goal) {
+                res = Math.min(res, sum - goal);
+                r--;
+            } else {
+                res = Math.min(res, goal - sum);
+                l++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << n / 2];
+        int[] right = new int[1 << n - n / 2];
+        for (int i = 0; i < (1 << n / 2); i++) {
+            for (int j = 0; j < n / 2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < (1 << n - n / 2); i++) {
+            for (int j = 0; j < n - n / 2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    right[i] += nums[n / 2 + j];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Integer.MAX_VALUE;
+        int l = 0, r = right.length - 1;
+        while (l < left.length && r >= 0) {
+            int sum = left[l] + right[r];
+            if (sum <= goal) {
+                ans = Math.min(ans, goal - sum);
+                l++;
+            } else {
+                ans = Math.min(ans, sum - goal);
+                r--;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << n/2];
+        int[] right = new int[1 << (n - n/2)];
+        for (int i = 0; i < 1 << n/2; i++) {
+            for (int j = 0; j < n/2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < 1 << (n - n/2); i++) {
+            for (int j = 0; j < n - n/2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    right[i] += nums[n/2 + j];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Math.abs(goal);
+        for (int i = 0; i < 1 << (n - n/2); i++) {
+            int l = 0, r = 1 << n/2;
+            while (l < r) {
+                int mid = l + r >> 1;
+                if (Math.abs(left[mid] + right[i] - goal) < Math.abs(left[l] + right[i] - goal)) {
+                    l = mid;
+                } else {
+                    r = mid;
+                }
+            }
+            ans = Math.min(ans, Math.abs(left[l] + right[i] - goal));
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << (n / 2)];
+        int[] right = new int[1 << (n - n / 2)];
+        
+        for (int i = 0; i < left.length; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        
+        for (int i = 0; i < right.length; i++) {
+            for (int j = 0; j < n - n / 2; j++) {
+                if ((i & (1 << j)) != 0) {
+                    right[i] += nums[n / 2 + j];
+                }
+            }
+        }
+        
+        Arrays.sort(left);
+        Arrays.sort(right);
+        
+        int ans = Math.abs(goal);
+        int l = 0, r = right.length - 1;
+        while (l < left.length && r >= 0) {
+            int sum = left[l] + right[r];
+            if (Math.abs(sum - goal) < ans) {
+                ans = Math.abs(sum - goal);
+            }
+            
+            if (sum > goal) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+        
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n/2];
+        int[] right = new int[n - n/2];
+        for (int i = 0; i < n/2; i++) {
+            left[i] = nums[i];
+        }
+        for (int i = n/2; i < n; i++) {
+            right[i - n/2] = nums[i];
+        }
+        TreeSet<Integer> leftSum = new TreeSet<>();
+        TreeSet<Integer> rightSum = new TreeSet<>();
+        leftSum.add(0);
+        rightSum.add(0);
+        for (int i = 0; i < left.length; i++) {
+            TreeSet<Integer> tmp = new TreeSet<>();
+            for (int sum : leftSum) {
+                tmp.add(sum + left[i]);
+            }
+            leftSum.addAll(tmp);
+        }
+        for (int i = 0; i < right.length; i++) {
+            TreeSet<Integer> tmp = new TreeSet<>();
+            for (int sum : rightSum) {
+                tmp.add(sum + right[i]);
+            }
+            rightSum.addAll(tmp);
+        }
+        int ans = Math.abs(goal);
+        for (int sum : leftSum) {
+            int cur = Math.abs(sum - goal);
+            if (cur < ans) {
+                ans = cur;
+            }
+            Integer rightSumCeil = rightSum.ceiling(goal - sum);
+            if (rightSumCeil != null) {
+                cur = Math.abs(sum + rightSumCeil - goal);
+                if (cur < ans) {
+                    ans = cur;
+                }
+            }
+            Integer rightSumFloor = rightSum.floor(goal - sum);
+            if (rightSumFloor != null) {
+                cur = Math.abs(sum + rightSumFloor - goal);
+                if (cur < ans) {
+                    ans = cur;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1 << n/2];
+        int[] right = new int[1 << n - n/2];
+        for (int i = 0; i < 1 << n/2; i++) {
+            for (int j = 0; j < n/2; j++) {
+                if ((i >> j & 1) == 1) {
+                    left[i] += nums[j];
+                }
+            }
+        }
+        for (int i = 0; i < 1 << n - n/2; i++) {
+            for (int j = 0; j < n - n/2; j++) {
+                if ((i >> j & 1) == 1) {
+                    right[i] += nums[j + n/2];
+                }
+            }
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0, j = right.length - 1; i < left.length && j >= 0; ) {
+            int sum = left[i] + right[j];
+            if (sum == goal) {
+                return 0;
+            } else if (sum < goal) {
+                ans = Math.min(ans, goal - sum);
+                i++;
+            } else {
+                ans = Math.min(ans, sum - goal);
+                j--;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] first = new int[nums.length / 2];
+        int[] second = new int[nums.length - first.length];
+        for (int i = 0; i < nums.length; i++) {
+            if (i < first.length) {
+                first[i] = nums[i];
+            } else {
+                second[i - first.length] = nums[i];
+            }
+        }
+
+        List<Integer> firstSum = new ArrayList<>();
+        List<Integer> secondSum = new ArrayList<>();
+
+        generate(first, 0, 0, firstSum);
+        generate(second, 0, 0, secondSum);
+
+        Collections.sort(firstSum);
+        Collections.sort(secondSum);
+
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < firstSum.size(); i++) {
+            int j = Collections.binarySearch(secondSum, goal - firstSum.get(i));
+            if (j >= 0) {
+                return 0;
+            } else {
+                j = -j - 1;
+                if (j < secondSum.size()) {
+                    min = Math.min(min, Math.abs(goal - firstSum.get(i) - secondSum.get(j)));
+                }
+                if (j > 0) {
+                    min = Math.min(min, Math.abs(goal - firstSum.get(i) - secondSum.get(j - 1)));
+                }
+            }
+        }
+
+        return min;
+    }
+
+    private void generate(int[] nums, int index, int sum, List<Integer> result) {
+        if (index == nums.length) {
+            result.add(sum);
+            return;
+        }
+
+        generate(nums, index + 1, sum + nums[index], result);
+        generate(nums, index + 1, sum, result);
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[1<<(n/2)];
+        int[] right = new int[1<<(n-n/2)];
+        int l = 0, r = 0;
+        for (int i = 0; i < 1<<(n/2); i++) {
+            for (int j = 0; j < n/2; j++) {
+                if ((i>>j&1) == 1) {
+                    left[l] += nums[j];
+                }
+            }
+            l++;
+        }
+        for (int i = 0; i < 1<<(n-n/2); i++) {
+            for (int j = 0; j < n-n/2; j++) {
+                if ((i>>j&1) == 1) {
+                    right[r] += nums[n/2+j];
+                }
+            }
+            r++;
+        }
+        Arrays.sort(left);
+        Arrays.sort(right);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < l; i++) {
+            int idx = Arrays.binarySearch(right, goal-left[i]);
+            if (idx >= 0) {
+                return 0;
+            }
+            idx = -idx-1;
+            if (idx < r) {
+                ans = Math.min(ans, Math.abs(goal-left[i]-right[idx]));
+            }
+            if (idx > 0) {
+                ans = Math.min(ans, Math.abs(goal-left[i]-right[idx-1]));
+            }
+        }
+        return ans;

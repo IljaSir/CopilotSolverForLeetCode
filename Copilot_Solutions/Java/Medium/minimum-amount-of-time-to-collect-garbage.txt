@@ -1,0 +1,293 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int[] metal = new int[garbage.length];
+        int[] paper = new int[garbage.length];
+        int[] glass = new int[garbage.length];
+        for (int i = 0; i < garbage.length; i++) {
+            for (int j = 0; j < garbage[i].length(); j++) {
+                if (garbage[i].charAt(j) == 'M') {
+                    metal[i]++;
+                } else if (garbage[i].charAt(j) == 'P') {
+                    paper[i]++;
+                } else {
+                    glass[i]++;
+                }
+            }
+        }
+        int[][] dp = new int[3][garbage.length];
+        for (int i = 0; i < 3; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = metal[0] * 1;
+        dp[1][0] = paper[0] * 1;
+        dp[2][0] = glass[0] * 1;
+        for (int i = 1; i < garbage.length; i++) {
+            for (int j = 0; j < 3; j++) {
+                dp[j][i] = dp[j][i - 1] + travel[i - 1];
+            }
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    dp[j][i] = Math.min(dp[j][i], dp[k][i - 1] + travel[i - 1] + metal[i] * 1);
+                    dp[j][i] = Math.min(dp[j][i], dp[k][i - 1] + travel[i - 1] + paper[i] * 1);
+                    dp[j][i] = Math.min(dp[j][i], dp[k][i - 1] + travel[i - 1] + glass[i] * 1);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < 3; i++) {
+            ans = Math.min(ans, dp[i][garbage.length - 1]);
+        }
+        return ans;
+
+=======
+
+        int[] metal = new int[garbage.length];
+        int[] paper = new int[garbage.length];
+        int[] glass = new int[garbage.length];
+        for (int i = 0; i < garbage.length; i++) {
+            metal[i] = paper[i] = glass[i] = -1;
+            for (char c : garbage[i].toCharArray()) {
+                if (c == 'M') {
+                    metal[i] = 0;
+                } else if (c == 'P') {
+                    paper[i] = 0;
+                } else {
+                    glass[i] = 0;
+                }
+            }
+        }
+        for (int i = 1; i < metal.length; i++) {
+            if (metal[i] != -1) {
+                metal[i] = metal[i - 1] + travel[i - 1];
+            }
+            if (paper[i] != -1) {
+                paper[i] = paper[i - 1] + travel[i - 1];
+            }
+            if (glass[i] != -1) {
+                glass[i] = glass[i - 1] + travel[i - 1];
+            }
+        }
+        return Math.min(metal[metal.length - 1], Math.min(paper[paper.length - 1], glass[glass.length - 1]));
+
+=======
+
+        int[][] dp = new int[garbage.length][3];
+        for (int i = 0; i < garbage.length; i++) {
+            for (int j = 0; j < 3; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = garbage[0].length() - garbage[0].replace("M", "").length();
+        dp[0][1] = garbage[0].length() - garbage[0].replace("P", "").length();
+        dp[0][2] = garbage[0].length() - garbage[0].replace("G", "").length();
+        for (int i = 1; i < garbage.length; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    if (j == k) {
+                        continue;
+                    }
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + travel[i - 1] + garbage[i].length() - garbage[i].replace(garbage[i].substring(j, j + 1), "").length());
+                }
+            }
+        }
+        return Math.min(dp[garbage.length - 1][0], Math.min(dp[garbage.length - 1][1], dp[garbage.length - 1][2]));
+
+=======
+
+        int n = garbage.length;
+        int[] M = new int[n];
+        int[] P = new int[n];
+        int[] G = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (char c : garbage[i].toCharArray()) {
+                if (c == 'M') {
+                    M[i]++;
+                } else if (c == 'P') {
+                    P[i]++;
+                } else {
+                    G[i]++;
+                }
+            }
+        }
+        int[][] dp = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = M[0] * travel[0];
+        dp[0][1] = P[0] * travel[0];
+        dp[0][2] = G[0] * travel[0];
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = Math.min(dp[i - 1][0], Math.min(dp[i - 1][1], dp[i - 1][2]) + travel[i - 1]) + M[i] * travel[i];
+            dp[i][1] = Math.min(dp[i - 1][0], dp[i - 1][2]) + P[i] * travel[i];
+            dp[i][2] = Math.min(dp[i - 1][0], dp[i - 1][1]) + G[i] * travel[i];
+        }
+        return Math.min(dp[n - 1][0], Math.min(dp[n - 1][1], dp[n - 1][2]));
+
+=======
+
+        int n = garbage.length;
+        int[][] dp = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < 3; i++) {
+            if (garbage[0].indexOf("MPG".charAt(i)) != -1) {
+                dp[0][i] = 0;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (garbage[i].indexOf("MPG".charAt(j)) != -1) {
+                    for (int k = 0; k < 3; k++) {
+                        if (dp[i - 1][k] != Integer.MAX_VALUE) {
+                            dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + travel[i - 1]);
+                        }
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < 3; i++) {
+            ans = Math.min(ans, dp[n - 1][i]);
+        }
+        return ans;
+
+=======
+
+        int n = garbage.length;
+        int[][] dp = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int j = 0; j < 3; j++) {
+            if (garbage[0].indexOf("MPG".charAt(j)) != -1) {
+                dp[0][j] = 0;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (garbage[i].indexOf("MPG".charAt(j)) == -1) {
+                    continue;
+                }
+                for (int k = 0; k < 3; k++) {
+                    if (dp[i - 1][k] != Integer.MAX_VALUE) {
+                        dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + travel[i - 1] + 1);
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int j = 0; j < 3; j++) {
+            ans = Math.min(ans, dp[n - 1][j] + travel[n - 1]);
+        }
+        return ans;
+
+=======
+
+        int[] metal = new int[garbage.length];
+        int[] paper = new int[garbage.length];
+        int[] glass = new int[garbage.length];
+        int[] sum = new int[garbage.length];
+        for (int i = 0; i < garbage.length; i++) {
+            for (char c : garbage[i].toCharArray()) {
+                switch (c) {
+                    case 'M':
+                        metal[i]++;
+                        break;
+                    case 'P':
+                        paper[i]++;
+                        break;
+                    case 'G':
+                        glass[i]++;
+                        break;
+                }
+            }
+        }
+        for (int i = 1; i < garbage.length; i++) {
+            sum[i] = sum[i - 1] + travel[i - 1];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < garbage.length; i++) {
+            int m = 0, p = 0, g = 0;
+            for (int j = 0; j <= i; j++) {
+                m += metal[j];
+                p += paper[j];
+                g += glass[j];
+            }
+            if (m == 0 && p == 0 && g == 0) {
+                continue;
+            }
+            int t = sum[i];
+            if (m > 0) {
+                t += sum[garbage.length - 1] - sum[i];
+            }
+            if (p > 0) {
+                t += sum[garbage.length - 1] - sum[i];
+            }
+            if (g > 0) {
+                t += sum[garbage.length - 1] - sum[i];
+            }
+            ans = Math.min(ans, t);
+        }
+        return ans;
+
+=======
+
+        int n = garbage.length;
+        int[] dp = new int[3];
+        int[] next = new int[3];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 3; j++) {
+                next[j] = dp[j] + travel[i];
+            }
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    if (j == k) continue;
+                    if (garbage[i].indexOf("MGP".charAt(k)) != -1) {
+                        next[k] = Math.min(next[k], dp[j]);
+                    }
+                }
+            }
+            int[] tmp = dp;
+            dp = next;
+            next = tmp;
+        }
+        return Math.min(dp[0], Math.min(dp[1], dp[2]));
+
+=======
+
+        int n = garbage.length;
+        int[][] dp = new int[n][3];
+        for(int i=0; i<n; i++){
+            Arrays.fill(dp[i], 100000);
+        }
+        dp[0][0] = 0;
+        dp[0][1] = 0;
+        dp[0][2] = 0;
+        for(int i=0; i<n-1; i++){
+            for(int j=0; j<3; j++){
+                for(int k=0; k<3; k++){
+                    if(garbage[i].charAt(k) == 'M'){
+                        dp[i+1][0] = Math.min(dp[i+1][0], dp[i][j] + travel[i] + (j==0?0:1));
+                    }
+                    if(garbage[i].charAt(k) == 'P'){
+                        dp[i+1][1] = Math.min(dp[i+1][1], dp[i][j] + travel[i] + (j==1?0:1));
+                    }
+                    if(garbage[i].charAt(k) == 'G'){
+                        dp[i+1][2] = Math.min(dp[i+1][2], dp[i][j] + travel[i] + (j==2?0:1));
+                    }
+                }
+            }
+        }
+        int ans = 100000;
+        for(int i=0; i<3; i++){
+            ans = Math.min(ans, dp[n-1][i] + (garbage[n-1].charAt(i)=='M'?0:1));
+        }
+        return ans;

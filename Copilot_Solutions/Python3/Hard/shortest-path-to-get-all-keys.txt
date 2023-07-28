@@ -1,0 +1,361 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        pass
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                    break
+        keys = []
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j].islower():
+                    keys.append((i, j))
+        k = len(keys)
+        if k == 0:
+            return 0
+        q = [(start, 0, 0)]
+        visited = set([(start, 0)])
+        while q:
+            pos, dist, key = q.pop(0)
+            if key == (1 << k) - 1:
+                return dist
+            for d in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                x, y = pos[0] + d[0], pos[1] + d[1]
+                if 0 <= x < m and 0 <= y < n and grid[x][y] != '#':
+                    if grid[x][y].isupper():
+                        if key & (1 << (ord(grid[x][y]) - ord('A'))) == 0:
+                            continue
+                    if grid[x][y].islower():
+                        key |= (1 << (ord(grid[x][y]) - ord('a')))
+                    if (x, y, key) not in visited:
+                        q.append(((x, y), dist + 1, key))
+                        visited.add((x, y, key))
+        return -1
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        start = None
+        keys = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                elif grid[i][j].islower():
+                    keys.add(grid[i][j])
+        def neighbors(i, j):
+            for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)):
+                if 0 <= x < m and 0 <= y < n and grid[x][y] != '#':
+                    yield x, y
+        def is_key(c):
+            return c.islower()
+        def is_lock(c):
+            return c.isupper()
+        def is_door(c, keys):
+            return c.isupper() and c.lower() not in keys
+        def is_empty(c):
+            return c == '.'
+        def is_start(c):
+            return c == '@'
+        def is_wall(c):
+            return c == '#'
+        def is_valid(c, keys):
+            return is_empty(c) or is_key(c) or is_start(c) or is_lock(c) and c.lower() in keys
+        def bfs(start, end):
+            queue = collections.deque([(start, 0)])
+            visited = {start}
+            while queue:
+                (i, j), dist = queue.popleft()
+                if (i, j) == end:
+                    return dist
+                for x, y in neighbors(i, j):
+                    if (x, y) in visited:
+                        continue
+                    visited.add((x, y))
+                    if is_valid(grid[x][y], keys):
+                        queue.append(((x, y), dist+1))
+            return -1
+        def dfs(i, j, keys, dist):
+            if len(keys) == len(set(grid[i][j] for i in range(m) for j in range(n) if grid[i][j].islower())):
+                return dist
+            res = float('inf')
+            for x, y in neighbors(i, j):
+                if is_valid(grid[x][y], keys):
+                    if is_key(grid[x][y]):
+                        keys.add(grid[x][y])
+                    res = min(res, dfs(x, y, keys, dist+1))
+                    if is_key(grid[x][y]):
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        start = None
+        keys = []
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                if 'a' <= grid[i][j] <= 'f':
+                    keys.append((i, j))
+        if not keys:
+            return 0
+        q = collections.deque()
+        q.append((start, 0, 0))
+        visited = set()
+        visited.add((start, 0))
+        while q:
+            p, k, d = q.popleft()
+            if k == (1 << len(keys)) - 1:
+                return d
+            for i, j in [(p[0] - 1, p[1]), (p[0] + 1, p[1]), (p[0], p[1] - 1), (p[0], p[1] + 1)]:
+                if 0 <= i < m and 0 <= j < n and grid[i][j] != '#':
+                    if 'A' <= grid[i][j] <= 'F' and k & (1 << (ord(grid[i][j]) - ord('A'))) == 0:
+                        continue
+                    if 'a' <= grid[i][j] <= 'f':
+                        k |= 1 << (ord(grid[i][j]) - ord('a'))
+                    if (i, j, k) not in visited:
+                        visited.add((i, j, k))
+                        q.append(((i, j), k, d + 1))
+        return -1
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m = len(grid)
+        n = len(grid[0])
+        start = None
+        keys = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                elif grid[i][j].islower():
+                    keys.add(grid[i][j])
+        visited = set()
+        q = [(start, 0, set())]
+        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        while q:
+            pos, step, k = q.pop(0)
+            if k == keys:
+                return step
+            if (pos, frozenset(k)) in visited:
+                continue
+            visited.add((pos, frozenset(k)))
+            for dx, dy in dirs:
+                x, y = pos
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] != '#':
+                    if grid[nx][ny].isupper() and grid[nx][ny].lower() not in k:
+                        continue
+                    if grid[nx][ny].islower() and grid[nx][ny] not in k:
+                        nk = set(k)
+                        nk.add(grid[nx][ny])
+                        q.append(((nx, ny), step + 1, nk))
+                    else:
+                        q.append(((nx, ny), step + 1, k))
+        return -1
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        keys = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                elif 'a' <= grid[i][j] <= 'f':
+                    keys.add(grid[i][j])
+        keys = list(keys)
+        k = len(keys)
+        if k == 0:
+            return 0
+        dist = [[-1] * n for _ in range(m)]
+        dist[start[0]][start[1]] = 0
+        q = deque([start])
+        while q:
+            x, y = q.popleft()
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] != '#' and dist[nx][ny] == -1:
+                    dist[nx][ny] = dist[x][y] + 1
+                    q.append((nx, ny))
+        dp = [[-1] * (1 << k) for _ in range(m * n)]
+        dp[start[0] * n + start[1]][0] = 0
+        q = deque([(start[0] * n + start[1], 0)])
+        while q:
+            s, state = q.popleft()
+            x, y = s // n, s % n
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] != '#':
+                    ns = nx * n + ny
+                    nstate = state
+                    if 'A' <= grid[nx][ny] <= 'F':
+                        if not (state >> (ord(grid[nx][ny]) - ord('A')) & 1):
+                            continue
+                    elif 'a' <= grid[nx][ny] <= 'f':
+                        nstate = state | (1 << (ord(grid[nx][ny]) - ord('a')))
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        keys = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    x, y = i, j
+                    grid[i][j] = '.'
+                if 'a' <= grid[i][j] <= 'f':
+                    keys |= 1 << (ord(grid[i][j]) - ord('a'))
+        
+        def bfs(x, y):
+            q = collections.deque([(x, y, 0)])
+            seen = {(x, y, 0)}
+            steps = 0
+            while q:
+                for _ in range(len(q)):
+                    x, y, cur_keys = q.popleft()
+                    if cur_keys == keys:
+                        return steps
+                    for dx, dy in (0, 1), (0, -1), (1, 0), (-1, 0):
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] != '#' and (nx, ny, cur_keys) not in seen:
+                            if 'A' <= grid[nx][ny] <= 'F' and cur_keys & (1 << (ord(grid[nx][ny]) - ord('A'))) == 0:
+                                continue
+                            if 'a' <= grid[nx][ny] <= 'f':
+                                cur_keys |= 1 << (ord(grid[nx][ny]) - ord('a'))
+                            q.append((nx, ny, cur_keys))
+                            seen.add((nx, ny, cur_keys))
+                steps += 1
+            return -1
+        
+        return bfs(x, y)
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        keys = set()
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                elif grid[i][j] in string.ascii_lowercase:
+                    keys.add(grid[i][j])
+        keys = tuple(sorted(keys))
+        def get_neighbors(x, y, keys):
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                xx, yy = x + dx, y + dy
+                if 0 <= xx < m and 0 <= yy < n and grid[xx][yy] != '#':
+                    if grid[xx][yy] in string.ascii_uppercase and grid[xx][yy].lower() not in keys:
+                        continue
+                    if grid[xx][yy] in string.ascii_lowercase and grid[xx][yy] not in keys:
+                        yield (xx, yy), keys + (grid[xx][yy],)
+                    else:
+                        yield (xx, yy), keys
+        q = deque([(start, tuple())])
+        visited = set()
+        visited.add((start, tuple()))
+        step = 0
+        while q:
+            size = len(q)
+            for _ in range(size):
+                x, y = q.popleft()
+                for neighbor, new_keys in get_neighbors(x, y, keys):
+                    if new_keys == keys:
+                        return step + 1
+                    if (neighbor, new_keys) not in visited:
+                        visited.add((neighbor, new_keys))
+                        q.append((neighbor, new_keys))
+            step += 1
+        return -1
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        key_count = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+                elif grid[i][j] in string.ascii_lowercase:
+                    key_count += 1
+        q = collections.deque([(start, 0, 0)])
+        seen = set()
+        while q:
+            (x, y), steps, keys = q.popleft()
+            if (x, y, keys) in seen:
+                continue
+            seen.add((x, y, keys))
+            if keys == 2**key_count - 1:
+                return steps
+            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n:
+                    c = grid[nx][ny]
+                    if c == '#':
+                        continue
+                    if c in string.ascii_lowercase:
+                        nkeys = keys | 1 << (ord(c) - ord('a'))
+                        q.append(((nx, ny), steps + 1, nkeys))
+                    elif c in string.ascii_uppercase:
+                        if keys & 1 << (ord(c) - ord('A')):
+                            q.append(((nx, ny), steps + 1, keys))
+                    else:
+                        q.append(((nx, ny), steps + 1, keys))
+
+=======
+
+def shortestPathAllKeys(self, grid: List[str]) -> int:
+        m, n = len(grid), len(grid[0])
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '@':
+                    start = (i, j)
+        keys = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j].islower():
+                    keys += 1
+        def get_next(cur):
+            x, y, k = cur
+            res = []
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] != '#':
+                    nk = k
+                    if grid[nx][ny].islower():
+                        nk |= 1 << (ord(grid[nx][ny]) - ord('a'))
+                    elif grid[nx][ny].isupper():
+                        if not nk & (1 << (ord(grid[nx][ny]) - ord('A'))):
+                            continue
+                    res.append((nx, ny, nk))
+            return res
+        q = collections.deque([(start[0], start[1], 0)])
+        seen = {(start[0], start[1], 0)}
+        step = 0
+        while q:
+            for _ in range(len(q)):
+                x, y, k = q.popleft()
+                if k == (1 << keys) - 1:
+                    return step
+                for nx, ny, nk in get_next((x, y, k)):
+                    if (nx, ny, nk) not in seen:
+                        q.append((nx, ny, nk))
+                        seen.add((nx, ny, nk))
+            step += 1
+        return -1

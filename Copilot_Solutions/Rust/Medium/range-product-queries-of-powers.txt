@@ -1,0 +1,116 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut powers = Vec::new();
+        let mut n = n;
+        let mut i = 0;
+        while n > 0 {
+            if n & 1 == 1 {
+                powers.push(i);
+            }
+            n >>= 1;
+            i += 1;
+        }
+        let mut res = Vec::new();
+        for query in queries {
+            let mut prod = 1;
+            for i in powers.iter().skip(query[0] as usize).take((query[1] - query[0] + 1) as usize) {
+                prod *= 1 << i;
+                prod %= 1_000_000_007;
+            }
+            res.push(prod);
+        }
+        res
+
+=======
+
+        let mut powers = vec![0; 32];
+        let mut i = 0;
+        let mut n = n;
+        while n > 0 {
+            if n & 1 == 1 {
+                powers[i] = 1;
+            }
+            n >>= 1;
+            i += 1;
+        }
+        let mut ans = vec![0; queries.len()];
+        for (i, q) in queries.iter().enumerate() {
+            let mut p = 1;
+            for j in q[0]..=q[1] {
+                p = (p * powers[j as usize]) % 1000000007;
+            }
+            ans[i] = p;
+        }
+        ans
+    }
+}
+
+=======
+
+        let n = n as u64;
+        let mut powers: Vec<u64> = vec![];
+        let mut i = 1;
+        while i <= n {
+            powers.push(i);
+            i *= 2;
+        }
+        let mut ans: Vec<i32> = vec![];
+        for q in queries {
+            let mut res = 1;
+            for i in q[0] as usize..=q[1] as usize {
+                res *= powers[i] as i32;
+                res %= 1000000007;
+            }
+            ans.push(res);
+        }
+        ans
+
+=======
+
+        let mut powers: Vec<i32> = vec![];
+        let mut n = n;
+        while n > 0 {
+            powers.push(n);
+            n = n & (n - 1);
+        }
+        let mut ans: Vec<i32> = vec![];
+        for q in queries {
+            let mut product: i32 = 1;
+            for i in q[0] as usize ..= q[1] as usize {
+                product = product * powers[i];
+                product = product % 1_000_000_007;
+            }
+            ans.push(product);
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut powers = vec![];
+        let mut n = n;
+        while n > 0 {
+            powers.push(n);
+            n &= n - 1;
+        }
+        let mut prod = vec![1];
+        let mut acc = 1;
+        for i in powers.iter() {
+            acc = acc * i % 1000000007;
+            prod.push(acc);
+        }
+        let mut res = vec![];
+        for q in queries.iter() {
+            let (left, right) = (q[0] as usize, q[1] as usize);
+            res.push(prod[right + 1] * (prod[left] as i32).pow(1000000005) % 1000000007);
+        }
+        res

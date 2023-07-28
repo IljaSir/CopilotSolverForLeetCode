@@ -1,0 +1,283 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[] res = new int[n];
+        boolean[] visited = new boolean[n];
+        dfs(graph, res, visited, labels, 0);
+        return res;
+    }
+    private int[] dfs(List<Integer>[] graph, int[] res, boolean[] visited, String labels, int node) {
+        visited[node] = true;
+        int[] count = new int[26];
+        count[labels.charAt(node) - 'a']++;
+        for (int next : graph[node]) {
+            if (!visited[next]) {
+                int[] nextCount = dfs(graph, res, visited, labels, next);
+                for (int i = 0; i < 26; i++) {
+                    count[i] += nextCount[i];
+                }
+            }
+        }
+        res[node] = count[labels.charAt(node) - 'a'];
+        return count;
+
+=======
+
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[] res = new int[n];
+        dfs(0, -1, labels, res, graph);
+        return res;
+    }
+    
+    private int[] dfs(int cur, int pre, String labels, int[] res, List<Integer>[] graph) {
+        int[] count = new int[26];
+        count[labels.charAt(cur) - 'a']++;
+        for (int nei : graph[cur]) {
+            if (nei == pre) {
+                continue;
+            }
+            int[] neiCount = dfs(nei, cur, labels, res, graph);
+            for (int i = 0; i < 26; i++) {
+                count[i] += neiCount[i];
+            }
+        }
+        res[cur] = count[labels.charAt(cur) - 'a'];
+        return count;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            map.putIfAbsent(edge[0], new ArrayList<>());
+            map.putIfAbsent(edge[1], new ArrayList<>());
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+        int[] res = new int[n];
+        dfs(0, new HashSet<>(), map, labels, res);
+        return res;
+    }
+    private int[] dfs(int node, Set<Integer> visited, Map<Integer, List<Integer>> map, String labels, int[] res) {
+        int[] count = new int[26];
+        visited.add(node);
+        for (int next : map.getOrDefault(node, new ArrayList<>())) {
+            if (!visited.contains(next)) {
+                int[] nextCount = dfs(next, visited, map, labels, res);
+                for (int i = 0; i < 26; i++) {
+                    count[i] += nextCount[i];
+                }
+            }
+        }
+        count[labels.charAt(node) - 'a']++;
+        res[node] = count[labels.charAt(node) - 'a'];
+        return count;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] e : edges) {
+            map.putIfAbsent(e[0], new ArrayList<>());
+            map.putIfAbsent(e[1], new ArrayList<>());
+            map.get(e[0]).add(e[1]);
+            map.get(e[1]).add(e[0]);
+        }
+        int[] res = new int[n];
+        boolean[] visited = new boolean[n];
+        dfs(map, visited, 0, labels, res);
+        return res;
+    }
+
+    private int[] dfs(Map<Integer, List<Integer>> map, boolean[] visited, int cur, String labels, int[] res) {
+        int[] count = new int[26];
+        visited[cur] = true;
+        count[labels.charAt(cur) - 'a']++;
+        for (int next : map.getOrDefault(cur, new ArrayList<>())) {
+            if (!visited[next]) {
+                int[] nextCount = dfs(map, visited, next, labels, res);
+                for (int i = 0; i < 26; i++) {
+                    count[i] += nextCount[i];
+                }
+            }
+        }
+        res[cur] = count[labels.charAt(cur) - 'a'];
+        return count;
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new HashSet<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new HashSet<>()).add(edge[0]);
+        }
+        int[] res = new int[n];
+        dfs(graph, 0, new HashSet<>(), labels, res);
+        return res;
+    }
+    int[] dfs(Map<Integer, Set<Integer>> graph, int cur, Set<Integer> visited, String labels, int[] res) {
+        int[] cnt = new int[26];
+        visited.add(cur);
+        for (int next : graph.getOrDefault(cur, new HashSet<>())) {
+            if (!visited.contains(next)) {
+                int[] nextCnt = dfs(graph, next, visited, labels, res);
+                for (int i = 0; i < 26; i++) {
+                    cnt[i] += nextCnt[i];
+                }
+            }
+        }
+        cnt[labels.charAt(cur) - 'a']++;
+        res[cur] = cnt[labels.charAt(cur) - 'a'];
+        return cnt;
+
+=======
+
+        int[] ans = new int[n];
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        dfs(graph, labels, 0, -1, ans, new int[26]);
+        return ans;
+    }
+    
+    private void dfs(List<Integer>[] graph, String labels, int cur, int parent, int[] ans, int[] count) {
+        count[labels.charAt(cur) - 'a']++;
+        for (int child : graph[cur]) {
+            if (child != parent) {
+                dfs(graph, labels, child, cur, ans, count);
+            }
+        }
+        ans[cur] = count[labels.charAt(cur) - 'a'];
+
+=======
+
+        int[] ans = new int[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            map.computeIfAbsent(edge[0], x -> new ArrayList<>()).add(edge[1]);
+            map.computeIfAbsent(edge[1], x -> new ArrayList<>()).add(edge[0]);
+        }
+        dfs(0, -1, map, labels, ans);
+        return ans;
+    }
+
+    private int[] dfs(int cur, int pre, Map<Integer, List<Integer>> map, String labels, int[] ans) {
+        int[] count = new int[26];
+        count[labels.charAt(cur) - 'a']++;
+        if (map.containsKey(cur)) {
+            for (int next : map.get(cur)) {
+                if (next == pre) {
+                    continue;
+                }
+                int[] subCount = dfs(next, cur, map, labels, ans);
+                for (int i = 0; i < 26; i++) {
+                    count[i] += subCount[i];
+                }
+            }
+        }
+        ans[cur] = count[labels.charAt(cur) - 'a'];
+        return count;
+
+=======
+
+        int[] res = new int[n];
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int[] e: edges) {
+            graph[e[0]].add(e[1]);
+            graph[e[1]].add(e[0]);
+        }
+        dfs(graph, labels, res, new boolean[n], 0);
+        return res;
+    }
+    private int[] dfs(List<Integer>[] graph, String labels, int[] res, boolean[] visited, int cur) {
+        int[] count = new int[26];
+        visited[cur] = true;
+        for (int next: graph[cur]) {
+            if (!visited[next]) {
+                int[] nextCount = dfs(graph, labels, res, visited, next);
+                for (int i = 0; i < 26; i++) count[i] += nextCount[i];
+            }
+        }
+        count[labels.charAt(cur) - 'a']++;
+        res[cur] = count[labels.charAt(cur) - 'a'];
+        return count;
+
+=======
+
+        int[] result = new int[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for(int[] edge : edges) {
+            List<Integer> list = map.getOrDefault(edge[0], new ArrayList<>());
+            list.add(edge[1]);
+            map.put(edge[0], list);
+            list = map.getOrDefault(edge[1], new ArrayList<>());
+            list.add(edge[0]);
+            map.put(edge[1], list);
+        }
+        dfs(map, result, labels, 0, new boolean[n]);
+        return result;
+    }
+
+    private int[] dfs(Map<Integer, List<Integer>> map, int[] result, String labels, int node, boolean[] visited) {
+        int[] count = new int[26];
+        visited[node] = true;
+        for(int child : map.getOrDefault(node, new ArrayList<>())) {
+            if(!visited[child]) {
+                int[] childCount = dfs(map, result, labels, child, visited);
+                for(int i = 0; i < 26; i++) {
+                    count[i] += childCount[i];
+                }
+            }
+        }
+        count[labels.charAt(node) - 'a']++;
+        result[node] = count[labels.charAt(node) - 'a'];
+        return count;
+
+=======
+
+        int[] result = new int[n];
+        // build graph
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], key -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], key -> new ArrayList<>()).add(edge[0]);
+        }
+        // dfs
+        dfs(graph, labels, result, new boolean[n], 0);
+        return result;
+    }
+
+    private int[] dfs(Map<Integer, List<Integer>> graph, String labels, int[] result, boolean[] visited, int node) {
+        int[] count = new int[26];
+        visited[node] = true;
+        for (int child : graph.getOrDefault(node, Collections.emptyList())) {
+            if (!visited[child]) {
+                int[] childCount = dfs(graph, labels, result, visited, child);
+                for (int i = 0; i < 26; i++) {
+                    count[i] += childCount[i];
+                }
+            }
+        }
+        count[labels.charAt(node) - 'a']++;
+        result[node] = count[labels.charAt(node) - 'a'];
+        return count;

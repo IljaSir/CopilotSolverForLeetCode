@@ -1,0 +1,158 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut cars = Vec::new();
+        for i in 0..position.len() {
+            cars.push((position[i], speed[i]));
+        }
+        cars.sort_by(|a, b| b.0.cmp(&a.0));
+        let mut ans = 0;
+        let mut max_time = 0.0;
+        for i in 0..cars.len() {
+            let time = (target - cars[i].0) as f64 / cars[i].1 as f64;
+            if time > max_time {
+                max_time = time;
+                ans += 1;
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut time = Vec::new();
+        for i in 0..position.len() {
+            time.push((position[i], (target - position[i]) as f64 / speed[i] as f64));
+        }
+        time.sort_by(|a, b| b.0.cmp(&a.0));
+        let mut num = 0;
+        let mut max_time = 0.0;
+        for i in 0..time.len() {
+            if time[i].1 > max_time {
+                num += 1;
+                max_time = time[i].1;
+            }
+        }
+        num
+
+=======
+
+        let mut cars: Vec<(i32, i32)> = position.iter().zip(speed.iter()).map(|(p, s)| (*p, *s)).collect();
+        cars.sort_by(|a, b| b.0.cmp(&a.0));
+        let mut t = 0;
+        let mut res = 0;
+        for (p, s) in cars {
+            let nt = (target - p) as f64 / s as f64;
+            if nt > t {
+                t = nt;
+                res += 1;
+            }
+        }
+        res
+
+=======
+
+        let mut cars = position
+            .iter()
+            .zip(speed.iter())
+            .map(|(&pos, &sp)| (pos, sp))
+            .collect::<Vec<(i32, i32)>>();
+        cars.sort_by(|a, b| b.0.cmp(&a.0));
+        let mut ans = 0;
+        let mut time = 0.0;
+        for (pos, sp) in cars {
+            let t = (target - pos) as f64 / sp as f64;
+            if t > time {
+                ans += 1;
+                time = t;
+            }
+        }
+        ans
+
+=======
+
+        let mut cars = position.into_iter().zip(speed.into_iter()).collect::<Vec<_>>();
+        cars.sort_unstable_by(|a, b| b.0.cmp(&a.0));
+        let mut times = cars.into_iter().map(|(p, s)| (target - p) as f64 / s as f64).collect::<Vec<_>>();
+        let mut result = 0;
+        let mut i = 0;
+        while i < times.len() {
+            result += 1;
+            let mut j = i + 1;
+            while j < times.len() && times[j] <= times[i] {
+                j += 1;
+            }
+            i = j;
+        }
+        result
+
+=======
+
+        if position.is_empty() {
+            return 0;
+        }
+        let mut cars: Vec<(i32, i32)> = position.into_iter().zip(speed.into_iter()).collect();
+        cars.sort_by_key(|a| -a.0);
+        let mut res = 1;
+        let mut t = (target - cars[0].0) as f64 / cars[0].1 as f64;
+        for i in 1..cars.len() {
+            let tt = (target - cars[i].0) as f64 / cars[i].1 as f64;
+            if tt > t {
+                res += 1;
+                t = tt;
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut cars = position.iter().zip(speed.iter()).map(|(&p, &s)| (target - p, s)).collect::<Vec<_>>();
+        cars.sort_by_key(|&(p, _)| p);
+        let mut ans = 0;
+        let mut cur = 0.0;
+        for &(p, s) in cars.iter().rev() {
+            if p as f64 / s as f64 > cur {
+                ans += 1;
+                cur = p as f64 / s as f64;
+            }
+        }
+        ans
+
+=======
+
+        let mut cars = position.iter().zip(speed.iter()).map(|(&pos, &speed)| (pos, speed)).collect::<Vec<_>>();
+        cars.sort_unstable_by(|&a, &b| b.0.cmp(&a.0));
+        let mut ans = 0;
+        let mut max_time = 0.0;
+        for (pos, speed) in cars {
+            let time = (target - pos) as f64 / speed as f64;
+            if time > max_time {
+                max_time = time;
+                ans += 1;
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut pos_speed = position.iter().zip(speed.iter()).collect::<Vec<_>>();
+        pos_speed.sort_by_key(|(p, _)| -p);
+        let mut time = vec![];
+        for (_, s) in pos_speed {
+            time.push((target - s) as f64 / *s as f64);
+        }
+        let mut ans = 0;
+        let mut max = 0.0;
+        for t in time {
+            if t > max {
+                ans += 1;
+                max = t;
+            }
+        }
+        ans

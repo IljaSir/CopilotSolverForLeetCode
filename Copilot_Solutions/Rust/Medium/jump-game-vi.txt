@@ -1,0 +1,199 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut dp = vec![0; n];
+        dp[0] = nums[0];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back(0);
+        for i in 1..n {
+            while !q.is_empty() && q.front().unwrap() + k as usize < i {
+                q.pop_front();
+            }
+            dp[i] = dp[*q.front().unwrap()] + nums[i];
+            while !q.is_empty() && dp[*q.back().unwrap()] <= dp[i] {
+                q.pop_back();
+            }
+            q.push_back(i);
+        }
+        dp[n - 1]
+
+=======
+
+        let n = nums.len();
+        let mut dp = vec![0; n];
+        dp[0] = nums[0];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back(0);
+        for i in 1..n {
+            dp[i] = dp[*q.front().unwrap()] + nums[i];
+            while !q.is_empty() && dp[i] >= dp[*q.back().unwrap()] {
+                q.pop_back();
+            }
+            q.push_back(i);
+            if i as i32 - q.front().unwrap() as i32 >= k {
+                q.pop_front();
+            }
+        }
+        dp[n - 1]
+
+=======
+
+        let n = nums.len();
+        let mut dp = vec![0; n];
+        dp[0] = nums[0];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back(0);
+        for i in 1..n {
+            while let Some(&j) = q.front() {
+                if j + k as usize < i {
+                    q.pop_front();
+                } else {
+                    break;
+                }
+            }
+            dp[i] = dp[q.front().unwrap()] + nums[i];
+            while let Some(&j) = q.back() {
+                if dp[j] < dp[i] {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back(i);
+        }
+        dp[n - 1]
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        dp[0] = nums[0];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back(0);
+        for i in 1..nums.len() {
+            while let Some(&j) = q.front() {
+                if i as i32 - j as i32 > k {
+                    q.pop_front();
+                } else {
+                    break;
+                }
+            }
+            dp[i] = dp[q[0]] + nums[i];
+            while let Some(&j) = q.back() {
+                if dp[j] <= dp[i] {
+                    q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            q.push_back(i);
+        }
+        dp[nums.len() - 1]
+
+=======
+
+        let n = nums.len();
+        let mut q = std::collections::VecDeque::new();
+        let mut dp = vec![0; n];
+        dp[0] = nums[0];
+        q.push_back(0);
+        for i in 1..n {
+            while q.len() > 0 && q[0] < i as i32 - k {
+                q.pop_front();
+            }
+            dp[i] = dp[q[0] as usize] + nums[i];
+            while q.len() > 0 && dp[q[q.len() - 1] as usize] <= dp[i] {
+                q.pop_back();
+            }
+            q.push_back(i as i32);
+        }
+        dp[n - 1]
+
+=======
+
+        let n = nums.len();
+        let mut q = std::collections::VecDeque::new();
+        let mut dp = vec![0; n];
+        dp[0] = nums[0];
+        q.push_back(0);
+        for i in 1..n {
+            while q.len() > 0 && q[0] < i - k as usize {
+                q.pop_front();
+            }
+            dp[i] = dp[q[0]] + nums[i];
+            while q.len() > 0 && dp[q[q.len() - 1]] <= dp[i] {
+                q.pop_back();
+            }
+            q.push_back(i);
+        }
+        dp[n - 1]
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        let mut q = std::collections::VecDeque::new();
+        dp[0] = nums[0];
+        q.push_back(0);
+        for i in 1..nums.len() {
+            while q.len() > 0 && q[0] < i as i32 - k {
+                q.pop_front();
+            }
+            dp[i] = nums[i] + dp[q[0] as usize];
+            while q.len() > 0 && dp[q.back().unwrap() as usize] < dp[i] {
+                q.pop_back();
+            }
+            q.push_back(i as i32);
+        }
+        dp[nums.len() - 1]
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        dp[0] = nums[0];
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back(0);
+        for i in 1..nums.len() {
+            dp[i] = dp[*queue.front().unwrap()] + nums[i];
+            while !queue.is_empty() && dp[i] >= dp[*queue.back().unwrap()] {
+                queue.pop_back();
+            }
+            queue.push_back(i);
+            if i as i32 - queue.front().unwrap() as i32 >= k {
+                queue.pop_front();
+            }
+        }
+        dp[nums.len() - 1]
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        dp[0] = nums[0];
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(nums[0]);
+        for i in 1..nums.len() {
+            while heap.peek().unwrap() + k as i32 < i as i32 {
+                heap.pop();
+            }
+            dp[i] = heap.peek().unwrap() + nums[i];
+            heap.push(dp[i]);
+        }
+        dp[nums.len() - 1]
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        let mut q: Vec<usize> = vec![];
+        dp[0] = nums[0];
+        q.push(0);
+        for i in 1..nums.len() {
+            while q.len() > 0 && q[0] < i - k as usize {
+                q.remove(0);
+            }
+            dp[i] = dp[q[0]] + nums[i];
+            while q.len() > 0 && dp[q[q.len() - 1]] <= dp[i] {
+                q.pop();
+            }
+            q.push(i);
+        }
+        dp[nums.len() - 1]

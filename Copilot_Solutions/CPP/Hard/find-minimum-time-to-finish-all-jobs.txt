@@ -1,0 +1,241 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        sort(jobs.begin(), jobs.end());
+        reverse(jobs.begin(), jobs.end());
+        int l = jobs[0], r = accumulate(jobs.begin(), jobs.end(), 0);
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (check(jobs, k, mid)) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+    bool check(vector<int>& jobs, int k, int limit) {
+        vector<int> sum(k);
+        return dfs(jobs, sum, 0, limit);
+    }
+    bool dfs(vector<int>& jobs, vector<int>& sum, int u, int limit) {
+        if (u == jobs.size()) return true;
+        int x = jobs[u];
+        for (int i = 0; i < sum.size(); i++) {
+            if (sum[i] + x <= limit) {
+                sum[i] += x;
+                if (dfs(jobs, sum, u + 1, limit)) return true;
+                sum[i] -= x;
+            }
+            if (!sum[i] || sum[i] + x == limit) break;
+        }
+        return false;
+
+=======
+
+        int n = jobs.size();
+        vector<int> sum(1 << n);
+        for (int i = 1; i < (1 << n); i++) {
+            int x = __builtin_ctz(i);
+            sum[i] = sum[i ^ (1 << x)] + jobs[x];
+        }
+        vector<vector<int>> dp(k, vector<int>(1 << n, INT_MAX / 2));
+        for (int i = 0; i < (1 << n); i++) {
+            dp[0][i] = sum[i];
+        }
+        for (int i = 1; i < k; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                for (int k = j; k; k = (k - 1) & j) {
+                    dp[i][j] = min(dp[i][j], max(dp[i - 1][j ^ k], sum[k]));
+                }
+            }
+        }
+        return dp[k - 1][(1 << n) - 1];
+
+=======
+
+        int n = jobs.size();
+        vector<int> workloads(k, 0);
+        sort(jobs.begin(), jobs.end());
+        reverse(jobs.begin(), jobs.end());
+        int l = jobs[0], r = accumulate(jobs.begin(), jobs.end(), 0);
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (check(jobs, workloads, mid, 0)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+
+    bool check(vector<int>& jobs, vector<int>& workloads, int limit, int idx) {
+        if (idx >= jobs.size()) {
+            return true;
+        }
+        int cur = jobs[idx];
+        for (int i = 0; i < workloads.size(); ++i) {
+            if (workloads[i] + cur <= limit) {
+                workloads[i] += cur;
+                if (check(jobs, workloads, limit, idx + 1)) {
+                    return true;
+                }
+                workloads[i] -= cur;
+            }
+            if (workloads[i] == 0 || workloads[i] + cur == limit) {
+                break;
+            }
+        }
+        return false;
+
+=======
+
+        int n = jobs.size();
+        vector<int> workloads(k, 0);
+        sort(jobs.begin(), jobs.end());
+        int l = jobs.back(), r = accumulate(jobs.begin(), jobs.end(), 0);
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (check(jobs, workloads, mid, n - 1))
+                r = mid;
+            else
+                l = mid + 1;
+        }
+        return l;
+    }
+
+    bool check(vector<int>& jobs, vector<int>& workloads, int limit, int i) {
+        if (i < 0)
+            return true;
+        int cur = jobs[i];
+        for (int j = 0; j < workloads.size(); j++) {
+            if (workloads[j] + cur <= limit) {
+                workloads[j] += cur;
+                if (check(jobs, workloads, limit, i - 1))
+                    return true;
+                workloads[j] -= cur;
+            }
+            if (workloads[j] == 0 || workloads[j] + cur == limit)
+                break;
+        }
+        return false;
+
+=======
+
+        int n = jobs.size();
+        vector<int> workers(k, 0);
+        sort(jobs.begin(), jobs.end());
+        int l = jobs.back(), r = accumulate(jobs.begin(), jobs.end(), 0);
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if (check(jobs, workers, mid, n - 1)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+    bool check(vector<int>& jobs, vector<int>& workers, int limit, int i) {
+        if (i < 0) return true;
+        int cur = jobs[i];
+        for (int &worker : workers) {
+            if (worker + cur <= limit) {
+                worker += cur;
+                if (check(jobs, workers, limit, i - 1)) return true;
+                worker -= cur;
+            }
+            if (worker == 0 || worker + cur == limit) break;
+        }
+        return false;
+
+=======
+
+        int n = jobs.size();
+        vector<int> workloads(k, 0);
+        int ans = INT_MAX;
+        function<void(int)> backtrack = [&](int i) {
+            if (i == n) {
+                int curMax = *max_element(workloads.begin(), workloads.end());
+                ans = min(ans, curMax);
+                return;
+            }
+            unordered_set<int> seen;
+            for (int j = 0; j < k; ++j) {
+                if (seen.count(workloads[j])) {
+                    continue;
+                }
+                if (workloads[j] + jobs[i] >= ans) {
+                    continue;
+                }
+                seen.insert(workloads[j]);
+                workloads[j] += jobs[i];
+                backtrack(i + 1);
+                workloads[j] -= jobs[i];
+            }
+        };
+        backtrack(0);
+        return ans;
+
+=======
+
+        int n = jobs.size();
+        int dp[1<<n];
+        memset(dp, 0, sizeof(dp));
+        for (int mask = 1; mask < (1<<n); mask++) {
+            int x = __builtin_ctz(mask);
+            int p = mask^(1<<x);
+            dp[mask] = dp[p] + jobs[x];
+        }
+        for (int i = 0; i < n; i++) {
+            for (int mask = 0; mask < (1<<n); mask++) {
+                if (mask&(1<<i)) {
+                    dp[mask] = min(dp[mask], dp[mask^(1<<i)]);
+                }
+            }
+        }
+        int f[1<<n];
+        memset(f, 0x3f, sizeof(f));
+        f[0] = 0;
+        for (int mask = 0; mask < (1<<n); mask++) {
+            int left = ((1<<n)-1)^mask;
+            for (int s = left; s; s = (s-1)&left) {
+                if (dp[s] <= k) {
+                    f[mask|s] = min(f[mask|s], max(f[mask], dp[s]));
+                }
+            }
+        }
+        return f[(1<<n)-1];
+
+=======
+
+        // 二分答案
+        // 用一个数组记录每个工人的工作量，每次分配工作给工人，从工人中选取工作量最小的那个
+        // 递归分配工作，直到分配完所有工作
+        // 二分的上下界是工作量最大值和所有工作量之和
+        int n = jobs.size();
+        int left = *max_element(jobs.begin(), jobs.end());
+        int right = accumulate(jobs.begin(), jobs.end(), 0);
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (dfs(jobs, k, 0, mid, vector<int>(k, 0))) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    bool dfs(vector<int>& jobs, int k, int idx, int limit, vector<int>& workers) {
+        if (idx == jobs.size()) return true;
+        for (int i = 0; i < k; i++) {
+            if (workers[i] + jobs[idx] <= limit) {
+                workers[i] += jobs[idx];
+                if (dfs(jobs, k, idx + 1, limit, workers)) return true;
+                workers[i] -= jobs[idx];
+            }
+            // 如果当前工人的工作量为0，说明这个工人之前没有分配过工作
+            // 那么之后的工作也不需要分配给这个工人了
+            if (workers[i] == 0) break;
+        }
+        return false;

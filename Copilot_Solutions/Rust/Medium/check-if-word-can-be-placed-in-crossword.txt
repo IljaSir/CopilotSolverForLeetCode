@@ -1,0 +1,445 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut word = word.chars().collect::<Vec<char>>();
+        for i in 0..m {
+            for j in 0..n {
+                if board[i][j] == '#' {
+                    continue;
+                }
+                if j > 0 && board[i][j-1] != '#' {
+                    continue;
+                }
+                if j < n-1 && board[i][j+1] != '#' {
+                    continue;
+                }
+                if i > 0 && board[i-1][j] != '#' {
+                    continue;
+                }
+                if i < m-1 && board[i+1][j] != '#' {
+                    continue;
+                }
+                let mut flag = true;
+                for k in 0..word.len() {
+                    if j+k >= n {
+                        flag = false;
+                        break;
+                    }
+                    if board[i][j+k] != ' ' && board[i][j+k] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    return true;
+                }
+                flag = true;
+                for k in 0..word.len() {
+                    if j-k < 0 {
+                        flag = false;
+                        break;
+                    }
+                    if board[i][j-k] != ' ' && board[i][j-k] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    return true;
+                }
+                flag = true;
+                for k in 0..word.len() {
+                    if i+k >= m {
+                        flag = false;
+                        break;
+                    }
+                    if board[i+k][j] != ' ' && board[i+k][j] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    return true;
+                }
+                flag = true;
+                for k in 0..word.len() {
+                    if i-k < 0 {
+                        flag = false;
+                        break;
+                    }
+                    if board[i-k][j] != ' ' && board[i-k][j] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    return true;
+                }
+            }
+        }
+        false
+
+=======
+
+        let (m, n) = (board.len(), board[0].len());
+        let word: Vec<char> = word.chars().collect();
+        let (w, h) = (word.len(), word.len());
+        for i in 0..m {
+            for j in 0..n {
+                if (i == 0 || board[i - 1][j] == '#') && i + h <= m {
+                    let mut k = 0;
+                    while k < h && (board[i + k][j] == ' ' || board[i + k][j] == word[k]) {
+                        k += 1;
+                    }
+                    if k == h {
+                        return true;
+                    }
+                }
+                if (j == 0 || board[i][j - 1] == '#') && j + w <= n {
+                    let mut k = 0;
+                    while k < w && (board[i][j + k] == ' ' || board[i][j + k] == word[k]) {
+                        k += 1;
+                    }
+                    if k == w {
+                        return true;
+                    }
+                }
+                if (i == 0 || board[i - 1][j] == '#') && i + w <= m {
+                    let mut k = 0;
+                    while k < w && (board[i + k][j] == ' ' || board[i + k][j] == word[w - 1 - k]) {
+                        k += 1;
+                    }
+                    if k == w {
+                        return true;
+                    }
+                }
+                if (j == 0 || board[i][j - 1] == '#') && j + h <= n {
+                    let mut k = 0;
+                    while k < h && (board[i][j + k] == ' ' || board[i][j + k] == word[h - 1 - k]) {
+                        k += 1;
+                    }
+                    if k == h {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+
+=======
+
+        let word = word.chars().collect::<Vec<char>>();
+        let m = board.len();
+        let n = board[0].len();
+        let mut rows = vec![vec![]; m];
+        let mut cols = vec![vec![]; n];
+        for i in 0..m {
+            for j in 0..n {
+                if board[i][j] == '#' {
+                    continue;
+                }
+                rows[i].push(j);
+            }
+        }
+        for j in 0..n {
+            for i in 0..m {
+                if board[i][j] == '#' {
+                    continue;
+                }
+                cols[j].push(i);
+            }
+        }
+        for i in 0..m {
+            if rows[i].len() < word.len() {
+                continue;
+            }
+            for j in 0..=rows[i].len() - word.len() {
+                let mut flag = true;
+                for k in 0..word.len() {
+                    if board[i][rows[i][j + k]] != ' ' && board[i][rows[i][j + k]] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag && (j == 0 || board[i][rows[i][j - 1]] == '#') && (j + word.len() == rows[i].len() || board[i][rows[i][j + word.len()]] == '#') {
+                    return true;
+                }
+            }
+        }
+        for i in 0..n {
+            if cols[i].len() < word.len() {
+                continue;
+            }
+            for j in 0..=cols[i].len() - word.len() {
+                let mut flag = true;
+                for k in 0..word.len() {
+                    if board[cols[i][j + k]][i] != ' ' && board[cols[i][j + k]][i] != word[k] {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag && (j == 0 || board[cols[i][j - 1]][i] == '#') && (j + word.len() == cols[i].len() || board[cols[i][j + word.len()]][i] == '#') {
+                    return true;
+                }
+            }
+        }
+        false
+
+=======
+
+        let mut board = board;
+        let mut word = word.chars().collect::<Vec<char>>();
+        let mut n = board.len();
+        let mut m = board[0].len();
+        for i in 0..n {
+            for j in 0..m {
+                if word[0] == board[i][j] {
+                    if i == 0 || board[i - 1][j] == '#' {
+                        if i + word.len() == n || board[i + word.len()][j] == '#' {
+                            let mut k = 0;
+                            for k in 0..word.len() {
+                                if board[i + k][j] != ' ' && board[i + k][j] != word[k] {
+                                    break;
+                                }
+                            }
+                            if k == word.len() - 1 {
+                                return true;
+                            }
+                        }
+                    }
+                    if j == 0 || board[i][j - 1] == '#' {
+                        if j + word.len() == m || board[i][j + word.len()] == '#' {
+                            let mut k = 0;
+                            for k in 0..word.len() {
+                                if board[i][j + k] != ' ' && board[i][j + k] != word[k] {
+                                    break;
+                                }
+                            }
+                            if k == word.len() - 1 {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        word.reverse();
+        for i in 0..n {
+            for j in 0..m {
+                if word[0] == board[i][j] {
+                    if i == 0 || board[i - 1][j] == '#' {
+                        if i + word.len() == n || board[i + word.len()][j] == '#' {
+                            let mut k = 0;
+                            for k in 0..word.len() {
+                                if board[i + k][j] != ' ' && board[i + k][j] != word[k] {
+                                    break;
+                                }
+                            }
+                            if k == word.len() - 1 {
+                                return true;
+                            }
+                        }
+                    }
+                    if j == 0 || board[i][j - 1] == '#' {
+                        if j + word.len() == m || board[i][j + word.len()] == '#' {
+                            let mut k = 0;
+                            for k in 0..word
+
+=======
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut board = board;
+        let word: Vec<char> = word.chars().collect();
+        let wlen = word.len();
+        let mut rboard = vec![vec![' '; n]; m];
+        for i in 0..m {
+            for j in 0..n {
+                rboard[i][j] = board[m-i-1][j];
+            }
+        }
+        let mut cboard = vec![vec![' '; m]; n];
+        for i in 0..m {
+            for j in 0..n {
+                cboard[j][i] = board[i][j];
+            }
+        }
+        let mut rcboard = vec![vec![' '; m]; n];
+        for i in 0..m {
+            for j in 0..n {
+                rcboard[j][i] = rboard[i][j];
+            }
+        }
+        let boards = vec![board, rboard, cboard, rcboard];
+        for board in boards {
+            for i in 0..m {
+                for j in 0..n {
+                    if board[i][j] == ' ' {
+                        let mut flag = true;
+                        for k in 0..wlen {
+                            if j+k >= n || board[i][j+k] != ' ' && board[i][j+k] != word[k] {
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if flag {
+                            return true;
+                        }
+                        flag = true;
+                        for k in 0..wlen {
+                            if i+k >= m || board[i+k][j] != ' ' && board[i+k][j] != word[k] {
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if flag {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        false
+
+=======
+
+        let n = board.len();
+        let m = board[0].len();
+        let mut board = board;
+        let word = word.chars().collect::<Vec<char>>();
+        
+        let mut i = 0;
+        while i < n {
+            let mut j = 0;
+            while j < m {
+                if board[i][j] == ' ' || board[i][j] == word[0] {
+                    let mut k = j;
+                    let mut l = 0;
+                    while k < m && (board[i][k] == ' ' || board[i][k] == word[l]) {
+                        k += 1;
+                        l += 1;
+                        if l == word.len() {
+                            return true;
+                        }
+                    }
+                    let mut k = j;
+                    let mut l = 0;
+                    while k < m && (board[i][k] == ' ' || board[i][k] == word[l]) {
+                        k += 1;
+                        l += 1;
+                        if l == word.len() {
+                            return true;
+                        }
+                    }
+                    let mut k = i;
+                    let mut l = 0;
+                    while k < n && (board[k][j] == ' ' || board[k][j] == word[l]) {
+                        k += 1;
+                        l += 1;
+                        if l == word.len() {
+                            return true;
+                        }
+                    }
+                    let mut k = i;
+                    let mut l = 0;
+                    while k < n && (board[k][j] == ' ' || board[k][j] == word[l]) {
+                        k += 1;
+                        l += 1;
+                        if l == word.len() {
+                            return true;
+                        }
+                    }
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        false
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut board = board;
+        let mut word = word;
+        let mut cnt = 0;
+        let mut rows = vec![vec![]; m];
+        let mut cols = vec![vec![]; n];
+        for i in 0..m {
+            for j in 0..n {
+                if board[i][j] == ' ' {
+                    cnt += 1;
+                } else {
+                    if cnt > 0 {
+                        rows[i].push(cnt);
+                    }
+                    cnt = 0;
+                }
+            }
+            if cnt > 0 {
+                rows[i].push(cnt);
+            }
+            cnt = 0;
+        }
+        for j in 0..n {
+            for i in 0..m {
+                if board[i][j] == ' ' {
+                    cnt += 1;
+                } else {
+                    if cnt > 0 {
+                        cols[j].push(cnt);
+                    }
+                    cnt = 0;
+                }
+            }
+            if cnt > 0 {
+                cols[j].push(cnt);
+            }
+            cnt = 0;
+        }
+        for i in 0..m {
+            for j in 0..n {
+                if board[i][j] == ' ' {
+                    for l in 0..rows[i].len() {
+                        if rows[i][l] >= word.len() {
+                            let mut flag = true;
+                            for k in 0..word.len() {
+                                if board[i][j + k] != ' ' && board[i][j + k] != word.chars().nth(k).unwrap() {
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            if flag {
+                                return true;
+                            }
+                        }
+                    }
+                    for l in 0..cols[j].len() {
+                        if cols[j][l] >= word.len() {
+                            let mut flag = true;
+                            for k in 0..word.len() {
+                                if board[i + k][j] != ' ' && board[i + k][j] != word.chars().nth(k).unwrap() {
+                                    flag = false;
+                                    break;
+                                }
+                            }
+                            if flag {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        word = word.chars().rev().collect();
+        for i in 0..m {
+            for j in

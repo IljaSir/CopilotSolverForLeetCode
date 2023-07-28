@@ -1,0 +1,191 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut res = vec![-1; nums1.len()];
+        for i in 0..nums1.len() {
+            let mut flag = false;
+            for j in 0..nums2.len() {
+                if flag && nums2[j] > nums1[i] {
+                    res[i] = nums2[j];
+                    break;
+                }
+                if nums2[j] == nums1[i] {
+                    flag = true;
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut ans = vec![-1; nums1.len()];
+        let mut stack = vec![];
+        let mut map = std::collections::HashMap::new();
+        for i in 0..nums2.len() {
+            while !stack.is_empty() && nums2[*stack.last().unwrap()] < nums2[i] {
+                map.insert(stack.pop().unwrap(), nums2[i]);
+            }
+            stack.push(i);
+        }
+        for i in 0..nums1.len() {
+            if let Some(&v) = map.get(&nums2.iter().position(|&x| x == nums1[i]).unwrap()) {
+                ans[i] = v;
+            }
+        }
+        ans
+
+=======
+
+        let mut stack = Vec::new();
+        let mut map = std::collections::HashMap::new();
+        for &n in nums2.iter() {
+            while !stack.is_empty() && stack.last().unwrap() < &n {
+                map.insert(stack.pop().unwrap(), n);
+            }
+            stack.push(n);
+        }
+        nums1.into_iter().map(|n| *map.get(&n).unwrap_or(&-1)).collect()
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        for i in nums1 {
+            let mut index = 0;
+            for j in 0..nums2.len() {
+                if nums2[j] == i {
+                    index = j;
+                }
+            }
+            let mut flag = false;
+            for j in index..nums2.len() {
+                if nums2[j] > i {
+                    result.push(nums2[j]);
+                    flag = true;
+                    break;
+                }
+            }
+            if !flag {
+                result.push(-1);
+            }
+        }
+        result
+
+=======
+
+        let mut stack = Vec::new();
+        let mut map = std::collections::HashMap::new();
+        for num in nums2 {
+            while let Some(&top) = stack.last() {
+                if num > top {
+                    map.insert(top, num);
+                    stack.pop();
+                } else {
+                    break;
+                }
+            }
+            stack.push(num);
+        }
+        nums1.iter().map(|&x| *map.get(&x).unwrap_or(&-1)).collect()
+
+=======
+
+        let mut stack = Vec::new();
+        let mut map = std::collections::HashMap::new();
+        for num in nums2 {
+            while let Some(&top) = stack.last() {
+                if top < num {
+                    let _ = stack.pop();
+                    map.insert(top, num);
+                } else {
+                    break;
+                }
+            }
+            stack.push(num);
+        }
+        nums1.into_iter().map(|n| map.get(&n).copied().unwrap_or(-1)).collect()
+
+=======
+
+        let mut res = vec![];
+        for i in nums1 {
+            let mut j = nums2.iter().position(|&x| x == i).unwrap();
+            while j < nums2.len() {
+                if nums2[j] > i {
+                    res.push(nums2[j]);
+                    break;
+                }
+                j += 1;
+            }
+            if j == nums2.len() {
+                res.push(-1);
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        for i in 0..nums1.len() {
+            let mut find = false;
+            for j in 0..nums2.len() {
+                if find {
+                    if nums1[i] < nums2[j] {
+                        result.push(nums2[j]);
+                        break;
+                    }
+                } else {
+                    if nums1[i] == nums2[j] {
+                        find = true;
+                    }
+                }
+            }
+            if !find || result.len() < i+1 {
+                result.push(-1);
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut result = vec![-1; nums1.len()];
+        for (i, n) in nums1.iter().enumerate() {
+            let mut found = false;
+            for n2 in nums2.iter() {
+                if found && n2 > n {
+                    result[i] = *n2;
+                    break;
+                }
+                if n2 == n {
+                    found = true;
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        for &num1 in nums1.iter() {
+            let mut found = false;
+            let mut greater = -1;
+            for &num2 in nums2.iter() {
+                if num2 == num1 {
+                    found = true;
+                }
+                if found && num2 > num1 {
+                    greater = num2;
+                    break;
+                }
+            }
+            res.push(greater);
+        }
+        res

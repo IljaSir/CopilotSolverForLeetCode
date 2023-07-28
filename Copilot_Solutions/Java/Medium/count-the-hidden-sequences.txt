@@ -1,0 +1,207 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = differences.length;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += differences[i];
+            dp[i + 1] = dp[i] * Math.max(0, Math.min(upper - sum, upper - lower + 1));
+            if (i > 0) {
+                dp[i + 1] += dp[i - 1] * Math.max(0, Math.min(lower - 1 - sum, upper - lower + 1));
+            }
+            dp[i + 1] %= 1000000007;
+        }
+        return (int) dp[n];
+
+=======
+
+        int n = differences.length;
+        long[] presum = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            presum[i + 1] = presum[i] + differences[i];
+        }
+        long mod = (long) 1e9 + 7;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            long min = presum[i] + lower;
+            long max = presum[i] + upper;
+            if (min > presum[i + 1] || max < presum[i + 1]) {
+                return 0;
+            }
+            if (min <= presum[i + 1] && presum[i + 1] <= max) {
+                dp[i + 1] = dp[i];
+            }
+            int minPos = Arrays.binarySearch(presum, min);
+            if (minPos < 0) {
+                minPos = -minPos - 1;
+            }
+            int maxPos = Arrays.binarySearch(presum, max);
+            if (maxPos < 0) {
+                maxPos = -maxPos - 1 - 1;
+            }
+            if (minPos <= maxPos) {
+                dp[i + 1] = (dp[i + 1] + dp[minPos] - dp[maxPos + 1]) % mod;
+            }
+        }
+        return (int) dp[n];
+
+=======
+
+        long[] dp = new long[differences.length + 1];
+        int mod = 1000000007;
+        dp[0] = 1;
+        long sum = 0;
+        for (int i = 0; i < differences.length; i++) {
+            sum += differences[i];
+            dp[i + 1] = (sum - upper) * (sum - lower + 1) / 2;
+            dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+        }
+        return (int) (dp[differences.length] % mod);
+
+=======
+
+        int n = differences.length;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        long sum = 0;
+        long mod = (long)1e9 + 7;
+        for (int i = 0; i < n; i++) {
+            sum += differences[i];
+            dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+            if (sum >= lower) {
+                int l = Math.max(0, i + 2 - (int)(sum - lower + 1));
+                int r = Math.min(i + 1, (int)(sum - upper + 1));
+                if (l <= r) {
+                    dp[r + 1] = (dp[r + 1] - dp[l] + mod) % mod;
+                }
+            }
+        }
+        return (int)dp[n];
+
+=======
+
+        int n = differences.length;
+        int mod = 1000000007;
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += differences[i];
+            dp[i + 1] = (int) ((sum - upper >= 0 ? dp[upperIndex(dp, sum - upper)] : 0) - (sum - lower > 0 ? dp[upperIndex(dp, sum - lower - 1)] : 0));
+            dp[i + 1] = (dp[i + 1] + mod) % mod;
+        }
+        return dp[n];
+    }
+    private int upperIndex(int[] dp, long target) {
+        int left = 0;
+        int right = dp.length - 1;
+        while (left < right) {
+            int mid = (left + right + 1) >> 1;
+            if (target >= dp[mid]) {
+                left = mid;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return left;
+
+=======
+
+        int n = differences.length;
+        long[] dp = new long[n + 1];
+        long mod = (long)1e9 + 7;
+        dp[0] = 1;
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += differences[i];
+            dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+            if (sum >= lower && sum <= upper) {
+                dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+            }
+            if (sum - upper >= 1) {
+                dp[i + 1] = (dp[i + 1] - dp[(int)(sum - upper - 1)]) % mod;
+            }
+            if (sum - lower >= 0) {
+                dp[i + 1] = (dp[i + 1] + dp[(int)(sum - lower)]) % mod;
+            }
+        }
+        return (int)((dp[n] - 1 + mod) % mod);
+
+=======
+
+        int mod = 1000000007;
+        int n = differences.length;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        long pre = 0;
+        for (int i = 0; i < n; i++) {
+            pre += differences[i];
+            long l = Math.max(pre - upper, 0);
+            long r = Math.max(pre - lower, 0);
+            dp[i + 1] = (dp[i + 1] + (pre - l) * dp[i]) % mod;
+            dp[i + 1] = (dp[i + 1] + (r - l) * dp[i]) % mod;
+            dp[i + 1] = (dp[i + 1] - (pre - r) * dp[i]) % mod;
+            if (dp[i + 1] < 0) {
+                dp[i + 1] += mod;
+            }
+        }
+        return (int) dp[n];
+
+=======
+
+        int n = differences.length;
+        int mod = 1_000_000_007;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        long[] prefixSum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefixSum[i + 1] = prefixSum[i] + differences[i];
+        }
+        for (int i = 0; i < n; i++) {
+            long l = prefixSum[i] + lower;
+            long r = prefixSum[i] + upper;
+            int left = Arrays.binarySearch(prefixSum, l);
+            if (left < 0) {
+                left = -left - 1;
+            }
+            int right = Arrays.binarySearch(prefixSum, r);
+            if (right < 0) {
+                right = -right - 2;
+            }
+            if (left <= right) {
+                dp[i + 1] = (dp[i + 1] + prefixSum[right + 1] - prefixSum[left] - l * (right - left + 1) + mod * 2) % mod;
+            }
+            dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+        }
+        return (int) dp[n];
+
+=======
+
+        int n = differences.length;
+        long[] dp = new long[n + 1];
+        dp[0] = 1;
+        long mod = (long)1e9 + 7;
+        long[] prefix = new long[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + differences[i - 1];
+        }
+        for (int i = 1; i <= n; i++) {
+            int l = lower - differences[i - 1];
+            int r = upper - differences[i - 1];
+            int lidx = Arrays.binarySearch(prefix, l);
+            if (lidx < 0) {
+                lidx = -lidx - 1;
+            }
+            int ridx = Arrays.binarySearch(prefix, r);
+            if (ridx < 0) {
+                ridx = -ridx - 2;
+            }
+            if (lidx <= ridx) {
+                dp[i] = (prefix[ridx] - prefix[lidx - 1]) % mod;
+            }
+        }
+        return (int)dp[n];

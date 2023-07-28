@@ -1,0 +1,261 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        double x = 0, y = 0, step = 100, eps = 1e-6;
+        for (int i = 0; i < 100; ++i) {
+            double best = 1e9;
+            int bx = 0, by = 0;
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    double sum = 0;
+                    for (auto& p : positions) {
+                        sum += sqrt((p[0] - x - dx * step) * (p[0] - x - dx * step) + (p[1] - y - dy * step) * (p[1] - y - dy * step));
+                    }
+                    if (sum < best) {
+                        best = sum;
+                        bx = dx;
+                        by = dy;
+                    }
+                }
+            }
+            x += bx * step;
+            y += by * step;
+            step *= 0.9;
+        }
+        return best;
+
+=======
+
+        int n = positions.size();
+        double x = 0, y = 0, step = 50;
+        for (auto& p : positions) {
+            x += p[0];
+            y += p[1];
+        }
+        x /= n;
+        y /= n;
+        double ans = 1e9;
+        for (int i = 0; i < 100; i++) {
+            double best = 1e9;
+            int dx = 0, dy = 0;
+            for (int j = -1; j <= 1; j++) {
+                for (int k = -1; k <= 1; k++) {
+                    double sum = 0;
+                    for (auto& p : positions) {
+                        sum += sqrt(pow(x + j * step - p[0], 2) + pow(y + k * step - p[1], 2));
+                    }
+                    if (best > sum) {
+                        best = sum;
+                        dx = j;
+                        dy = k;
+                    }
+                }
+            }
+            x += dx * step;
+            y += dy * step;
+            step /= 2;
+            ans = min(ans, best);
+        }
+        return ans;
+
+=======
+
+        double x = 0, y = 0, step = 100, eps = 1e-6;
+        for (int i = 0; i < 100; ++i) {
+            double minDist = 1e9;
+            int idx = -1;
+            for (int j = 0; j < positions.size(); ++j) {
+                double dist = distTo(positions[j][0], positions[j][1], x, y);
+                if (dist < minDist) {
+                    minDist = dist;
+                    idx = j;
+                }
+            }
+            x += step * (positions[idx][0] - x);
+            y += step * (positions[idx][1] - y);
+            step *= 0.99;
+        }
+        return getDist(positions, x, y);
+
+=======
+
+        double x = 0, y = 0, step = 100;
+        for (int i = 0; i < 100; ++i) {
+            double minDist = 1e9;
+            for (int j = 0; j < 4; ++j) {
+                double nx = x + (j % 2 ? 1 : -1) * step;
+                double ny = y + (j / 2 ? 1 : -1) * step;
+                double dist = 0;
+                for (auto& p : positions) {
+                    dist += sqrt(pow(p[0] - nx, 2) + pow(p[1] - ny, 2));
+                }
+                if (dist < minDist) {
+                    minDist = dist;
+                    x = nx;
+                    y = ny;
+                }
+            }
+            step /= 2;
+        }
+        return minDist;
+
+=======
+
+        double x = 50, y = 50, step = 100, eps = 1e-6;
+        int n = positions.size();
+        while (step > eps) {
+            double nx = x, ny = y;
+            for (int i = 0; i < n; i++) {
+                double dx = positions[i][0] - x, dy = positions[i][1] - y;
+                double dist = sqrt(dx*dx + dy*dy);
+                nx += step * dx / dist;
+                ny += step * dy / dist;
+            }
+            x = nx;
+            y = ny;
+            step *= 0.99;
+        }
+        double res = 0;
+        for (int i = 0; i < n; i++) {
+            double dx = positions[i][0] - x, dy = positions[i][1] - y;
+            res += sqrt(dx*dx + dy*dy);
+        }
+        return res;
+
+=======
+
+        double cx = 0, cy = 0, step = 100, eps = 1e-6;
+        for (int i = 0; i < 100; ++i) {
+            vector<pair<double, double>> cand = {{cx + step, cy}, {cx - step, cy}, {cx, cy + step}, {cx, cy - step}};
+            auto best = cand[0];
+            for (auto& p : cand) {
+                if (getDistSum(positions, p.first, p.second) < getDistSum(positions, best.first, best.second)) {
+                    best = p;
+                }
+            }
+            cx = best.first;
+            cy = best.second;
+            step *= 0.99;
+        }
+        return getDistSum(positions, cx, cy);
+    }
+    
+    double getDistSum(vector<vector<int>>& positions, double cx, double cy) {
+        double sum = 0;
+        for (auto& p : positions) {
+            sum += sqrt(pow(p[0] - cx, 2) + pow(p[1] - cy, 2));
+        }
+        return sum;
+
+=======
+
+        double x = 0, y = 0, step = 100;
+        for (int i = 0; i < 100; ++i) {
+            double best = 1e9;
+            int bx, by;
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    double sum = 0;
+                    for (auto& p : positions) {
+                        sum += sqrt((p[0] - x - dx * step) * (p[0] - x - dx * step) + (p[1] - y - dy * step) * (p[1] - y - dy * step));
+                    }
+                    if (sum < best) {
+                        best = sum;
+                        bx = dx;
+                        by = dy;
+                    }
+                }
+            }
+            x += bx * step;
+            y += by * step;
+            step /= 2;
+        }
+        return best;
+
+=======
+
+        int n = positions.size();
+        double x = 0, y = 0;
+        double step = 100, eps = 1e-7;
+        while (step > eps) {
+            double best = 1e9;
+            int nx = 0, ny = 0;
+            for (int dx = -1; dx <= 1; ++dx) {
+                for (int dy = -1; dy <= 1; ++dy) {
+                    double nx = x + dx * step, ny = y + dy * step;
+                    double sum = 0;
+                    for (auto& p : positions) {
+                        sum += sqrt((nx - p[0]) * (nx - p[0]) + (ny - p[1]) * (ny - p[1]));
+                    }
+                    if (sum < best) {
+                        best = sum;
+                        x = nx;
+                        y = ny;
+                    }
+                }
+            }
+            step /= 2;
+        }
+        return best;
+
+=======
+
+        double x = 50, y = 50, step = 50;
+        for (int i = 0; i < 100; ++i) {
+            double minSum = getSum(positions, x, y);
+            double minx = x, miny = y;
+            for (int j = 0; j < 4; ++j) {
+                double curx = x + step * (j % 2 == 0 ? 1 : -1);
+                double cury = y + step * (j / 2 == 0 ? 1 : -1);
+                double curSum = getSum(positions, curx, cury);
+                if (curSum < minSum) {
+                    minSum = curSum;
+                    minx = curx;
+                    miny = cury;
+                }
+            }
+            x = minx;
+            y = miny;
+            step /= 2;
+        }
+        return getSum(positions, x, y);
+    }
+    
+    double getSum(vector<vector<int>>& positions, double x, double y) {
+        double sum = 0;
+        for (auto& pos : positions) {
+            sum += sqrt((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
+        }
+        return sum;
+
+=======
+
+        double x = 50, y = 50;
+        double step = 100;
+        double eps = 1e-7;
+        double ans = 1e15;
+        while (step > eps) {
+            double minAns = ans;
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0) {
+                        continue;
+                    }
+                    double nx = x + step * dx;
+                    double ny = y + step * dy;
+                    double temp = 0;
+                    for (auto& pos : positions) {
+                        temp += sqrt((nx - pos[0]) * (nx - pos[0]) + (ny - pos[1]) * (ny - pos[1]));
+                    }
+                    if (temp < minAns) {
+                        minAns = temp;
+                        x = nx;
+                        y = ny;
+                    }
+                }
+            }
+            ans = minAns;
+            step /= 2;
+        }
+        return ans;

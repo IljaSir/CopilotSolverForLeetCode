@@ -1,0 +1,199 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let n = nums.len();
+        let mut dp = vec![0; 1 << n];
+        dp[0] = 1;
+        for i in 0..n {
+            for j in 0..i {
+                if nums[i] - nums[j] < k {
+                    dp[1 << i] += dp[1 << j];
+                }
+            }
+            for j in 1..(1 << i) {
+                if (j & (1 << i)) != 0 {
+                    dp[j | (1 << i)] = dp[j];
+                }
+            }
+        }
+        dp.iter().sum()
+
+=======
+
+        let mut ans = 0;
+        let n = nums.len();
+        for i in 0..1 << n {
+            let mut ok = true;
+            for j in 0..n {
+                for l in j + 1..n {
+                    if (i >> j & 1) == 1 && (i >> l & 1) == 1 && (nums[j] - nums[l]).abs() == k {
+                        ok = false;
+                    }
+                }
+            }
+            if ok {
+                ans += 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut dp = vec![0; 1 << nums.len()];
+        dp[0] = 1;
+        for i in 0..(1 << nums.len()) {
+            let mut ok = true;
+            for j in 0..nums.len() {
+                if i & (1 << j) != 0 {
+                    for l in j + 1..nums.len() {
+                        if i & (1 << l) != 0 && (nums[j] - nums[l]).abs() == k {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if ok {
+                for j in 0..nums.len() {
+                    if i & (1 << j) == 0 {
+                        dp[i | (1 << j)] += dp[i];
+                    }
+                }
+            }
+        }
+        dp[(1 << nums.len()) - 1]
+
+=======
+
+        let mut ans = 0;
+        let n = nums.len();
+        for i in 0..1 << n {
+            let mut flag = true;
+            for j in 0..n {
+                for l in j + 1..n {
+                    if i >> j & 1 == 1 && i >> l & 1 == 1 && (nums[j] - nums[l]).abs() == k {
+                        flag = false;
+                    }
+                }
+            }
+            if flag {
+                ans += 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut dp = vec![0; 1024];
+        dp[0] = 1;
+        for &x in nums.iter() {
+            for i in (0..1024).rev() {
+                if i & (1 << x) == 0 {
+                    dp[i | (1 << x)] += dp[i];
+                }
+            }
+        }
+        let mut ans = 0;
+        for i in 0..1024 {
+            let mut ok = true;
+            for j in 0..10 {
+                if i & (1 << j) > 0 && i & (1 << (j + k)) > 0 {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                ans += dp[i];
+            }
+        }
+        ans
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut dp = vec![0; 1 << nums.len()];
+        for i in 0..nums.len() {
+            let mut mask = 0;
+            for j in i..nums.len() {
+                if j > i && nums[j] - nums[j - 1] < k {
+                    mask |= 1 << (j - 1);
+                }
+                dp[1 << j | mask] += 1;
+            }
+        }
+        dp.iter().sum()
+    }
+}
+
+=======
+
+        let mut cnt = 0;
+        let mut nums = nums;
+        nums.sort();
+        for i in 0..nums.len() {
+            cnt += 1;
+            let mut j = i + 1;
+            while j < nums.len() && nums[j] - nums[i] < k {
+                j += 1;
+            }
+            if j < nums.len() && nums[j] - nums[i] == k {
+                cnt += 1;
+            }
+        }
+        cnt
+    }
+}
+
+=======
+
+        let mut dp = vec![0; 1 << 20];
+        for &x in nums.iter() {
+            dp[1 << x] += 1;
+        }
+        for mask in 1..(1 << 20) {
+            if dp[mask] > 0 {
+                for i in 1..20 {
+                    if (mask & (1 << i)) == 0 {
+                        let next = mask | (1 << i);
+                        if (next & (1 << (i - k))) == 0 && (next & (1 << (i + k))) == 0 {
+                            dp[next] += dp[mask];
+                        }
+                    }
+                }
+            }
+        }
+        dp[(1 << 20) - 1]
+
+=======
+
+        let mut res = 0;
+        for i in 0..(1<<nums.len()){
+            let mut j = i;
+            let mut idx = 0;
+            let mut ok = true;
+            while j > 0 {
+                if j & 1 > 0 {
+                    for l in 0..idx {
+                        if (j & (1<<l)) > 0 && (nums[l] - nums[idx]).abs() == k {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if !ok {
+                        break;
+                    }
+                }
+                j >>= 1;
+                idx += 1;
+            }
+            if ok {
+                res += 1;
+            }
+        }
+        res
+    }
+}

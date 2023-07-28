@@ -1,0 +1,490 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> parent(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+        }
+        int res = 0;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                if (find(parent, e[1]) != find(parent, e[2])) {
+                    parent[find(parent, e[1])] = find(parent, e[2]);
+                    --n;
+                } else {
+                    ++res;
+                }
+            }
+        }
+        vector<int> parentA = parent;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (find(parentA, e[1]) != find(parentA, e[2])) {
+                    parentA[find(parentA, e[1])] = find(parentA, e[2]);
+                    --n;
+                } else {
+                    ++res;
+                }
+            }
+        }
+        vector<int> parentB = parent;
+        for (auto& e : edges) {
+            if (e[0] == 2) {
+                if (find(parentB, e[1]) != find(parentB, e[2])) {
+                    parentB[find(parentB, e[1])] = find(parentB, e[2]);
+                    --n;
+                } else {
+                    ++res;
+                }
+            }
+        }
+        return n == 1 ? res : -1;
+
+=======
+
+        vector<int> parent(n + 1, 0);
+        vector<int> parent2(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+            parent2[i] = i;
+        }
+        int ans = 0;
+        int cnt = 0;
+        for (auto &edge : edges) {
+            if (edge[0] == 3) {
+                if (Union(parent, edge[1], edge[2])) {
+                    cnt++;
+                } else {
+                    ans++;
+                }
+                if (Union(parent2, edge[1], edge[2])) {
+                    cnt++;
+                } else {
+                    ans++;
+                }
+            }
+        }
+        for (auto &edge : edges) {
+            if (edge[0] == 1) {
+                if (Union(parent, edge[1], edge[2])) {
+                    cnt++;
+                } else {
+                    ans++;
+                }
+            }
+            if (edge[0] == 2) {
+                if (Union(parent2, edge[1], edge[2])) {
+                    cnt++;
+                } else {
+                    ans++;
+                }
+            }
+        }
+        if (cnt == n - 1) {
+            return ans;
+        }
+        return -1;
+    }
+    int find(vector<int> &parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+    bool Union(vector<int> &parent, int x, int y) {
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if (px == py) {
+            return false;
+        }
+        parent[px] = py;
+        return true;
+
+=======
+
+        vector<int> parent(n + 1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+        }
+        int res = 0;
+        for (auto& edge : edges) {
+            if (edge[0] == 3) {
+                if (find(parent, edge[1]) == find(parent, edge[2])) {
+                    res++;
+                } else {
+                    merge(parent, edge[1], edge[2]);
+                }
+            }
+        }
+        int aParent = find(parent, 1);
+        int bParent = find(parent, 1);
+        for (auto& edge : edges) {
+            if (edge[0] == 1) {
+                if (find(parent, edge[1]) == find(parent, edge[2])) {
+                    res++;
+                } else {
+                    merge(parent, edge[1], edge[2]);
+                }
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (find(parent, i) != aParent) {
+                return -1;
+            }
+        }
+        for (auto& edge : edges) {
+            if (edge[0] == 2) {
+                if (find(parent, edge[1]) == find(parent, edge[2])) {
+                    res++;
+                } else {
+                    merge(parent, edge[1], edge[2]);
+                }
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (find(parent, i) != bParent) {
+                return -1;
+            }
+        }
+        return res;
+    }
+    int find(vector<int>& parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+    void merge(vector<int>& parent, int x, int y) {
+        int xParent = find(parent, x);
+        int yParent = find(parent, y);
+        if (xParent != yParent) {
+            parent[xParent] = yParent;
+        }
+
+=======
+
+        vector<int> parent(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+        }
+        int result = edges.size();
+        for (auto& edge : edges) {
+            if (edge[0] == 3) {
+                if (find(parent, edge[1]) != find(parent, edge[2])) {
+                    unite(parent, edge[1], edge[2]);
+                    --result;
+                }
+            }
+        }
+        vector<int> parentA(parent);
+        for (auto& edge : edges) {
+            if (edge[0] == 1) {
+                if (find(parentA, edge[1]) != find(parentA, edge[2])) {
+                    unite(parentA, edge[1], edge[2]);
+                    --result;
+                }
+            }
+        }
+        vector<int> parentB(parent);
+        for (auto& edge : edges) {
+            if (edge[0] == 2) {
+                if (find(parentB, edge[1]) != find(parentB, edge[2])) {
+                    unite(parentB, edge[1], edge[2]);
+                    --result;
+                }
+            }
+        }
+        int root = find(parentA, 1);
+        for (int i = 2; i <= n; ++i) {
+            if (find(parentA, i) != root) {
+                return -1;
+            }
+        }
+        root = find(parentB, 1);
+        for (int i = 2; i <= n; ++i) {
+            if (find(parentB, i) != root) {
+                return -1;
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> parent(n + 1);
+        iota(parent.begin(), parent.end(), 0);
+        int res = 0;
+        for (auto& e : edges)
+            if (e[0] == 3) {
+                if (!unionSet(e[1], e[2], parent))
+                    res++;
+            }
+        vector<int> a = parent, b = parent;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (!unionSet(e[1], e[2], a))
+                    res++;
+            } else if (e[0] == 2) {
+                if (!unionSet(e[1], e[2], b))
+                    res++;
+            }
+        }
+        for (int i = 1; i <= n; i++)
+            if (find(i, a) != find(i, b))
+                return -1;
+        return res;
+    }
+    
+    int find(int x, vector<int>& parent) {
+        return parent[x] == x ? x : parent[x] = find(parent[x], parent);
+
+=======
+
+        vector<int> parent(n+1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+        }
+        int res = 0;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                if (find(parent, e[1]) != find(parent, e[2])) {
+                    merge(parent, e[1], e[2]);
+                    n--;
+                } else {
+                    res++;
+                }
+            }
+        }
+        vector<int> parentA(parent);
+        vector<int> parentB(parent);
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (find(parentA, e[1]) != find(parentA, e[2])) {
+                    merge(parentA, e[1], e[2]);
+                    n--;
+                } else {
+                    res++;
+                }
+            } else if (e[0] == 2) {
+                if (find(parentB, e[1]) != find(parentB, e[2])) {
+                    merge(parentB, e[1], e[2]);
+                    n--;
+                } else {
+                    res++;
+                }
+            }
+        }
+        return n == 1 ? res : -1;
+
+=======
+
+        vector<int> parent(n+1, 0);
+        for (int i = 0; i < n+1; i++) {
+            parent[i] = i;
+        }
+        int ans = 0;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                if (find(parent, e[1]) == find(parent, e[2])) {
+                    ans++;
+                } else {
+                    merge(parent, e[1], e[2]);
+                }
+            }
+        }
+        int A = 0, B = 0;
+        for (int i = 0; i < n+1; i++) {
+            parent[i] = i;
+        }
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (find(parent, e[1]) == find(parent, e[2])) {
+                    ans++;
+                    A++;
+                } else {
+                    merge(parent, e[1], e[2]);
+                }
+            }
+        }
+        for (int i = 0; i < n+1; i++) {
+            parent[i] = i;
+        }
+        for (auto& e : edges) {
+            if (e[0] == 2) {
+                if (find(parent, e[1]) == find(parent, e[2])) {
+                    ans++;
+                    B++;
+                } else {
+                    merge(parent, e[1], e[2]);
+                }
+            }
+        }
+        if (A+B == n-1) {
+            return ans;
+        }
+        return -1;
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    void merge(vector<int>& parent, int i, int j) {
+        int pi = find(parent, i);
+        int pj = find(parent, j);
+        if (pi != pj) {
+            parent[pi] = pj;
+        }
+
+=======
+
+        vector<int> parent(n + 1);
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+        }
+        int cnt = n;
+        int res = 0;
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                if (unionSet(e[1], e[2], parent)) {
+                    --cnt;
+                } else {
+                    ++res;
+                }
+            }
+        }
+        vector<int> parent1(parent);
+        vector<int> parent2(parent);
+        int cnt1 = cnt;
+        int cnt2 = cnt;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (unionSet(e[1], e[2], parent1)) {
+                    --cnt1;
+                }
+            } else if (e[0] == 2) {
+                if (unionSet(e[1], e[2], parent2)) {
+                    --cnt2;
+                }
+            }
+        }
+        if (cnt1 != 1 || cnt2 != 1) {
+            return -1;
+        }
+        return res;
+    }
+    int find(int x, vector<int>& parent) {
+        if (x != parent[x]) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+    }
+    bool unionSet(int x, int y, vector<int>& parent) {
+        int rx = find(x, parent);
+        int ry = find(y, parent);
+        if (rx == ry) {
+            return false;
+        }
+        parent[rx] = ry;
+        return true;
+
+=======
+
+        vector<int> parent(n+1);
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+        for (auto& e : edges) {
+            if (e[0] == 3) {
+                if (find(parent, e[1]) != find(parent, e[2])) {
+                    n--;
+                    parent[find(parent, e[1])] = find(parent, e[2]);
+                } else {
+                    res++;
+                }
+            }
+        }
+        int a = n, b = n;
+        vector<int> parentA = parent, parentB = parent;
+        for (auto& e : edges) {
+            if (e[0] == 1) {
+                if (find(parentA, e[1]) != find(parentA, e[2])) {
+                    a--;
+                    parentA[find(parentA, e[1])] = find(parentA, e[2]);
+                } else {
+                    res++;
+                }
+            } else if (e[0] == 2) {
+                if (find(parentB, e[1]) != find(parentB, e[2])) {
+                    b--;
+                    parentB[find(parentB, e[1])] = find(parentB, e[2]);
+                } else {
+                    res++;
+                }
+            }
+        }
+        if (a != 1 || b != 1) return -1;
+        return res;
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        vector<int> parent(n+1);
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+        for (auto& edge: edges) {
+            if (edge[0] == 3) {
+                if (find(parent, edge[1]) != find(parent, edge[2])) {
+                    parent[find(parent, edge[1])] = find(parent, edge[2]);
+                    n--;
+                } else {
+                    ans++;
+                }
+            }
+        }
+        int a = n, b = n;
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+        for (auto& edge: edges) {
+            if (edge[0] == 1) {
+                if (find(parent, edge[1]) != find(parent, edge[2])) {
+                    parent[find(parent, edge[1])] = find(parent, edge[2]);
+                    a--;
+                } else {
+                    ans++;
+                }
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            parent[i] = i;
+        }
+        for (auto& edge: edges) {
+            if (edge[0] == 2) {
+                if (find(parent, edge[1]) != find(parent, edge[2])) {
+                    parent[find(parent, edge[1])] = find(parent, edge[2]);
+                    b--;
+                } else {
+                    ans++;
+                }
+            }
+        }
+        if (a != 1 || b != 1) {
+            return -1;
+        }
+        return ans;
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];

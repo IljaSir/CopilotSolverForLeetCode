@@ -1,0 +1,302 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] primes = new int[]{2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
+        int n = nums.length;
+        int[] sub = new int[n];
+        for (int i = 0; i < n; i++) {
+            int p = 0;
+            while (p < primes.length && primes[p] < nums[i]) {
+                p++;
+            }
+            p--;
+            sub[i] = p;
+        }
+        int[] dp = new int[n];
+        dp[0] = 1;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] - primes[sub[j]] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        return dp[n - 1] == n - 1;
+
+=======
+
+        int[] primes = new int[]{2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997};
+        int[] primeSet = new int[1001];
+        for (int i = 0; i < primes.length; i++) {
+            primeSet[primes[i]] = 1;
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[i - 1]) {
+                dp[i] = 1;
+            } else {
+                for (int j = i - 1; j >= 0; j--) {
+                    if (nums[i] > nums[j] && primeSet[nums[i] - nums[j]] == 1) {
+                        dp[i]
+
+=======
+
+        boolean[] isPrime = new boolean[1001];
+        Arrays.fill(isPrime, true);
+        isPrime[0] = false;
+        isPrime[1] = false;
+        for (int i = 2; i < 1001; i++) {
+            if (isPrime[i]) {
+                for (int j = 2; i * j < 1001; j++) {
+                    isPrime[i * j] = false;
+                }
+            }
+        }
+        int prev = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= prev) {
+                return false;
+            }
+            for (int j = nums[i] - 1; j > 0; j--) {
+                if (isPrime[j] && nums[i] - j > prev) {
+                    nums[i] -= j;
+                    break;
+                }
+            }
+            prev = nums[i];
+        }
+        return true;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        boolean[] prime = new boolean[1001];
+        Arrays.fill(prime, true);
+        prime[0] = false;
+        prime[1] = false;
+        for (int i = 2; i < 1001; i++) {
+            if (prime[i]) {
+                for (int j = i + i; j < 1001; j += i) {
+                    prime[j] = false;
+                }
+            }
+        }
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            dp[i] = nums[i];
+            for (int j = 0; j < i; j++) {
+                if (prime[dp[j]] && dp[j] < dp[i]) {
+                    dp[i] = dp[j];
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (dp[i] != nums[i]) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = nums.length;
+        boolean[] prime = new boolean[1001];
+        Arrays.fill(prime, true);
+        prime[0] = false;
+        prime[1] = false;
+        for (int i = 2; i < 1001; i++) {
+            if (prime[i]) {
+                for (int j = 2; i * j < 1001; j++) {
+                    prime[i * j] = false;
+                }
+            }
+        }
+        int[] pre = new int[n];
+        pre[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            pre[i] = Math.min(nums[i], pre[i - 1]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > pre[i]) {
+                boolean flag = false;
+                for (int j = 2; j < nums[i]; j++) {
+                    if (prime[j] && nums[i] - j >= pre[i]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.length;
+        boolean[] prime = new boolean[1001];
+        Arrays.fill(prime, true);
+        prime[0] = prime[1] = false;
+        for (int i = 2; i < 1001; i++) {
+            if (prime[i]) {
+                for (int j = 2; i * j < 1001; j++) {
+                    prime[i * j] = false;
+                }
+            }
+        }
+        int[] diff = new int[n];
+        for (int i = 1; i < n; i++) {
+            diff[i] = nums[i] - nums[i - 1];
+        }
+        for (int i = 1; i < n; i++) {
+            if (diff[i] <= 0) {
+                boolean flag = false;
+                for (int j = 2; j < nums[i]; j++) {
+                    if (prime[j] && nums[i] - j > diff[i - 1]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+=======
+
+        int[] primes = new int[1001];
+        Arrays.fill(primes, 1);
+        for (int i = 2; i < 1001; i++) {
+            if (primes[i] == 1) {
+                for (int j = i * i; j < 1001; j += i) {
+                    primes[j] = 0;
+                }
+            }
+        }
+        for (int i = 0; i < nums.length - 1; i++) {
+            int n = nums[i];
+            while (n > 1) {
+                if (primes[n] == 1) {
+                    nums[i] -= n;
+                    break;
+                }
+                n--;
+            }
+            if (nums[i] >= nums[i + 1]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int[] primes = new int[1000];
+        int primeCount = 0;
+        for (int i = 2; i < 1000; i++) {
+            boolean isPrime = true;
+            for (int j = 2; j < i; j++) {
+                if (i % j == 0) {
+                    isPrime = false;
+                }
+            }
+            if (isPrime) {
+                primes[primeCount] = i;
+                primeCount++;
+            }
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int max = 0;
+            for (int j = 0; j < i; j++) {
+                if (nums[j] > nums[i]) {
+                    continue;
+                }
+                for (int k = 0; k < primeCount; k++) {
+                    if (nums[j] - primes[k] > 0 && nums[j] - primes[k] < nums[i]) {
+                        max = Math.max(dp[j], max);
+                    }
+                }
+            }
+            dp[i] = max + 1;
+        }
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            max = Math.max(max, dp[i]);
+        }
+        return max == nums.length;
+
+=======
+
+        int n = nums.length;
+        int[] primes = new int[1000];
+        int count = 0;
+        for (int i = 2; i < 1000; i++) {
+            if (isPrime(i)) {
+                primes[count++] = i;
+            }
+        }
+        int[] dp = new int[n];
+        dp[0] = 1;
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < count; j++) {
+                if (primes[j] < nums[i]) {
+                    for (int k = 0; k < i; k++) {
+                        if (nums[k] - primes[j] == nums[i]) {
+                            dp[i] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean isPrime(int n) {
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        for (int i = 0; i < nums.length-1; i++) {
+            if (nums[i] > nums[i+1]) {
+                if (!isPrime(nums[i+1])) {
+                    if (nums[i+1] == 1) {
+                        nums[i+1] = 2;
+                        continue;
+                    }
+                    return false;
+                }
+                nums[i] -= nums[i+1];
+                i = -1;
+            }
+        }
+        return true;
+    }
+    
+    public boolean isPrime(int n) {
+        if (n <= 1) return false;
+        if (n <= 3) return true;
+        if (n % 2 == 0 || n % 3 == 0) return false;
+        for (int i = 5; i*i <= n; i = i + 6) {
+            if (n % i == 0 || n % (i + 2) == 0) return false;
+        }
+        return true;

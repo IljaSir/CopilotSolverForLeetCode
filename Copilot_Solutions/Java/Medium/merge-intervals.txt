@@ -1,0 +1,180 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+        Arrays.sort(intervals, (i1, i2) -> Integer.compare(i1[0], i2[0]));
+        List<int[]> merged = new ArrayList<>();
+        for (int i = 0; i < intervals.length; i++) {
+            int L = intervals[i][0], R = intervals[i][1];
+            if (merged.size() == 0 || merged.get(merged.size() - 1)[1] < L) {
+                merged.add(new int[]{L, R});
+            } else {
+                merged.get(merged.size() - 1)[1] = Math.max(merged.get(merged.size() - 1)[1], R);
+            }
+        }
+        return merged.toArray(new int[merged.size()][]);
+
+=======
+
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        List<int[]> result = new ArrayList<>();
+        int[] newInterval = intervals[0];
+        result.add(newInterval);
+        for (int[] interval: intervals) {
+            if (interval[0] <= newInterval[1]) {
+                newInterval[1] = Math.max(newInterval[1], interval[1]);
+            } else {
+                newInterval = interval;
+                result.add(newInterval);
+            }
+        }
+        return result.toArray(new int[result.size()][]);
+
+=======
+
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+        // Sort by ascending starting point
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(final int[] interval1, final int[] interval2) {
+                return Integer.compare(interval1[0], interval2[0]);
+            }
+        });
+        List<int[]> merged = new LinkedList<int[]>();
+        for (int[] interval : intervals) {
+            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < interval[0]) {
+                merged.add(interval);
+            } else {
+                merged.get(merged.size() - 1)[1] = Math.max(merged.get(merged.size() - 1)[1], interval[1]);
+            }
+        }
+        return merged.toArray(new int[merged.size()][]);
+
+=======
+
+        List<int[]> result = new ArrayList<>();
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        int[] newInterval = intervals[0];
+        result.add(newInterval);
+        for (int[] interval : intervals) {
+            if (interval[0] <= newInterval[1]) {
+                newInterval[1] = Math.max(newInterval[1], interval[1]);
+            } else {
+                newInterval = interval;
+                result.add(newInterval);
+            }
+        }
+        return result.toArray(new int[result.size()][]);
+
+=======
+
+        if (intervals.length <= 1)
+            return intervals;
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        List<int[]> result = new ArrayList<>();
+        int[] newInterval = intervals[0];
+        result.add(newInterval);
+        for (int[] interval : intervals) {
+            if (interval[0] <= newInterval[1])
+                newInterval[1] = Math.max(newInterval[1], interval[1]);
+            else {
+                newInterval = interval;
+                result.add(newInterval);
+            }
+        }
+        return result.toArray(new int[result.size()][]);
+
+=======
+
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        int i = 0;
+        while (i < intervals.length - 1) {
+            if (intervals[i][1] >= intervals[i + 1][0]) {
+                intervals[i][1] = Math.max(intervals[i][1], intervals[i + 1][1]);
+                intervals[i + 1][0] = intervals[i][0];
+                intervals[i + 1][1] = intervals[i][1];
+                intervals[i][0] = -1;
+                intervals[i][1] = -1;
+            }
+            i++;
+        }
+        return Arrays.stream(intervals).filter(a -> a[0] != -1).toArray(int[][]::new);
+
+=======
+
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        List<int[]> output = new ArrayList<>();
+        for (int[] interval : intervals) {
+            if (output.isEmpty() || output.get(output.size() - 1)[1] < interval[0]) {
+                output.add(interval);
+            } else {
+                output.get(output.size() - 1)[1] = Math.max(output.get(output.size() - 1)[1], interval[1]);
+            }
+        }
+        return output.toArray(new int[output.size()][]);
+
+=======
+
+        int len = intervals.length;
+        if (len < 2) return intervals;
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        int[][] merged = new int[len][2];
+        int index = -1;
+        for (int[] interval : intervals) {
+            if (index == -1 || merged[index][1] < interval[0]) {
+                merged[++index] = interval;
+            } else {
+                merged[index][1] = Math.max(merged[index][1], interval[1]);
+            }
+        }
+        return Arrays.copyOf(merged, index + 1);
+
+=======
+
+        if(intervals.length <= 1) return intervals;
+        Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
+        List<int[]> result = new ArrayList<>();
+        int[] currentInterval = intervals[0];
+        result.add(currentInterval);
+        for(int[] interval: intervals){
+            int currentBegin = currentInterval[0];
+            int currentEnd = currentInterval[1];
+            int nextBegin = interval[0];
+            int nextEnd = interval[1];
+            if(currentEnd >= nextBegin){
+                currentInterval[1] = Math.max(currentEnd, nextEnd);
+            }else{
+                currentInterval = interval;
+                result.add(currentInterval);
+            }
+        }
+        return result.toArray(new int[result.size()][]);
+
+=======
+
+        // sort the array based on the start time
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        // add the first interval to the result
+        List<int[]> result = new ArrayList<>();
+        result.add(intervals[0]);
+        
+        for (int i = 1; i < intervals.length; i++) {
+            int[] currentInterval = intervals[i];
+            int[] lastInterval = result.get(result.size() - 1);
+            
+            if (currentInterval[0] <= lastInterval[1]) {
+                // overlapping intervals, adjust the end time of the last interval
+                lastInterval[1] = Math.max(lastInterval[1], currentInterval[1]);
+            } else {
+                // non-overlapping interval, add to the result
+                result.add(currentInterval);
+            }
+        }
+        
+        return result.toArray(new int[result.size()][]);

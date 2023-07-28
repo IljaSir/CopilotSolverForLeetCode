@@ -1,0 +1,457 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut x_count = 0;
+        let mut o_count = 0;
+        for i in 0..3 {
+            for j in 0..3 {
+                if board[i].as_bytes()[j] == b'X' {
+                    x_count += 1;
+                } else if board[i].as_bytes()[j] == b'O' {
+                    o_count += 1;
+                }
+            }
+        }
+        if o_count != x_count && o_count != x_count - 1 {
+            return false;
+        }
+        let mut x_win = false;
+        let mut o_win = false;
+        for i in 0..3 {
+            if board[i].as_bytes()[0] == b'X' && board[i].as_bytes()[1] == b'X' && board[i].as_bytes()[2] == b'X' {
+                x_win = true;
+            }
+            if board[i].as_bytes()[0] == b'O' && board[i].as_bytes()[1] == b'O' && board[i].as_bytes()[2] == b'O' {
+                o_win = true;
+            }
+            if board[0].as_bytes()[i] == b'X' && board[1].as_bytes()[i] == b'X' && board[2].as_bytes()[i] == b'X' {
+                x_win = true;
+            }
+            if board[0].as_bytes()[i] == b'O' && board[1].as_bytes()[i] == b'O' && board[2].as_bytes()[i] == b'O' {
+                o_win = true;
+            }
+        }
+        if board[0].as_bytes()[0] == b'X' && board[1].as_bytes()[1] == b'X' && board[2].as_bytes()[2] == b'X' {
+            x_win = true;
+        }
+        if board[0].as_bytes()[0] == b'O' && board[1].as_bytes()[1] == b'O' && board[2].as_bytes()[2] == b'O' {
+            o_win = true;
+        }
+        if board[0].as_bytes()[2] == b'X' && board[1].as_bytes()[1] == b'X' && board[2].as_bytes()[0] == b'X
+
+=======
+
+        let mut x_count = 0;
+        let mut o_count = 0;
+        for row in board.iter() {
+            for c in row.chars() {
+                match c {
+                    'X' => x_count += 1,
+                    'O' => o_count += 1,
+                    _ => {}
+                }
+            }
+        }
+        if x_count < o_count || x_count > o_count + 1 {
+            return false;
+        }
+        let winner = Self::get_winner(&board);
+        if winner == Some('X') {
+            x_count == o_count + 1
+        } else if winner == Some('O') {
+            x_count == o_count
+        } else {
+            true
+        }
+
+=======
+
+        let mut xs = 0;
+        let mut os = 0;
+        let mut rows = vec![0; 3];
+        let mut cols = vec![0; 3];
+        let mut diag = 0;
+        let mut anti_diag = 0;
+        for (i, row) in board.iter().enumerate() {
+            for (j, c) in row.chars().enumerate() {
+                if c == 'X' {
+                    xs += 1;
+                    rows[i] += 1;
+                    cols[j] += 1;
+                    if i == j {
+                        diag += 1;
+                    }
+                    if i + j == 2 {
+                        anti_diag += 1;
+                    }
+                } else if c == 'O' {
+                    os += 1;
+                    rows[i] -= 1;
+                    cols[j] -= 1;
+                    if i == j {
+                        diag -= 1;
+                    }
+                    if i + j == 2 {
+                        anti_diag -= 1;
+                    }
+                }
+            }
+        }
+        if (xs - os).abs() > 1 {
+            return false;
+        }
+        if xs > os && rows.iter().any(|&x| x == 3) {
+            return false;
+        }
+        if xs > os && cols.iter().any(|&x| x == 3) {
+            return false;
+        }
+        if xs > os && diag == 3 {
+            return false;
+        }
+        if xs > os && anti_diag == 3 {
+            return false;
+        }
+        if os > xs && rows.iter().any(|&x| x == -3) {
+            return false;
+        }
+        if os > xs && cols.iter().any(|&x| x == -3) {
+            return false;
+        }
+        if os > xs && diag == -3 {
+            return false;
+        }
+        if os > xs && anti_diag == -3 {
+            return false;
+        }
+        true
+
+=======
+
+        let mut x = 0;
+        let mut o = 0;
+        let mut win = 0;
+        for i in 0..3 {
+            for j in 0..3 {
+                if board[i].chars().nth(j).unwrap() == 'X' {
+                    x += 1;
+                }
+                if board[i].chars().nth(j).unwrap() == 'O' {
+                    o += 1;
+                }
+            }
+        }
+        if o > x || x - o > 1 {
+            return false;
+        }
+        for i in 0..3 {
+            if board[i].chars().nth(0).unwrap() != ' ' && board[i].chars().nth(0).unwrap() == board[i].chars().nth(1).unwrap() && board[i].chars().nth(0).unwrap() == board[i].chars().nth(2).unwrap() {
+                win += 1;
+            }
+            if board[0].chars().nth(i).unwrap() != ' ' && board[0].chars().nth(i).unwrap() == board[1].chars().nth(i).unwrap() && board[0].chars().nth(i).unwrap() == board[2].chars().nth(i).unwrap() {
+                win += 1;
+            }
+        }
+        if board[0].chars().nth(0).unwrap() != ' ' && board[0].chars().nth(0).unwrap() == board[1].chars().nth(1).unwrap() && board[0].chars().nth(0).unwrap() == board[2].chars().nth(2).unwrap() {
+            win += 1;
+        }
+        if board[0].chars().nth(2).unwrap() != ' ' && board[0].chars().nth(2).unwrap() == board[1].chars().nth(1).unwrap() && board[0].chars().nth(2).unwrap() == board[2].chars().nth(0).unwrap() {
+            win += 1;
+        }
+        if win == 0 {
+            return true;
+        }
+        if win == 1 {
+            if x == o {
+                return false;
+            }
+            return true;
+        }
+        if win == 2 {
+            return false;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut x = 0;
+        let mut o = 0;
+        let mut row = vec![0; 3];
+        let mut col = vec![0; 3];
+        let mut diagonal = 0;
+        let mut anti_diagonal = 0;
+
+        for (i, b) in board.iter().enumerate() {
+            for (j, c) in b.chars().enumerate() {
+                if c == 'X' {
+                    x += 1;
+                    row[i] += 1;
+                    col[j] += 1;
+                    if i == j {
+                        diagonal += 1;
+                    }
+                    if i + j == 2 {
+                        anti_diagonal += 1;
+                    }
+                } else if c == 'O' {
+                    o += 1;
+                    row[i] -= 1;
+                    col[j] -= 1;
+                    if i == j {
+                        diagonal -= 1;
+                    }
+                    if i + j == 2 {
+                        anti_diagonal -= 1;
+                    }
+                }
+            }
+        }
+
+        if o > x || x - o > 1 {
+            return false;
+        }
+
+        if row.iter().any(|&x| x == 3) || col.iter().any(|&x| x == 3) || diagonal == 3 || anti_diagonal == 3 {
+            if o == x {
+                return false;
+            }
+        } else if row.iter().any(|&x| x == -3) || col.iter().any(|&x| x == -3) || diagonal == -3 || anti_diagonal == -3 {
+            if o != x {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+=======
+
+        let mut count_x = 0;
+        let mut count_o = 0;
+        let mut win_x = false;
+        let mut win_o = false;
+        for i in 0..3 {
+            let mut row_x = true;
+            let mut row_o = true;
+            let mut col_x = true;
+            let mut col_o = true;
+            for j in 0..3 {
+                match board[i].as_bytes()[j] {
+                    b'X' => {
+                        count_x += 1;
+                    },
+                    b'O' => {
+                        count_o += 1;
+                    },
+                    _ => {}
+                }
+                if board[i].as_bytes()[j] != b'X' {
+                    row_x = false;
+                }
+                if board[i].as_bytes()[j] != b'O' {
+                    row_o = false;
+                }
+                if board[j].as_bytes()[i] != b'X' {
+                    col_x = false;
+                }
+                if board[j].as_bytes()[i] != b'O' {
+                    col_o = false;
+                }
+            }
+            if row_x {
+                win_x = true;
+            }
+            if row_o {
+                win_o = true;
+            }
+            if col_x {
+                win_x = true;
+            }
+            if col_o {
+                win_o = true;
+            }
+        }
+        if board[0].as_bytes()[0] == b'X' && board[1].as_bytes()[1] == b'X' && board[2].as_bytes()[2] == b'X' {
+            win_x = true;
+        }
+        if board[0].as_bytes()[0] == b'O' && board[1].as_bytes()[1] == b'O' && board[2].as_bytes()[2] == b'O' {
+            win_o = true;
+        }
+        if board[0].as_bytes()[2] == b'X' && board[1].as_bytes()[1] == b'X' && board[2].as_bytes()[0] == b'X' {
+            win_x = true;
+        }
+        if board[0].as_bytes()[2] == b'O' && board[1].as_bytes()[1] == b'O' && board[2].as_bytes()[0] == b'O' {
+            win_o = true;
+        }
+        if count
+
+=======
+
+        let mut x_count = 0;
+        let mut o_count = 0;
+        let mut x_win = false;
+        let mut o_win = false;
+        for i in 0..3 {
+            if board[i].starts_with("XXX") {
+                x_win = true;
+            }
+            if board[i].starts_with("OOO") {
+                o_win = true;
+            }
+            if board[i].ends_with("XXX") {
+                x_win = true;
+            }
+            if board[i].ends_with("OOO") {
+                o_win = true;
+            }
+            if board[i].chars().nth(1) == Some('X') && board[i].chars().nth(1) == board[i].chars().nth(2) && board[i].chars().nth(2) == board[i].chars().nth(3) {
+                x_win = true;
+            }
+            if board[i].chars().nth(1) == Some('O') && board[i].chars().nth(1) == board[i].chars().nth(2) && board[i].chars().nth(2) == board[i].chars().nth(3) {
+                o_win = true;
+            }
+            if board[0].chars().nth(i) == Some('X') && board[1].chars().nth(i) == Some('X') && board[2].chars().nth(i) == Some('X') {
+                x_win = true;
+            }
+            if board[0].chars().nth(i) == Some('O') && board[1].chars().nth(i) == Some('O') && board[2].chars().nth(i) == Some('O') {
+                o_win = true;
+            }
+            x_count += board[i].matches("X").count();
+            o_count += board[i].matches("O").count();
+        }
+        if board[0].chars().nth(1) == Some('X') && board[1].chars().nth(2) == Some('X') && board[2].chars().nth(3) == Some('X') {
+            x_win = true;
+        }
+        if board[0].chars().nth(3) == Some('X') && board[1].chars().nth(2) == Some('X') && board[2].chars().nth(1) == Some('X') {
+            x
+
+=======
+
+        let mut x = 0;
+        let mut o = 0;
+        let mut x_win = false;
+        let mut o_win = false;
+        for i in 0..3 {
+            if board[i].chars().nth(0) == board[i].chars().nth(1) && board[i].chars().nth(0) == board[i].chars().nth(2) {
+                if board[i].chars().nth(0) == Some('X') {
+                    x_win = true;
+                } else if board[i].chars().nth(0) == Some('O') {
+                    o_win = true;
+                }
+            }
+            if board[0].chars().nth(i) == board[1].chars().nth(i) && board[0].chars().nth(i) == board[2].chars().nth(i) {
+                if board[0].chars().nth(i) == Some('X') {
+                    x_win = true;
+                } else if board[0].chars().nth(i) == Some('O') {
+                    o_win = true;
+                }
+            }
+        }
+        if board[0].chars().nth(0) == board[1].chars().nth(1) && board[0].chars().nth(0) == board[2].chars().nth(2) {
+            if board[0].chars().nth(0) == Some('X') {
+                x_win = true;
+            } else if board[0].chars().nth(0) == Some('O') {
+                o_win = true;
+            }
+        }
+        if board[0].chars().nth(2) == board[1].chars().nth(1) && board[0].chars().nth(2) == board[2].chars().nth(0) {
+            if board[0].chars().nth(2) == Some('X') {
+                x_win = true;
+            } else if board[0].chars().nth(2) == Some('O') {
+                o_win = true;
+            }
+        }
+        for i in 0..3 {
+            for j in 0..3 {
+                if board[i].chars().nth(j) == Some('X') {
+                    x += 1;
+                } else if board[i].chars().nth(j) == Some('O') {
+                    o += 1;
+                }
+            }
+
+=======
+
+        let mut x = 0;
+        let mut o = 0;
+        let mut x_win = false;
+        let mut o_win = false;
+        for i in 0..3 {
+            if board[i].starts_with("XXX") || board[i].ends_with("XXX") {
+                x_win = true;
+            }
+            if board[i].starts_with("OOO") || board[i].ends_with("OOO") {
+                o_win = true;
+            }
+            for j in 0..3 {
+                if board[i].chars().nth(j).unwrap() == 'X' {
+                    x += 1;
+                } else if board[i].chars().nth(j).unwrap() == 'O' {
+                    o += 1;
+                }
+                if i == j && (board[i].chars().nth(j).unwrap() == 'X') {
+                    if board[0].chars().nth(0).unwrap() == 'X' && board[1].chars().nth(1).unwrap() == 'X' && board[2].chars().nth(2).unwrap() == 'X' {
+                        x_win = true;
+                    }
+                }
+                if i + j == 2 && (board[i].chars().nth(j).unwrap() == 'X') {
+                    if board[0].chars().nth(2).unwrap() == 'X' && board[1].chars().nth(1).unwrap() == 'X' && board[2].chars().nth(0).unwrap() == 'X' {
+                        x_win = true;
+                    }
+                }
+                if i == j && (board[i].chars().nth(j).unwrap() == 'O') {
+                    if board[0].chars().nth(0).unwrap() == 'O' && board[1].chars().nth(1).unwrap() == 'O' && board[2].chars().nth(2).unwrap() == 'O' {
+                        o_win = true;
+                    }
+                }
+                if i + j == 2 && (board[i].chars().nth(j).unwrap() == 'O') {
+                    if board[0].chars().nth(2).unwrap() == 'O' && board[1].chars().nth(1).unwrap() == 'O' && board[2].chars().nth(0).unwrap() == 'O' {
+                        o_win = true
+
+=======
+
+        let mut x = 0;
+        let mut o = 0;
+        let mut win = 0;
+        for i in 0..3 {
+            if board[i].starts_with("XXX") || board[i].ends_with("XXX") {
+                win += 1;
+            }
+            if board[i].starts_with("OOO") || board[i].ends_with("OOO") {
+                win -= 1;
+            }
+            for j in 0..3 {
+                if board[i].chars().nth(j).unwrap() == 'X' {
+                    x += 1;
+                } else if board[i].chars().nth(j).unwrap() == 'O' {
+                    o += 1;
+                }
+            }
+            if board[0].chars().nth(i).unwrap() == board[1].chars().nth(i).unwrap() && board[1].chars().nth(i).unwrap() == board[2].chars().nth(i).unwrap() {
+                if board[0].chars().nth(i).unwrap() == 'X' {
+                    win += 1;
+                } else if board[0].chars().nth(i).unwrap() == 'O' {
+                    win -= 1;
+                }
+            }
+        }
+        if board[0].chars().nth(0).unwrap() == board[1].chars().nth(1).unwrap() && board[1].chars().nth(1).unwrap() == board[2].chars().nth(2).unwrap() {
+            if board[0].chars().nth(0).unwrap() == 'X' {
+                win += 1;
+            } else if board[0].chars().nth(0).unwrap() == 'O' {
+                win -= 1;
+            }
+        }
+        if board[0].chars().nth(2).unwrap() == board[1].chars().nth(1).unwrap() && board[1].chars().nth(1).unwrap() == board[2].chars().nth(0).unwrap() {
+            if board[0].chars().nth(2).unwrap() == 'X' {
+                win += 1;
+            } else if board[0].chars().nth(2).unwrap() == 'O' {
+                win -= 1;
+            }
+        }
+        if win > 0 || win < 0 && o >= x {
+            return false;

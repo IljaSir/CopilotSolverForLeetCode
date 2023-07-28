@@ -1,0 +1,67 @@
+class Solution:
+    def maxScore(self, cardPoints: List[int], k: int) -> int:
+        
+        
+        # 1. sliding window
+        # 2. prefix sum
+        # 3. sliding window
+        # 4. sliding window
+        # 5. sliding window
+        # 6. sliding window
+        # 7. sliding window
+        # 8. sliding window
+        # 9. sliding window
+        # 10. sliding window
+        # 11. sliding window
+        # 12. sliding window
+        # 13. sliding window
+        # 14. sliding window
+        # 15. sliding window
+        # 16. sliding window
+        # 17. sliding window
+        # 18. sliding window
+        # 19. sliding window
+        # 20. sliding window
+        # 21. sliding window
+        # 22. sliding window
+        # 23. sliding window
+        # 24. sliding window
+        # 25. sliding window
+        # 26. sliding window
+        # 27. sliding window
+        # 28. sliding window
+        # 29. sliding window
+        # 30. sliding window
+        # 31. sliding window
+        # 32. sliding window
+        # 33. sliding window
+        # 34. sliding window
+        # 35. sliding window
+        # 36. sliding window
+        # 37. sliding window
+        # 38. sliding window
+        # 39. sliding window
+        # 40. sliding window
+        # 41. sliding window
+        # 42. sliding window
+        # 43. sliding window
+        # 44. sliding window
+        # 45. sliding window
+        # 46. sliding window
+        # 47. sliding window
+        # 48. sliding window
+        # 49. sliding window
+        # 50. sliding window
+        # 51. sliding window
+        # 52. sliding window
+        # 53. sliding window
+        # 54. sliding window
+        # 55. sliding window
+        # 56. sliding window
+        # 57. sliding window
+        # 58. sliding window
+        # 59. sliding window
+        # 60. sliding window
+        # 61. sliding window
+        # 62. sliding window
+        #

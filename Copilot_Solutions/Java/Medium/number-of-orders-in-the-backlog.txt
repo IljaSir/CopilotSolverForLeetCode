@@ -1,0 +1,426 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                buy.offer(order);
+            } else {
+                sell.offer(order);
+            }
+            while (!buy.isEmpty() && !sell.isEmpty() && buy.peek()[0] >= sell.peek()[0]) {
+                int[] buyOrder = buy.poll();
+                int[] sellOrder = sell.poll();
+                if (buyOrder[1] > sellOrder[1]) {
+                    buyOrder[1] -= sellOrder[1];
+                    sellOrder[1] = 0;
+                    buy.offer(buyOrder);
+                } else if (buyOrder[1] < sellOrder[1]) {
+                    sellOrder[1] -= buyOrder[1];
+                    buyOrder[1] = 0;
+                    sell.offer(sellOrder);
+                }
+            }
+        }
+        int res = 0;
+        while (!buy.isEmpty()) {
+            res = (res + buy.poll()[1]) % 1000000007;
+        }
+        while (!sell.isEmpty()) {
+            res = (res + sell.poll()[1]) % 1000000007;
+        }
+        return res;
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                while (!sell.isEmpty() && sell.peek()[0] <= order[0] && order[1] > 0) {
+                    int[] s = sell.poll();
+                    if (s[1] > order[1]) {
+                        s[1] -= order[1];
+                        order[1] = 0;
+                        sell.offer(s);
+                    } else {
+                        order[1] -= s[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    buy.offer(order);
+                }
+            } else {
+                while (!buy.isEmpty() && buy.peek()[0] >= order[0] && order[1] > 0) {
+                    int[] b = buy.poll();
+                    if (b[1] > order[1]) {
+                        b[1] -= order[1];
+                        order[1] = 0;
+                        buy.offer(b);
+                    } else {
+                        order[1] -= b[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    sell.offer(order);
+                }
+            }
+        }
+        long res = 0;
+        for (int[] b : buy) {
+            res += b[1];
+        }
+        for (int[] s : sell) {
+            res += s[1];
+        }
+        return (int)(res % (1000000007));
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                while (!sell.isEmpty() && sell.peek()[0] <= order[0] && order[1] > 0) {
+                    int[] sellOrder = sell.poll();
+                    if (sellOrder[1] > order[1]) {
+                        sellOrder[1] -= order[1];
+                        order[1] = 0;
+                        sell.offer(sellOrder);
+                    } else {
+                        order[1] -= sellOrder[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    buy.offer(order);
+                }
+            } else {
+                while (!buy.isEmpty() && buy.peek()[0] >= order[0] && order[1] > 0) {
+                    int[] buyOrder = buy.poll();
+                    if (buyOrder[1] > order[1]) {
+                        buyOrder[1] -= order[1];
+                        order[1] = 0;
+                        buy.offer(buyOrder);
+                    } else {
+                        order[1] -= buyOrder[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    sell.offer(order);
+                }
+            }
+        }
+        long res = 0;
+        while (!buy.isEmpty()) {
+            res += buy.poll()[1];
+        }
+        while (!sell.isEmpty()) {
+            res += sell.poll()[1];
+        }
+        return (int) (res % (1000000007));
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                buy.offer(order);
+            } else {
+                sell.offer(order);
+            }
+            while (!buy.isEmpty() && !sell.isEmpty() && buy.peek()[0] >= sell.peek()[0]) {
+                int[] buyOrder = buy.poll();
+                int[] sellOrder = sell.poll();
+                if (buyOrder[1] > sellOrder[1]) {
+                    buyOrder[1] -= sellOrder[1];
+                    buy.offer(buyOrder);
+                } else if (buyOrder[1] < sellOrder[1]) {
+                    sellOrder[1] -= buyOrder[1];
+                    sell.offer(sellOrder);
+                }
+            }
+        }
+        int res = 0;
+        while (!buy.isEmpty()) {
+            res += buy.peek()[1];
+            res %= 1_000_000_007;
+            buy.poll();
+        }
+        while (!sell.isEmpty()) {
+            res += sell.peek()[1];
+            res %= 1_000_000_007;
+            sell.poll();
+        }
+        return res;
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a,b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a,b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            int price = order[0];
+            int amount = order[1];
+            int type = order[2];
+            if (type == 0) {
+                while (amount > 0 && !sell.isEmpty() && sell.peek()[0] <= price) {
+                    int[] sellOrder = sell.poll();
+                    if (sellOrder[1] > amount) {
+                        sellOrder[1] -= amount;
+                        sell.offer(sellOrder);
+                        amount = 0;
+                    } else {
+                        amount -= sellOrder[1];
+                    }
+                }
+                if (amount > 0) {
+                    buy.offer(new int[] { price, amount });
+                }
+            } else {
+                while (amount > 0 && !buy.isEmpty() && buy.peek()[0] >= price) {
+                    int[] buyOrder = buy.poll();
+                    if (buyOrder[1] > amount) {
+                        buyOrder[1] -= amount;
+                        buy.offer(buyOrder);
+                        amount = 0;
+                    } else {
+                        amount -= buyOrder[1];
+                    }
+                }
+                if (amount > 0) {
+                    sell.offer(new int[] { price, amount });
+                }
+            }
+        }
+        int ans = 0;
+        while (!buy.isEmpty()) {
+            ans += buy.poll()[1];
+            ans %= 1000000007;
+        }
+        while (!sell.isEmpty()) {
+            ans += sell.poll()[1];
+            ans %= 1000000007;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            int price = order[0], amount = order[1], type = order[2];
+            if (type == 0) {
+                while (amount > 0 && !sell.isEmpty() && sell.peek()[0] <= price) {
+                    int[] sellOrder = sell.poll();
+                    if (amount >= sellOrder[1]) {
+                        amount -= sellOrder[1];
+                    } else {
+                        sellOrder[1] -= amount;
+                        amount = 0;
+                        sell.offer(sellOrder);
+                    }
+                }
+                if (amount > 0) {
+                    buy.offer(new int[]{price, amount});
+                }
+            } else {
+                while (amount > 0 && !buy.isEmpty() && buy.peek()[0] >= price) {
+                    int[] buyOrder = buy.poll();
+                    if (amount >= buyOrder[1]) {
+                        amount -= buyOrder[1];
+                    } else {
+                        buyOrder[1] -= amount;
+                        amount = 0;
+                        buy.offer(buyOrder);
+                    }
+                }
+                if (amount > 0) {
+                    sell.offer(new int[]{price, amount});
+                }
+            }
+        }
+        int ans = 0;
+        while (!buy.isEmpty()) {
+            ans = (ans + buy.poll()[1]) % mod;
+        }
+        while (!sell.isEmpty()) {
+            ans = (ans + sell.poll()[1]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                while (!sell.isEmpty() && sell.peek()[0] <= order[0] && order[1] > 0) {
+                    int[] sellOrder = sell.poll();
+                    if (order[1] > sellOrder[1]) {
+                        order[1] -= sellOrder[1];
+                    } else {
+                        sellOrder[1] -= order[1];
+                        order[1] = 0;
+                        sell.offer(sellOrder);
+                    }
+                }
+                if (order[1] > 0) {
+                    buy.offer(order);
+                }
+            } else {
+                while (!buy.isEmpty() && buy.peek()[0] >= order[0] && order[1] > 0) {
+                    int[] buyOrder = buy.poll();
+                    if (order[1] > buyOrder[1]) {
+                        order[1] -= buyOrder[1];
+                    } else {
+                        buyOrder[1] -= order[1];
+                        order[1] = 0;
+                        buy.offer(buyOrder);
+                    }
+                }
+                if (order[1] > 0) {
+                    sell.offer(order);
+                }
+            }
+        }
+        long res = 0;
+        while (!sell.isEmpty()) {
+            res += sell.poll()[1];
+        }
+        while (!buy.isEmpty()) {
+            res += buy.poll()[1];
+        }
+        return (int) (res % mod);
+
+=======
+
+        PriorityQueue<int[]> buy = new PriorityQueue<>((a,b)->(b[0]-a[0]));
+        PriorityQueue<int[]> sell = new PriorityQueue<>((a,b)->(a[0]-b[0]));
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                while (order[1] > 0 && !sell.isEmpty() && sell.peek()[0] <= order[0]) {
+                    int[] s = sell.poll();
+                    if (s[1] > order[1]) {
+                        s[1] -= order[1];
+                        sell.offer(s);
+                        order[1] = 0;
+                    } else {
+                        order[1] -= s[1];
+                    }
+                }
+                if (order[1] > 0) buy.offer(order);
+            } else {
+                while (order[1] > 0 && !buy.isEmpty() && buy.peek()[0] >= order[0]) {
+                    int[] b = buy.poll();
+                    if (b[1] > order[1]) {
+                        b[1] -= order[1];
+                        buy.offer(b);
+                        order[1] = 0;
+                    } else {
+                        order[1] -= b[1];
+                    }
+                }
+                if (order[1] > 0) sell.offer(order);
+            }
+        }
+        int res = 0;
+        for (int[] b : buy) res = (res + b[1]) % 1000000007;
+        for (int[] s : sell) res = (res + s[1]) % 1000000007;
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        PriorityQueue<int[]> buy = new PriorityQueue<int[]>((a, b) -> b[0] - a[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<int[]>((a, b) -> a[0] - b[0]);
+        for (int[] order : orders) {
+            if (order[2] == 0) {
+                while (!sell.isEmpty() && sell.peek()[0] <= order[0] && order[1] > 0) {
+                    int[] o = sell.poll();
+                    if (o[1] > order[1]) {
+                        o[1] -= order[1];
+                        sell.offer(o);
+                        order[1] = 0;
+                    } else {
+                        order[1] -= o[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    buy.offer(order);
+                }
+            } else {
+                while (!buy.isEmpty() && buy.peek()[0] >= order[0] && order[1] > 0) {
+                    int[] o = buy.poll();
+                    if (o[1] > order[1]) {
+                        o[1] -= order[1];
+                        buy.offer(o);
+                        order[1] = 0;
+                    } else {
+                        order[1] -= o[1];
+                    }
+                }
+                if (order[1] > 0) {
+                    sell.offer(order);
+                }
+            }
+        }
+        int ans = 0;
+        while (!buy.isEmpty()) {
+            ans = (ans + buy.poll()[1]) % mod;
+        }
+        while (!sell.isEmpty()) {
+            ans = (ans + sell.poll()[1]) % mod;
+        }
+        return ans;
+
+=======
+
+        final int MOD = 1_000_000_007;
+        PriorityQueue<int[]> buy = new PriorityQueue<>((o1, o2) -> o2[0]-o1[0]);
+        PriorityQueue<int[]> sell = new PriorityQueue<>((o1, o2) -> o1[0]-o2[0]);
+        for (int[] order : orders) {
+            int price = order[0], amount = order[1], type = order[2];
+            if (type == 0) {
+                while (amount > 0 && !sell.isEmpty() && sell.peek()[0] <= price) {
+                    int[] o = sell.poll();
+                    if (o[1] > amount) {
+                        o[1] -= amount;
+                        sell.add(o);
+                        amount = 0;
+                    } else {
+                        amount -= o[1];
+                    }
+                }
+                if (amount > 0) {
+                    buy.add(new int[]{price, amount});
+                }
+            } else {
+                while (amount > 0 && !buy.isEmpty() && buy.peek()[0] >= price) {
+                    int[] o = buy.poll();
+                    if (o[1] > amount) {
+                        o[1] -= amount;
+                        buy.add(o);
+                        amount = 0;
+                    } else {
+                        amount -= o[1];
+                    }
+                }
+                if (amount > 0) {
+                    sell.add(new int[]{price, amount});
+                }
+            }
+        }
+        long ans = 0;
+        for (int[] o : buy) {
+            ans += o[1];
+            ans %= MOD;
+        }
+        for (int[] o : sell) {
+            ans += o[1];
+            ans %= MOD;
+        }
+        return (int) ans;

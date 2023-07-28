@@ -1,0 +1,469 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = grid.length;
+        boolean found = false;
+        for (int i = 0; i < n && !found; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int res = 0;
+        boolean[][] visited = new boolean[n][n];
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    q.offer(new int[]{i, j});
+                    visited[i][j] = true;
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0];
+                int y = cur[1];
+                if (grid[x][y] == 2) {
+                    return res - 1;
+                }
+                if (x > 0 && !visited[x - 1][y]) {
+                    q.offer(new int[]{x - 1, y});
+                    visited[x - 1][y] = true;
+                }
+                if (x < n - 1 && !visited[x + 1][y]) {
+                    q.offer(new int[]{x + 1, y});
+                    visited[x + 1][y] = true;
+                }
+                if (y > 0 && !visited[x][y - 1]) {
+                    q.offer(new int[]{x, y - 1});
+                    visited[x][y - 1] = true;
+                }
+                if (y < n - 1 && !visited[x][y + 1]) {
+                    q.offer(new int[]{x, y + 1});
+                    visited[x][y + 1] = true;
+                }
+            }
+            res++;
+        }
+        return res;
+
+=======
+
+        Queue<int[]> q = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < grid.length; i++) {
+            if (found) break;
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j, q);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int step = 0;
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] == 2) continue;
+                    if (grid[x][y] == 1) return step;
+                    grid[x][y] = 2;
+                    q.offer(new int[]{x, y});
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+    
+    private void dfs(int[][] grid, int i, int j, Queue<int[]> q) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != 1) return;
+        grid[i][j] = 2;
+        q.offer(new int[]{i, j});
+        dfs(grid, i + 1, j, q);
+        dfs(grid, i - 1, j, q);
+        dfs(grid, i, j + 1, q);
+        dfs(grid, i, j - 1, q);
+
+=======
+
+        int n = grid.length;
+        boolean[][] visited = new boolean[n][n];
+        boolean found = false;
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (found) break;
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j, visited, q);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int[][] dirs = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= n || y < 0 || y >= n || visited[x][y]) continue;
+                    if (grid[x][y] == 1) return step;
+                    visited[x][y] = true;
+                    q.offer(new int[]{x, y});
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int[][] dirs = {{0,1},{0,-1},{1,0},{-1,0}};
+        Queue<int[]> q = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < m; i++) {
+            if (found) break;
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j, q);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int res = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int x = cur[0], y = cur[1];
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0], ny = y + dir[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n || grid[nx][ny] == 2) continue;
+                    if (grid[nx][ny] == 1) return res;
+                    grid[nx][ny] = 2;
+                    q.offer(new int[]{nx, ny});
+                }
+            }
+            res++;
+        }
+        return -1;
+
+=======
+
+        int n = grid.length;
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        Queue<int[]> queue = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < n; i++) {
+            if (found) break;
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j, queue);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= n || y < 0 || y >= n || grid[x][y] == 2) continue;
+                    if (grid[x][y] == 1) return step;
+                    grid[x][y] = 2;
+                    queue.offer(new int[]{x, y});
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] visited = new int[n][m];
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> queue = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < n; i++) {
+            if (found) break;
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, visited, i, j, queue);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                int x = cur[0];
+                int y = cur[1];
+                if (grid[x][y] == 1) {
+                    return step - 1;
+                }
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx < 0 || nx >= n || ny < 0 || ny >= m || visited[nx][ny] == 1) continue;
+                    queue.offer(new int[]{nx, ny});
+                    visited[nx][ny] = 1;
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] visited = new int[n][m];
+        int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        Queue<int[]> queue = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, visited, i, j, queue);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+        int level = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                if (grid[cur[0]][cur[1]] == 1) {
+                    return level - 1;
+                }
+                for (int[] direction : directions) {
+                    int x = cur[0] + direction[0];
+                    int y = cur[1] + direction[1];
+                    if (x >= 0 && x < n && y >= 0 && y < m && visited[x][y] == 0) {
+                        visited[x][y] = 1;
+                        queue.offer(new int[]{x, y});
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+    
+    private void dfs(int[][] grid, int[][] visited, int x, int y, Queue<int[]> queue) {
+        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || grid[x][y] == 0 || visited[x][y] == 1) {
+            return;
+        }
+        visited[x][y] = 1;
+        queue.offer(new int[]{x, y});
+        dfs(grid, visited, x + 1, y, queue);
+        dfs(grid, visited, x - 1, y, queue);
+        dfs(grid, visited, x, y + 1, queue);
+        dfs(grid, visited, x, y - 1, queue);
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        boolean[][] visited = new boolean[n][m];
+        boolean found = false;
+        int[][] dirs = new int[][]{{1, 0}, {-1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (found) {
+                break;
+            }
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, i, j, visited, q);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x >= 0 && x < n && y >= 0 && y < m && !visited[x][y]) {
+                        if (grid[x][y] == 1) {
+                            return step;
+                        }
+                        visited[x][y] = true;
+                        q.offer(new int[]{x, y});
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+
+    private void dfs(int[][] grid, int i, int j, boolean[][] visited, Queue<int[]> q) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if (i < 0 || i >= n || j < 0 || j >= m || visited[i][j] || grid[i][j] == 0) {
+            return;
+        }
+        visited[i][j] = true;
+        q.offer(new int[]{i, j});
+        dfs(grid, i - 1, j, visited, q);
+        dfs(grid, i + 1, j, visited, q);
+        dfs(grid, i, j - 1, visited, q);
+        dfs(grid, i, j + 1, visited, q);
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        int[][] visited = new int[n][m];
+        int[][] d = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> q = new LinkedList<>();
+        boolean found = false;
+        for (int i = 0; i < n; i++) {
+            if (found) {
+                break;
+            }
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    dfs(grid, visited, i, j, d, q);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                for (int j = 0; j < 4; j++) {
+                    int x = cur[0] + d[j][0];
+                    int y = cur[1] + d[j][1];
+                    if (x < 0 || x >= n || y < 0 || y >= m || visited[x][y] == 1) {
+                        continue;
+                    }
+                    if (grid[x][y] == 1) {
+                        return step;
+                    }
+                    visited[x][y] = 1;
+                    q.offer(new int[]{x, y});
+                }
+            }
+            step++;
+        }
+        return step;
+    }
+
+    private void dfs(int[][] grid, int[][] visited, int i, int j, int[][] d, Queue<int[]> q) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || visited[i][j] == 1 || grid[i][j] == 0) {
+            return;
+        }
+        visited[i][j] = 1;
+        q.offer(new int[]{i, j});
+        for (int k = 0; k < 4; k++) {
+            dfs(grid, visited, i + d[k][0], j + d[k][1], d, q);
+        }
+
+=======
+
+        int n = grid.length;
+        int m = grid[0].length;
+        // find first island
+        int i = 0;
+        int j = 0;
+        boolean found = false;
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+        // mark first island
+        markIsland(grid, i, j);
+        // find second island
+        found = false;
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            }
+        }
+        // expand second island
+        return expandIsland(grid, i, j);
+    }
+
+    private void markIsland(int[][] grid, int i, int j) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if (i < 0 || i >= n || j < 0 || j >= m || grid[i][j] != 1) {
+            return;
+        }
+        grid[i][j] = 2;
+        markIsland(grid, i - 1, j);
+        markIsland(grid, i + 1, j);
+        markIsland(grid, i, j - 1);
+        markIsland(grid, i, j + 1);
+    }
+
+    private int expandIsland(int[][] grid, int i, int j) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if (i < 0 || i >= n || j < 0 || j >= m) {
+            return -1;
+        }
+        if (grid[i][j] == 2) {
+            return 0;
+        }
+        if (grid[i][j] == 1) {
+            return -1;
+        }
+        grid[i][j] = 1;
+        int a = expandIsland(grid, i - 1, j);
+        int b = expandIsland(grid, i +

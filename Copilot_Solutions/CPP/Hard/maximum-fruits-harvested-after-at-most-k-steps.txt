@@ -1,0 +1,408 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = fruits.size();
+        vector<int> pos(n), amount(n);
+        for (int i = 0; i < n; ++i) {
+            pos[i] = fruits[i][0];
+            amount[i] = fruits[i][1];
+        }
+        
+        int ans = 0;
+        for (int i = startPos; i >= 0 && k; --i, --k) {
+            ans += amount[i];
+        }
+        int l = startPos - 1, r = startPos + 1;
+        while (l >= 0 && r < n && k) {
+            if (pos[l] + k >= pos[r]) {
+                ans += amount[r];
+                k -= pos[r] - pos[l] - 1;
+                ++r;
+            } else {
+                ans += amount[l];
+                k -= pos[l + 1] - pos[l] - 1;
+                --l;
+            }
+        }
+        while (l >= 0 && k) {
+            ans += amount[l];
+            k -= pos[l + 1] - pos[l] - 1;
+            --l;
+        }
+        while (r < n && k) {
+            ans += amount[r];
+            k -= pos[r] - pos[r - 1] - 1;
+            ++r;
+        }
+        return ans;
+
+=======
+
+        int n = fruits.size();
+        int res = 0;
+        int i = startPos, j = startPos;
+        int sum = 0;
+        while (j < n && j - i <= k) {
+            sum += fruits[j][1];
+            res = max(res, sum);
+            ++j;
+        }
+        --j;
+        while (i < n && j < n) {
+            int t = i;
+            while (t < n && fruits[t][0] < fruits[j][0] - k) {
+                sum -= fruits[t][1];
+                ++t;
+            }
+            i = t;
+            while (j < n && fruits[j][0] - fruits[i][0] <= k) {
+                sum += fruits[j][1];
+                res = max(res, sum);
+                ++j;
+            }
+        }
+        return res;
+
+=======
+
+        int n = fruits.size();
+        int left = startPos, right = startPos;
+        int ans = 0;
+        int sum = 0;
+        unordered_map<int, int> mp;
+        while (right < n && right - left < k) {
+            sum += fruits[right][1];
+            mp[fruits[right][0]] += fruits[right][1];
+            ans = max(ans, sum);
+            right++;
+        }
+        while (right < n) {
+            sum += fruits[right][1];
+            mp[fruits[right][0]] += fruits[right][1];
+            ans = max(ans, sum);
+            right++;
+            while (left < right && mp.size() > 2) {
+                sum -= mp[fruits[left][0]];
+                mp[fruits[left][0]]--;
+                if (mp[fruits[left][0]] == 0) {
+                    mp.erase(fruits[left][0]);
+                }
+                left++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = fruits.size();
+        int i = startPos, j = startPos;
+        int cur = 0;
+        int ans = 0;
+        unordered_map<int, int> m;
+        while (i >= 0 || j < n) {
+            int l = i >= 0 ? fruits[i][0] : INT_MIN;
+            int r = j < n ? fruits[j][0] : INT_MAX;
+            if (cur <= k && (l >= startPos - k && l <= startPos + k || r >= startPos - k && r <= startPos + k)) {
+                if (l < r) {
+                    cur += startPos - l;
+                    m[fruits[i][1]]++;
+                    i--;
+                } else {
+                    cur += r - startPos;
+                    m[fruits[j][1]]++;
+                    j++;
+                }
+            } else {
+                if (l >= startPos - k && l <= startPos + k) {
+                    cur += startPos - l;
+                    m[fruits[i][1]]++;
+                    i--;
+                } else {
+                    cur += r - startPos;
+                    m[fruits[j][1]]++;
+                    j++;
+                }
+            }
+            if (cur > k) {
+                if (l >= startPos - k && l <= startPos + k) {
+                    cur -= startPos - l;
+                    m[fruits[i + 1][1]]--;
+                    if (m[fruits[i + 1][1]] == 0) {
+                        m.erase(fruits[i + 1][1]);
+                    }
+                    i++;
+                } else {
+                    cur -= r - startPos;
+                    m[fruits[j - 1][1]]--;
+                    if (m[fruits[j - 1][1]] == 0) {
+                        m.erase(fruits[j - 1][1]);
+                    }
+                    j--;
+                }
+            }
+            int t = 0;
+            for (auto& p : m) {
+                t += p.second;
+            }
+            ans = max(ans, t);
+        }
+        return ans;
+
+=======
+
+        int n = fruits.size();
+        int l = startPos;
+        int r = startPos;
+        int total = 0;
+        int ans = 0;
+        int i = startPos;
+        int j = startPos;
+        while (i >= 0 && j < n) {
+            if (fruits[i][0] >= fruits[startPos][0] - k) {
+                total += fruits[i][1];
+                i--;
+            } else if (fruits[j][0] <= fruits[startPos][0] + k) {
+                total += fruits[j][1];
+                j++;
+            } else {
+                break;
+            }
+            ans = max(ans, total);
+        }
+        return ans;
+    }
+    int totalFruit(vector<int>& tree) {
+        int n = tree.size();
+        vector<vector<int>> fruits;
+        int last = tree[0];
+        int count = 1;
+        for (int i = 1; i < n; i++) {
+            if (tree[i] == last) {
+                count++;
+            } else {
+                fruits.push_back({i - count, count});
+                last = tree[i];
+                count = 1;
+            }
+        }
+        fruits.push_back({n - count, count});
+        int ans = 0;
+        for (int i = 0; i < fruits.size(); i++) {
+            ans = max(ans, maxTotalFruits(fruits, i, n));
+        }
+        return ans;
+
+=======
+
+        int n = fruits.size();
+        int res = 0, cur = 0, i = startPos;
+        unordered_map<int, int> cnt;
+        for (int j = 0; j < n; ++j) {
+            ++cnt[fruits[j][0]];
+            cur += fruits[j][1];
+            if (cnt.size() > 2) {
+                --cnt[fruits[i][0]];
+                if (cnt[fruits[i][0]] == 0) cnt.erase(fruits[i][0]);
+                cur -= fruits[i][1];
+                ++i;
+            }
+            res = max(res, cur);
+            if (i == startPos) k = 0;
+            if (k > 0) {
+                --k;
+                ++i;
+                if (i == n) i = 0;
+            }
+        }
+        return res;
+
+=======
+
+        int n = fruits.size();
+        int i = startPos, j = startPos;
+        int res = 0;
+        int cur = 0;
+        int last = -1;
+        while (i >= 0 || j < n) {
+            if (i >= 0 && (j == n || fruits[i][0] >= fruits[j][0] - k)) {
+                if (fruits[i][0] == last) {
+                    cur += fruits[i][1];
+                } else {
+                    res = max(res, cur);
+                    cur = fruits[i][1];
+                    last = fruits[i][0];
+                }
+                --i;
+            } else {
+                if (fruits[j][0] == last) {
+                    cur += fruits[j][1];
+                } else {
+                    res = max(res, cur);
+                    cur = fruits[j][1];
+                    last = fruits[j][0];
+                }
+                ++j;
+            }
+        }
+        return res;
+
+=======
+
+        int n = fruits.size();
+        int ans = 0;
+        int i = startPos;
+        int j = startPos;
+        int cnt = 0;
+        int sum = 0;
+        int type1 = fruits[startPos][0];
+        int type2 = -1;
+        while (i >= 0 && j < n && k >= 0) {
+            if (fruits[i][0] == type1 || fruits[i][0] == type2) {
+                sum += fruits[i][1];
+                cnt++;
+                i--;
+            }
+            else if (fruits[j][0] == type1 || fruits[j][0] == type2) {
+                sum += fruits[j][1];
+                cnt++;
+                j++;
+            }
+            else {
+                if (k > 0) {
+                    k--;
+                    if (type2 == -1) {
+                        sum += fruits[i][1];
+                        cnt++;
+                        type2 = fruits[i][0];
+                        i--;
+                    }
+                    else {
+                        sum += fruits[j][1];
+                        cnt++;
+                        type2 = fruits[j][0];
+                        j++;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+            ans = max(ans, sum);
+        }
+        return ans;
+    }
+    int totalFruit(vector<vector<int>>& fruits, int startPos, int k) {
+        int n = fruits.size();
+        int ans = 0;
+        int i = startPos;
+        int j = startPos;
+        int cnt = 0;
+        int sum = 0;
+        int type1 = fruits[startPos][0];
+        int type2 = -1;
+        while (i >= 0 && j < n && k >= 0) {
+            if (fruits[i][0] == type1 || fruits[i][0] == type2) {
+                sum += fruits[i][1];
+                cnt++;
+                i--;
+            }
+            else if (fruits[j][0] == type1 || fruits[j][0] == type2) {
+                sum += fruits[j][1];
+                cnt++;
+                j++;
+            }
+            else {
+                if (k > 0) {
+                    k--;
+                    if (type2 == -1) {
+                        sum += fruits[i][1];
+                        cnt++;
+                        type2 = fruits[i][0];
+                        i--;
+                    }
+                    else {
+                        sum += fruits[j][1];
+                        cnt
+
+=======
+
+        int n = fruits.size();
+        int left = startPos, right = startPos;
+        int sum = 0;
+        int maxSum = 0;
+        vector<int> cnt(2 * 100000 + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum += fruits[i][1];
+            cnt[fruits[i][0]] += fruits[i][1];
+            while (left > 0 && right < n - 1 && left - 1 >= startPos - k && fruits[left - 1][0] == fruits[left][0]) {
+                sum += fruits[left - 1][1];
+                cnt[fruits[left - 1][0]] += fruits[left - 1][1];
+                --left;
+            }
+            while (left > 0 && right < n - 1 && right + 1 <= startPos + k && fruits[right + 1][0] == fruits[right][0]) {
+                sum += fruits[right + 1][1];
+                cnt[fruits[right + 1][0]] += fruits[right + 1][1];
+                ++right;
+            }
+            maxSum = max(maxSum, sum);
+            if (left == 0 && right == n - 1) break;
+            if (left > 0 && right < n - 1) {
+                if (fruits[left - 1][0] < fruits[right + 1][0]) {
+                    sum -= cnt[fruits[right][0]];
+                    cnt[fruits[right][0]] = 0;
+                    ++right;
+                } else {
+                    sum -= cnt[fruits[left][0]];
+                    cnt[fruits[left][0]] = 0;
+                    --left;
+                }
+            } else if (left > 0) {
+                sum -= cnt[fruits[left][0]];
+                cnt[fruits[left][0]] = 0;
+                --left;
+            } else {
+                sum -= cnt[fruits[right][0]];
+                cnt[fruits[right][0]] = 0;
+                ++right;
+            }
+        }
+        return maxSum;
+
+=======
+
+        int n = fruits.size();
+        int ans = 0;
+        int l = startPos, r = startPos;
+        int cnt = 0;
+        while (l >= 0 || r < n) {
+            int lval = l >= 0 ? fruits[l][0] : -1;
+            int rval = r < n ? fruits[r][0] : -1;
+            if (lval == rval) {
+                if (lval == -1) break;
+                l--, r++;
+                cnt++;
+            } else if (lval == -1) {
+                r++;
+                cnt++;
+            } else if (rval == -1) {
+                l--;
+                cnt++;
+            } else {
+                if (lval < rval) {
+                    l--;
+                    cnt++;
+                } else {
+                    r++;
+                    cnt++;
+                }
+            }
+            if (cnt <= k) {
+                int sum = 0;
+                for (int i = l + 1; i < r; i++) {
+                    sum += fruits[i][1];
+                }
+                ans = max(ans, sum);
+            }
+        }
+        return ans;

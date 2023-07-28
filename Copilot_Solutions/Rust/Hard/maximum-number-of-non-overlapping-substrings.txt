@@ -1,0 +1,151 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut last = vec![0; 26];
+        let s = s.as_bytes();
+        for i in 0..s.len() {
+            last[(s[i] - b'a') as usize] = i;
+        }
+        let mut ans = Vec::new();
+        let mut start = 0;
+        while start < s.len() {
+            let mut end = last[(s[start] - b'a') as usize];
+            let mut i = start;
+            while i <= end {
+                end = end.max(last[(s[i] - b'a') as usize]);
+                i += 1;
+            }
+            let mut j = start;
+            while j < end {
+                if last[(s[j] - b'a') as usize] > end {
+                    start = j + 1;
+                    end = 0;
+                    break;
+                }
+                j += 1;
+            }
+            if end > 0 {
+                ans.push(String::from_utf8(s[start..=end].to_vec()).unwrap());
+                start = end + 1;
+            }
+        }
+        ans
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut left = vec![0; 26];
+        let mut right = vec![0; 26];
+        for (i, c) in s.chars().enumerate() {
+            let idx = c as usize - 'a' as usize;
+            if left[idx] == 0 {
+                left[idx] = i + 1;
+            }
+            right[idx] = i + 1;
+        }
+        let mut ans = Vec::new();
+        let mut cur = String::new();
+        let mut l = 0;
+        let mut r = 0;
+        let mut i = 0;
+        while i < s.len() {
+            let c = s[i..i+1].to_string();
+            if cur.contains(&c) {
+                i += 1;
+                continue;
+            }
+            let idx = c.chars().next().unwrap() as usize - 'a' as usize;
+            let mut j = left[idx] - 1;
+            while j < right[idx] {
+                let c = s[j..j+1].to_string();
+                if !cur.contains(&c) {
+                    cur.push_str(&c);
+                    l = l.min(left[c.chars().next().unwrap() as usize - 'a' as usize] - 1);
+                    r = r.max(right[c.chars().next().unwrap() as usize - 'a' as usize] - 1);
+                }
+                j += 1;
+            }
+            if i == r {
+                ans.push(s[l..r+1].to_string());
+                cur = String::new();
+            }
+            i += 1;
+        }
+        ans
+
+=======
+
+        let mut left = vec![s.len(); 26];
+        let mut right = vec![0; 26];
+        let mut ans = vec![];
+        let bytes = s.as_bytes();
+        for (i, &b) in bytes.iter().enumerate() {
+            let idx = (b - b'a') as usize;
+            left[idx] = left[idx].min(i);
+            right[idx] = right[idx].max(i);
+        }
+        let mut i = 0;
+        while i < s.len() {
+            let idx = (bytes[i] - b'a') as usize;
+            let mut j = left[idx];
+            let mut k = right[idx];
+            while j < k {
+                let idx = (bytes[j] - b'a') as usize;
+                k = k.max(right[idx]);
+                j += 1;
+            }
+            ans.push(s[i..=k].to_string());
+            i = k + 1;
+        }
+        ans
+
+=======
+
+        let mut ans = vec![];
+        let mut last = vec![0; 26];
+        let mut visited = vec![false; 26];
+        let mut left = vec![0; 26];
+        let mut right = vec![0; 26];
+        let mut stack = vec![];
+        let mut pos = 0;
+        for c in s.chars() {
+            last[c as usize - 'a' as usize] = pos;
+            pos += 1;
+        }
+        for c in s.chars() {
+            let i = c as usize - 'a' as usize;
+            if visited[i] {
+                continue;
+            }
+            visited[i] = true;
+            left[i] = pos;
+            right[i] = pos;
+            stack.push(i);
+            while let Some(j) = stack.pop() {
+                left[i] = left[i].min(left[j]);
+                right[i] = right[i].max(right[j]);
+                let c = (s.as_bytes()[right[i]] as char).to_string();
+                if let Some(&k) = last.get(c.as_bytes()[0] as usize - 'a' as usize) {
+                    if k > right[i] {
+                        stack.push(k as usize - 'a' as usize);
+                    }
+                }
+            }
+            pos += 1;
+        }
+        let mut i = 0;
+        while i < 26 {
+            if visited[i] {
+                ans.push(s[left[i]..right[i] + 1].to_string());
+                i = right[i] + 1;
+            } else {
+                i += 1;
+            }
+        }
+        ans

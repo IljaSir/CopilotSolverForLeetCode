@@ -1,0 +1,363 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = s[i] - '0';
+        }
+        for (int i = 3; i <= n; i += 2) {
+            for (int j = 0; j + i <= n; j += 2) {
+                dp[j][j + i - 1] = INT_MAX;
+                for (int k = j + 1; k < j + i - 1; k += 2) {
+                    int a = dp[j][k - 1];
+                    int b = dp[k + 1][j + i - 1];
+                    if (s[k] == '+') {
+                        dp[j][j + i - 1] = min(dp[j][j + i - 1], a + b);
+                    }
+                    else {
+                        dp[j][j + i - 1] = min(dp[j][j + i - 1], a * b);
+                    }
+                }
+                if (i == n) {
+                    continue;
+                }
+                for (int k = j; k < j + i; k += 2) {
+                    int a = dp[j][k];
+                    int b = dp[k + 1][j + i - 1];
+                    if (s[k + 1] == '+') {
+                        dp[j][j + i - 1] = min(dp[j][j + i - 1], a + b);
+                    }
+                    else {
+                        dp[j][j + i - 1] = min(dp[j][j + i - 1], a * b);
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (auto& x : answers) {
+            if (x == dp[0][n - 1]) {
+                ans += 5;
+            }
+            else {
+                bool flag = false;
+                for (int i = 0; i < n; i += 2) {
+                    if (x == dp[0][i]) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    ans += 2;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = s[i] - '0';
+        }
+        for (int len = 2; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len;
+                for (int k = i + 1; k < j; k += 2) {
+                    if (s[k] == '+') {
+                        for (int x : dp[i][k - 1]) {
+                            for (int y : dp[k + 1][j]) {
+                                dp[i][j].push_back(x + y);
+                            }
+                        }
+                    } else {
+                        for (int x : dp[i][k - 1]) {
+                            for (int y : dp[k + 1][j]) {
+                                dp[i][j].push_back(x * y);
+                            }
+                        }
+                    }
+                }
+                if (len == n) {
+                    for (int x : dp[i][j]) {
+                        dp[i][j].push_back(x);
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int x : answers) {
+            if (find(dp[0][n].begin(), dp[0][n].end(), x) != dp[0][n].end()) {
+                ans += 5;
+            } else if (x == dp[0][n][0]) {
+                ans += 2;
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = s[i] - '0';
+        }
+        for (int i = 1; i < n; i += 2) {
+            for (int j = 0; j + i < n; j += 2) {
+                int k = j + i;
+                if (s[k] == '+') {
+                    for (int l = j; l < k; l += 2) {
+                        dp[j][k] = max(dp[j][k], dp[j][l] + dp[l + 2][k]);
+                    }
+                } else {
+                    for (int l = j; l < k; l += 2) {
+                        dp[j][k] = max(dp[j][k], dp[j][l] * dp[l + 2][k]);
+                    }
+                }
+                for (int l = j; l < k; l += 2) {
+                    if (s[l + 1] == '+') {
+                        dp[j][k] = max(dp[j][k], dp[j][l] + dp[l + 2][k] + dp[l + 1][l + 1]);
+                    } else {
+                        dp[j][k] = max(dp[j][k], dp[j][l] * dp[l + 2][k] + dp[l + 1][l + 1]);
+                    }
+                }
+            }
+        }
+        int correct = dp[0][n - 1];
+        for (int answer : answers) {
+            if (answer == correct) {
+                ans += 5;
+            } else if (find(begin(dp[0]), end(dp[0]), answer) != end(dp[0])) {
+                ans += 2;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<unordered_set<int>> dp(n + 1, unordered_set<int>());
+        dp[0].insert(0);
+        for (int i = 0; i < n; i++) {
+            if (s[i] == '*') {
+                for (int j = 0; j <= i; j++) {
+                    for (auto a : dp[j]) {
+                        for (auto b : dp[i - j]) {
+                            dp[i + 1].insert(a * b);
+                        }
+                    }
+                }
+            } else {
+                for (auto a : dp[i]) {
+                    dp[i + 1].insert(a + s[i] - '0');
+                }
+            }
+        }
+        int ans = 0;
+        for (auto a : answers) {
+            if (dp[n].count(a)) {
+                ans += 5;
+            } else {
+                for (int i = 0; i < n; i++) {
+                    if (s[i] == '*') {
+                        for (auto b : dp[n - i - 1]) {
+                            if (dp[i].count(a - b)) {
+                                ans += 2;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        int result = 0;
+        vector<vector<unordered_set<int>>> dp(n, vector<unordered_set<int>>(n));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i].insert(s[i] - '0');
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i + 1; k < j; k += 2) {
+                    for (int a : dp[i][k - 1]) {
+                        for (int b : dp[k + 1][j]) {
+                            if (s[k] == '+') {
+                                dp[i][j].insert(a + b);
+                            } else {
+                                dp[i][j].insert(a * b);
+                            }
+                        }
+                    }
+                }
+                if (len == n) {
+                    for (int a : dp[0][n - 1]) {
+                        if (a == answers[0]) {
+                            result += 5;
+                        } else if (find(answers.begin() + 1, answers.end(), a) != answers.end()) {
+                            result += 2;
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int n = s.length();
+        int n2 = n / 2;
+        vector<vector<int>> dp(n2 + 1, vector<int>(n2 + 1, 0));
+        for (int i = 0; i < n2; i++) {
+            for (int j = 0; j < n2 - i; j++) {
+                int k = 2 * j + i;
+                if (i == 0) {
+                    dp[j][j] = s[k] - '0';
+                } else {
+                    for (int m = 0; m < i; m++) {
+                        int p = j + m;
+                        int q = p + 1;
+                        int r = q + i - m;
+                        if (s[2 * q - 1] == '+') {
+                            dp[j][r] = max(dp[j][r], dp[j][p] + dp[q][r]);
+                        } else {
+                            dp[j][r] = max(dp[j][r], dp[j][p] * dp[q][r]);
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int x : answers) {
+            if (x == dp[0][n2]) {
+                ans += 5;
+            } else if (x > dp[0][n2] && x <= 1000) {
+                bool valid = false;
+                for (int i = 0; i < n2; i++) {
+                    for (int j = 0; j < n2 - i; j++) {
+                        int k = 2 * j + i;
+                        if (i == 0) {
+                            if (x == s[k] - '0') {
+                                valid = true;
+                                break;
+                            }
+                        } else {
+                            for (int m = 0; m < i; m++) {
+                                int p = j + m;
+                                int q = p + 1;
+                                int r = q + i - m;
+                                if (s[2 * q - 1] == '+') {
+                                    if (x == dp[j][p] + dp[q][r]) {
+                                        valid = true;
+                                        break;
+                                    }
+                                } else {
+                                    if (x == dp[j][p] * dp[q][r]) {
+                                        valid = true;
+                                        break;
+                                    }
+
+=======
+
+        int ans = 0;
+        int n = s.length();
+        int correct = calculate(s);
+        for (int a : answers) {
+            if (a == correct) {
+                ans += 5;
+            } else {
+                // check if the answer is a combination of correct answers
+                vector<int> sub = getSub(s);
+                bool ok = false;
+                for (int i = 0; i < sub.size(); ++i) {
+                    for (int j = i + 1; j < sub.size(); ++j) {
+                        int t = calculate(sub[i]) + calculate(sub[j]);
+                        if (t == a) {
+                            ok = true;
+                            break;
+                        }
+                    }
+                    if (ok) break;
+                }
+                if (ok) ans += 2;
+            }
+        }
+        return ans;
+    }
+    
+    vector<string> getSub(string s) {
+        vector<string> res;
+        for (int i = 0; i < s.length(); ++i) {
+            if (s[i] == '+' || s[i] == '*') {
+                res.push_back(s.substr(0, i));
+                res.push_back(s.substr(i + 1));
+            }
+        }
+        return res;
+    }
+    
+    int calculate(string s) {
+        int num = 0;
+        int ans = 0;
+        char op = '+';
+        for (int i = 0; i < s.length(); ++i) {
+            if (s[i] >= '0' && s[i] <= '9') {
+                num = num * 10 + (s[i] - '0');
+            } else {
+                if (op == '+') {
+                    ans += num;
+                } else {
+                    ans *= num;
+                }
+                op = s[i];
+                num = 0;
+            }
+        }
+        if (op == '+') {
+            ans += num;
+        } else {
+            ans *= num;
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        // dp[i][j]: the possible values of expression s[i:j]
+        vector<vector<set<int>>> dp(n, vector<set<int>>(n));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i].insert(s[i] - '0');
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i + 1; k < j; k += 2) {
+                    for (int a : dp[i][k - 1]) {
+                        for (int b : dp[k + 1][j]) {
+                            if (s[k] == '+') {
+                                dp[i][j].insert(a + b);
+                            } else {
+                                dp[i][j].insert(a * b);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int correct = *dp[0][n - 1].begin();
+        int ans = 0;
+        for (int a : answers) {
+            if (a == correct) {
+                ans += 5;
+            } else if (dp[0][n - 1].count(a)) {
+                ans += 2;
+            }
+        }
+        return ans;

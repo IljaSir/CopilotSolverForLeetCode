@@ -1,0 +1,359 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            graph.get(road[0]).add(road[1]);
+            graph.get(road[1]).add(road[0]);
+        }
+        long[] dp = new long[n];
+        dfs(graph, 0, -1, dp);
+        long ans = 0;
+        for (int i = 1; i < n; i++) {
+            ans += dp[i];
+        }
+        return ans;
+    }
+    
+    private void dfs(List<List<Integer>> graph, int u, int p, long[] dp) {
+        long sum = 0;
+        for (int v : graph.get(u)) {
+            if (v != p) {
+                dfs(graph, v, u, dp);
+                sum += dp[v];
+            }
+        }
+        dp[u] = sum / (seats - 1) + (sum % (seats - 1) == 0 ? 0 : 1);
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            graph.get(road[0]).add(road[1]);
+            graph.get(road[1]).add(road[0]);
+        }
+        long[] dp = new long[n];
+        long[] dp1 = new long[n];
+        dfs(graph, dp, dp1, 0, -1, seats);
+        return dp[0];
+    }
+    private void dfs(List<List<Integer>> graph, long[] dp, long[] dp1, int cur, int pre, int seats) {
+        dp[cur] = 0;
+        dp1[cur] = 0;
+        List<Integer> children = graph.get(cur);
+        for (int child : children) {
+            if (child == pre) {
+                continue;
+            }
+            dfs(graph, dp, dp1, child, cur, seats);
+            dp[cur] += dp[child];
+            dp1[cur] += dp[child];
+        }
+        Collections.sort(children, (a, b) -> Long.compare(dp1[b], dp1[a]));
+        int cnt = 0;
+        for (int child : children) {
+            if (child == pre) {
+                continue;
+            }
+            cnt += 1;
+            dp[cur] += dp1[child];
+            dp1[cur] += dp1[child];
+            if (cnt == seats - 1) {
+                break;
+            }
+        }
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            graph.get(road[0]).add(road[1]);
+            graph.get(road[1]).add(road[0]);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        long ans = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            int cur = 0;
+            for (int i = 0; i < size; i++) {
+                int node = queue.poll();
+                cur++;
+                for (int neighbor : graph.get(node)) {
+                    if (!visited[neighbor]) {
+                        visited[neighbor] = true;
+                        queue.offer(neighbor);
+                    }
+                }
+            }
+            ans += Math.max(0, cur - seats);
+        }
+        return ans;
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            int u = road[0], v = road[1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        long total = 0;
+        for (int i = 1; i < n; i++) {
+            total += seats - 1;
+        }
+        long[] dp = new long[n];
+        dfs(0, 0, graph, dp);
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            min = Math.min(min, dp[i]);
+        }
+        return total - min;
+    }
+    private void dfs(int u, int p, List<List<Integer>> graph, long[] dp) {
+        long sum = 0;
+        for (int v : graph.get(u)) {
+            if (v != p) {
+                dfs(v, u, graph, dp);
+                sum += dp[v];
+            }
+        }
+        dp[u] = sum + 1;
+
+=======
+
+        int n = roads.length + 1;
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] road : roads) {
+            graph[road[0]].add(road[1]);
+            graph[road[1]].add(road[0]);
+        }
+        long[] fuel = new long[n];
+        Arrays.fill(fuel, Long.MAX_VALUE);
+        fuel[0] = 0;
+        dfs(graph, fuel, 0, -1);
+        Arrays.sort(fuel);
+        long ans = 0;
+        for (int i = 1; i < n; i++) {
+            ans += fuel[i];
+        }
+        return ans;
+    }
+    private void dfs(List<Integer>[] graph, long[] fuel, int u, int p) {
+        int cnt = 0;
+        for (int v : graph[u]) {
+            if (v != p) {
+                dfs(graph, fuel, v, u);
+                cnt++;
+            }
+        }
+        if (p != -1) {
+            fuel[u] = fuel[p] + Math.max(0, cnt - 1);
+        }
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] road: roads) {
+            int u = road[0];
+            int v = road[1];
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+        int[] size = new int[n];
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        dfs(0, adj, size, parent);
+        long ans = 0;
+        TreeSet<Integer> set = new TreeSet<>();
+        for (int i = 1; i < n; i++) {
+            set.add(size[i]);
+        }
+        while (set.size() > seats) {
+            int v = set.pollFirst();
+            ans += v;
+            int u = parent[v];
+            set.remove(size[u]);
+            size[u] += size[v];
+            set.add(size[u]);
+        }
+        return ans;
+    }
+    private void dfs(int v, List<List<Integer>> adj, int[] size, int[] parent) {
+        size[v] = 1;
+        for (int u: adj.get(v)) {
+            if (u != parent[v]) {
+                parent[u] = v;
+                dfs(u, adj, size, parent);
+                size[v] += size[u];
+            }
+        }
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            adj.get(road[0]).add(road[1]);
+            adj.get(road[1]).add(road[0]);
+        }
+        long[] dp = new long[n];
+        Arrays.fill(dp, Long.MAX_VALUE);
+        dfs(0, adj, dp, seats);
+        return dp[0] - 1;
+    }
+    private void dfs(int u, List<List<Integer>> adj, long[] dp, int seats) {
+        dp[u] = 0;
+        for (int v : adj.get(u)) {
+            dfs(v, adj, dp, seats);
+            dp[u] += dp[v];
+        }
+        dp[u] = (dp[u] + seats - 1) / seats;
+
+=======
+
+        int n = roads.length + 1;
+        List<Integer>[] adj = new List[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] road : roads) {
+            adj[road[0]].add(road[1]);
+            adj[road[1]].add(road[0]);
+        }
+
+        int[] sub = new int[n];
+        dfs(adj, sub, 0, -1);
+
+        long[] dp = new long[n];
+        Arrays.fill(dp, Long.MAX_VALUE);
+        dp[0] = 0;
+        dfs(adj, dp, sub, 0, -1, seats);
+        return dp[0];
+    }
+
+    private void dfs(List<Integer>[] adj, int[] sub, int u, int p) {
+        sub[u] = 1;
+        for (int v : adj[u]) {
+            if (v == p) {
+                continue;
+            }
+            dfs(adj, sub, v, u);
+            sub[u] += sub[v];
+        }
+    }
+
+    private void dfs(List<Integer>[] adj, long[] dp, int[] sub, int u, int p, int seats) {
+        for (int v : adj[u]) {
+            if (v == p) {
+                continue;
+            }
+            dfs(adj, dp, sub, v, u, seats);
+            dp[u] += dp[v] + sub[v];
+        }
+
+        long min = Long.MAX_VALUE;
+        for (int v : adj[u]) {
+            if (v == p) {
+                continue;
+            }
+            min = Math.min(min, dp[u] - dp[v] - sub[v] + dp[v] + (sub[v] + seats - 1) / seats);
+        }
+        dp[u] = Math.min(dp[u], min);
+
+=======
+
+        int n = roads.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; ++i) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] road : roads) {
+            graph.get(road[0]).add(road[1]);
+            graph.get(road[1]).add(road[0]);
+        }
+        long[][] dp = new long[n][seats + 1];
+        for (int i = 0; i < n; ++i) {
+            Arrays.fill(dp[i], Long.MAX_VALUE / 2);
+        }
+        dp[0][1] = 0;
+        dfs(graph, dp, 0, -1, seats);
+        long ans = Long.MAX_VALUE;
+        for (int i = 1; i <= seats; ++i) {
+            ans = Math.min(ans, dp[0][i]);
+        }
+        return ans;
+    }
+
+    private void dfs(List<List<Integer>> graph, long[][] dp, int u, int p, int seats) {
+        for (int v : graph.get(u)) {
+            if (v == p) {
+                continue;
+            }
+            dfs(graph, dp, v, u, seats);
+            for (int i = seats; i >= 1; --i) {
+                for (int j = 1; j <= i; ++j) {
+                    dp[u][i] = Math.min(dp[u][i], dp[u][i - j] + dp[v][j]);
+                }
+            }
+            dp[u][1] += 1;
+        }
+
+=======
+
+        int n = roads.length + 1;
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        for (int[] road : roads) {
+            int p1 = find(parent, road[0]);
+            int p2 = find(parent, road[1]);
+            if (p1 != p2) {
+                parent[p1] = p2;
+            }
+        }
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            count[find(parent, i)]++;
+        }
+        long ans = 0;
+        for (int i = 1; i < n; i++) {
+            if (count[i] > 0) {
+                ans += count[i] - 1;
+            }
+        }
+        return ans;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] == -1) {
+            return i;
+        }
+        return find(parent, parent[i]);

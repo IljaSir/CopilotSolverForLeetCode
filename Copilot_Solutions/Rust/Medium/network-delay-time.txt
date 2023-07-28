@@ -1,0 +1,137 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for time in times {
+            graph[time[0] as usize - 1].push((time[1] as usize - 1, time[2]));
+        }
+        let mut dist = vec![std::i32::MAX; n as usize];
+        dist[k as usize - 1] = 0;
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(std::cmp::Reverse((0, k as usize - 1)));
+        while let Some(std::cmp::Reverse((d, i))) = heap.pop() {
+            if d > dist[i] { continue; }
+            for &(j, w) in &graph[i] {
+                if dist[j] > d + w {
+                    dist[j] = d + w;
+                    heap.push(std::cmp::Reverse((dist[j], j)));
+                }
+            }
+        }
+        dist.iter().max().cloned().unwrap_or(-1)
+
+=======
+
+        let mut graph: Vec<Vec<(i32, i32)>> = vec![vec![]; n as usize];
+        for time in times {
+            graph[time[0] as usize - 1].push((time[1], time[2]));
+        }
+        let mut dist = vec![i32::MAX; n as usize];
+        let mut visited = vec![false; n as usize];
+        dist[k as usize - 1] = 0;
+        for _ in 0..n {
+            let mut min = i32::MAX;
+            let mut min_idx = -1;
+            for i in 0..n {
+                if !visited[i as usize] && dist[i as usize] < min {
+                    min = dist[i as usize];
+                    min_idx = i;
+                }
+            }
+            if min_idx == -1 {
+                break;
+            }
+            visited[min_idx as usize] = true;
+            for edge in &graph[min_idx as usize] {
+                dist[edge.0 as usize - 1] = dist[edge.0 as usize - 1].min(min + edge.1);
+            }
+        }
+        let mut ans = 0;
+        for i in 0..n {
+            if dist[i as usize] == i32::MAX {
+                return -1;
+            }
+            ans = ans.max(dist[i as usize]);
+        }
+        ans
+
+=======
+
+        let mut edges = vec![vec![]; n as usize];
+        for t in times {
+            edges[(t[0] - 1) as usize].push((t[1] - 1, t[2]));
+        }
+        let mut dist = vec![i32::MAX; n as usize];
+        dist[(k - 1) as usize] = 0;
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(std::cmp::Reverse((0, (k - 1) as usize)));
+        while let Some(std::cmp::Reverse((d, u))) = heap.pop() {
+            if d > dist[u] {
+                continue;
+            }
+            for &(v, w) in &edges[u] {
+                if dist[v] > dist[u] + w {
+                    dist[v] = dist[u] + w;
+                    heap.push(std::cmp::Reverse((dist[v], v)));
+                }
+            }
+        }
+        let ans = dist.into_iter().max().unwrap();
+        if ans == i32::MAX { -1 } else { ans }
+
+=======
+
+        let mut adj_list = vec![vec![]; n as usize];
+        for time in times {
+            adj_list[time[0] as usize - 1].push((time[1] as usize - 1, time[2]));
+        }
+        let mut distance = vec![std::i32::MAX; n as usize];
+        distance[k as usize - 1] = 0;
+        let mut queue = std::collections::BinaryHeap::new();
+        queue.push(std::cmp::Reverse((0, k as usize - 1)));
+        while let Some(std::cmp::Reverse((dist, node))) = queue.pop() {
+            if distance[node] < dist {
+                continue;
+            }
+            for &(next, cost) in adj_list[node].iter() {
+                if distance[next] > dist + cost {
+                    distance[next] = dist + cost;
+                    queue.push(std::cmp::Reverse((dist + cost, next)));
+                }
+            }
+        }
+        let max = *distance.iter().max().unwrap();
+        if max == std::i32::MAX {
+            -1
+        } else {
+            max
+        }
+
+=======
+
+        let n = n as usize;
+        let k = k as usize;
+        let mut dp = vec![std::i32::MAX; n];
+        let mut edges = vec![vec![]; n];
+        for time in times {
+            edges[time[0] as usize - 1].push((time[1] as usize - 1, time[2]));
+        }
+        let mut queue = std::collections::BinaryHeap::new();
+        queue.push((0, k - 1));
+        while let Some((cost, cur)) = queue.pop() {
+            if dp[cur] > cost {
+                dp[cur] = cost;
+                for (next, time) in &edges[cur] {
+                    queue.push((cost - time, *next));
+                }
+            }
+        }
+        let mut res = 0;
+        for i in 0..n {
+            if dp[i] == std::i32::MAX {
+                return -1;
+            }
+            res = res.max(dp[i]);
+        }
+        res

@@ -1,0 +1,253 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> g(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int x = nums[i] + nums[j];
+                int y = sqrt(x);
+                g[i][j] = (y * y == x);
+            }
+        }
+        vector<int> f(1 << n);
+        f[0] = 1;
+        for (int mask = 1; mask < (1 << n); ++mask) {
+            int bits = __builtin_popcount(mask);
+            vector<int> last(n, -1);
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    if (last[nums[i]] >= 0) {
+                        if (g[last[nums[i]]][i]) {
+                            f[mask] += f[mask ^ (1 << i)];
+                        }
+                    }
+                    last[nums[i]] = i;
+                }
+            }
+        }
+        return f[(1 << n) - 1];
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> adj(n, vector<int>());
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (is_square(nums[i] + nums[j])) {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+            }
+        }
+        vector<bool> used(n, false);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            used[i] = true;
+            dfs(nums, adj, used, i, 1, res);
+            used[i] = false;
+        }
+        return res;
+    }
+    void dfs(vector<int>& nums, vector<vector<int>>& adj, vector<bool>& used, int cur, int count, int& res) {
+        if (count == nums.size()) {
+            res++;
+            return;
+        }
+        for (int i = 0; i < adj[cur].size(); i++) {
+            int next = adj[cur][i];
+            if (used[next]) continue;
+            if (next > 0 && nums[next] == nums[next - 1] && !used[next - 1]) continue;
+            used[next] = true;
+            dfs(nums, adj, used, next, count + 1, res);
+            used[next] = false;
+        }
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> graph(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int sum = nums[i] + nums[j];
+                int sq = sqrt(sum);
+                if (sq * sq == sum) {
+                    graph[i][j] = 1;
+                    graph[j][i] = 1;
+                }
+            }
+        }
+        vector<int> visited(n, 0);
+        unordered_map<int, int> count;
+        for (int i = 0; i < n; i++) {
+            count[nums[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            count[nums[i]]--;
+            visited[i] = 1;
+            ans += dfs(graph, visited, nums, i, n - 1);
+            visited[i] = 0;
+            count[nums[i]]++;
+        }
+        return ans;
+    }
+    int dfs(vector<vector<int>>& graph, vector<int>& visited, vector<int>& nums, int cur, int left) {
+        if (left == 0) {
+            return 1;
+        }
+        int ans = 0;
+        for (int i = 0; i < graph.size(); i++) {
+            if (visited[i] || graph[cur][i] == 0) {
+                continue;
+            }
+            if (i > 0 && nums[i] == nums[i - 1] && visited[i - 1] == 0) {
+                continue;
+            }
+            count[nums[i]]--;
+            visited[i] = 1;
+            ans += dfs(graph, visited, nums, i, left - 1);
+            visited[i] = 0;
+            count[nums[i]]++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> adj(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int x = nums[i] + nums[j];
+                int y = sqrt(x);
+                if (y*y == x) {
+                    adj[i][j] = 1;
+                }
+            }
+        }
+        vector<int> perm(n, 0);
+        vector<int> used(n, 0);
+        int res = 0;
+        function<void(int)> dfs = [&](int k) {
+            if (k == n) {
+                res++;
+                return;
+            }
+            for (int i = 0; i < n; i++) {
+                if (used[i] || (k > 0 && adj[perm[k-1]][i] == 0)) {
+                    continue;
+                }
+                used[i] = 1;
+                perm[k] = i;
+                dfs(k + 1);
+                used[i] = 0;
+            }
+        };
+        dfs(0);
+        return res;
+
+=======
+
+        int N = nums.size();
+        vector<vector<int>> graph(100, vector<int>());
+        vector<int> count(100, 0);
+        for (int i = 0; i < N; ++i) {
+            for (int j = i + 1; j < N; ++j) {
+                int a = nums[i], b = nums[j];
+                int c = (int) sqrt(a + b);
+                if (c * c == a + b) {
+                    graph[a].push_back(b);
+                    graph[b].push_back(a);
+                }
+            }
+            count[nums[i]]++;
+        }
+        int ans = 0;
+        vector<int> path;
+        vector<int> visited(100, 0);
+        for (int i = 0; i < 100; ++i) {
+            if (count[i] > 0) {
+                dfs(i, graph, count, visited, path, ans);
+            }
+        }
+        return ans;
+    }
+    
+    void dfs(int u, vector<vector<int>>& graph, vector<int>& count, vector<int>& visited, vector<int>& path, int& ans) {
+        path.push_back(u);
+        visited[u]++;
+        count[u]--;
+        if (path.size() == count.size()) {
+            ans++;
+        } else {
+            for (int v : graph[u]) {
+                if (count[v] > 0 && (visited[v] < 2 || (path.size() == count.size() - 1 && v == path[0]))) {
+                    dfs(v, graph, count, visited, path, ans);
+                }
+            }
+        }
+        visited[u]--;
+        count[u]++;
+        path.pop_back();
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        vector<bool> used(n, false);
+        sort(nums.begin(), nums.end());
+        function<bool(int, int)> isSquare = [&](int a, int b) {
+            int c = sqrt(a+b);
+            return c*c == a+b;
+        };
+        function<void(int)> dfs = [&](int cur) {
+            if (cur == n) {
+                ans++;
+                return;
+            }
+            for (int i = 0; i < n; ++i) {
+                if (used[i]) continue;
+                if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue;
+                if (cur > 0 && !isSquare(nums[i], nums[cur-1])) continue;
+                used[i] = true;
+                dfs(cur+1);
+                used[i] = false;
+            }
+        };
+        dfs(0);
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> out;
+        vector<bool> used(n, false);
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        dfs(nums, used, out, ans);
+        return ans;
+    }
+    void dfs(vector<int>& nums, vector<bool>& used, vector<int>& out, int& ans) {
+        if (out.size() == nums.size()) {
+            ans++;
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (used[i]) continue;
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) continue;
+            if (out.size() > 0 && !isSquare(out.back() + nums[i])) continue;
+            out.push_back(nums[i]);
+            used[i] = true;
+            dfs(nums, used, out, ans);
+            out.pop_back();
+            used[i] = false;
+        }
+    }
+    bool isSquare(int n) {
+        int sq = sqrt(n);
+        return sq * sq == n;

@@ -1,0 +1,130 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = energy.size();
+        vector<vector<int>> dp(n + 1, vector<int>(initialEnergy + 1, INT_MAX));
+        dp[0][initialEnergy] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= initialEnergy; j++) {
+                if (dp[i][j] != INT_MAX) {
+                    int e = max(j - energy[i], 1);
+                    int ex = dp[i][j] + experience[i];
+                    dp[i + 1][e] = min(dp[i + 1][e], ex);
+                    dp[i + 1][j] = min(dp[i + 1][j], dp[i][j]);
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 1; i <= initialEnergy; i++) {
+            if (dp[n][i] != INT_MAX) {
+                res = min(res, dp[n][i]);
+            }
+        }
+        return res - initialExperience;
+
+=======
+
+        int n = energy.size();
+        int dp[n][101][101];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= 100; j++) {
+                for (int k = 0; k <= 100; k++) {
+                    dp[i][j][k] = INT_MAX;
+                }
+            }
+        }
+        dp[0][initialEnergy][initialExperience] = 0;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j <= 100; j++) {
+                for (int k = 0; k <= 100; k++) {
+                    if (dp[i][j][k] != INT_MAX) {
+                        int e = j - energy[i];
+                        int x = k + experience[i];
+                        if (e > 0 && x > 0) {
+                            dp[i + 1][e][x] = min(dp[i + 1][e][x], dp[i][j][k]);
+                        }
+                        dp[i][j + 1][k] = min(dp[i][j + 1][k], dp[i][j][k] + 1);
+                        dp[i][j][k + 1] = min(dp[i][j][k + 1], dp[i][j][k] + 1);
+                    }
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int j = 0; j <= 100; j++) {
+            for (int k = 0; k <= 100; k++) {
+                if (dp[n - 1][j][k] != INT_MAX) {
+                    int e = j - energy[n - 1];
+                    int x = k + experience[n - 1];
+                    if (e > 0 && x > 0) {
+                        res = min(res, dp[n - 1][j][k]);
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = energy.size();
+        vector<vector<int>> dp(n, vector<int>(initialEnergy + 1, -1));
+        dp[0][initialEnergy] = initialExperience;
+        for (int i = 0; i < n - 1; ++i) {
+            for (int j = 1; j <= initialEnergy; ++j) {
+                if (dp[i][j] == -1) continue;
+                int k = min(j - 1, initialEnergy - energy[i]);
+                dp[i + 1][k] = max(dp[i + 1][k], dp[i][j] + experience[i]);
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= initialEnergy; ++i) {
+            if (dp[n - 1][i] == -1) continue;
+            ans = max(ans, (i - 1) * 2 + (initialEnergy - energy[n - 1] - i + 1));
+        }
+        return ans;
+
+=======
+
+        int n = energy.size();
+        vector<vector<int>> dp(n, vector<int>(n + 1, 1e9));
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (dp[i][j] == 1e9) {
+                    continue;
+                }
+                int e = initialEnergy + j;
+                int exp = initialExperience + i - j;
+                if (e > energy[i] && exp > experience[i]) {
+                    dp[i + 1][j + 1] = min(dp[i + 1][j + 1], dp[i][j]);
+                }
+                dp[i][j + 1] = min(dp[i][j + 1], dp[i][j] + 1);
+                dp[i + 1][j] = min(dp[i + 1][j], dp[i][j] + 1);
+            }
+        }
+        int res = 1e9;
+        for (int i = 0; i <= n; i++) {
+            res = min(res, dp[n][i]);
+        }
+        return res;
+
+=======
+
+        int n = energy.size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; ++i) {
+            int e = initialEnergy - energy[i];
+            int exp = initialExperience - experience[i];
+            if (e <= 0 && exp <= 0) return -1;
+            if (e >= 0 && exp >= 0) continue;
+            if (e < 0) {
+                dp[i] = (abs(e) + 1) / 2;
+            } else {
+                dp[i] = (abs(exp) + 1) / 2;
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            res = max(res, dp[i]);
+        }
+        return res;

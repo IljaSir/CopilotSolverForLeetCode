@@ -1,0 +1,360 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        long count = 0;
+        for (int i = 0; i < n; i++) {
+            int[] visited = new int[n];
+            dfs(graph, i, visited);
+            for (int j = 0; j < n; j++) {
+                if (visited[j] == 0) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    private void dfs(Map<Integer, Set<Integer>> graph, int node, int[] visited) {
+        visited[node] = 1;
+        for (int neighbor : graph.get(node)) {
+            if (visited[neighbor] == 0) {
+                dfs(graph, neighbor, visited);
+            }
+        }
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] size = new int[n];
+        Arrays.fill(size, 1);
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int pu = find(u, parent);
+            int pv = find(v, parent);
+            if (pu != pv) {
+                parent[pu] = pv;
+                size[pv] += size[pu];
+            }
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                ans += (long) size[i] * (size[i] - 1) / 2;
+            }
+        }
+        return ans;
+    }
+
+    private int find(int x, int[] parent) {
+        if (x != parent[x]) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+
+=======
+
+        int[] parents = new int[n];
+        for (int i = 0; i < n; i++) {
+            parents[i] = i;
+        }
+        int[] sizes = new int[n];
+        Arrays.fill(sizes, 1);
+        for (int[] edge : edges) {
+            int from = edge[0];
+            int to = edge[1];
+            union(parents, sizes, from, to);
+        }
+        long result = 0;
+        for (int i = 0; i < n; i++) {
+            result += (long) (n - sizes[find(parents, i)] - 1);
+        }
+        return result / 2;
+    }
+    private int find(int[] parents, int i) {
+        if (parents[i] == i) {
+            return i;
+        }
+        return parents[i] = find(parents, parents[i]);
+    }
+    private void union(int[] parents, int[] sizes, int i, int j) {
+        int pi = find(parents, i);
+        int pj = find(parents, j);
+        if (pi == pj) {
+            return;
+        }
+        if (sizes[pi] < sizes[pj]) {
+            int tmp = pi;
+            pi = pj;
+            pj = tmp;
+        }
+        sizes[pi] += sizes[pj];
+        parents[pj] = pi;
+
+=======
+
+        int[] parent = new int[n];
+        int[] rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] edge : edges) {
+            union(parent, rank, edge[0], edge[1]);
+        }
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            count[find(parent, i)]++;
+        }
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res += (long) count[i] * (n - count[i] - 1);
+        }
+        return res / 2;
+    }
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+    private void union(int[] parent, int[] rank, int x, int y) {
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if (px == py) {
+            return;
+        }
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[px] = py;
+            rank[py]++;
+        }
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] edge : edges) {
+            int p1 = find(parent, edge[0]);
+            int p2 = find(parent, edge[1]);
+            if (p1 != p2) {
+                parent[p1] = p2;
+                n--;
+            }
+        }
+        return (long) n * (n - 1) / 2 - edges.length;
+    }
+    
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            union(parent, u, v);
+        }
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            size[find(parent, i)]++;
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (size[i] > 1) {
+                ans += (long) size[i] * (size[i] - 1) / 2;
+            }
+        }
+        return (long) n * (n - 1) / 2 - ans;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+
+    private void union(int[] parent, int x, int y) {
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if (px != py) {
+            parent[px] = py;
+        }
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] edge : edges) {
+            int a = edge[0], b = edge[1];
+            int pa = find(parent, a), pb = find(parent, b);
+            if (pa != pb) {
+                parent[pa] = pb;
+            }
+        }
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            size[find(parent, i)]++;
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += (long) size[i] * (size[i] - 1) / 2;
+        }
+        return ans;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int[] parents = new int[n];
+        for (int i = 0; i < n; i++) {
+            parents[i] = i;
+        }
+        int[] counts = new int[n];
+        for (int i = 0; i < n; i++) {
+            counts[i] = 1;
+        }
+        for (int[] edge : edges) {
+            int x = find(parents, edge[0]);
+            int y = find(parents, edge[1]);
+            if (x != y) {
+                parents[y] = x;
+                counts[x] += counts[y];
+            }
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (parents[i] == i) {
+                ans += (long) counts[i] * (counts[i] - 1) / 2;
+            }
+        }
+        return ans;
+    }
+    
+    int find(int[] parents, int x) {
+        if (parents[x] == x) {
+            return x;
+        }
+        return parents[x] = find(parents, parents[x]);
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] rank = new int[n];
+        int[] size = new int[n];
+        Arrays.fill(size, 1);
+        for (int[] edge: edges) {
+            int u = edge[0];
+            int v = edge[1];
+            union(u, v, parent, rank, size);
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += ((long)size[i] * (n - size[i] - 1));
+        }
+        return ans / 2;
+    }
+    int find(int x, int[] parent) {
+        if (x != parent[x]) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+    }
+    void union(int x, int y, int[] parent, int[] rank, int[] size) {
+        int xRoot = find(x, parent);
+        int yRoot = find(y, parent);
+        if (xRoot == yRoot) {
+            return;
+        }
+        if (rank[xRoot] < rank[yRoot]) {
+            parent[xRoot] = yRoot;
+            size[yRoot] += size[xRoot];
+        } else if (rank[xRoot] > rank[yRoot]) {
+            parent[yRoot] = xRoot;
+            size[xRoot] += size[yRoot];
+        } else {
+            parent[yRoot] = xRoot;
+            size[xRoot] += size[yRoot];
+            rank[xRoot]++;
+        }
+
+=======
+
+        long[] dp = new long[n];
+        Arrays.fill(dp, -1);
+        int[] count = new int[n];
+        for (int[] e : edges) {
+            count[e[0]]++;
+            count[e[1]]++;
+        }
+        int[] id = new int[n];
+        for (int i = 0; i < n; i++) {
+            id[i] = i;
+        }
+        Arrays.sort(id, (a, b) -> count[b] - count[a]);
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            if (count[id[i]] == 0) {
+                break;
+            }
+            for (int j = i + 1; j < n; j++) {
+                if (count[id[j]] == 0) {
+                    break;
+                }
+                if (find(id[i], dp) != find(id[j], dp)) {
+                    union(id[i], id[j], dp);
+                    res += (count[id[i]] - 1) * (count[id[j]] - 1);
+                }
+            }
+        }
+        return res;
+    }
+
+    private int find(int x, long[] dp) {
+        if (dp[x] < 0) {
+            return x;
+        }
+        return (int) (dp[x] = find((int) dp[x], dp));
+    }
+
+    private void union(int x, int y, long[] dp) {
+        int rx = find(x, dp);
+        int ry = find(y, dp);
+        if (rx != ry) {
+            dp[rx] += dp[ry];
+            dp[ry] = rx;
+        }

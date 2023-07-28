@@ -1,0 +1,271 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] preSum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Arrays.fill(left, -1);
+        Arrays.fill(right, n);
+        Deque<Integer> stack = new ArrayDeque<Integer>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                right[stack.pop()] = i;
+            }
+            if (!stack.isEmpty()) {
+                left[i] = stack.peek();
+            }
+            stack.push(i);
+        }
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            int l = left[i] + 1, r = right[i] - 1;
+            res = Math.max(res, (long) nums[i] * (preSum[r + 1] - preSum[l]));
+        }
+        return (int) (res % 1000000007);
+
+=======
+
+        int n = nums.length;
+        long[] preSum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Arrays.fill(right, n);
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                right[stack.pop()] = i;
+            }
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, nums[i] * (preSum[right[i]] - preSum[left[i] + 1]));
+        }
+        return (int) (ans % 1000000007);
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        stack.clear();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, (long) nums[i] * (sum[right[i]] - sum[left[i] + 1]));
+        }
+        return (int) (res % (long) (1e9 + 7));
+
+=======
+
+        int n = nums.length;
+        long[] prefix = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < n; ++i) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        stack.clear();
+        for (int i = n - 1; i >= 0; --i) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+        long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = Math.max(ans, (prefix[right[i]] - prefix[left[i] + 1]) * nums[i]);
+        }
+        return (int) (ans % 1000000007);
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        int[] stack = new int[n];
+        int top = 0;
+        long ans = 0;
+        for (int i = 0; i <= n; i++) {
+            while (top > 0 && (i == n || nums[stack[top-1]] > nums[i])) {
+                int j = stack[--top];
+                int left = top == 0 ? 0 : stack[top-1] + 1;
+                ans = Math.max(ans, (long) nums[j] * (sum[i] - sum[left]));
+            }
+            stack[top++] = i;
+        }
+        return (int) (ans % 1000000007);
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i;
+            while (left[i] > 0 && nums[i] <= nums[left[i] - 1]) {
+                left[i] = left[left[i] - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = i;
+            while (right[i] < n - 1 && nums[i] <= nums[right[i] + 1]) {
+                right[i] = right[right[i] + 1];
+            }
+        }
+
+        long[] sum = new long[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, (sum[right[i]] - (left[i] == 0 ? 0 : sum[left[i] - 1])) * nums[i]);
+        }
+
+        return (int) (ans % 1000000007);
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n+1];
+        for (int i = 0; i < n; ++i) {
+            prefix[i+1] = prefix[i] + nums[i];
+        }
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1);
+        long res = 0;
+        for (int i = 0; i <= n; ++i) {
+            while (stack.peek() != -1 && (i == n || nums[i] < nums[stack.peek()])) {
+                int j = stack.pop();
+                res = Math.max(res, (long)nums[j] * (prefix[i] - prefix[stack.peek()+1]));
+            }
+            stack.push(i);
+        }
+        return (int)(res % 1000000007);
+
+=======
+
+        Stack<Integer> stack = new Stack<>();
+        int[] left = new int[nums.length];
+        int[] right = new int[nums.length];
+        for(int i = 0; i < nums.length; i++){
+            while(!stack.isEmpty() && nums[stack.peek()] >= nums[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()){
+                left[i] = -1;
+            }else{
+                left[i] = stack.peek();
+            }
+            stack.push(i);
+        }
+        stack.clear();
+        for(int i = nums.length - 1; i >= 0; i--){
+            while(!stack.isEmpty() && nums[stack.peek()] >= nums[i]){
+                stack.pop();
+            }
+            if(stack.isEmpty()){
+                right[i] = nums.length;
+            }else{
+                right[i] = stack.peek();
+            }
+            stack.push(i);
+        }
+        long[] sum = new long[nums.length + 1];
+        for(int i = 1; i <= nums.length; i++){
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        long mod = 1000000007;
+        long max = 0;
+        for(int i = 0; i < nums.length; i++){
+            long l = left[i] + 1;
+            long r = right[i] - 1;
+            long s = sum[(int)r + 1] - sum[(int)l];
+            max = Math.max(max, s * nums[i]);
+        }
+        return (int)(max % mod);
+
+=======
+
+        // 1. find the prefix sum
+        // 2. find the max min product
+        // 3. find the max sum
+        int n = nums.length;
+        long[] prefixSum = new long[n];
+        long maxSum = 0;
+        long maxMinProduct = 0;
+        for (int i = 0; i < n; i++) {
+            prefixSum[i] = nums[i] + (i == 0 ? 0 : prefixSum[i - 1]);
+            maxSum = Math.max(maxSum, prefixSum[i]);
+        }
+        
+        // find the max min product
+        // 1. find the previous smaller element
+        // 2. find the next smaller element
+        // 3. calculate the min product
+        Stack<Integer> stack = new Stack<>();
+        int[] prevSmaller = new int[n];
+        int[] nextSmaller = new int[n];
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            prevSmaller[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        
+        stack.clear();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            nextSmaller[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+        
+        for (int i = 0; i < n; i++) {
+            maxMinProduct = Math.max(maxMinProduct, nums[i] * (prefixSum[nextSmaller[i] - 1] - (prevSmaller[i] == -1 ? 0 : prefixSum[prevSmaller[i]])));
+        }
+        
+        return (int) (maxMinProduct % (long) (1e9 + 7));

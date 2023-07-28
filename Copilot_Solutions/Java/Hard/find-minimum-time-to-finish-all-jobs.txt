@@ -1,0 +1,283 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int left = 0;
+        int right = 0;
+        for (int job : jobs) {
+            left = Math.max(left, job);
+            right += job;
+        }
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (check(jobs, k, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    public boolean check(int[] jobs, int k, int limit) {
+        int[] workloads = new int[k];
+        return backtrack(jobs, workloads, 0, limit);
+    }
+
+    public boolean backtrack(int[] jobs, int[] workloads, int i, int limit) {
+        if (i >= jobs.length) {
+            return true;
+        }
+        int cur = jobs[i];
+        for (int j = 0; j < workloads.length; ++j) {
+            if (workloads[j] + cur <= limit) {
+                workloads[j] += cur;
+                if (backtrack(jobs, workloads, i + 1, limit)) {
+                    return true;
+                }
+                workloads[j] -= cur;
+            }
+            if (workloads[j] == 0 || workloads[j] + cur == limit) {
+                break;
+            }
+        }
+        return false;
+
+=======
+
+        int n = jobs.length;
+        int[][] dp = new int[k + 1][1 << n];
+        for (int i = 0; i <= k; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int mask = 1; mask < (1 << n); mask++) {
+                int x = mask;
+                int s = 0;
+                while (x > 0) {
+                    int j = Integer.numberOfTrailingZeros(x);
+                    s += jobs[j];
+                    x ^= (1 << j);
+                    dp[i][mask] = Math.min(dp[i][mask], Math.max(dp[i - 1][mask ^ (1 << j)], s));
+                }
+            }
+        }
+        return dp[k][(1 << n) - 1];
+
+=======
+
+        int n = jobs.length;
+        int[] sum = new int[1 << n];
+        for (int i = 1; i < (1 << n); i++) {
+            int x = Integer.lowestOneBit(i);
+            sum[i] = sum[i - x] + jobs[Integer.numberOfTrailingZeros(x)];
+        }
+        int[][] dp = new int[k][1 << n];
+        for (int i = 0; i < (1 << n); i++) {
+            dp[0][i] = sum[i];
+        }
+        for (int i = 1; i < k; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                int min = Integer.MAX_VALUE;
+                for (int x = j; x > 0; x = (x - 1) & j) {
+                    min = Math.min(min, Math.max(dp[i - 1][j - x], sum[x]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[k - 1][(1 << n) - 1];
+
+=======
+
+        int[] workers = new int[k];
+        return dfs(jobs, workers, 0);
+    }
+    
+    private int dfs(int[] jobs, int[] workers, int i) {
+        if (i == jobs.length) {
+            return Arrays.stream(workers).max().getAsInt();
+        }
+        int min = Integer.MAX_VALUE;
+        for (int j = 0; j < workers.length; j++) {
+            workers[j] += jobs[i];
+            min = Math.min(min, dfs(jobs, workers, i + 1));
+            workers[j] -= jobs[i];
+            if (workers[j] == 0) {
+                break;
+            }
+        }
+        return min;
+
+=======
+
+        int n = jobs.length;
+        int[][] dp = new int[k][1 << n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < (1 << n); i++) {
+            int total = 0;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) > 0) {
+                    total += jobs[j];
+                }
+            }
+            dp[0][i] = total;
+        }
+        for (int i = 1; i < k; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                for (int k2 = j; k2 > 0; k2 = (k2 - 1) & j) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[i - 1][j - k2], dp[0][k2]));
+                }
+            }
+        }
+        return dp[k - 1][(1 << n) - 1];
+
+=======
+
+        int n = jobs.length;
+        int[][] dp = new int[n + 1][1 << n];
+        for (int i = 0; i < (1 << n); i++) {
+            Arrays.fill(dp[0], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int mask = 0; mask < (1 << n); mask++) {
+                if (Integer.bitCount(mask) != i) {
+                    continue;
+                }
+                int submask = mask;
+                do {
+                    dp[i][mask] = Math.min(dp[i][mask], Math.max(dp[i - Integer.bitCount(submask)][mask ^ submask], jobs[Integer.numberOfTrailingZeros(submask)]));
+                    submask = (submask - 1) & mask;
+                } while (submask != mask);
+            }
+        }
+        return dp[n][(1 << n) - 1];
+
+=======
+
+        int n = jobs.length;
+        int[] sum = new int[1 << n];
+        for (int i = 1; i < 1 << n; i++) {
+            int last = i & (-i);
+            sum[i] = sum[i ^ last] + jobs[Integer.bitCount(last - 1)];
+        }
+        int[] dp = new int[1 << n];
+        for (int i = 1; i < 1 << n; i++) {
+            dp[i] = sum[i];
+        }
+        for (int i = 1; i < k; i++) {
+            for (int j = 1; j < 1 << n; j++) {
+                for (int k1 = j; k1 > 0; k1 = (k1 - 1) & j) {
+                    dp[j] = Math.min(dp[j], Math.max(dp[k1], sum[j ^ k1]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int l = jobs.length;
+        int max = 0;
+        int sum = 0;
+        for (int job: jobs) {
+            max = Math.max(max, job);
+            sum += job;
+        }
+        int left = max;
+        int right = sum;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (check(jobs, k, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    public boolean check(int[] jobs, int k, int limit) {
+        int[] workloads = new int[k];
+        return backtrack(jobs, workloads, 0, limit);
+    }
+    public boolean backtrack(int[] jobs, int[] workloads, int i, int limit) {
+        if (i >= jobs.length) {
+            return true;
+        }
+        int cur = jobs[i];
+        for (int j = 0; j < workloads.length; ++j) {
+            if (workloads[j] + cur <= limit) {
+                workloads[j] += cur;
+                if (backtrack(jobs, workloads, i + 1, limit)) {
+                    return true;
+                }
+                workloads[j] -= cur;
+            }
+            if (workloads[j] == 0 || workloads[j] + cur == limit) {
+                break;
+            }
+        }
+        return false;
+
+=======
+
+        int n = jobs.length;
+        int[] maxTime = new int[1];
+        maxTime[0] = Integer.MAX_VALUE;
+        dfs(jobs, n, k, 0, 0, 0, maxTime, new boolean[n]);
+        return maxTime[0];
+    }
+
+    private void dfs(int[] jobs, int n, int k, int start, int curTime, int maxTime, int[] minTime, boolean[] used) {
+        if (maxTime >= minTime[0]) {
+            return;
+        }
+
+        if (start == n) {
+            minTime[0] = Math.min(minTime[0], maxTime);
+            return;
+        }
+
+        if (k == 0) {
+            return;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (!used[i]) {
+                used[i] = true;
+                dfs(jobs, n, k - 1, start + 1, 0, Math.max(maxTime, curTime + jobs[i]), minTime, used);
+                used[i] = false;
+                if (curTime == 0) {
+                    break;
+                }
+            }
+        }
+
+=======
+
+        int n = jobs.length;
+        int[] workers = new int[k];
+        int[] jobsTaken = new int[n];
+        return dfs(jobs, workers, jobsTaken, 0);
+    }
+    
+    private int dfs(int[] jobs, int[] workers, int[] jobsTaken, int jobIndex) {
+        if (jobIndex == jobs.length) {
+            int max = 0;
+            for (int worker : workers) {
+                max = Math.max(max, worker);
+            }
+            return max;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < workers.length; i++) {
+            if (jobsTaken[jobIndex] == 0) {
+                jobsTaken[jobIndex] = 1;
+                workers[i] += jobs[jobIndex];
+                min = Math.min(min, dfs(jobs, workers, jobsTaken, jobIndex + 1));
+                workers[i] -= jobs[jobIndex];
+                jobsTaken[jobIndex] = 0;
+            }
+        }
+        return min;

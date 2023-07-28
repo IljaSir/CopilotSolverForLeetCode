@@ -1,0 +1,305 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Character, Character> map = new HashMap<>();
+        for (char[] mapping : mappings) {
+            map.put(mapping[0], mapping[1]);
+        }
+        int i = 0;
+        int j = 0;
+        while (i < s.length() && j < sub.length()) {
+            if (s.charAt(i) == sub.charAt(j)) {
+                i++;
+                j++;
+            } else if (map.containsKey(sub.charAt(j))) {
+                if (map.get(sub.charAt(j)) == s.charAt(i)) {
+                    i++;
+                    j++;
+                } else {
+                    i++;
+                }
+            } else {
+                i++;
+            }
+        }
+        return j == sub.length();
+
+=======
+
+        int i = 0;
+        int j = 0;
+        int n = s.length();
+        int m = sub.length();
+        while (i < n && j < m) {
+            if (s.charAt(i) == sub.charAt(j)) {
+                i++;
+                j++;
+            } else {
+                boolean found = false;
+                for (int k = 0; k < mappings.length; k++) {
+                    if (s.charAt(i) == mappings[k][0] && sub.charAt(j) == mappings[k][1]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    i++;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return j == m;
+    }
+}
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            if (s.charAt(i) == sub.charAt(j)) {
+                i++;
+                j++;
+                if (j == m) {
+                    return true;
+                }
+            } else {
+                boolean match = false;
+                for (int k = 0; k < mappings.length; k++) {
+                    if (mappings[k][0] == sub.charAt(j)) {
+                        j++;
+                        match = true;
+                        if (j == m) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+                if (!match) {
+                    i++;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i == 0) {
+                    dp[i][j] = j == 0 ? 1 : 0;
+                } else if (j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    char c1 = s.charAt(i - 1);
+                    char c2 = sub.charAt(j - 1);
+                    if (c1 == c2) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        for (char[] mapping : mappings) {
+                            if (mapping[0].charAt(0) == c2 && mapping[1].charAt(0) == c1) {
+                                dp[i][j] = dp[i - 1][j - 1];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m] == 1;
+    }
+}
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i == 0 && j == 0) {
+                    dp[i][j] = 1;
+                    continue;
+                }
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                char c = s.charAt(i - 1);
+                char d = sub.charAt(j - 1);
+                if (c == d) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    for (char[] mapping : mappings) {
+                        if (mapping[0].charAt(0) == d) {
+                            if (mapping[1].charAt(0) == c) {
+                                dp[i][j] = dp[i - 1][j - 1];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m] == 1;
+
+=======
+
+        Map<Character, Character> map = new HashMap<>();
+        for (char[] pair : mappings) {
+            map.put(pair[0], pair[1]);
+        }
+        int j = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (j < sub.length() && s.charAt(i) == sub.charAt(j)) {
+                j++;
+            } else if (map.containsKey(s.charAt(i))) {
+                char c = map.get(s.charAt(i));
+                if (j < sub.length() && c == sub.charAt(j)) {
+                    j++;
+                }
+            }
+        }
+        return j == sub.length();
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i == 0 && j == 0) {
+                    dp[i][j] = 1;
+                } else if (i == 0) {
+                    dp[i][j] = 0;
+                } else if (j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = 0;
+                    if (dp[i - 1][j] == 1) {
+                        dp[i][j] = 1;
+                    } else {
+                        for (char[] mapping : mappings) {
+                            if (s.charAt(i - 1) == mapping[0] && sub.charAt(j - 1) == mapping[1]) {
+                                if (dp[i - 1][j - 1] == 1) {
+                                    dp[i][j] = 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m] == 1;
+
+=======
+
+        int n = s.length();
+        int m = sub.length();
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                dp[i][j] = dp[i - 1][j - 1] + (s.charAt(i - 1) == sub.charAt(j - 1) ? 1 : 0);
+            }
+        }
+        Map<Character, Set<Character>> map = new HashMap<>();
+        for (char[] mapping : mappings) {
+            Set<Character> set = map.getOrDefault(mapping[0], new HashSet<>());
+            set.add(mapping[1]);
+            map.put(mapping[0], set);
+        }
+        boolean[] visited = new boolean[26];
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            if (!map.containsKey(c)) {
+                continue;
+            }
+            if (!dfs(c, map, visited)) {
+                return false;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (dp[i][j] == j) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private boolean dfs(char c, Map<Character, Set<Character>> map, boolean[] visited) {
+        if (visited[c - 'a']) {
+            return false;
+        }
+        visited[c - 'a'] = true;
+        if (!map.containsKey(c)) {
+            return true;
+        }
+        for (char next : map.get(c)) {
+            if (!dfs(next, map, visited)) {
+                return false;
+            }
+        }
+        visited[c - 'a'] = false;
+        return true;
+
+=======
+
+        int n = s.length(), m = sub.length();
+        int[][] map = new int[26][26];
+        for (char[] mapping : mappings) {
+            map[mapping[0] - 'a'][mapping[1] - 'a']++;
+        }
+        int[] dp = new int[m + 1];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            int[] next = new int[m + 1];
+            Arrays.fill(next, -1);
+            for (int j = 0; j <= m; j++) {
+                if (dp[j] != -1) {
+                    if (j < m && s.charAt(i) == sub.charAt(j)) {
+                        next[j + 1] = dp[j];
+                    }
+                    for (int k = 0; k < 26; k++) {
+                        if (map[s.charAt(i) - 'a'][k] > 0) {
+                            next[j] = Math.max(next[j], dp[j] + map[s.charAt(i) - 'a'][k]);
+                        }
+                    }
+                }
+            }
+            dp = next;
+        }
+        return dp[m] >= m;
+
+=======
+
+        int m = s.length();
+        int n = sub.length();
+        int[][] dp = new int[m+1][n+1];
+        for(int i=0;i<=m;i++){
+            dp[i][0] = 1;
+        }
+        for(int i=1;i<=m;i++){
+            for(int j=1;j<=n;j++){
+                if(s.charAt(i-1) == sub.charAt(j-1)){
+                    dp[i][j] = dp[i-1][j-1];
+                }else{
+                    for(char[] mapping : mappings){
+                        if(s.charAt(i-1) == mapping[0] && sub.charAt(j-1) == mapping[1]){
+                            dp[i][j] = dp[i-1][j-1];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[m][n] == 1;

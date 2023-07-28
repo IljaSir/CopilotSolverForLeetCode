@@ -1,0 +1,159 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        vector<vector<int>> dp(n+1, vector<int>(sum+1, 0));
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 0; j <= sum; ++j) {
+                dp[i][j] = dp[i-1][j];
+                if (j >= nums[i-1]) {
+                    dp[i][j] += dp[i-1][j-nums[i-1]];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = k; i <= sum; ++i) {
+            ans += dp[n][i];
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9 + 7;
+        sort(nums.begin(), nums.end());
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            for (int j = i + 1; j >= 1; j--) {
+                if (sum - nums[i] >= (j - 1) * k) {
+                    dp[j] = (dp[j] + dp[j - 1]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans = (ans + dp[i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j >= 0 && sum < k; j--) {
+                sum += nums[j];
+                if (sum >= k) {
+                    dp[i + 1] = (dp[i + 1] + dp[j]) % 1000000007;
+                }
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n+1, 0);
+        dp[0] = 1;
+        int sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += nums[i];
+            for (int j = i+1; j > 0; --j) {
+                if (sum - dp[j-1] >= k)
+                    dp[j] = (dp[j] + dp[j-1]) % 1000000007;
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; ++i) {
+            res = (res + dp[i]) % 1000000007;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int mod = 1e9+7;
+        vector<int> dp(n+1, 0);
+        dp[0] = 1;
+        int sum = 0;
+        for (auto x: nums) {
+            sum += x;
+            for (int i = n; i >= 1; i--) {
+                if (sum - dp[i-1] >= k) {
+                    dp[i] = (dp[i] + dp[i-1]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            ans = (ans + dp[i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int N = nums.size();
+        int M = 1e9 + 7;
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        for (int i = 0; i < N; i++) {
+            int l = i, r = N - 1;
+            while (l < r) {
+                int m = l + (r - l) / 2;
+                if (nums[m] + nums[i] < k) {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            if (nums[l] + nums[i] < k) {
+                continue;
+            }
+            ans = (ans + (1 << (N - l - 1))) % M;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int mod = 1000000007;
+        // dp[i][j] 为前 i 个数分成 j 组的方案数
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        // sum[i][j] 为前 i 个数分成 j 组的方案数之和
+        vector<vector<int>> sum(n + 1, vector<int>(n + 1, 0));
+        // pre[i][j] 为前 i 个数分成 j 组的方案数之和
+        vector<vector<int>> pre(n + 1, vector<int>(n + 1, 0));
+        // dp[i][j] = sum[i - 1][j - 1] - pre[i - 1][j - 1] + dp[i - 1][j]
+        for (int i = 1; i <= n; ++i) {
+            sum[i][1] = 1;
+            pre[i][1] = 1;
+        }
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 2; j <= i; ++j) {
+                dp[i][j] = (sum[i - 1][j - 1] - pre[i - 1][j - 1] + dp[i - 1][j]) % mod;
+                sum[i][j] = (sum[i - 1][j] + dp[i][j]) % mod;
+                pre[i][j] = (pre[i - 1][j] + sum[i][j]) % mod;
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= i; ++j) {
+                int sum = 0;
+                for (int k = j - 1; k < i; ++k) {
+                    sum += nums[k];
+                }
+                if (sum >= k) {
+                    ans = (ans + dp[i][j]) % mod;
+                }
+            }
+        }
+        return ans;

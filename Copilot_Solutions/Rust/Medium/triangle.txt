@@ -1,0 +1,170 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut dp = vec![vec![0; triangle.len()]; triangle.len()];
+        dp[0][0] = triangle[0][0];
+        for i in 1..triangle.len() {
+            for j in 0..triangle[i].len() {
+                if j == 0 {
+                    dp[i][j] = dp[i - 1][j] + triangle[i][j];
+                } else if j == triangle[i].len() - 1 {
+                    dp[i][j] = dp[i - 1][j - 1] + triangle[i][j];
+                } else {
+                    dp[i][j] = std::cmp::min(dp[i - 1][j - 1], dp[i - 1][j]) + triangle[i][j];
+                }
+            }
+        }
+        let mut res = dp[triangle.len() - 1][0];
+        for i in 1..triangle.len() {
+            res = std::cmp::min(res, dp[triangle.len() - 1][i]);
+        }
+        res
+
+=======
+Suggestion 2
+
+        let mut dp = vec![vec![0; triangle.len()]; triangle.len()];
+        dp[0][0] = triangle[0][0];
+        for i in 1..triangle.len() {
+            dp[i][0] = dp[i - 1][0] + triangle[i][0];
+            for j in 1..triangle[i].len() - 1 {
+                dp[i][j] = triangle[i][j] + std::cmp::min(dp[i - 1][j - 1], dp[i - 1][j]);
+            }
+            dp[i][i] = dp[i - 1][i - 1] + triangle[i][i];
+        }
+        let mut min = std::i32::MAX;
+        for i in 0..triangle.len() {
+            if dp[triangle.len() - 1][i] < min {
+                min = dp[triangle.len() - 1][i];
+            }
+        }
+        min
+
+=======
+Suggestion 3
+
+        let mut dp = vec![0; triangle.len()];
+        dp[0] = triangle[0][0];
+        for i in 1..triangle.len() {
+            dp[i] = dp[i - 1] + triangle[i][i];
+            for j in (1..i).rev() {
+                dp[j] = triangle[i][j] + dp[j].min(dp[j - 1]);
+            }
+            dp[0] += triangle[i][0];
+        }
+        dp.iter().min().unwrap().clone()
+
+=======
+Suggestion 4
+
+        let mut dp: Vec<i32> = triangle[triangle.len() - 1].clone();
+        for i in (0..triangle.len() - 1).rev() {
+            for j in 0..triangle[i].len() {
+                dp[j] = triangle[i][j] + dp[j].min(dp[j + 1]);
+            }
+        }
+        dp[0]
+
+=======
+Suggestion 5
+
+        let mut dp = vec![0; triangle.len()];
+        dp[0] = triangle[0][0];
+        for i in 1..triangle.len() {
+            for j in (0..i + 1).rev() {
+                if j == 0 {
+                    dp[j] = dp[j] + triangle[i][j];
+                } else if j == i {
+                    dp[j] = dp[j - 1] + triangle[i][j];
+                } else {
+                    dp[j] = std::cmp::min(dp[j - 1], dp[j]) + triangle[i][j];
+                }
+            }
+        }
+        let mut min = dp[0];
+        for i in 1..dp.len() {
+            min = std::cmp::min(min, dp[i]);
+        }
+        min
+
+=======
+Suggestion 6
+
+        let mut dp = triangle.clone();
+        for i in 1..dp.len() {
+            for j in 0..dp[i].len() {
+                if j == 0 {
+                    dp[i][j] += dp[i - 1][j];
+                } else if j == dp[i].len() - 1 {
+                    dp[i][j] += dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] += dp[i - 1][j - 1].min(dp[i - 1][j]);
+                }
+            }
+        }
+        dp.last().unwrap().iter().min().unwrap().clone()
+
+=======
+Suggestion 7
+
+        let mut dp = vec![0; triangle.len()];
+        for i in 0..triangle.len() {
+            for j in (0..=i).rev() {
+                if j == 0 {
+                    dp[j] += triangle[i][j];
+                } else if j == i {
+                    dp[j] = dp[j - 1] + triangle[i][j];
+                } else {
+                    dp[j] = dp[j - 1].min(dp[j]) + triangle[i][j];
+                }
+            }
+        }
+        dp.iter().min().unwrap().to_owned()
+
+=======
+Suggestion 8
+
+        let mut triangle = triangle;
+        for row in (0..triangle.len()-1).rev() {
+            for col in 0..triangle[row].len() {
+                triangle[row][col] += triangle[row+1][col].min(triangle[row+1][col+1]);
+            }
+        }
+        triangle[0][0]
+
+=======
+Suggestion 9
+
+        let mut triangle = triangle;
+        let mut dp = vec![0; triangle.len()];
+        for i in 0..triangle.len() {
+            dp[i] = triangle[triangle.len() - 1][i];
+        }
+        for i in (0..triangle.len() - 1).rev() {
+            for j in 0..triangle[i].len() {
+                dp[j] = triangle[i][j] + dp[j].min(dp[j + 1]);
+            }
+        }
+        dp[0]
+
+=======
+Suggestion 10
+
+        let mut dp = vec![vec![0; triangle.len()]; triangle.len()];
+        for i in 0..triangle.len() {
+            for j in 0..triangle[i].len() {
+                let mut min = i32::MAX;
+                if i > 0 {
+                    if j > 0 {
+                        min = min.min(dp[i-1][j-1]);
+                    }
+                    if j < triangle[i-1].len() {
+                        min = min.min(dp[i-1][j]);
+                    }
+                }
+                dp[i][j] = min + triangle[i][j];
+            }
+        }
+        dp[triangle.len()-1].iter().min().unwrap().clone()

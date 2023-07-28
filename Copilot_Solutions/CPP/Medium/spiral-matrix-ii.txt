@@ -1,0 +1,285 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<int>> ans(n, vector<int>(n));
+        int l = 0, r = n - 1, t = 0, b = n - 1;
+        int num = 1, tar = n * n;
+        while (num <= tar) {
+            for (int i = l; i <= r; i++) ans[t][i] = num++;
+            t++;
+            for (int i = t; i <= b; i++) ans[i][r] = num++;
+            r--;
+            for (int i = r; i >= l; i--) ans[b][i] = num++;
+            b--;
+            for (int i = b; i >= t; i--) ans[i][l] = num++;
+            l++;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> matrix(n, vector<int>(n, 0));
+        int top = 0, bottom = n - 1, left = 0, right = n - 1, num = 1;
+        while (top <= bottom && left <= right) {
+            for (int col = left; col <= right; col++) {
+                matrix[top][col] = num++;
+            }
+            top++;
+            for (int row = top; row <= bottom; row++) {
+                matrix[row][right] = num++;
+            }
+            right--;
+            if (top <= bottom) {
+                for (int col = right; col >= left; col--) {
+                    matrix[bottom][col] = num++;
+                }
+            }
+            bottom--;
+            if (left <= right) {
+                for (int row = bottom; row >= top; row--) {
+                    matrix[row][left] = num++;
+                }
+            }
+            left++;
+        }
+        return matrix;
+
+=======
+
+        vector<vector<int>> res(n, vector<int>(n, 0));
+        int x = 0, y = 0, dx = 0, dy = 1;
+        for (int i = 1; i <= n * n; ++i) {
+            res[x][y] = i;
+            if (res[(x + dx + n) % n][(y + dy + n) % n]) {
+                int t = dx;
+                dx = dy;
+                dy = -t;
+            }
+            x += dx;
+            y += dy;
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> ans(n, vector<int>(n, 0));
+        int i = 0, j = 0, di = 0, dj = 1;
+        for (int k = 1; k <= n * n; k++) {
+            ans[i][j] = k;
+            if (ans[(i + di + n) % n][(j + dj + n) % n] != 0) {
+                int t = di;
+                di = dj;
+                dj = -t;
+            }
+            i += di;
+            j += dj;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> mat(n, vector<int>(n, 0));
+        int row_start = 0, row_end = n - 1;
+        int col_start = 0, col_end = n - 1;
+        int num = 1;
+        while (row_start <= row_end && col_start <= col_end) {
+            for (int i = col_start; i <= col_end; i++) {
+                mat[row_start][i] = num;
+                num++;
+            }
+            row_start++;
+            for (int i = row_start; i <= row_end; i++) {
+                mat[i][col_end] = num;
+                num++;
+            }
+            col_end--;
+            for (int i = col_end; i >= col_start; i--) {
+                mat[row_end][i] = num;
+                num++;
+            }
+            row_end--;
+            for (int i = row_end; i >= row_start; i--) {
+                mat[i][col_start] = num;
+                num++;
+            }
+            col_start++;
+        }
+        return mat;
+
+=======
+
+        vector<vector<int>> result(n, vector<int>(n));
+        int num = 1;
+        int rowBegin = 0, rowEnd = n - 1;
+        int colBegin = 0, colEnd = n - 1;
+        while (rowBegin <= rowEnd && colBegin <= colEnd) {
+            // Traverse Right
+            for (int i = colBegin; i <= colEnd; i++) {
+                result[rowBegin][i] = num++;
+            }
+            rowBegin++;
+            // Traverse Down
+            for (int i = rowBegin; i <= rowEnd; i++) {
+                result[i][colEnd] = num++;
+            }
+            colEnd--;
+            // Traverse Left
+            if (rowBegin <= rowEnd) {
+                for (int i = colEnd; i >= colBegin; i--) {
+                    result[rowEnd][i] = num++;
+                }
+            }
+            rowEnd--;
+            // Traverse Up
+            if (colBegin <= colEnd) {
+                for (int i = rowEnd; i >= rowBegin; i--) {
+                    result[i][colBegin] = num++;
+                }
+            }
+            colBegin++;
+        }
+        return result;
+
+=======
+
+        vector<vector<int>> res(n, vector<int>(n, 0));
+        int i = 0, j = 0, cnt = 1;
+        while (cnt <= n * n) {
+            while (j < n && res[i][j] == 0) res[i][j++] = cnt++;
+            i++, j--;
+            while (i < n && res[i][j] == 0) res[i++][j] = cnt++;
+            i--, j--;
+            while (j >= 0 && res[i][j] == 0) res[i][j--] = cnt++;
+            i--, j++;
+            while (i >= 0 && res[i][j] == 0) res[i--][j] = cnt++;
+            i++, j++;
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> ans(n, vector<int>(n));
+        int i = 0, j = 0;
+        int cnt = 1;
+        int state = 0;
+        while (cnt <= n * n) {
+            ans[i][j] = cnt;
+            if (state == 0) {
+                if (j + 1 < n && ans[i][j + 1] == 0) {
+                    j++;
+                } else {
+                    state = 1;
+                    i++;
+                }
+            } else if (state == 1) {
+                if (i + 1 < n && ans[i + 1][j] == 0) {
+                    i++;
+                } else {
+                    state = 2;
+                    j--;
+                }
+            } else if (state == 2) {
+                if (j - 1 >= 0 && ans[i][j - 1] == 0) {
+                    j--;
+                } else {
+                    state = 3;
+                    i--;
+                }
+            } else if (state == 3) {
+                if (i - 1 >= 0 && ans[i - 1][j] == 0) {
+                    i--;
+                } else {
+                    state = 0;
+                    j++;
+                }
+            }
+            cnt++;
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> result(n, vector<int>(n, 0));
+        int i = 0;
+        int j = 0;
+        int count = 1;
+        int direction = 0; // 0: right, 1: down, 2: left, 3: up
+        while (count <= n * n) {
+            result[i][j] = count;
+            count++;
+            if (direction == 0) {
+                if (j + 1 < n && result[i][j + 1] == 0) {
+                    j++;
+                } else {
+                    direction = 1;
+                    i++;
+                }
+            } else if (direction == 1) {
+                if (i + 1 < n && result[i + 1][j] == 0) {
+                    i++;
+                } else {
+                    direction = 2;
+                    j--;
+                }
+            } else if (direction == 2) {
+                if (j - 1 >= 0 && result[i][j - 1] == 0) {
+                    j--;
+                } else {
+                    direction = 3;
+                    i--;
+                }
+            } else if (direction == 3) {
+                if (i - 1 >= 0 && result[i - 1][j] == 0) {
+                    i--;
+                } else {
+                    direction = 0;
+                    j++;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        vector<vector<int>> res(n, vector<int>(n));
+        const int N = n * n;
+        int i = 0, j = 0, k = 1, d = 0;
+        while (k <= N) {
+            res[i][j] = k++;
+            switch (d) {
+                case 0:
+                    if (j + 1 < n && res[i][j + 1] == 0) {
+                        j++;
+                    } else {
+                        d = (d + 1) % 4;
+                        i++;
+                    }
+                    break;
+                case 1:
+                    if (i + 1 < n && res[i + 1][j] == 0) {
+                        i++;
+                    } else {
+                        d = (d + 1) % 4;
+                        j--;
+                    }
+                    break;
+                case 2:
+                    if (j - 1 >= 0 && res[i][j - 1] == 0) {
+                        j--;
+                    } else {
+                        d = (d + 1) % 4;
+                        i--;
+                    }
+                    break;
+                case 3:
+                    if (i - 1 >= 0 && res[i - 1][j] == 0) {
+                        i--;
+                    } else {
+                        d = (d + 1) % 4;
+                        j++;
+                    }
+                    break;
+            }
+        }
+        return res;

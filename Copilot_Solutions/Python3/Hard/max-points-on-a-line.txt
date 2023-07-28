@@ -1,0 +1,288 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        def gcd(a, b):
+            if b == 0:
+                return a
+            else:
+                return gcd(b, a % b)
+        n = len(points)
+        ans = 0
+        for i in range(n):
+            d = {}
+            same = 1
+            for j in range(i + 1, n):
+                x = points[i][0] - points[j][0]
+                y = points[i][1] - points[j][1]
+                if x == 0 and y == 0:
+                    same += 1
+                    continue
+                g = gcd(x, y)
+                x //= g
+                y //= g
+                d[(x, y)] = d.get((x, y), 0) + 1
+            ans = max(ans, max(d.values(), default=0) + same)
+        return ans
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+        def get_slope(p1, p2):
+            if p1[0] == p2[0]:
+                return (0, 0)
+            if p1[1] == p2[1]:
+                return (1, 0)
+            a = p2[0] - p1[0]
+            b = p2[1] - p1[1]
+            g = gcd(a, b)
+            a //= g
+            b //= g
+            if a < 0:
+                a = -a
+                b = -b
+            return (a, b)
+        n = len(points)
+        if n < 3:
+            return n
+        res = 2
+        for i in range(n):
+            slopes = {}
+            same = 1
+            for j in range(i + 1, n):
+                if points[i] == points[j]:
+                    same += 1
+                    continue
+                slope = get_slope(points[i], points[j])
+                if slope in slopes:
+                    slopes[slope] += 1
+                else:
+                    slopes[slope] = 2
+            res = max(res, same)
+            for s in slopes:
+                res = max(res, slopes[s] + same)
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) <= 2:
+            return len(points)
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+        def slope(p1, p2):
+            x1, y1 = p1
+            x2, y2 = p2
+            dy = y2 - y1
+            dx = x2 - x1
+            if dy == 0:
+                return 0, 1
+            if dx == 0:
+                return 1, 0
+            g = gcd(dy, dx)
+            return dy // g, dx // g
+        res = 0
+        for i in range(len(points)):
+            slope_dict = {}
+            same_point = 1
+            for j in range(i + 1, len(points)):
+                if points[i] == points[j]:
+                    same_point += 1
+                    continue
+                s = slope(points[i], points[j])
+                if s in slope_dict:
+                    slope_dict[s] += 1
+                else:
+                    slope_dict[s] = 2
+            res = max(res, same_point, max(slope_dict.values(), default=0))
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) < 3:
+            return len(points)
+        res = 0
+        for i in range(len(points)):
+            dic = {}
+            same = 1
+            for j in range(i+1, len(points)):
+                if points[i] == points[j]:
+                    same += 1
+                else:
+                    x = points[j][0] - points[i][0]
+                    y = points[j][1] - points[i][1]
+                    gcd = math.gcd(x, y)
+                    if gcd != 0:
+                        x //= gcd
+                        y //= gcd
+                    dic[(x, y)] = dic.get((x, y), 0) + 1
+            res = max(res, same + max(dic.values()) if dic else same)
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) < 3:
+            return len(points)
+        res = 0
+        for i in range(len(points)):
+            d = {}
+            same = 1
+            for j in range(i+1, len(points)):
+                if points[i] == points[j]:
+                    same += 1
+                else:
+                    x = points[j][0] - points[i][0]
+                    y = points[j][1] - points[i][1]
+                    g = self.gcd(x, y)
+                    x //= g
+                    y //= g
+                    d[(x, y)] = d.get((x, y), 0) + 1
+            res = max(res, same)
+            if d:
+                res = max(res, max(d.values()) + same)
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) <= 2:
+            return len(points)
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+        def get_slope(p1, p2):
+            x1, y1 = p1
+            x2, y2 = p2
+            if x1 == x2:
+                return (0, 0)
+            if y1 == y2:
+                return (1, 0)
+            dx = x1 - x2
+            dy = y1 - y2
+            g = gcd(dx, dy)
+            dx //= g
+            dy //= g
+            if dx < 0:
+                dx *= -1
+                dy *= -1
+            return (dx, dy)
+        res = 0
+        for i in range(len(points)):
+            slopes = {}
+            for j in range(i):
+                slope = get_slope(points[i], points[j])
+                slopes[slope] = slopes.get(slope, 0) + 1
+            res = max(res, max(slopes.values(), default=0) + 1)
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        def gcd(a,b):
+            if b == 0:
+                return a
+            return gcd(b, a % b)
+        def slope(p1, p2):
+            if p1[0] == p2[0]:
+                return 0, 0
+            dx, dy = p2[0] - p1[0], p2[1] - p1[1]
+            g = gcd(dx, dy)
+            return dx // g, dy // g
+        if len(points) < 3:
+            return len(points)
+        res = 0
+        for i in range(len(points)):
+            same = 1
+            slopes = collections.defaultdict(int)
+            for j in range(i + 1, len(points)):
+                if points[i] == points[j]:
+                    same += 1
+                    continue
+                s = slope(points[i], points[j])
+                slopes[s] += 1
+            if slopes:
+                res = max(res, same + max(slopes.values()))
+            else:
+                res = max(res, same)
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) < 3:
+            return len(points)
+        max_points = 0
+        for i in range(len(points)):
+            same_points = 1
+            slopes = {}
+            for j in range(i+1, len(points)):
+                if points[j][0] == points[i][0] and points[j][1] == points[i][1]:
+                    same_points += 1
+                elif points[j][0] == points[i][0]:
+                    slopes['inf'] = slopes.get('inf', 0) + 1
+                else:
+                    slope = (points[j][1] - points[i][1]) / (points[j][0] - points[i][0])
+                    slopes[slope] = slopes.get(slope, 0) + 1
+            if len(slopes) == 0:
+                max_points = max(max_points, same_points)
+            else:
+                max_points = max(max_points, same_points + max(slopes.values()))
+        return max_points
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) == 1:
+            return 1
+        res = 0
+        for i in range(len(points)):
+            x1, y1 = points[i]
+            same = 0
+            dic = {}
+            for j in range(i+1, len(points)):
+                x2, y2 = points[j]
+                if x1 == x2 and y1 == y2:
+                    same += 1
+                elif x1 == x2:
+                    dic["v"] = dic.get("v", 0) + 1
+                elif y1 == y2:
+                    dic["h"] = dic.get("h", 0) + 1
+                else:
+                    k = (y2-y1)/(x2-x1)
+                    dic[k] = dic.get(k, 0) + 1
+            res = max(res, same + (0 if not dic else max(dic.values())+1))
+        return res
+
+=======
+
+def maxPoints(self, points: List[List[int]]) -> int:
+        if len(points) == 1:
+            return 1
+        max_points = 0
+        for i in range(len(points)):
+            same_point = 0
+            point = points[i]
+            slope_map = {}
+            for j in range(i+1, len(points)):
+                point2 = points[j]
+                if point[0] == point2[0] and point[1] == point2[1]:
+                    same_point += 1
+                elif point[0] == point2[0]:
+                    slope_map['inf'] = slope_map.get('inf', 0) + 1
+                else:
+                    slope = (point[1] - point2[1]) / (point[0] - point2[0])
+                    slope_map[slope] = slope_map.get(slope, 0) + 1
+            max_points = max(max_points, same_point + 1)
+            for slope in slope_map:
+                max_points = max(max_points, slope_map[slope] + same_point + 1)
+        return max_points

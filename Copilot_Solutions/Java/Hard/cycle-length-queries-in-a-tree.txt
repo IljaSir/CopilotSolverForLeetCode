@@ -1,0 +1,288 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int m = queries.length;
+        int[] ans = new int[m];
+        int[] parent = new int[1 << n];
+        for (int i = 1; i < (1 << n); i++) {
+            parent[i] = i / 2;
+        }
+        for (int i = 0; i < m; i++) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            int[] pa = new int[1 << n];
+            int[] pb = new int[1 << n];
+            int[] sa = new int[1 << n];
+            int[] sb = new int[1 << n];
+            int[] len = new int[1 << n];
+            int[] dep = new int[1 << n];
+            int[] vis = new int[1 << n];
+            int[] que = new int[1 << n];
+            int head = 0;
+            int tail = 0;
+            vis[a] = 1;
+            que[tail++] = a;
+            while (head < tail) {
+                int u = que[head++];
+                if (u == b) {
+                    break;
+                }
+                if (u * 2 < (1 << n)) {
+                    if (vis[u * 2] == 0) {
+                        vis[u * 2] = 1;
+                        que[tail++] = u * 2;
+                        pa[u * 2] = u;
+                        dep[u * 2] = dep[u] + 1;
+                    }
+                }
+                if (u * 2 + 1 < (1 << n)) {
+                    if (vis[u * 2 + 1] == 0) {
+                        vis[u * 2 + 1] = 1;
+                        que[tail++] = u * 2 + 1;
+                        pa[u * 2 + 1] = u;
+                        dep[u * 2 + 1] = dep[u] + 1;
+                    }
+                }
+                if (vis[parent[u]] == 0) {
+                    vis[parent[u]] = 1;
+                    que[tail++] = parent[u];
+                    pa[parent[u]] = u;
+                    dep[parent[u]] = dep[u] + 1;
+                }
+            }
+            head = 0;
+            tail = 0;
+            vis[b] = 1;
+
+=======
+
+        int[] ans = new int[queries.length];
+        int[] parent = new int[(int)Math.pow(2, n)];
+        for (int i = 1; i < parent.length; i++) {
+            parent[i] = i / 2;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int a = q[0], b = q[1];
+            int[] depthA = depth(a, parent);
+            int[] depthB = depth(b, parent);
+            int[] depth = new int[depthA.length + depthB.length];
+            int idx = 0;
+            for (int d : depthA) {
+                depth[idx++] = d;
+            }
+            for (int d : depthB) {
+                depth[idx++] = d;
+            }
+            int lca = lca(a, b, parent);
+            int[] depthLCA = depth(lca, parent);
+            int[] depthLCA2 = new int[depthLCA.length];
+            for (int j = 0; j < depthLCA.length; j++) {
+                depthLCA2[j] = depthLCA[depthLCA.length - 1 - j];
+            }
+            int[] depth2 = new int[depth.length];
+            for (int j = 0; j < depth.length; j++) {
+                depth2[j] = depth[depth.length - 1 - j];
+            }
+            int[] depthLCA3 = new int[depthLCA.length + depthLCA2.length];
+            idx = 0;
+            for (int d : depthLCA) {
+                depthLCA3[idx++] = d;
+            }
+            for (int d : depthLCA2) {
+                depthLCA3[idx++] = d;
+            }
+            int[] depth3 = new int[depth.length + depth2.length];
+            idx = 0;
+            for (int d : depth) {
+                depth3[idx++] = d;
+            }
+            for (int d : depth2) {
+                depth3[idx++] = d;
+            }
+            int[] depthLCA4 = new int[depthLCA.length + depthLCA2.length - 1];
+            idx = 0;
+            for (int j = 1; j < depthLCA.length; j++) {
+                depthL
+
+=======
+
+        int m = queries.length;
+        int[] ans = new int[m];
+        int[] parent = new int[1 << n];
+        int[] depth = new int[1 << n];
+        int[] size = new int[1 << n];
+        for (int i = 0; i < (1 << n); ++i) {
+            parent[i] = i;
+            depth[i] = 0;
+            size[i] = 1;
+        }
+        for (int i = 0; i < m; ++i) {
+            int a = queries[i][0], b = queries[i][1];
+            int pa = find(parent, a), pb = find(parent, b);
+            if (pa == pb) {
+                ans[i] = -1;
+                continue;
+            }
+            if (depth[pa] < depth[pb]) {
+                int t = pa;
+                pa = pb;
+                pb = t;
+            }
+            parent[pb] = pa;
+            size[pa] += size[pb];
+            if (depth[pa] == depth[pb]) {
+                depth[pa]++;
+            }
+            int d = depth[pa] - depth[pb];
+            int s = size[pb];
+            if (d % 2 == 0) {
+                ans[i] = s;
+            } else {
+                ans[i] = (1 << n) - s;
+            }
+        }
+        return ans;
+    }
+
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int[] answer = new int[queries.length];
+        int[] parent = new int[1 << n];
+        int[] size = new int[1 << n];
+        for (int i = 1; i < parent.length; i++) {
+            parent[i] = i / 2;
+            size[i] = 1;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            int pa = find(a, parent);
+            int pb = find(b, parent);
+            if (pa == pb) {
+                answer[i] = size[pa];
+            } else {
+                answer[i] = size[pa] + size[pb];
+                parent[pa] = pb;
+                size[pb] += size[pa];
+            }
+        }
+        return answer;
+    }
+    
+    private int find(int x, int[] parent) {
+        if (x == parent[x]) {
+            return x;
+        }
+        return parent[x] = find(parent[x], parent);
+
+=======
+
+        int[] answer = new int[queries.length];
+        int[] parent = new int[1 << n];
+        int[] depth = new int[1 << n];
+        int[] size = new int[1 << n];
+        for (int i = 0; i < (1 << n); i++) {
+            parent[i] = i;
+            depth[i] = 0;
+            size[i] = 1;
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            int pa = findParent(parent, a);
+            int pb = findParent(parent, b);
+            if (pa == pb) {
+                answer[i] = -1;
+            } else {
+                if (depth[pa] > depth[pb]) {
+                    int tmp = pa;
+                    pa = pb;
+                    pb = tmp;
+                }
+                parent[pa] = pb;
+                size[pb] += size[pa];
+                if (depth[pa] == depth[pb]) {
+                    depth[pb]++;
+                }
+                answer[i] = (size[pb] - 1) * 2;
+            }
+        }
+        return answer;
+    }
+
+    private int findParent(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = findParent(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int m = queries.length;
+        int[] result = new int[m];
+        int[] parent = new int[1 << n];
+        for (int i = 0; i < parent.length; ++i) {
+            parent[i] = i;
+        }
+        int[] depth = new int[1 << n];
+        for (int i = 0; i < m; ++i) {
+            int a = queries[i][0];
+            int b = queries[i][1];
+            if (a > b) {
+                int temp = a;
+                a = b;
+                b = temp;
+            }
+            int pa = getParent(a, parent);
+            int pb = getParent(b, parent);
+            if (pa == pb) {
+                result[i] = depth[a] + depth[b] - 2 * depth[pa];
+            } else {
+                parent[pa] = pb;
+                depth[pa] = depth[a] + depth[b] - depth[pb] + 1;
+            }
+        }
+        return result;
+    }
+
+    private int getParent(int a, int[] parent) {
+        if (parent[a] == a) {
+            return a;
+        }
+        return parent[a] = getParent(parent[a], parent);
+    }
+}
+
+=======
+
+        int[] ans = new int[queries.length];
+        int m = queries.length;
+        int[] parent = new int[1 << n];
+        for (int i = 1; i < parent.length; i++) {
+            parent[i] = i >> 1;
+        }
+        for (int i = 0; i < m; i++) {
+            int a = queries[i][0], b = queries[i][1];
+            int pa = find(a, parent), pb = find(b, parent);
+            if (pa == pb) {
+                ans[i] = -1;
+            } else {
+                parent[pa] = pb;
+                ans[i] = (1 << n) - 1;
+            }
+        }
+        return ans;
+    }
+    int find(int x, int[] parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];

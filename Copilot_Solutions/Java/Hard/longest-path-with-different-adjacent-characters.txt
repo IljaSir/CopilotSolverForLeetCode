@@ -1,0 +1,288 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = parent.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int i = 1; i < n; i++) {
+            graph[parent[i]].add(i);
+        }
+        int[] res = new int[1];
+        dfs(graph, s, 0, res);
+        return res[0];
+    }
+    private int[] dfs(List<Integer>[] graph, String s, int node, int[] res) {
+        int[] count = new int[26];
+        for (int child : graph[node]) {
+            int[] childCount = dfs(graph, s, child, res);
+            for (int i = 0; i < 26; i++) {
+                count[i] = Math.max(count[i], childCount[i]);
+            }
+        }
+        count[s.charAt(node) - 'a']++;
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            max = Math.max(max, count[i]);
+        }
+        res[0] = Math.max(res[0], max);
+        return count;
+
+=======
+
+        int n = parent.length;
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int i = 1; i < n; i++) {
+            adj.get(parent[i]).add(i);
+        }
+        int[] ans = new int[1];
+        dfs(0, adj, s, ans);
+        return ans[0];
+    }
+    private int[] dfs(int u, List<List<Integer>> adj, String s, int[] ans) {
+        int[] cnt = new int[26];
+        for (int v : adj.get(u)) {
+            int[] sub = dfs(v, adj, s, ans);
+            for (int i = 0; i < 26; i++) {
+                cnt[i] = Math.max(cnt[i], sub[i]);
+            }
+        }
+        int c = s.charAt(u) - 'a';
+        ans[0] = Math.max(ans[0], cnt[c] + 1);
+        cnt[c] += 1;
+        return cnt;
+
+=======
+
+        int n = parent.length;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.putIfAbsent(i, new ArrayList<>());
+            if (parent[i] != -1) {
+                graph.get(parent[i]).add(i);
+            }
+        }
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int res = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            int max1 = 0, max2 = 0;
+            for (int j : graph.get(i)) {
+                if (s.charAt(j) != s.charAt(i)) {
+                    if (dp[j] > max1) {
+                        max2 = max1;
+                        max1 = dp[j];
+                    } else if (dp[j] > max2) {
+                        max2 = dp[j];
+                    }
+                }
+            }
+            dp[i] += max1;
+            res = Math.max(res, max1 + max2 + 1);
+        }
+        return res;
+
+=======
+
+        int n = parent.length;
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i = 0; i < n; i++)
+            adj.add(new ArrayList<>());
+        for(int i = 1; i < n; i++)
+            adj.get(parent[i]).add(i);
+        int[] res = new int[1];
+        dfs(adj, s, 0, res);
+        return res[0];
+    }
+    
+    private int[] dfs(List<List<Integer>> adj, String s, int u, int[] res) {
+        int[] dp = new int[26];
+        for(int v : adj.get(u)) {
+            int[] next = dfs(adj, s, v, res);
+            for(int i = 0; i < 26; i++)
+                dp[i] = Math.max(dp[i], next[i]);
+        }
+        dp[s.charAt(u) - 'a']++;
+        for(int i = 0; i < 26; i++)
+            res[0] = Math.max(res[0], dp[i]);
+        return dp;
+
+=======
+
+        int n = parent.length;
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        int root = 0;
+        for(int i = 0; i < n; i++) {
+            if(parent[i] == -1) {
+                root = i;
+                continue;
+            }
+            adj.get(parent[i]).add(i);
+        }
+        return dfs(adj, s, root, ' ');
+    }
+    private int dfs(List<List<Integer>> adj, String s, int node, char prev) {
+        int max = 0;
+        if(s.charAt(node) != prev) {
+            max = 1;
+        }
+        for(int child : adj.get(node)) {
+            max = Math.max(max, dfs(adj, s, child, s.charAt(node)) + 1);
+        }
+        return max;
+
+=======
+
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        int n = parent.length;
+        for (int i = 0; i < n; i++) {
+            int p = parent[i];
+            if (p != -1) {
+                Set<Integer> set = map.getOrDefault(p, new HashSet<>());
+                set.add(i);
+                map.put(p, set);
+            }
+        }
+        return dfs(map, s, 0, ' ');
+    }
+    private int dfs(Map<Integer, Set<Integer>> map, String s, int i, char c) {
+        int res = 0;
+        if (map.containsKey(i)) {
+            for (int j : map.get(i)) {
+                if (s.charAt(j) != c) {
+                    res = Math.max(res, 1 + dfs(map, s, j, s.charAt(j)));
+                } else {
+                    res = Math.max(res, dfs(map, s, j, c));
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = parent.length;
+        int[] adj[] = new int[n][];
+        int[] deg = new int[n];
+        for (int i = 0; i < n; i++) {
+            deg[i] = 0;
+        }
+        for (int i = 0; i < n; i++) {
+            if (parent[i] >= 0) {
+                deg[parent[i]]++;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            adj[i] = new int[deg[i]];
+            deg[i] = 0;
+        }
+        for (int i = 0; i < n; i++) {
+            if (parent[i] >= 0) {
+                adj[parent[i]][deg[parent[i]]++] = i;
+            }
+        }
+        int[] dp = new int[n];
+        int[] dp2 = new int[n];
+        dfs(0, adj, s, dp, dp2);
+        return dp[0];
+    }
+    private void dfs(int u, int[][] adj, String s, int[] dp, int[] dp2) {
+        dp[u] = 0;
+        dp2[u] = 0;
+        for (int v : adj[u]) {
+            dfs(v, adj, s, dp, dp2);
+            if (s.charAt(u) == s.charAt(v)) {
+                dp2[u] = Math.max(dp2[u], dp2[v] + 1);
+            } else {
+                dp[u] = Math.max(dp[u], dp[v] + 1);
+            }
+        }
+        dp[u] = Math.max(dp[u], dp2[u]);
+
+=======
+
+        int n = parent.length;
+        int[] dp = new int[n];
+        int[] dp2 = new int[n];
+        int ans = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            int max = 0;
+            int max2 = 0;
+            for (int j = i + 1; j < n; j++) {
+                if (parent[j] == i) {
+                    if (s.charAt(j) != s.charAt(i)) {
+                        if (dp[j] >= max) {
+                            max2 = max;
+                            max = dp[j];
+                        } else if (dp[j] > max2) {
+                            max2 = dp[j];
+                        }
+                    }
+                }
+            }
+            dp[i] = max + 1;
+            dp2[i] = max2 + 1;
+            ans = Math.max(ans, dp[i] + max2);
+        }
+        return ans;
+
+=======
+
+        int n = parent.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int[] cnt = new int[26];
+            int node = i;
+            while (node != -1) {
+                int c = s.charAt(node) - 'a';
+                if (cnt[c] > 0) {
+                    break;
+                }
+                cnt[c] = dp[node] + 1;
+                ans = Math.max(ans, cnt[c]);
+                node = parent[node];
+            }
+            for (int j = 0; j < 26; j++) {
+                dp[i] = Math.max(dp[i], cnt[j]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = parent.length;
+        int[] dp = new int[n];
+        int[] count = new int[26];
+        int[] children = new int[n];
+        for (int i = 0; i < n; i++) {
+            children[parent[i]]++;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (children[i] == 0) {
+                dp[i] = 1;
+                count[s.charAt(i) - 'a']++;
+            } else {
+                int max = 0;
+                for (int j = 0; j < 26; j++) {
+                    if (count[j] > 0) {
+                        max = Math.max(max, count[j]);
+                        count[j] = 0;
+                    }
+                }
+                dp[i] = max + 1;
+                count[s.charAt(i) - 'a']++;
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, dp[i]);
+        }
+        return max;

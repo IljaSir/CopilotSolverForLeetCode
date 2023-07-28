@@ -1,0 +1,248 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut first = vec![-1; 101];
+        let mut last = vec![-1; 101];
+        let n = colors.len();
+        for i in 0..n {
+            let c = colors[i] as usize;
+            if first[c] == -1 {
+                first[c] = i as i32;
+            }
+            last[c] = i as i32;
+        }
+        let mut res = 0;
+        for i in 0..101 {
+            for j in (i+1)..101 {
+                if first[i] != -1 && first[j] != -1 {
+                    res = res.max((last[i] - first[j]).abs());
+                    res = res.max((last[j] - first[i]).abs());
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut left = 0;
+        let mut right = colors.len() - 1;
+        let mut max = 0;
+        while left < right {
+            if colors[left] == colors[right] {
+                if colors[left] == colors[left + 1] {
+                    left += 1;
+                } else if colors[right] == colors[right - 1] {
+                    right -= 1;
+                } else {
+                    if right - left > max {
+                        max = right - left;
+                    }
+                    left += 1;
+                    right -= 1;
+                }
+            } else {
+                if right - left > max {
+                    max = right - left;
+                }
+                left += 1;
+                right -= 1;
+            }
+        }
+        max as i32
+    }
+}
+
+=======
+
+        let mut left = 0;
+        let mut right = colors.len() - 1;
+        let mut max_distance = 0;
+        while left < right {
+            if colors[left] == colors[right] {
+                if colors[left] == colors[left + 1] {
+                    left += 1;
+                } else {
+                    right -= 1;
+                }
+            } else {
+                max_distance = std::cmp::max(max_distance, (right - left) as i32);
+                if colors[left] == colors[left + 1] {
+                    left += 1;
+                } else {
+                    right -= 1;
+                }
+            }
+        }
+        max_distance
+
+=======
+
+        let n = colors.len();
+        let mut left = vec![0; n];
+        let mut right = vec![0; n];
+        let mut last = vec![0; 101];
+        for i in 0..n {
+            last[colors[i] as usize] = i;
+            left[i] = last[colors[i] as usize];
+        }
+        last = vec![n; 101];
+        for i in (0..n).rev() {
+            last[colors[i] as usize] = i;
+            right[i] = last[colors[i] as usize];
+        }
+        let mut ans = 0;
+        for i in 0..n {
+            ans = ans.max((left[i] as i32 - i as i32).abs());
+            ans = ans.max((right[i] as i32 - i as i32).abs());
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut first = -1;
+        let mut last = -1;
+        let mut max = 0;
+        for i in 0..colors.len() {
+            if first == -1 {
+                first = i as i32;
+            } else if colors[i] != colors[first as usize] {
+                last = i as i32;
+            }
+            if last != -1 {
+                max = std::cmp::max(max, (last - first).abs());
+            }
+        }
+        max
+
+=======
+
+        let mut left = vec![0; colors.len()];
+        let mut right = vec![0; colors.len()];
+        let mut l = 0;
+        let mut r = 0;
+        for i in 0..colors.len() {
+            if colors[i] == colors[0] {
+                l += 1;
+            }
+            left[i] = l;
+            let j = colors.len() - i - 1;
+            if colors[j] == colors[colors.len() - 1] {
+                r += 1;
+            }
+            right[j] = r;
+        }
+        let mut max = 0;
+        for i in 0..colors.len() {
+            if colors[i] != colors[0] {
+                max = max.max(i - left[i]);
+            }
+            if colors[i] != colors[colors.len() - 1] {
+                max = max.max(right[i] - i);
+            }
+        }
+        max as i32
+    }
+}
+
+=======
+
+        let mut left = vec![0; colors.len()];
+        let mut right = vec![0; colors.len()];
+        let mut left_max = 0;
+        let mut right_max = 0;
+        for i in 0..colors.len() {
+            left[i] = left_max;
+            if colors[i] > colors[left_max] {
+                left_max = i;
+            }
+        }
+        for i in (0..colors.len()).rev() {
+            right[i] = right_max;
+            if colors[i] > colors[right_max] {
+                right_max = i;
+            }
+        }
+        let mut max = 0;
+        for i in 0..colors.len() {
+            if colors[i] != colors[left[i]] {
+                max = max.max(i - left[i]);
+            }
+            if colors[i] != colors[right[i]] {
+                max = max.max(right[i] - i);
+            }
+        }
+        max as i32
+    }
+}
+
+=======
+
+        let mut left = vec![0; colors.len()];
+        let mut right = vec![0; colors.len()];
+        let mut cl = colors[0];
+        let mut cr = colors[colors.len() - 1];
+        for i in 1..colors.len() {
+            if cl == colors[i] {
+                left[i] = left[i - 1];
+            } else {
+                left[i] = i;
+                cl = colors[i];
+            }
+        }
+        for i in (0..colors.len() - 1).rev() {
+            if cr == colors[i] {
+                right[i] = right[i + 1];
+            } else {
+                right[i] = i;
+                cr = colors[i];
+            }
+        }
+        let mut max = 0;
+        for i in 0..colors.len() {
+            let d = (left[i] - i).abs();
+            if d > max {
+                max = d;
+            }
+            let d = (right[i] - i).abs();
+            if d > max {
+                max = d;
+            }
+        }
+        max as i32
+
+=======
+
+        let mut max = 0;
+        let mut min = 101;
+        let mut max_index = 0;
+        let mut min_index = 0;
+        for (i, &v) in colors.iter().enumerate() {
+            if v > max {
+                max = v;
+                max_index = i;
+            }
+            if v < min {
+                min = v;
+                min_index = i;
+            }
+        }
+        (max_index as i32 - min_index as i32).abs()
+    }
+}
+
+=======
+
+        let mut r = 0;
+        let mut l = 0;
+        let mut max = 0;
+        let mut last = 0;
+        for i in 1..colors.len() {
+            if colors[i] != colors[last] {
+                max = std::cmp::max(max, i - last);
+                last = i;
+            }
+        }
+        max

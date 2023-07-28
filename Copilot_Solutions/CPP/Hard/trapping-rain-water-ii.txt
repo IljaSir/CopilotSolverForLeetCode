@@ -1,0 +1,224 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = heightMap.size();
+        if (m == 0) return 0;
+        int n = heightMap[0].size();
+        if (n == 0) return 0;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int i = 0; i < m; i++) {
+            pq.push({heightMap[i][0], i * n});
+            pq.push({heightMap[i][n - 1], i * n + n - 1});
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            pq.push({heightMap[0][j], j});
+            pq.push({heightMap[m - 1][j], (m - 1) * n + j});
+            visited[0][j] = true;
+            visited[m - 1][j] = true;
+        }
+        int res = 0;
+        while (!pq.empty()) {
+            auto cur = pq.top();
+            pq.pop();
+            int i = cur.second / n;
+            int j = cur.second % n;
+            vector<pair<int, int>> dirs = {{i - 1, j}, {i + 1, j}, {i, j - 1}, {i, j + 1}};
+            for (auto& dir : dirs) {
+                int x = dir.first;
+                int y = dir.second;
+                if (x >= 0 && x < m && y >= 0 && y < n && !visited[x][y]) {
+                    visited[x][y] = true;
+                    res += max(0, cur.first - heightMap[x][y]);
+                    pq.push({max(cur.first, heightMap[x][y]), x * n + y});
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int m = heightMap.size();
+        int n = heightMap[0].size();
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int i = 0; i < m; ++i) {
+            pq.push({heightMap[i][0], i * n});
+            visited[i][0] = 1;
+            pq.push({heightMap[i][n - 1], i * n + n - 1});
+            visited[i][n - 1] = 1;
+        }
+        for (int j = 1; j < n - 1; ++j) {
+            pq.push({heightMap[0][j], j});
+            visited[0][j] = 1;
+            pq.push({heightMap[m - 1][j], (m - 1) * n + j});
+            visited[m - 1][j] = 1;
+        }
+        vector<int> dir = {-1, 0, 1, 0, -1};
+        int ans = 0;
+        while (!pq.empty()) {
+            auto [h, idx] = pq.top();
+            pq.pop();
+            int i = idx / n;
+            int j = idx % n;
+            for (int k = 0; k < 4; ++k) {
+                int ni = i + dir[k];
+                int nj = j + dir[k + 1];
+                if (ni >= 0 && ni < m && nj >= 0 && nj < n && !visited[ni][nj]) {
+                    ans += max(0, h - heightMap[ni][nj]);
+                    pq.push({max(h, heightMap[ni][nj]), ni * n + nj});
+                    visited[ni][nj] = 1;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = heightMap.size();
+        int n = heightMap[0].size();
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            q.push({heightMap[i][0], i * n});
+            visited[i][0] = 1;
+            q.push({heightMap[i][n - 1], i * n + n - 1});
+            visited[i][n - 1] = 1;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            q.push({heightMap[0][j], j});
+            visited[0][j] = 1;
+            q.push({heightMap[m - 1][j], (m - 1) * n + j});
+            visited[m - 1][j] = 1;
+        }
+        while (!q.empty()) {
+            auto t = q.top();
+            q.pop();
+            int height = t.first;
+            int x = t.second / n;
+            int y = t.second % n;
+            static const int dx[] = {-1, 1, 0, 0};
+            static const int dy[] = {0, 0, -1, 1};
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny]) {
+                    visited[nx][ny] = 1;
+                    if (heightMap[nx][ny] < height) {
+                        ans += height - heightMap[nx][ny];
+                        q.push({height, nx * n + ny});
+                    } else {
+                        q.push({heightMap[nx][ny], nx * n + ny});
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int m = heightMap.size(), n = heightMap[0].size();
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            pq.push({heightMap[i][0], i, 0});
+            pq.push({heightMap[i][n - 1], i, n - 1});
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            pq.push({heightMap[0][j], 0, j});
+            pq.push({heightMap[m - 1][j], m - 1, j});
+            visited[0][j] = true;
+            visited[m - 1][j] = true;
+        }
+        vector<vector<int>> dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        while (!pq.empty()) {
+            auto t = pq.top();
+            pq.pop();
+            for (auto dir : dirs) {
+                int x = t[1] + dir[0], y = t[2] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || visited[x][y]) continue;
+                res += max(0, t[0] - heightMap[x][y]);
+                pq.push({max(t[0], heightMap[x][y]), x, y});
+                visited[x][y] = true;
+            }
+        }
+        return res;
+
+=======
+
+        int m = heightMap.size();
+        int n = heightMap[0].size();
+        int ans = 0;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        vector<vector<int>> dirs{{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        for (int i = 0; i < m; i++) {
+            pq.push({heightMap[i][0], i * n});
+            pq.push({heightMap[i][n - 1], i * n + n - 1});
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            pq.push({heightMap[0][j], j});
+            pq.push({heightMap[m - 1][j], (m - 1) * n + j});
+            visited[0][j] = true;
+            visited[m - 1][j] = true;
+        }
+        while (!pq.empty()) {
+            auto [height, index] = pq.top();
+            pq.pop();
+            int x = index / n;
+            int y = index % n;
+            for (auto& dir : dirs) {
+                int newX = x + dir[0];
+                int newY = y + dir[1];
+                if (newX >= 0 && newX < m && newY >= 0 && newY < n && !visited[newX][newY]) {
+                    visited[newX][newY] = true;
+                    ans += max(0, height - heightMap[newX][newY]);
+                    pq.push({max(height, heightMap[newX][newY]), newX * n + newY});
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        if (heightMap.size() == 0 || heightMap[0].size() == 0) return 0;
+        int m = heightMap.size();
+        int n = heightMap[0].size();
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        for (int i = 0; i < m; i++) {
+            pq.push({heightMap[i][0], i, 0});
+            pq.push({heightMap[i][n - 1], i, n - 1});
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+        }
+        for (int j = 1; j < n - 1; j++) {
+            pq.push({heightMap[0][j], 0, j});
+            pq.push({heightMap[m - 1][j], m - 1, j});
+            visited[0][j] = true;
+            visited[m - 1][j] = true;
+        }
+        vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int res = 0;
+        while (!pq.empty()) {
+            vector<int> cur = pq.top();
+            pq.pop();
+            for (vector<int>& dir : dirs) {
+                int x = cur[1] + dir[0];
+                int y = cur[2] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || visited[x][y]) continue;
+                visited[x][y] = true;
+                res += max(0, cur[0] - heightMap[x][y]);
+                pq.push({max(cur[0], heightMap[x][y]), x, y});
+            }
+        }
+        return res;

@@ -1,0 +1,203 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let index_diff = index_diff as usize;
+        let value_diff = value_diff as i64;
+        let mut set = std::collections::BTreeSet::new();
+        for i in 0..nums.len() {
+            let n = nums[i] as i64;
+            if let Some(&x) = set.range(n - value_diff..=n + value_diff).next() {
+                return true;
+            }
+            set.insert(n);
+            if i >= index_diff {
+                set.remove(&(nums[i - index_diff] as i64));
+            }
+        }
+        false
+
+=======
+
+        let mut buckets = std::collections::BTreeMap::new();
+        let index_diff = index_diff as usize;
+        let value_diff = value_diff as i64;
+        for (i, &num) in nums.iter().enumerate() {
+            let bucket = num as i64 / (value_diff + 1);
+            if buckets.contains_key(&bucket) {
+                return true;
+            }
+            if let Some(&v) = buckets.get(&(bucket - 1)) {
+                if num as i64 - v <= value_diff {
+                    return true;
+                }
+            }
+            if let Some(&v) = buckets.get(&(bucket + 1)) {
+                if v - num as i64 <= value_diff {
+                    return true;
+                }
+            }
+            buckets.insert(bucket, num as i64);
+            if i >= index_diff {
+                buckets.remove(&(nums[i - index_diff] as i64 / (value_diff + 1)));
+            }
+        }
+        false
+
+=======
+
+        let mut index_diff = index_diff as usize;
+        let mut value_diff = value_diff as i64;
+        let mut set = std::collections::BTreeSet::new();
+        for i in 0..nums.len() {
+            if i > index_diff {
+                set.remove(&nums[i - index_diff - 1]);
+            }
+            let n = nums[i] as i64;
+            let floor = set.range(n-value_diff..).next();
+            if let Some(&m) = floor {
+                if m - n <= value_diff {
+                    return true;
+                }
+            }
+            let ceil = set.range(..=n+value_diff).next_back();
+            if let Some(&m) = ceil {
+                if n - m <= value_diff {
+                    return true;
+                }
+            }
+            set.insert(n);
+        }
+        false
+
+=======
+
+        let mut i = 0;
+        while i < nums.len() {
+            let mut j = i + 1;
+            while j < nums.len() && (j - i) <= index_diff as usize {
+                if (nums[i] - nums[j]).abs() <= value_diff {
+                    return true;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut bucket = std::collections::BTreeMap::new();
+        let index_diff = index_diff as usize;
+        let value_diff = value_diff as i64;
+        for (i, &num) in nums.iter().enumerate() {
+            let bucket_id = num as i64 / (value_diff + 1);
+            if bucket.contains_key(&bucket_id)
+                || bucket.contains_key(&(bucket_id - 1)) && num as i64 - bucket[&(bucket_id - 1)] <= value_diff
+                || bucket.contains_key(&(bucket_id + 1)) && bucket[&(bucket_id + 1)] - num as i64 <= value_diff
+            {
+                return true;
+            }
+            bucket.insert(bucket_id, num as i64);
+            if i >= index_diff {
+                bucket.remove(&(nums[i - index_diff] as i64 / (value_diff + 1)));
+            }
+        }
+        false
+    }
+}
+
+=======
+
+        let index_diff = index_diff as usize;
+        let value_diff = value_diff as i64;
+        let mut set = std::collections::BTreeSet::new();
+        for i in nums.iter().enumerate() {
+            let (index, &num) = i;
+            if set.range((num - value_diff)..=(num + value_diff)).next().is_some() {
+                return true;
+            }
+            set.insert(num);
+            if set.len() > index_diff {
+                set.remove(&nums[index - index_diff]);
+            }
+        }
+        false
+    }
+}
+
+=======
+
+        let mut nums = nums;
+        for i in 0..nums.len() {
+            for j in (i + 1)..nums.len() {
+                if (j - i) as i32 <= index_diff && (nums[i] - nums[j]).abs() <= value_diff {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+}
+
+=======
+
+        let mut set = std::collections::BTreeSet::new();
+        for (i, &num) in nums.iter().enumerate() {
+            let num = num as i64;
+            let left = num - value_diff as i64;
+            let right = num + value_diff as i64;
+            if let Some(&x) = set.range(left..=right).next() {
+                if (x - num).abs() <= value_diff as i64 {
+                    return true;
+                }
+            }
+            set.insert(num);
+            if set.len() > index_diff as usize {
+                set.remove(&(nums[i - index_diff as usize] as i64));
+            }
+        }
+        false
+    }
+}
+
+=======
+
+        let mut set = std::collections::BTreeSet::new();
+        for i in 0..nums.len() {
+            let num = nums[i] as i64;
+            let floor = set.range(..num).next_back().cloned();
+            let ceil = set.range(num..).next().cloned();
+            if floor.map_or(false, |x| num - x <= value_diff as i64) ||
+                ceil.map_or(false, |x| x - num <= value_diff as i64) {
+                return true;
+            }
+            set.insert(num);
+            if i as i32 >= index_diff {
+                set.remove(&(nums[i - index_diff as usize] as i64));
+            }
+        }
+        false
+    }
+}
+
+=======
+
+        let mut map = std::collections::BTreeMap::new();
+        for (i, &num) in nums.iter().enumerate() {
+            let mut range = map.range(num - value_diff..=num + value_diff);
+            if let Some(&(&n, &j)) = range.next() {
+                if (i as i32 - j as i32).abs() <= index_diff {
+                    return true;
+                }
+            }
+            if let Some(&(&n, &j)) = range.next() {
+                if (i as i32 - j as i32).abs() <= index_diff {
+                    return true;
+                }
+            }
+            map.insert(num, i);
+        }
+        false

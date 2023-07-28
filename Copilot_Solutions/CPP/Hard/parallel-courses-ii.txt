@@ -1,0 +1,58 @@
+Synthesizing 4/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<int> graph(n, 0);
+        for (auto& r : relations) {
+            graph[r[1] - 1] |= 1 << (r[0] - 1);
+        }
+        vector<int> dp(1 << n, n);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            int canTake = 0;
+            for (int i = 0; i < n; ++i) {
+                if (!(mask & (1 << i)) && (mask & graph[i]) == graph[i]) {
+                    canTake |= 1 << i;
+                }
+            }
+            for (int sub = canTake; sub; sub = (sub - 1) & canTake) {
+                if (__builtin_popcount(sub) <= k) {
+                    dp[mask | sub] = min(dp[mask | sub], dp[mask] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        vector<int> indegree(n, 0);
+        vector<unordered_set<int>> outdegree(n);
+        for (auto& r : relations) {
+            ++indegree[r[1] - 1];
+            outdegree[r[0] - 1].insert(r[1] - 1);
+        }
+        vector<int> course(n, 0);
+        for (int i = 0; i < n; ++i) {
+            course[i] = i;
+        }
+        int semester = 0;
+        while (!course.empty()) {
+            int cnt = 0;
+            vector<int> temp;
+            for (int i = 0; i < course.size(); ++i) {
+                if (indegree[course[i]] == 0) {
+                    ++cnt;
+                    if (cnt > k) {
+                        break;
+                    }
+                    for (auto& j : outdegree[course[i]]) {
+                        --indegree[j];
+                    }
+                } else {
+                    temp.push_back(course[i]);
+                }
+            }
+            course = temp;
+            ++semester;
+        }
+        return semester;

@@ -1,0 +1,195 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.size();
+        vector<int> count(26, 0);
+        for (int i = 0; i < n; ++i) {
+            ++count[s[i] - 'a'];
+        }
+        sort(count.begin(), count.end());
+        int res = 0;
+        for (int i = 24; i >= 0; --i) {
+            if (count[i] == 0) break;
+            if (count[i] <= count[i + 1]) {
+                res += count[i + 1] - count[i] + 1;
+                count[i] = 0;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> freq(26, 0);
+        for (auto c : s) {
+            freq[c - 'a']++;
+        }
+        unordered_set<int> st;
+        int ans = 0;
+        for (auto f : freq) {
+            while (f > 0 && st.count(f)) {
+                f--;
+                ans++;
+            }
+            st.insert(f);
+        }
+        return ans;
+
+=======
+
+        unordered_map<char, int> m;
+        for (auto c : s) {
+            m[c]++;
+        }
+        unordered_set<int> st;
+        int ans = 0;
+        for (auto& p : m) {
+            while (st.count(p.second)) {
+                p.second--;
+                ans++;
+            }
+            if (p.second > 0) {
+                st.insert(p.second);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int freq[26] = {0};
+        int maxFreq = 0;
+        for (int i = 0; i < n; i++) {
+            freq[s[i] - 'a']++;
+            maxFreq = max(maxFreq, freq[s[i] - 'a']);
+        }
+        int ans = 0;
+        int count[maxFreq + 1] = {0};
+        for (int i = 0; i < 26; i++) {
+            count[freq[i]]++;
+        }
+        for (int i = maxFreq; i >= 1; i--) {
+            if (count[i] > 1) {
+                ans += count[i] - 1;
+                count[i - 1] += count[i] - 1;
+            }
+        }
+        return ans;
+
+=======
+
+        int freq[26] = {0};
+        for (char c: s) {
+            freq[c-'a']++;
+        }
+        int res = 0;
+        set<int> st;
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] == 0) continue;
+            while (st.count(freq[i])) {
+                freq[i]--;
+                res++;
+            }
+            st.insert(freq[i]);
+        }
+        return res;
+
+=======
+
+        map<char, int> m;
+        for (auto c : s) m[c]++;
+        set<int> st;
+        int res = 0;
+        for (auto p : m) {
+            while (st.count(p.second)) {
+                res++;
+                p.second--;
+            }
+            if (p.second) st.insert(p.second);
+        }
+        return res;
+
+=======
+
+        vector<int> freq(26, 0);
+        for (char c : s) {
+            freq[c - 'a']++;
+        }
+        int ret = 0;
+        set<int> used;
+        for (int f : freq) {
+            while (f > 0 && used.count(f)) {
+                f--;
+                ret++;
+            }
+            used.insert(f);
+        }
+        return ret;
+
+=======
+
+        unordered_map<char, int> freq;
+        for (auto c : s) {
+            freq[c] += 1;
+        }
+        unordered_map<int, int> cnt;
+        for (auto it : freq) {
+            cnt[it.second] += 1;
+        }
+        int ans = 0;
+        for (auto it : cnt) {
+            if (it.second > 1) {
+                int k = it.first;
+                while (k > 0 && cnt[k] > 1) {
+                    cnt[k] -= 1;
+                    k -= 1;
+                    ans += 1;
+                }
+                cnt[k] += 1;
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<char, int> freq;
+        for (auto ch : s) {
+            freq[ch]++;
+        }
+        unordered_set<int> used;
+        int ans = 0;
+        for (auto& [_, count] : freq) {
+            while (count > 0 && used.count(count)) {
+                count--;
+                ans++;
+            }
+            used.insert(count);
+        }
+        return ans;
+
+=======
+
+        unordered_map<char,int> m;
+        for(auto c:s) m[c]++;
+        vector<int> count(s.length()+1,0);
+        for(auto it:m){
+            count[it.second]++;
+        }
+        int ans = 0;
+        for(int i = s.length(); i > 0; i--){
+            if(count[i] > 1){
+                int remain = count[i] - 1;
+                ans += remain;
+                for(int j = i-1; j >= 0; j--){
+                    if(count[j] == 0){
+                        count[j] = remain;
+                        break;
+                    }
+                    else{
+                        remain += count[j];
+                        count[j] = 0;
+                    }
+                }
+            }
+        }
+        return ans;

@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let n = weights.len();
+        let mut prefix = vec![0; n + 1];
+        for i in 0..n {
+            prefix[i + 1] = prefix[i] + weights[i];
+        }
+        let mut dp = vec![vec![0; n + 1]; k as usize + 1];
+        for i in 0..n + 1 {
+            dp[1][i] = prefix[i] as i64;
+        }
+        for i in 2..k as usize + 1 {
+            for j in i..n + 1 {
+                let mut minv = std::i64::MAX;
+                for p in i - 1..j + 1 {
+                    let cost = dp[i - 1][p - 1] + (prefix[j] - prefix[p - 1]) as i64;
+                    minv = minv.min(cost);
+                }
+                dp[i][j] = minv;
+            }
+        }
+        dp[k as usize][n] as i64
+    }
+}
+
+=======
+
+        let k = k as usize;
+        let n = weights.len();
+        let mut sum = vec![0; n + 1];
+        for i in 0..n {
+            sum[i + 1] = sum[i] + weights[i];
+        }
+        let mut dp = vec![vec![0; k + 1]; n + 1];
+        for i in 1..=n {
+            dp[i][1] = sum[i];
+        }
+        for i in 2..=n {
+            for j in 2..=k {
+                let mut min = i64::max_value();
+                for x in 1..i {
+                    let s = dp[x][j - 1] + (sum[i] - sum[x]) * (sum[i] - sum[x]);
+                    if s < min {
+                        min = s;
+                    }
+                }
+                dp[i][j] = min;
+            }
+        }
+        let mut max = i64::min_value();
+        let mut min = i64::max_value();
+        for i in 1..=n {
+            if dp[i][k] > max {
+                max = dp[i][k];
+            }
+            if dp[i][k] < min {
+                min = dp[i][k];
+            }
+        }
+        (max - min) as i64
+
+=======
+
+        let mut dp = vec![vec![0; weights.len()]; k as usize];
+        let mut sum = vec![0; weights.len()];
+        sum[0] = weights[0] as i64;
+        for i in 1..weights.len() {
+            sum[i] = sum[i - 1] + weights[i] as i64;
+        }
+        for i in 0..k as usize {
+            for j in i..weights.len() {
+                if i == 0 {
+                    dp[i][j] = sum[j] as i64;
+                } else {
+                    let mut min = std::i64::MAX;
+                    for l in 0..j {
+                        let s = dp[i - 1][l] + (sum[j] - sum[l]) as i64;
+                        if s < min {
+                            min = s;
+                        }
+                    }
+                    dp[i][j] = min;
+                }
+            }
+        }
+        let mut max = 0;
+        let mut min = std::i64::MAX;
+        for i in 0..weights.len() {
+            if dp[k as usize - 1][i] > max {
+                max = dp[k as usize - 1][i];
+            }
+            if dp[k as usize - 1][i] < min {
+                min = dp[k as usize - 1][i];
+            }
+        }
+        return max - min;
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; k as usize + 1]; weights.len() + 1];
+        let mut s = vec![0; weights.len() + 1];
+        for i in 1..=weights.len() {
+            s[i] = s[i - 1] + weights[i - 1];
+        }
+        for i in 1..=weights.len() {
+            for j in 1..=k as usize {
+                if i == j {
+                    dp[i][j] = s[i] as i64;
+                } else {
+                    dp[i][j] = i64::max_value();
+                    for p in 1..i {
+                        dp[i][j] = i64::min(dp[i][j], i64::max(dp[p][j - 1], (s[i] - s[p]) as i64));
+                    }
+                }
+            }
+        }
+        (s[weights.len()] as i64 - dp[weights.len()][k as usize]) - dp[weights.len()][k as usize]
+
+=======
+
+        let k = k as usize;
+        let mut dp = vec![vec![0; weights.len()]; k];
+        let mut sum = vec![0; weights.len()];
+        sum[0] = weights[0];
+        for i in 1..weights.len() {
+            sum[i] = sum[i - 1] + weights[i];
+        }
+        for i in 0..k {
+            for j in i..weights.len() {
+                if i == 0 {
+                    dp[i][j] = sum[j] as i64;
+                } else {
+                    dp[i][j] = dp[i][j - 1];
+                    for l in i - 1..j {
+                        dp[i][j] = std::cmp::min(
+                            dp[i][j],
+                            dp[i - 1][l] + (sum[j] - sum[l]) as i64,
+                        );
+                    }
+                }
+            }
+        }
+        let max = dp[k - 1][weights.len() - 1];
+        let mut min = std::i64::MAX;
+        for i in 0..weights.len() {
+            let mut sum = 0;
+            for j in 0..k {
+                let l = if j == 0 {
+                    0
+                } else {
+                    i + j - 1
+                };
+                if l >= weights.len() {
+                    break;
+                }
+                sum += weights[l];
+                if j == k - 1 {
+                    min = std::cmp::min(min, sum as i64);
+                }
+            }
+        }
+        max - min
+    }
+}
+
+=======
+
+        let sz = weights.len();
+        let mut sum = vec![0; sz+1];
+        for i in 0..sz {
+            sum[i+1] = sum[i] + weights[i];
+        }
+        let mut dp = vec![vec![0; sz+1]; k as usize];
+        for i in 0..sz {
+            dp[0][i+1] = sum[i+1];
+        }
+        for i in 1..k as usize {
+            for j in i..sz {
+                let mut min = i64::max_value();
+                for l in i-1..j {
+                    let s = dp[i-1][l+1] + (sum[j+1] - sum[l+1]) * (sum[j+1] - sum[l+1]);
+                    if s < min {
+                        min = s;
+                    }
+                }
+                dp[i][j+1] = min;
+            }
+        }
+        dp[k as usize - 1][sz] as i64
+
+=======
+
+        let mut sum = 0;
+        for i in 0..weights.len() {
+            sum += weights[i] as i64;
+        }
+        let mut dp = vec![vec![sum; weights.len()]; k as usize];
+        for i in 0..weights.len() {
+            dp[0][i] = weights[i] as i64;
+        }
+        for i in 1..k as usize {
+            for j in 0..weights.len() {
+                let mut min = std::i64::MAX;
+                let mut sum = 0;
+                for l in (i..=j).rev() {
+                    sum += weights[l] as i64;
+                    let cost = sum + dp[i - 1][l - 1];
+                    min = std::cmp::min(min, cost);
+                }
+                dp[i][j] = min;
+            }
+        }
+        (sum - dp[k as usize - 1][weights.len() - 1]) as i64

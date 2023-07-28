@@ -1,0 +1,286 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_map<char, int> mp;
+        for (int i = 0; i < licensePlate.size(); i++) {
+            if (isalpha(licensePlate[i])) {
+                mp[tolower(licensePlate[i])]++;
+            }
+        }
+        string res = "";
+        for (int i = 0; i < words.size(); i++) {
+            unordered_map<char, int> temp = mp;
+            for (int j = 0; j < words[i].size(); j++) {
+                if (temp.find(words[i][j]) != temp.end()) {
+                    temp[words[i][j]]--;
+                    if (temp[words[i][j]] == 0) {
+                        temp.erase(words[i][j]);
+                    }
+                }
+            }
+            if (temp.empty() && (res.empty() || res.size() > words[i].size())) {
+                res = words[i];
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> charCount(26, 0);
+        for (char c : licensePlate) {
+            if (isalpha(c)) {
+                charCount[tolower(c) - 'a']++;
+            }
+        }
+        string res;
+        for (string w : words) {
+            vector<int> count(charCount);
+            for (char c : w) {
+                if (isalpha(c)) {
+                    count[tolower(c) - 'a']--;
+                }
+            }
+            if (all_of(count.begin(), count.end(), [](int x) { return x <= 0; })) {
+                if (res.empty() || res.size() > w.size()) {
+                    res = w;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> charCount(26, 0);
+        for (auto c : licensePlate) {
+            if (isalpha(c)) {
+                charCount[tolower(c) - 'a']++;
+            }
+        }
+        string res = "";
+        for (auto word : words) {
+            vector<int> count(26, 0);
+            for (auto c : word) {
+                count[c - 'a']++;
+            }
+            bool flag = true;
+            for (int i = 0; i < 26; i++) {
+                if (charCount[i] > count[i]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                if (res == "" || res.size() > word.size()) {
+                    res = word;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int count[26] = {0};
+        for (auto c : licensePlate) {
+            if (isalpha(c)) {
+                count[tolower(c) - 'a']++;
+            }
+        }
+        string ans;
+        for (auto &word : words) {
+            int tmp[26] = {0};
+            for (auto c : word) {
+                tmp[c - 'a']++;
+            }
+            bool ok = true;
+            for (int i = 0; i < 26; i++) {
+                if (count[i] > tmp[i]) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok && (ans.empty() || ans.size() > word.size())) {
+                ans = word;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> lp(26, 0);
+        for (auto c : licensePlate) {
+            if (isalpha(c)) {
+                lp[tolower(c) - 'a']++;
+            }
+        }
+        string result = "";
+        for (auto& word : words) {
+            if (word.length() < result.length() || result.length() == 0) {
+                vector<int> wp(26, 0);
+                for (auto c : word) {
+                    wp[c - 'a']++;
+                }
+                bool ok = true;
+                for (int i = 0; i < 26; i++) {
+                    if (lp[i] > wp[i]) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) {
+                    result = word;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> c(26, 0);
+        for (auto ch: licensePlate) {
+            if (isalpha(ch)) {
+                c[tolower(ch) - 'a']++;
+            }
+        }
+        string ans;
+        for (auto word: words) {
+            vector<int> cc(c);
+            for (auto ch: word) {
+                cc[ch - 'a']--;
+            }
+            bool ok = true;
+            for (auto x: cc) {
+                if (x > 0) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok && (ans.empty() || word.size() < ans.size())) {
+                ans = word;
+            }
+        }
+        return ans;
+
+=======
+
+        int minLen = 15;
+        int minIdx = -1;
+        for (int i = 0; i < words.size(); i++) {
+            if (words[i].length() < minLen) {
+                if (isCompletingWord(licensePlate, words[i])) {
+                    minLen = words[i].length();
+                    minIdx = i;
+                }
+            }
+        }
+        return words[minIdx];
+    }
+    
+    bool isCompletingWord(string licensePlate, string word) {
+        int count[26] = {0};
+        for (auto c : word) {
+            count[c - 'a']++;
+        }
+        for (auto c : licensePlate) {
+            if (c >= 'A' && c <= 'Z') {
+                c = c - 'A' + 'a';
+            }
+            if (c >= 'a' && c <= 'z') {
+                if (--count[c - 'a'] < 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int minLen = INT_MAX;
+        int minIdx = -1;
+        for (int i = 0; i < words.size(); ++i) {
+            string word = words[i];
+            int len = word.size();
+            if (len < minLen && isCompletingWord(licensePlate, word)) {
+                minLen = len;
+                minIdx = i;
+            }
+        }
+        return words[minIdx];
+    }
+    bool isCompletingWord(string licensePlate, string word) {
+        int count[26] = {0};
+        for (char ch : word) {
+            if (isalpha(ch)) {
+                ++count[tolower(ch) - 'a'];
+            }
+        }
+        for (char ch : licensePlate) {
+            if (isalpha(ch)) {
+                if (--count[tolower(ch) - 'a'] < 0) return false;
+            }
+        }
+        return true;
+
+=======
+
+        int minLen = 16;
+        string minWord = "";
+        for (int i = 0; i < words.size(); i++) {
+            string word = words[i];
+            if (word.length() < minLen) {
+                if (isCompletingWord(licensePlate, word)) {
+                    minLen = word.length();
+                    minWord = word;
+                }
+            }
+        }
+        return minWord;
+    }
+    
+    bool isCompletingWord(string licensePlate, string word) {
+        map<char, int> charMap;
+        for (int i = 0; i < word.length(); i++) {
+            char c = word[i];
+            if (charMap.find(c) == charMap.end()) {
+                charMap[c] = 1;
+            } else {
+                charMap[c]++;
+            }
+        }
+        for (int i = 0; i < licensePlate.length(); i++) {
+            char c = licensePlate[i];
+            if (c >= 'A' && c <= 'Z') {
+                c = c - 'A' + 'a';
+            }
+            if (c >= 'a' && c <= 'z') {
+                if (charMap.find(c) == charMap.end() || charMap[c] == 0) {
+                    return false;
+                } else {
+                    charMap[c]--;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int minLen = 1001;
+        string ans;
+        for (int i = 0; i < words.size(); i++) {
+            string word = words[i];
+            if (word.size() < minLen) {
+                int j = 0;
+                for (; j < word.size(); j++) {
+                    char c = word[j];
+                    if (licensePlate.find(c) == string::npos &&
+                        licensePlate.find(tolower(c)) == string::npos) {
+                        break;
+                    }
+                }
+                if (j == word.size()) {
+                    minLen = word.size();
+                    ans = word;
+                }
+            }
+        }
+        return ans;

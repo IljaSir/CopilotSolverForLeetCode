@@ -1,0 +1,390 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] dp = new int[n - k + 1];
+        int max = 0;
+        for (int i = 0; i <= n - k; i++) {
+            dp[i] = sum[i + k] - sum[i];
+            if (dp[i] > dp[max]) {
+                max = i;
+            }
+        }
+        int[] left = new int[n - k + 1];
+        left[k - 1] = max;
+        for (int i = k; i <= n - k; i++) {
+            if (dp[i] >= dp[left[i - 1]]) {
+                left[i] = i;
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        int[] right = new int[n - k + 1];
+        right[n - k] = max;
+        for (int i = n - k - 1; i >= 0; i--) {
+            if (dp[i] >= dp[right[i + 1]]) {
+                right[i] = i;
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int[] res = new int[3];
+        for (int i = k; i <= n - 2 * k; i++) {
+            int l = left[i - 1];
+            int r = right[i + k];
+            if (res[0] == 0 || sum[res[0] + k] - sum[res[0]] + sum[res[1] + k] - sum[res[1]] + sum[res[2] + k] - sum[res[2]] < sum[l + k] - sum[l] + sum[i + k] - sum[i] + sum[r + k] - sum[r]) {
+                res[0] = l;
+                res[1] = i;
+                res[2] = r;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] dp = new int[n - k + 1];
+        dp[0] = sum[k] - sum[0];
+        int max = dp[0];
+        for (int i = 1; i <= n - k; i++) {
+            dp[i] = sum[i + k] - sum[i];
+            if (dp[i] > max) {
+                max = dp[i];
+            }
+            dp[i] = max;
+        }
+        int[] pos = new int[n - k + 1];
+        pos[n - k] = n - k;
+        for (int i = n - k - 1; i >= 0; i--) {
+            if (dp[i] > dp[pos[i + 1]]) {
+                pos[i] = i;
+            } else {
+                pos[i] = pos[i + 1];
+            }
+        }
+        int[] left = new int[n - 2 * k + 1];
+        left[0] = sum[k] - sum[0];
+        max = left[0];
+        for (int i = 1; i <= n - 2 * k; i++) {
+            left[i] = sum[i + k] - sum[i];
+            if (left[i] > max) {
+                max = left[i];
+            }
+            left[i] = max;
+        }
+        int[] res = new int[3];
+        int maxSum = 0;
+        for (int i = 0; i <= n - 3 * k; i++) {
+            int cur = left[i] + dp[pos[i + k]] + sum[i + 2 * k] - sum[i + k];
+            if (cur > maxSum) {
+                maxSum = cur;
+                res[0] = i;
+                res[1] = pos[i + k];
+                res[2] = i + 2 * k;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] dp = new int[n - k + 1];
+        int[] left = new int[n - k + 1];
+        int max = 0;
+        for (int i = k; i <= n; i++) {
+            int cur = sum[i] - sum[i - k];
+            if (cur > max) {
+                max = cur;
+                left[i - k] = i - k;
+            } else {
+                left[i - k] = left[i - k - 1];
+            }
+            dp[i - k] = max;
+        }
+        int[] right = new int[n - k + 1];
+        max = 0;
+        for (int i = n - k; i >= 0; i--) {
+            int cur = sum[i + k] - sum[i];
+            if (cur >= max) {
+                max = cur;
+                right[i] = i;
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int[] res = new int[3];
+        max = 0;
+        for (int i = k; i <= n - 2 * k; i++) {
+            int l = left[i - k];
+            int r = right[i + k];
+            int cur = dp[l] + dp[i] + dp[r];
+            if (cur > max) {
+                max = cur;
+                res[0] = l;
+                res[1] = i;
+                res[2] = r;
+            }
+        }
+        return res;
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] left = new int[nums.length], right = new int[nums.length];
+        for (int i = 0, max = 0; i < nums.length; i++) {
+            if (sum[i + 1] - sum[i + 1 - k] > max) {
+                left[i] = i + 1 - k;
+                max = sum[i + 1] - sum[i + 1 - k];
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        for (int i = nums.length - 1, max = 0; i >= 0; i--) {
+            if (sum[i + k] - sum[i] >= max) {
+                right[i] = i;
+                max = sum[i + k] - sum[i];
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int[] res = new int[] {-1, -1, -1};
+        for (int i = k; i <= nums.length - 2 * k; i++) {
+            int l = left[i - 1], r = right[i + k];
+            int total = sum[l + k] - sum[l] + sum[r + k] - sum[r] + sum[i + k] - sum[i];
+            if (res[0] == -1 || total > sum[res[0] + k] - sum[res[0]] + sum[res[1] + k] - sum[res[1]] + sum[res[2] + k] - sum[res[2]]) {
+                res[0] = l;
+                res[1] = i;
+                res[2] = r;
+            }
+        }
+        return res;
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] ans = new int[3];
+        int max = 0;
+        for (int i = k, tot = sum[k] - sum[0]; i < n; i++) {
+            if (sum[i + 1] - sum[i + 1 - k] > tot) {
+                left[i] = i + 1 - k;
+                tot = sum[i + 1] - sum[i + 1 - k];
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        right[n - k] = n - k;
+        for (int i = n - k - 1, tot = sum[n] - sum[n - k]; i >= 0; i--) {
+            if (sum[i + k] - sum[i] >= tot) {
+                right[i] = i;
+                tot = sum[i + k] - sum[i];
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        for (int i = k; i <= n - 2 * k; i++) {
+            int l = left[i - 1], r = right[i + k];
+            int tot = (sum[i + k] - sum[i]) + (sum[l + k] - sum[l]) + (sum[r + k] - sum[r]);
+            if (tot > max) {
+                max = tot;
+                ans[0] = l;
+                ans[1] = i;
+                ans[2] = r;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[][] dp = new int[4][nums.length + 1];
+        int[][] pos = new int[4][nums.length + 1];
+        for (int i = 1; i <= 3; i++) {
+            for (int j = i * k; j <= nums.length; j++) {
+                int s = sum[j] - sum[j - k] + dp[i - 1][j - k];
+                if (s > dp[i][j - 1]) {
+                    dp[i][j] = s;
+                    pos[i][j] = j - k;
+                } else {
+                    dp[i][j] = dp[i][j - 1];
+                    pos[i][j] = pos[i][j - 1];
+                }
+            }
+        }
+        int[] ans = new int[3];
+        ans[2] = pos[3][nums.length];
+        ans[1] = pos[2][ans[2]];
+        ans[0] = pos[1][ans[1]];
+        return ans;
+
+=======
+
+        int[] sum = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int[] left = new int[nums.length];
+        int best = 0;
+        for (int i = k, max = sum[k] - sum[0]; i < nums.length; i++) {
+            if (sum[i + 1] - sum[i + 1 - k] > max) {
+                max = sum[i + 1] - sum[i + 1 - k];
+                best = i + 1 - k;
+            }
+            left[i] = best;
+        }
+        int[] right = new int[nums.length];
+        best = nums.length - k;
+        for (int i = nums.length - k - 1, max = sum[nums.length] - sum[nums.length - k]; i >= 0; i--) {
+            if (sum[i + k] - sum[i] >= max) {
+                max = sum[i + k] - sum[i];
+                best = i;
+            }
+            right[i] = best;
+        }
+        int[] ans = new int[] {-1, -1, -1};
+        for (int i = k; i <= nums.length - 2 * k; i++) {
+            int l = left[i - 1], r = right[i + k];
+            int total = (sum[i + k] - sum[i]) + (sum[l + k] - sum[l]) + (sum[r + k] - sum[r]);
+            if (ans[0] == -1 || total > (sum[ans[0] + k] - sum[ans[0]]) + (sum[ans[1] + k] - sum[ans[1]]) + (sum[ans[2] + k] - sum[ans[2]])) {
+                ans[0] = l;
+                ans[1] = i;
+                ans[2] = r;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] sums = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        int[] left = new int[n];
+        int max = sums[k] - sums[0];
+        for (int i = k; i < n; i++) {
+            if (sums[i + 1] - sums[i + 1 - k] > max) {
+                left[i] = i + 1 - k;
+                max = sums[i + 1] - sums[i + 1 - k];
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        int[] right = new int[n];
+        right[n - k] = n - k;
+        max = sums[n] - sums[n - k];
+        for (int i = n - k - 1; i >= 0; i--) {
+            if (sums[i + k] - sums[i] >= max) {
+                right[i] = i;
+                max = sums[i + k] - sums[i];
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int[] ans = new int[]{-1, -1, -1};
+        for (int i = k; i <= n - 2 * k; i++) {
+            int l = left[i - 1], r = right[i + k];
+            int sum = sums[l + k] - sums[l] + sums[i + k] - sums[i] + sums[r + k] - sums[r];
+            if (ans[0] == -1 || sum > sums[ans[0] + k] - sums[ans[0]] + sums[ans[1] + k] - sums[ans[1]] + sums[ans[2] + k] - sums[ans[2]]) {
+                ans[0] = l;
+                ans[1] = i;
+                ans[2] = r;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] sums = new int[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        int[] left = new int[nums.length];
+        int maxSum = sums[k] - sums[0];
+        for (int i = k, best = 0; i < nums.length; i++) {
+            if (sums[i + 1] - sums[i + 1 - k] > maxSum) {
+                best = i + 1 - k;
+                maxSum = sums[i + 1] - sums[i + 1 - k];
+            }
+            left[i] = best;
+        }
+        int[] right = new int[nums.length];
+        maxSum = sums[nums.length] - sums[nums.length - k];
+        for (int i = nums.length - k - 1, best = nums.length - k; i >= 0; i--) {
+            if (sums[i + k] - sums[i] >= maxSum) {
+                best = i;
+                maxSum = sums[i + k] - sums[i];
+            }
+            right[i] = best;
+        }
+        int[] ans = new int[]{-1, -1, -1};
+        for (int j = k; j < nums.length - k; j++) {
+            int l = left[j - 1], r = right[j + k];
+            int total = (sums[l + k] - sums[l]) + (sums[j + k] - sums[j]) + (sums[r + k] - sums[r]);
+            if (ans[0] == -1 || total > sums[ans[0] + k] - sums[ans[0]] + sums[ans[1] + k] - sums[ans[1]] + sums[ans[2] + k] - sums[ans[2]]) {
+                ans[0] = l;
+                ans[1] = j;
+                ans[2] = r;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; ++i) sum[i + 1] = sum[i] + nums[i];
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] ans = new int[3];
+        for (int i = k, tot = sum[k] - sum[0]; i < n; ++i) {
+            if (sum[i + 1] - sum[i + 1 - k] > tot) {
+                left[i] = i + 1 - k;
+                tot = sum[i + 1] - sum[i + 1 - k];
+            } else {
+                left[i] = left[i - 1];
+            }
+        }
+        right[n - k] = n - k;
+        for (int i = n - k - 1, tot = sum[n] - sum[n - k]; i >= 0; --i) {
+            if (sum[i + k] - sum[i] >= tot) {
+                right[i] = i;
+                tot = sum[i + k] - sum[i];
+            } else {
+                right[i] = right[i + 1];
+            }
+        }
+        int best = 0;
+        for (int i = k; i <= n - 2 * k; ++i) {
+            int l = left[i - 1], r = right[i + k];
+            int tot = (sum[i + k] - sum[i]) + (sum[l + k] - sum[l]) + (sum[r + k] - sum[r]);
+            if (tot > best) {
+                ans[0] = l; ans[1] = i; ans[2] = r;
+                best = tot;
+            }
+        }
+        return ans;

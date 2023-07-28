@@ -1,0 +1,152 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        return evaluate(expression, 0, expression.size() - 1);
+    }
+    int evaluate(string& s, int start, int end) {
+        if (s[start] != '(') {
+            if (s[start] == '-' || isdigit(s[start])) {
+                return stoi(s.substr(start, end - start + 1));
+            }
+            int i = start;
+            while (i <= end && isalnum(s[i])) {
+                ++i;
+            }
+            return evaluate(s, start, i - 1);
+        }
+        int i = start + 1;
+        while (s[i] != ' ') {
+            ++i;
+        }
+        string op = s.substr(start + 1, i - start - 1);
+        if (op == "let") {
+            map<string, int> m;
+            while (true) {
+                ++i;
+                int j = i;
+                while (j <= end && isalnum(s[j])) {
+                    ++j;
+                }
+                string var = s.substr(i, j - i);
+                i = j + 1;
+                j = i;
+                int cnt = 0;
+                while (true) {
+                    if (s[j] == '(') {
+                        ++cnt;
+                    }
+                    else if (s[j] == ')') {
+                        --cnt;
+                    }
+                    if (cnt == 0 && s[j] == ' ') {
+                        break;
+                    }
+                    ++j;
+                }
+                m[var] = evaluate(s, i, j - 1);
+                i = j + 1;
+                if (s[i] == ')') {
+                    break;
+                }
+            }
+            return evaluate(s, i + 1, end - 1);
+        }
+        else if (op == "add") {
+            ++i;
+            int j = i;
+            int cnt = 0;
+            while (true) {
+                if (s[j] == '(') {
+                    ++cnt;
+                }
+                else if (s[j] == ')') {
+                    --cnt;
+                }
+                if (cnt == 0 && s[j] == ' ') {
+                    break;
+                }
+                ++j;
+            }
+            int x = evaluate(s, i, j - 1);
+            i = j + 1;
+            j = i;
+            cnt = 0;
+            while (true) {
+                if (s[j] == '('
+
+=======
+
+        return evaluate(expression, 0, expression.size(), 0).first;
+    }
+    pair<int, int> evaluate(string &expression, int l, int r, int depth) {
+        if (expression[l] != '(') {
+            int value = 0;
+            int sign = 1;
+            if (expression[l] == '-') {
+                sign = -1;
+                ++l;
+            }
+            for (int i = l; i < r; ++i) {
+                value = value * 10 + expression[i] - '0';
+            }
+            return {value * sign, r};
+        }
+        if (expression[l + 1] == 'm') {
+            auto [x, i] = evaluate(expression, l + 6, r - 1, depth + 1);
+            auto [y, j] = evaluate(expression, i + 1, r - 1, depth + 1);
+            return {x * y, j};
+        }
+        if (expression[l + 1] == 'a') {
+            auto [x, i] = evaluate(expression, l + 5, r - 1, depth + 1);
+            auto [y, j] = evaluate(expression, i + 1, r - 1, depth + 1);
+            return {x + y, j};
+        }
+        int i = l + 5;
+        unordered_map<string, int> values;
+        while (i < r - 1) {
+            auto [name, j] = evaluate(expression, i + 1, r - 1, depth + 1);
+            auto [value, k] = evaluate(expression, j + 1, r - 1, depth + 1);
+            values[expression.substr(i + 1, j - i - 1)] = value;
+            i = k + 1;
+        }
+        return evaluate(expression, i + 1, r - 1, depth + 1);
+
+=======
+
+        return evaluate(expression, 0, expression.size() - 1);
+
+=======
+
+        int result = 0;
+        map<string, int> vars;
+        int i = 0;
+        result = evaluate(expression, i, vars);
+        return result;
+    }
+    
+    int evaluate(string expression, int &i, map<string, int> vars) {
+        if (expression[i] == '(') {
+            i++;
+            string op = nextWord(expression, i);
+            if (op == "add") {
+                return evaluate(expression, i, vars) + evaluate(expression, i, vars);
+            } else if (op == "mult") {
+                return evaluate(expression, i, vars) * evaluate(expression, i, vars);
+            } else if (op == "let") {
+                while (expression[i] != ')') {
+                    string var = nextWord(expression, i);
+                    int val = evaluate(expression, i, vars);
+                    vars[var] = val;
+                }
+                i++;
+                return evaluate(expression, i, vars);
+            }
+        } else {
+            return stoi(nextWord(expression, i));
+        }
+        return 0;
+
+=======
+
+        return evaluate(expression, 0, expression.size());

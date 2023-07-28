@@ -1,0 +1,301 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = passingFees[0];
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], x -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+            graph.computeIfAbsent(edge[1], x -> new ArrayList<>()).add(new int[]{edge[0], edge[2]});
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        pq.offer(new int[]{0, 0, passingFees[0]});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int u = cur[0], t = cur[1], cost = cur[2];
+            if (u == n - 1) {
+                return cost;
+            }
+            if (dp[u][t] < cost) {
+                continue;
+            }
+            for (int[] nxt : graph.getOrDefault(u, new ArrayList<>())) {
+                int v = nxt[0], w = nxt[1];
+                if (t + w <= maxTime && cost + passingFees[v] < dp[v][t + w]) {
+                    dp[v][t + w] = cost + passingFees[v];
+                    pq.offer(new int[]{v, t + w, dp[v][t + w]});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = passingFees[0];
+        for (int t = 1; t <= maxTime; t++) {
+            for (int[] edge : edges) {
+                int u = edge[0], v = edge[1], w = edge[2];
+                if (t >= w && dp[u][t - w] != Integer.MAX_VALUE) {
+                    dp[v][t] = Math.min(dp[v][t], dp[u][t - w] + passingFees[v]);
+                }
+                if (t >= w && dp[v][t - w] != Integer.MAX_VALUE) {
+                    dp[u][t] = Math.min(dp[u][t], dp[v][t - w] + passingFees[u]);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int t = 1; t <= maxTime; t++) {
+            ans = Math.min(ans, dp[n - 1][t]);
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int n = passingFees.length;
+        List<List<int[]>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(new int[] { edge[1], edge[2] });
+            graph.get(edge[1]).add(new int[] { edge[0], edge[2] });
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[] { passingFees[0], 0, 0 });
+        int[][] cost = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(cost[i], Integer.MAX_VALUE);
+        }
+        cost[0][0] = passingFees[0];
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[1];
+            int time = cur[2];
+            if (node == n - 1) {
+                return cur[0];
+            }
+            for (int[] next : graph.get(node)) {
+                int v = next[0];
+                int t = next[1];
+                if (time + t <= maxTime && cur[0] + passingFees[v] < cost[v][time + t]) {
+                    cost[v][time + t] = cur[0] + passingFees[v];
+                    pq.offer(new int[] { cost[v][time + t], v, time + t });
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= maxTime; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        dp[0][0] = passingFees[0];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= maxTime; j++) {
+                if (dp[i][j] == -1) {
+                    continue;
+                }
+                for (int[] edge : edges) {
+                    if (edge[0] == i) {
+                        int next = edge[1];
+                        int time = edge[2];
+                        if (j + time <= maxTime) {
+                            if (dp[next][j + time] == -1) {
+                                dp[next][j + time] = dp[i][j] + passingFees[next];
+                            } else {
+                                dp[next][j + time] = Math.min(dp[next][j + time], dp[i][j] + passingFees[next]);
+                            }
+                        }
+                    }
+                    if (edge[1] == i) {
+                        int next = edge[0];
+                        int time = edge[2];
+                        if (j + time <= maxTime) {
+                            if (dp[next][j + time] == -1) {
+                                dp[next][j + time] = dp[i][j] + passingFees[next];
+                            } else {
+                                dp[next][j + time] = Math.min(dp[next][j + time], dp[i][j] + passingFees[next]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int ans = -1;
+        for (int i = 0; i <= maxTime; i++) {
+            if (ans == -1) {
+                ans = dp[n - 1][i];
+            } else {
+                if (dp[n - 1][i] != -1) {
+                    ans = Math.min(ans, dp[n - 1][i]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = passingFees.length;
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(graph[i], -1);
+        }
+        for (int[] e : edges) {
+            graph[e[0]][e[1]] = e[2];
+            graph[e[1]][e[0]] = e[2];
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        dp[0][0] = passingFees[0];
+        int res = dfs(0, maxTime, graph, passingFees, dp);
+        return res == Integer.MAX_VALUE ? -1 : res;
+    }
+
+    private int dfs(int cur, int time, int[][] graph, int[] fees, int[][] dp) {
+        if (dp[cur][time] != -1) {
+            return dp[cur][time];
+        }
+        int n = graph.length;
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (graph[cur][i] != -1 && graph[cur][i] <= time) {
+                res = Math.min(res, dfs(i, time - graph[cur][i], graph, fees, dp) + fees[i]);
+            }
+        }
+        dp[cur][time] = res;
+        return res;
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][maxTime+1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = passingFees[0];
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int[] e : edges) {
+            map.computeIfAbsent(e[0], k -> new ArrayList<>()).add(new int[]{e[1], e[2]});
+            map.computeIfAbsent(e[1], k -> new ArrayList<>()).add(new int[]{e[0], e[2]});
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{0, 0});
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            for (int[] e : map.getOrDefault(cur[0], Collections.emptyList())) {
+                if (cur[1] + e[1] > maxTime) continue;
+                if (dp[e[0]][cur[1]+e[1]] > dp[cur[0]][cur[1]] + passingFees[e[0]]) {
+                    dp[e[0]][cur[1]+e[1]] = dp[cur[0]][cur[1]] + passingFees[e[0]];
+                    q.add(new int[]{e[0], cur[1]+e[1]});
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 1; i <= maxTime; i++) {
+            res = Math.min(res, dp[n-1][i]);
+        }
+        return res == Integer.MAX_VALUE ? -1 : res;
+
+=======
+
+        int n = passingFees.length;
+        int[][] g = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(g[i], Integer.MAX_VALUE);
+        }
+        for (int[] e : edges) {
+            g[e[0]][e[1]] = e[2];
+            g[e[1]][e[0]] = e[2];
+        }
+        int[][] dp = new int[n][maxTime + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = passingFees[0];
+        for (int i = 1; i <= maxTime; i++) {
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    if (g[j][k] != Integer.MAX_VALUE && dp[k][i - g[j][k]] != Integer.MAX_VALUE) {
+                        dp[j][i] = Math.min(dp[j][i], dp[k][i - g[j][k]] + passingFees[j]);
+                    }
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i <= maxTime; i++) {
+            res = Math.min(res, dp[n - 1][i]);
+        }
+        return res == Integer.MAX_VALUE ? -1 : res;
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][maxTime+1];
+        for(int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = passingFees[0];
+        for(int i = 0; i < maxTime; i++) {
+            for(int[] e: edges) {
+                int u = e[0];
+                int v = e[1];
+                int t = e[2];
+                if(i + t <= maxTime) {
+                    dp[v][i+t] = Math.min(dp[v][i+t], dp[u][i] + passingFees[v]);
+                    dp[u][i+t] = Math.min(dp[u][i+t], dp[v][i] + passingFees[u]);
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i <= maxTime; i++) {
+            min = Math.min(min, dp[n-1][i]);
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+
+=======
+
+        int n = passingFees.length;
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], 0x7fffffff);
+        }
+        dp[0][0] = passingFees[0];
+        for (int i = 1; i < n; i++) {
+            dp[i][i] = passingFees[i];
+        }
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            dp[u][v] = Math.min(dp[u][v], passingFees[v]);
+            dp[v][u] = Math.min(dp[v][u], passingFees[u]);
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][k] + dp[k][j]);
+                }
+            }
+        }
+        int ans = 0x7fffffff;
+        for (int i = 0; i < n; i++) {
+            if (dp[0][i] + dp[i][n - 1] <= maxTime) {
+                ans = Math.min(ans, dp[0][i] + passingFees[n - 1]);
+            }
+        }
+        return ans == 0x7fffffff ? -1 : ans;

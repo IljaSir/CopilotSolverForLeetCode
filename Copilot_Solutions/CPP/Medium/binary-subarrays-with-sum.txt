@@ -1,0 +1,181 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int sum = 0;
+            for (int j = i; j < n; j++) {
+                sum += nums[j];
+                if (sum == goal) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> preSum(n+1, 0);
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i-1] + nums[i-1];
+        }
+        unordered_map<int, int> cnt;
+        int res = 0;
+        for (int i = 0; i <= n; i++) {
+            res += cnt[preSum[i]-goal];
+            cnt[preSum[i]]++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> prefix(n+1, 0);
+        for (int i = 1; i <= n; ++i) {
+            prefix[i] = prefix[i-1] + nums[i-1];
+        }
+        unordered_map<int, int> count;
+        int res = 0;
+        for (int i = 0; i <= n; ++i) {
+            res += count[prefix[i] - goal];
+            ++count[prefix[i]];
+        }
+        return res;
+
+=======
+
+        unordered_map<int, int> count;
+        count[0] = 1;
+        int sum = 0, res = 0;
+        for (int num : nums) {
+            sum += num;
+            res += count[sum - goal];
+            count[sum]++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n+1);
+        for (int i = 0; i < n; i++) {
+            pre[i+1] = pre[i] + nums[i];
+        }
+        unordered_map<int, int> cnt;
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans += cnt[pre[i] - goal];
+            cnt[pre[i]]++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int l = 0, r = 0;
+        int sum = 0;
+        int ans = 0;
+        while (r < n) {
+            sum += nums[r];
+            if (sum == goal) {
+                int temp = r + 1;
+                while (temp < n && nums[temp] == 0) {
+                    temp++;
+                }
+                int count = temp - r;
+                ans += count;
+                r = temp;
+            } else if (sum > goal) {
+                while (l <= r && sum > goal) {
+                    sum -= nums[l];
+                    l++;
+                }
+                if (sum == goal) {
+                    int temp = r + 1;
+                    while (temp < n && nums[temp] == 0) {
+                        temp++;
+                    }
+                    int count = temp - r;
+                    ans += count;
+                    r = temp;
+                } else {
+                    r++;
+                }
+            } else {
+                r++;
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<int, int> cnt;
+        int sum = 0;
+        int res = 0;
+        for (auto num: nums) {
+            cnt[sum]++;
+            sum += num;
+            res += cnt[sum - goal];
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        vector<int> sums(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            sums[i] = sums[i - 1] + nums[i - 1];
+        }
+        unordered_map<int, int> mp;
+        for (int i = 0; i <= n; i++) {
+            int t = sums[i] - goal;
+            if (mp.count(t)) {
+                res += mp[t];
+            }
+            mp[sums[i]]++;
+        }
+        return res;
+
+=======
+
+        int l = 0, r = 0, n = nums.size(), sum = 0, res = 0;
+        while (r < n) {
+            sum += nums[r];
+            while (l <= r && sum > goal) {
+                sum -= nums[l];
+                l++;
+            }
+            if (sum == goal) {
+                int r2 = r + 1;
+                while (r2 < n && nums[r2] == 0) r2++;
+                int l2 = l;
+                while (l2 > 0 && nums[l2 - 1] == 0) l2--;
+                res += (r2 - r) * (l - l2 + 1);
+                l = l2;
+            }
+            r++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n + 1, 0);
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            dp[i] = dp[i - 1] + nums[i - 1];
+            if (dp[i] >= goal) {
+                int j = i - 1;
+                while (j >= 0 && dp[i] - dp[j] <= goal) {
+                    if (dp[i] - dp[j] == goal) {
+                        res++;
+                    }
+                    j--;
+                }
+            }
+        }
+        return res;

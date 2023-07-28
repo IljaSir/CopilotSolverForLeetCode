@@ -1,0 +1,133 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<int> bobArrows(12, 0);
+        for (int i = 0; i < 12; ++i) {
+            bobArrows[i] = numArrows - aliceArrows[i];
+        }
+        return bobArrows;
+
+=======
+
+        vector<int> bobArrows(12, 0);
+        for (int i = 0; i < 12; i++) {
+            bobArrows[i] = numArrows - aliceArrows[i];
+        }
+        return bobArrows;
+
+=======
+
+        int sum = 0;
+        for (int i = 0; i < 12; ++i) {
+            sum += aliceArrows[i];
+        }
+        vector<int> bobArrows(12, 0);
+        int diff = numArrows - sum;
+        int i = 11;
+        while (diff > 0) {
+            if (aliceArrows[i] == 0) {
+                bobArrows[i] = 1;
+                diff--;
+            }
+            i--;
+        }
+        return bobArrows;
+
+=======
+
+        int total = accumulate(aliceArrows.begin(), aliceArrows.end(), 0);
+        vector<int> bobArrows(12, 0);
+        for (int i = 0; i < 12; i++) {
+            bobArrows[i] = (i + 1) * aliceArrows[i] - total;
+            if (bobArrows[i] < 0) {
+                bobArrows[i] = 0;
+            }
+        }
+        return bobArrows;
+
+=======
+
+        vector<int> bobArrows(12, 0);
+        int sum = 0;
+        for (int i = 0; i < 12; i++) {
+            sum += aliceArrows[i];
+        }
+        bobArrows[11] = max(0, numArrows - sum);
+        for (int i = 10; i >= 0; i--) {
+            if (aliceArrows[i] < aliceArrows[i + 1]) {
+                bobArrows[i] = aliceArrows[i + 1] - aliceArrows[i];
+            }
+        }
+        return bobArrows;
+
+=======
+
+        vector<int> bobArrows(12);
+        int score = 0;
+        for (int i = 0; i < 12; i++) {
+            bobArrows[i] = numArrows - aliceArrows[i];
+            score += i * aliceArrows[i];
+        }
+        int maxScore = score;
+        for (int i = 11; i >= 0; i--) {
+            if (bobArrows[i] == 0) continue;
+            int tmp = score;
+            for (int j = 11; j >= 0; j--) {
+                if (bobArrows[j] == 0) continue;
+                if (j > i) {
+                    tmp += (j - i) * bobArrows[i];
+                    tmp -= (j - i) * bobArrows[j];
+                } else if (j < i) {
+                    tmp -= (i - j) * bobArrows[i];
+                    tmp += (i - j) * bobArrows[j];
+                }
+                if (tmp > maxScore) {
+                    maxScore = tmp;
+                    bobArrows[i]--;
+                    bobArrows[j]++;
+                } else {
+                    tmp = score;
+                }
+            }
+        }
+        return bobArrows;
+
+=======
+
+        vector<int> bobArrows(12, 0);
+        int total = 0;
+        for (int i = 0; i < 12; ++i) {
+            int diff = numArrows - aliceArrows[i];
+            if (diff >= 0) {
+                bobArrows[i] = diff;
+                total += diff;
+            }
+        }
+        if (total > numArrows) {
+            int diff = total - numArrows;
+            for (int i = 11; i >= 0; --i) {
+                if (bobArrows[i] > 0) {
+                    int d = min(bobArrows[i], diff);
+                    bobArrows[i] -= d;
+                    diff -= d;
+                    if (diff == 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        return bobArrows;
+
+=======
+
+        vector<int> bobArrows(12);
+        int aliceTotal = 0, bobTotal = 0;
+        for (int i = 0; i < 12; ++i) {
+            int alice = aliceArrows[i];
+            int bob = min(numArrows - alice, numArrows - aliceTotal - bobTotal);
+            aliceTotal += alice;
+            bobTotal += bob;
+            bobArrows[i] = bob;
+        }
+        return bobArrows;

@@ -1,0 +1,246 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        boolean[][] graph = new boolean[numCourses][numCourses];
+        for (int[] p : prerequisites) {
+            graph[p[0]][p[1]] = true;
+        }
+        for (int k = 0; k < numCourses; k++) {
+            for (int i = 0; i < numCourses; i++) {
+                for (int j = 0; j < numCourses; j++) {
+                    graph[i][j] = graph[i][j] || graph[i][k] && graph[k][j];
+                }
+            }
+        }
+        List<Boolean> res = new ArrayList<>();
+        for (int[] q : queries) {
+            res.add(graph[q[0]][q[1]]);
+        }
+        return res;
+
+=======
+
+        List<Boolean> res = new ArrayList<>();
+        boolean[][] dp = new boolean[numCourses][numCourses];
+        for (int[] p : prerequisites) {
+            dp[p[0]][p[1]] = true;
+        }
+        for (int k = 0; k < numCourses; k++) {
+            for (int i = 0; i < numCourses; i++) {
+                for (int j = 0; j < numCourses; j++) {
+                    dp[i][j] |= dp[i][k] && dp[k][j];
+                }
+            }
+        }
+        for (int[] q : queries) {
+            res.add(dp[q[0]][q[1]]);
+        }
+        return res;
+
+=======
+
+        List<Boolean> result = new ArrayList<>();
+        boolean[][] graph = new boolean[numCourses][numCourses];
+        for (int[] prerequisite : prerequisites) {
+            graph[prerequisite[0]][prerequisite[1]] = true;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < numCourses; j++) {
+                for (int k = 0; k < numCourses; k++) {
+                    graph[j][k] = graph[j][k] || (graph[j][i] && graph[i][k]);
+                }
+            }
+        }
+        for (int[] query : queries) {
+            result.add(graph[query[0]][query[1]]);
+        }
+        return result;
+
+=======
+
+        List<Boolean> result = new ArrayList<>();
+        int[][] graph = new int[numCourses][numCourses];
+        for (int[] p : prerequisites) {
+            graph[p[0]][p[1]] = 1;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < numCourses; j++) {
+                for (int k = 0; k < numCourses; k++) {
+                    if (graph[j][i] == 1 && graph[i][k] == 1) {
+                        graph[j][k] = 1;
+                    }
+                }
+            }
+        }
+        for (int[] q : queries) {
+            result.add(graph[q[0]][q[1]] == 1);
+        }
+        return result;
+
+=======
+
+        List<Boolean> result = new ArrayList<>();
+        boolean[][] dp = new boolean[numCourses][numCourses];
+        for (int[] pre : prerequisites) {
+            dp[pre[0]][pre[1]] = true;
+        }
+        for (int k = 0; k < numCourses; k++) {
+            for (int i = 0; i < numCourses; i++) {
+                for (int j = 0; j < numCourses; j++) {
+                    dp[i][j] |= dp[i][k] && dp[k][j];
+                }
+            }
+        }
+        for (int[] q : queries) {
+            result.add(dp[q[0]][q[1]]);
+        }
+        return result;
+
+=======
+
+        List<Boolean> result = new ArrayList<>();
+        int[][] matrix = new int[numCourses][numCourses];
+        for (int[] p : prerequisites) {
+            matrix[p[1]][p[0]] = 1;
+        }
+        for (int k = 0; k < numCourses; k++) {
+            for (int i = 0; i < numCourses; i++) {
+                for (int j = 0; j < numCourses; j++) {
+                    if (matrix[i][k] == 1 && matrix[k][j] == 1) {
+                        matrix[i][j] = 1;
+                    }
+                }
+            }
+        }
+        for (int[] q : queries) {
+            result.add(matrix[q[0]][q[1]] == 1);
+        }
+        return result;
+
+=======
+
+        List<Boolean> ans = new ArrayList<>();
+        if (prerequisites.length == 0) {
+            for (int[] query : queries) {
+                ans.add(false);
+            }
+            return ans;
+        }
+        int[][] graph = new int[numCourses][numCourses];
+        for (int[] prerequisite : prerequisites) {
+            graph[prerequisite[0]][prerequisite[1]] = 1;
+        }
+        for (int k = 0; k < numCourses; k++) {
+            for (int i = 0; i < numCourses; i++) {
+                for (int j = 0; j < numCourses; j++) {
+                    graph[i][j] = graph[i][j] | (graph[i][k] & graph[k][j]);
+                }
+            }
+        }
+        for (int[] query : queries) {
+            ans.add(graph[query[0]][query[1]] == 1);
+        }
+        return ans;
+
+=======
+
+        List<Boolean> result = new ArrayList<Boolean>();
+        for (int[] query : queries) {
+            result.add(canFinish(numCourses, prerequisites, query[0], query[1]));
+        }
+        return result;
+    }
+    
+    public boolean canFinish(int numCourses, int[][] prerequisites, int start, int end) {
+        List<List<Integer>> adj = new ArrayList<List<Integer>>();
+        for (int i = 0; i < numCourses; i++) {
+            adj.add(new ArrayList<Integer>());
+        }
+        for (int[] p : prerequisites) {
+            adj.get(p[1]).add(p[0]);
+        }
+        boolean[] visited = new boolean[numCourses];
+        Queue<Integer> queue = new LinkedList<Integer>();
+        queue.offer(start);
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            if (course == end) {
+                return true;
+            }
+            visited[course] = true;
+            for (int next : adj.get(course)) {
+                if (!visited[next]) {
+                    queue.offer(next);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        List<Boolean> result = new ArrayList<>();
+        if (numCourses == 0) {
+            return result;
+        }
+        Set<Integer>[] graph = new Set[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            graph[i] = new HashSet<>();
+        }
+        for (int[] prerequisite : prerequisites) {
+            graph[prerequisite[0]].add(prerequisite[1]);
+        }
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < numCourses; j++) {
+                if (i == j) {
+                    continue;
+                }
+                if (graph[i].contains(j)) {
+                    continue;
+                }
+                for (int k : graph[j]) {
+                    if (graph[i].contains(k)) {
+                        graph[i].add(j);
+                        break;
+                    }
+                }
+            }
+        }
+        for (int[] query : queries) {
+            result.add(graph[query[0]].contains(query[1]));
+        }
+        return result;
+
+=======
+
+        List<Boolean> result = new ArrayList<Boolean>();
+        for (int i = 0; i < queries.length; i++) {
+            result.add(false);
+        }
+        Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
+        for (int i = 0; i < prerequisites.length; i++) {
+            if (map.containsKey(prerequisites[i][0])) {
+                map.get(prerequisites[i][0]).add(prerequisites[i][1]);
+            } else {
+                Set<Integer> set = new HashSet<Integer>();
+                set.add(prerequisites[i][1]);
+                map.put(prerequisites[i][0], set);
+            }
+        }
+        for (int i = 0; i < queries.length; i++) {
+            if (map.containsKey(queries[i][0])) {
+                if (map.get(queries[i][0]).contains(queries[i][1])) {
+                    result.set(i, true);
+                } else {
+                    for (Integer key : map.get(queries[i][0])) {
+                        if (map.containsKey(key)) {
+                            if (map.get(key).contains(queries[i][1])) {
+                                result.set(i, true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;

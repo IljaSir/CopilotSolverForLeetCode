@@ -1,0 +1,346 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut current = current.split(":").map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+        let correct = correct.split(":").map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
+        let mut res = 0;
+        let mut time = current[0] * 60 + current[1];
+        let mut target = correct[0] * 60 + correct[1];
+        while time < target {
+            if target - time >= 60 && time % 60 == 0 {
+                time += 60;
+            } else if target - time >= 15 && time % 60 % 5 == 0 {
+                time += 15;
+            } else if target - time >= 5 && time % 60 % 5 == 0 {
+                time += 5;
+            } else {
+                time += 1;
+            }
+            res += 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut current = current.split(":").map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let correct = correct.split(":").map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let mut ans = 0;
+        let mut carry = 0;
+        let mut i = 1;
+        while i >= 0 {
+            let mut diff = correct[i] - current[i] + carry;
+            if diff < 0 {
+                diff += 60;
+                carry = -1;
+            } else {
+                carry = 0;
+            }
+            if diff >= 60 {
+                diff -= 60;
+                carry += 1;
+            }
+            if diff >= 15 {
+                diff -= 15;
+                carry += 1;
+            }
+            if diff >= 5 {
+                diff -= 5;
+                carry += 1;
+            }
+            if diff >= 1 {
+                diff -= 1;
+                carry += 1;
+            }
+            ans += diff;
+            i -= 1;
+        }
+        ans
+
+=======
+
+        let mut current = current.split(":").map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let mut correct = correct.split(":").map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let mut ans = 0;
+        while current != correct {
+            if current[1] < correct[1] {
+                ans += 1;
+                current[1] += 1;
+            }
+            if current[1] == correct[1] && current[0] < correct[0] {
+                ans += 1;
+                current[1] += 1;
+            }
+            if current[1] == 60 {
+                current[1] = 0;
+                current[0] += 1;
+            }
+            if current[0] == 24 {
+                current[0] = 0;
+            }
+        }
+        ans
+
+=======
+
+        let mut current = current.split(':').map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let correct = correct.split(':').map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>();
+        let mut res = 0;
+        if correct[1] < current[1] {
+            res += 1;
+            current[0] += 1;
+        }
+        if correct[0] < current[0] {
+            res += 1;
+            current[0] -= 24;
+        }
+        res += (correct[1] - current[1]) / 5;
+        res += (correct[0] - current[0]) * 12;
+        res
+
+=======
+
+        let mut count = 0;
+        let (mut h1, mut m1) = (0, 0);
+        let (mut h2, mut m2) = (0, 0);
+        for (i, c) in current.chars().enumerate() {
+            if i < 2 {
+                h1 = h1 * 10 + (c as i32 - '0' as i32);
+            } else if i > 2 {
+                m1 = m1 * 10 + (c as i32 - '0' as i32);
+            }
+        }
+        for (i, c) in correct.chars().enumerate() {
+            if i < 2 {
+                h2 = h2 * 10 + (c as i32 - '0' as i32);
+            } else if i > 2 {
+                m2 = m2 * 10 + (c as i32 - '0' as i32);
+            }
+        }
+        let mut total = h2 * 60 + m2 - (h1 * 60 + m1);
+        while total > 0 {
+            if total >= 60 {
+                total -= 60;
+            } else if total >= 15 {
+                total -= 15;
+            } else if total >= 5 {
+                total -= 5;
+            } else {
+                total -= 1;
+            }
+            count += 1;
+        }
+        count
+
+=======
+
+        let mut c = current.split(':').collect::<Vec<_>>();
+        let mut co = correct.split(':').collect::<Vec<_>>();
+        let mut h = c[0].parse::<i32>().unwrap();
+        let mut m = c[1].parse::<i32>().unwrap();
+        let mut ho = co[0].parse::<i32>().unwrap();
+        let mut mo = co[1].parse::<i32>().unwrap();
+        let mut ans = 0;
+        if ho < h {
+            ho += 24;
+        }
+        if mo < m {
+            mo += 60;
+            ho -= 1;
+        }
+        let mut diff = (ho - h) * 60 + (mo - m);
+        let mut a = [60, 15, 5, 1];
+        for i in 0..4 {
+            ans += diff / a[i];
+            diff %= a[i];
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut cur = 0;
+        let mut cor = 0;
+        for (i, c) in current.chars().enumerate() {
+            if i == 0 {
+                cur += (c as i32 - '0' as i32) * 600;
+            } else if i == 1 {
+                cur += (c as i32 - '0' as i32) * 60;
+            } else if i == 3 {
+                cur += (c as i32 - '0' as i32) * 10;
+            } else {
+                cur += (c as i32 - '0' as i32);
+            }
+        }
+        for (i, c) in correct.chars().enumerate() {
+            if i == 0 {
+                cor += (c as i32 - '0' as i32) * 600;
+            } else if i == 1 {
+                cor += (c as i32 - '0' as i32) * 60;
+            } else if i == 3 {
+                cor += (c as i32 - '0' as i32) * 10;
+            } else {
+                cor += (c as i32 - '0' as i32);
+            }
+        }
+        let mut ans = 0;
+        let mut diff = cor - cur;
+        if diff >= 60 {
+            ans += diff / 60;
+            diff -= (diff / 60) * 60;
+        }
+        if diff >= 15 {
+            ans += diff / 15;
+            diff -= (diff / 15) * 15;
+        }
+        if diff >= 5 {
+            ans += diff / 5;
+            diff -= (diff / 5) * 5;
+        }
+        ans + diff
+    }
+}
+
+=======
+
+        let mut c = current.split(":").collect::<Vec<_>>();
+        let mut cor = correct.split(":").collect::<Vec<_>>();
+        let mut c_hour = c[0].parse::<i32>().unwrap();
+        let mut c_min = c[1].parse::<i32>().unwrap();
+        let mut cor_hour = cor[0].parse::<i32>().unwrap();
+        let mut cor_min = cor[1].parse::<i32>().unwrap();
+        let mut ans = 0;
+        if cor_min < c_min {
+            cor_min += 60;
+            cor_hour -= 1;
+        }
+        ans += (cor_min - c_min) / 5;
+        ans += (cor_min - c_min) % 5;
+        ans += (cor_hour - c_hour) * 12;
+        ans
+
+=======
+
+        let mut current = current.split(":").collect::<Vec<_>>();
+        let correct = correct.split(":").collect::<Vec<_>>();
+        let mut ans = 0;
+        let mut c = current[1].parse::<i32>().unwrap();
+        let mut h = current[0].parse::<i32>().unwrap();
+        let mut c2 = correct[1].parse::<i32>().unwrap();
+        let mut h2 = correct[0].parse::<i32>().unwrap();
+        while c != c2 || h != h2 {
+            if c < c2 {
+                if c2 - c >= 60 {
+                    h += 1;
+                    c += 60;
+                    ans += 1;
+                } else if c2 - c >= 15 {
+                    c += 15;
+                    ans += 1;
+                } else if c2 - c >= 5 {
+                    c += 5;
+                    ans += 1;
+                } else {
+                    c += 1;
+                    ans += 1;
+                }
+            } else {
+                if c - c2 >= 60 {
+                    h -= 1;
+                    c -= 60;
+                    ans += 1;
+                } else if c - c2 >= 15 {
+                    c -= 15;
+                    ans += 1;
+                } else if c - c2 >= 5 {
+                    c -= 5;
+                    ans += 1;
+                } else {
+                    c -= 1;
+                    ans += 1;
+                }
+            }
+            if c >= 60 {
+                c -= 60;
+                h += 1;
+            }
+            if c < 0 {
+                c += 60;
+                h -= 1;
+            }
+            if h >= 24 {
+                h -= 24;
+            }
+            if h < 0 {
+                h += 24;
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut count = 0;
+        let mut c: Vec<&str> = current.split(':').collect();
+        let mut co: Vec<&str> = correct.split(':').collect();
+        let mut c1: i32 = c[0].parse::<i32>().unwrap();
+        let mut c2: i32 = c[1].parse::<i32>().unwrap();
+        let mut co1: i32 = co[0].parse::<i32>().unwrap();
+        let mut co2: i32 = co[1].parse::<i32>().unwrap();
+        if c1 < co1 {
+            while c1 < co1 {
+                if c2 <= co2 {
+                    c2 += 60;
+                    count += 1;
+                }
+                if c2 > co2 {
+                    c2 -= 60;
+                    c1 += 1;
+                    count += 1;
+                }
+            }
+        } else if c1 > co1 {
+            while c1 > co1 {
+                if c2 >= co2 {
+                    c2 -= 60;
+                    count += 1;
+                }
+                if c2 < co2 {
+                    c2 += 60;
+                    c1 -= 1;
+                    count += 1;
+                }
+            }
+        }
+        if c2 < co2 {
+            while c2 < co2 {
+                if co2 - c2 >= 15 {
+                    c2 += 15;
+                    count += 1;
+                } else if co2 - c2 >= 5 {
+                    c2 += 5;
+                    count += 1;
+                } else if co2 - c2 >= 1 {
+                    c2 += 1;
+                    count += 1;
+                }
+            }
+        } else if c2 > co2 {
+            while c2 > co2 {
+                if c2 - co2 >= 15 {
+                    c2 -= 15;
+                    count += 1;
+                } else if c2 - co2 >= 5 {
+                    c2 -= 5;
+                    count += 1;
+                } else if c2 - co2 >= 1 {
+                    c2 -= 1;
+                    count += 1;
+                }
+            }
+        }
+        count

@@ -1,0 +1,206 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums1.size();
+        long long res = 0;
+        for (int i = 0; i <= k; i++) {
+            int j = k - i;
+            if (i > n || j > n) continue;
+            long long s1 = 0, s2 = 0;
+            vector<int> v1, v2;
+            for (int p = 0; p < i; p++) {
+                s1 += nums1[p];
+                v1.push_back(nums1[p]);
+            }
+            for (int p = 0; p < j; p++) {
+                s2 += nums2[p];
+                v2.push_back(nums2[p]);
+            }
+            sort(v1.begin(), v1.end());
+            sort(v2.begin(), v2.end());
+            for (int p = 0; p < min(i, j) && v1[p] < v2[p]; p++) {
+                s1 -= v1[p];
+                s1 += v2[p];
+            }
+            res = max(res, s1 * s2);
+        }
+        return res;
+
+=======
+
+        int n = nums1.size();
+        vector<int> sum1(n + 1, 0);
+        vector<int> sum2(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        long long res = 0;
+        for (int i = 0; i <= k; ++i) {
+            int j = k - i;
+            if (i > n || j > n) continue;
+            int m = min(nums1[i - 1], nums2[n - j]);
+            res = max(res, (long long)sum1[i] + (long long)sum2[n] - (long long)sum2[n - j] + (long long)m * j);
+        }
+        return res;
+
+=======
+
+        long long res = 0;
+        int n = nums1.size();
+        for (int i = 0; i <= k; ++i) {
+            if (i <= n && k - i <= n) {
+                res = max(res, maxScore(nums1, nums2, i));
+            }
+        }
+        return res;
+    }
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k, int i1, int i2) {
+        long long res = 0;
+        int n = nums1.size();
+        for (int i = 0; i <= k; ++i) {
+            if (i <= n && k - i <= n) {
+                res = max(res, maxScore(nums1, nums2, i, i1, i2));
+            }
+        }
+        return res;
+    }
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k, int i1, int i2, int j1, int j2) {
+        long long res = 0;
+        int n = nums1.size();
+        for (int i = 0; i <= k; ++i) {
+            if (i <= n && k - i <= n) {
+                res = max(res, maxScore(nums1, nums2, i, i1, i2, j1, j2));
+            }
+        }
+        return res;
+    }
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k, int i1, int i2, int j1, int j2, int l1, int l2) {
+        long long res = 0;
+        int n = nums1.size();
+        for (int i = 0; i <= k; ++i) {
+            if (i <= n && k - i <= n) {
+                res = max(res, maxScore(nums1, nums2, i, i1, i2, j1, j2, l1, l2));
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> dp(k + 1, INT_MIN);
+        dp[0] = 0;
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j <= i; j++) {
+                dp[i + 1] = max(dp[i + 1], dp[j] + 1LL * nums1[n - 1 - i + j] * nums2[j]);
+                dp[i + 1] = max(dp[i + 1], dp[j] + 1LL * nums1[j] * nums2[n - 1 - i + j]);
+            }
+        }
+        return dp[k];
+
+=======
+
+        long long res = 0;
+        for(int i = 0; i <= k; ++i){
+            int j = k - i;
+            if(i > nums1.size() || j > nums2.size()) continue;
+            long long tmp = 0;
+            vector<int> v;
+            for(int l = 0; l < i; ++l) v.push_back(nums1[l]);
+            for(int l = 0; l < j; ++l) v.push_back(nums2[l]);
+            sort(v.begin(), v.end());
+            for(int l = 0; l < k; ++l){
+                tmp += v[l];
+            }
+            res = max(res, tmp);
+        }
+        return res;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> pre(n + 1);
+        for (int i = 0; i < n; ++i) {
+            pre[i + 1] = pre[i] + max(nums1[i], nums2[i]);
+        }
+        long long ans = 0;
+        for (int i = 0; i <= k; ++i) {
+            int j = k - i;
+            if (i > n || j > n) {
+                continue;
+            }
+            ans = max(ans, pre[i] + pre[n] - pre[n - j] + min(nums1[i - 1], nums2[n - j]));
+        }
+        return ans;
+
+=======
+
+        const int n = nums1.size();
+        vector<long long> sum1(k + 1, 0);
+        vector<long long> sum2(k + 1, 0);
+        for (int i = 0; i < k; ++i) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        long long ans = 0;
+        for (int i = 0; i <= k; ++i) {
+            int j = k - i;
+            ans = max(ans, sum1[i] + sum2[j] - min(nums1[i], nums2[j]));
+        }
+        return ans;
+
+=======
+
+        vector<long long> pre1(k + 1, 0), pre2(k + 1, 0);
+        for (int i = 1; i <= k; i++) {
+            pre1[i] = pre1[i - 1] + nums1[i - 1];
+            pre2[i] = pre2[i - 1] + nums2[i - 1];
+        }
+        vector<long long> suf1(k + 1, 0), suf2(k + 1, 0);
+        for (int i = k - 1; i >= 0; i--) {
+            suf1[i] = suf1[i + 1] + nums1[nums1.size() - k + i];
+            suf2[i] = suf2[i + 1] + nums2[nums2.size() - k + i];
+        }
+        long long ans = 0;
+        for (int i = 0; i <= k; i++) {
+            ans = max(ans, pre1[i] * min(nums2[i], nums1[i]) + suf2[i] * min(nums1[i], nums2[i]));
+            ans = max(ans, pre2[i] * min(nums1[i], nums2[i]) + suf1[i] * min(nums2[i], nums1[i]));
+        }
+        return ans;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> dp(k + 1, 0);
+        for (int i = 0; i <= k; ++i) {
+            dp[i] = LLONG_MIN;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = min(i + 1, k); j > 0; --j) {
+                if (nums1[i] < nums2[i]) {
+                    dp[j] = max(dp[j], dp[j - 1] + nums1[i]);
+                } else if (nums1[i] > nums2[i]) {
+                    dp[j] = max(dp[j], dp[j - 1] + nums2[i]);
+                } else {
+                    dp[j] = max(dp[j], dp[j - 1] + nums1[i]);
+                    dp[j] = max(dp[j], dp[j - 1] + nums2[i]);
+                }
+            }
+        }
+        return dp[k];
+
+=======
+
+        int n = nums1.size();
+        vector<long long> dp(k+1, 0);
+        for (int i = 0; i < k; ++i) {
+            vector<long long> ndp(k+1, 0);
+            for (int j = 0; j <= i; ++j) {
+                ndp[j] = max(ndp[j], dp[j] + nums1[i-j]);
+                ndp[j+1] = max(ndp[j+1], dp[j] + nums2[n-1-j]);
+            }
+            swap(ndp, dp);
+        }
+        return *max_element(dp.begin(), dp.end());

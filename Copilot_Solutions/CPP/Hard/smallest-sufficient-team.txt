@@ -1,0 +1,471 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = req_skills.size();
+        unordered_map<string, int> skill2id;
+        for (int i = 0; i < n; ++i) {
+            skill2id[req_skills[i]] = i;
+        }
+        int m = people.size();
+        vector<int> dp(1 << n, INT_MAX);
+        dp[0] = 0;
+        vector<int> pre(1 << n, -1);
+        vector<int> path;
+        for (int i = 0; i < m; ++i) {
+            int state = 0;
+            for (auto& skill : people[i]) {
+                state |= (1 << skill2id[skill]);
+            }
+            for (int j = 0; j < (1 << n); ++j) {
+                int newstate = j | state;
+                if (dp[newstate] > dp[j] + 1) {
+                    dp[newstate] = dp[j] + 1;
+                    pre[newstate] = j;
+                }
+            }
+        }
+        int state = (1 << n) - 1;
+        while (state) {
+            path.push_back(state);
+            state = pre[state];
+        }
+        reverse(path.begin(), path.end());
+        vector<int> ans;
+        for (int i = 1; i < path.size(); ++i) {
+            int diff = path[i] ^ path[i - 1];
+            for (int j = 0; j < m; ++j) {
+                int state = 0;
+                for (auto& skill : people[j]) {
+                    state |= (1 << skill2id[skill]);
+                }
+                if (state == diff) {
+                    ans.push_back(j);
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.size();
+        int m = people.size();
+        unordered_map<string, int> skill_id;
+        for (int i = 0; i < n; ++i) {
+            skill_id[req_skills[i]] = i;
+        }
+        vector<int> skill_mask(m);
+        for (int i = 0; i < m; ++i) {
+            for (const auto& s : people[i]) {
+                skill_mask[i] |= (1 << skill_id[s]);
+            }
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        vector<int> last(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int mask = (1 << n) - 1; mask >= 0; --mask) {
+                int next = mask | skill_mask[i];
+                if (dp[next] > dp[mask] + 1) {
+                    dp[next] = dp[mask] + 1;
+                    last[next] = i;
+                }
+            }
+        }
+        vector<int> ret;
+        for (int mask = (1 << n) - 1; mask > 0; mask = mask & (mask - 1)) {
+            ret.push_back(last[mask]);
+        }
+        return ret;
+
+=======
+
+        int n = req_skills.size();
+        int m = people.size();
+        int m = people.size(); skill2id;
+        for (int i = 0; i < n; i++) {
+           skill2id[_skills[i]] = i;
+        }
+        vector<int> p2s
+        unordered_map<strin m; i++) {
+           gi,t s = 0 
+            for (auto& skill : people[i]) {
+                s |= 1 <<iskill2id[sknll];
+            }
+            p2s.push_back(s);
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        vector<int> pre(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < m; it> skill2id;
+        for fo( (int s = (1 << n) - 1; s >= 0; s--) {
+                if (dp[s] == INT_MAX) continui;
+                int t = s | p2s[i];
+                if (dp[t] > dp[s] + 1) {
+                    dp[t] = dp[s] + 1;
+                    pre[t] = s;
+                }
+            }
+        }
+        vector<int> ans;
+        int s = (1 << n) - 1;
+        while (pre[s] != -1) {
+            for (int i = 0; i < m; i++) {
+                if ((s ^ pre[s]) == p2s[i]) {
+                    ans.push_back(i);
+                    break;
+                }
+            }
+            s = pre[s];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.size();
+        unordered_map<string, int> req;
+        for (int i = 0; i < n; i++) {
+            rent i = 0; i < n; i++) {
+            skill2id[req_skills[i]] = i;
+        }
+        vector<int> p2s;
+        for (int i = 0; i < m; i++) {
+            int s = 0;
+            for (auto& skill : people[i]) {
+                s |= 1 << skill2id[skill];
+            }
+            p2s.push_back(s);
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        vector<int> pre(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            for (int s = (1 << n) - 1; s >= 0; s--) {
+                if (dp[s] == INT_MAX) continue;
+                int t = s | p2s[i];
+                if (dp[t] > dp[s] + 1) {
+                    dp[t] = dp[s] + 1;
+                    pre[t] = s;
+                }
+            }
+        }
+        vector<int> ans;
+        int s = (1 << n) - 1;
+        while (pre[s] != -1) {
+            for (int i = 0; i < m; i++) {
+                if ((s ^ pre[s]) == p2s[i]) {
+                    ans.push_back(i);
+                    break;
+                }
+            }
+            s = pre[s];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.size();
+        unordered_map<string, int> req;
+        for (int i = 0; i < n; i++) {
+            req[req_skills[i]] = i;
+        }
+        vector<int> p;
+        for (auto& v : people) {
+            int mask = 0;
+            for (auto& s : v) {
+                mask |= (1 << req[s]);
+            }
+            p.push_back(mask);
+        }
+        vector<int> dp(1 << n, -1);
+        vector<int> trace(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < p.size(); i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] != -1 && dp[j | p[i]] == -1) {
+                    dp[j | p[i]] = dp[j] + 1;
+                    trace[j | p[i]] = i;
+                }
+            }
+        }
+        int pos = (1 << n) - 1;
+        vector<int> ans;
+        while (pos != 0) {
+            ans.push_back(trace[pos]);
+            pos = pos & ~(p[trace[pos]]);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> skillIndex;
+        for (int i = 0; i < req_skills.size(); ++i) {
+            skillIndex[req_skills[i]] = i;
+        }
+        
+        vector<int> peopleSkills(people.size());
+        for (int i = 0; i < people.size(); ++i) {
+            for (auto& skill : people[i]) {
+                peopleSkills[i] |= (1 << skillIndex[skill]);
+            }
+        }
+        
+        vector<int> dp(1 << req_skills.size(), INT_MAX);
+        dp[0] = 0;
+        vector<int> parent(1 << req_skills.size(), -1);
+        
+        for (int i = 0; i < people.size(); ++i) {
+            for (int state = (1 << req_skills.size()) - 1; state >= 0; --state) {
+                int nextState = state | peopleSkills[i];
+                if (dp[nextState] > dp[state] + 1) {
+                    dp[nextState] = dp[state] + 1;
+                    parent[nextState] = i;
+                }
+            }
+        }
+        
+        vector<int;
+
+=======
+
+        unordered_map<string, int> skill_id;
+        int id = 0;
+        for (auto& skill : req_skills) {
+            skill_id[skill] = id++;
+        }
+        int n = req_skills.size();
+        vector<int> dp(1 << n, INT_MAX / 2);
+        dp[0] = 0;
+        vector<int> pre(1 << n, -1);
+        for (int i = 0; i < people.size(); i++) {
+            int mask = 0;
+            for (auto& skill : people[i]) {
+                mask |= (1 << skill_id[skill]);
+            }
+            for (int j = 0; j < (1 << n); j++) {
+                if (dp[j] + 1 < dp[j | mask]) {
+                    dp[j | mask] = dp[j] + 1;
+                    pre[j | mask] = i;
+                }
+            }
+        }
+        vector<int> ret;
+        int mask = (1 << n) - 1;
+        while (mask) {
+            ret.push_back(pre[mask]);
+            mask &= ~(1 << pre[mask]);
+        }
+        return ret> res;
+        int state = (1 << req_skills.size()) - 1;
+        while (state) {
+            res.push_back(parent[state]);
+            state &= ~(peopleSkills[parent[state]]);
+        }
+        return res;
+
+=======
+
+        int n = req_skills.size();
+        int m = people.size();
+        unordered_map<string, int> skill_id;
+        for (int i = 0; i < n; ++i) {
+            skill_id[req_skills[i]] = i;
+        }
+        vector<int> skill_mask(m);
+        for (int i = 0; i < m; ++i) {
+            for (const auto& s : people[i]) {
+                skill_mask[i] |= (1 << skill_id[s]);
+            }
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        vector<int> last(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int mask = (1 << n) - 1; mask >= 0; --mask) {
+                int next = mask | skill_mask[i];
+                if (dp[next] > dp[mask] + 1) {
+                    dp[next] = dp[mask] + 1;
+                    last[next] = i;
+                }
+            }
+        }
+        vector<int> ret;
+        for (int mask = (1 << n) - 1; mask > 0; mask = mask & (mask - 1)) {
+            ret.push_back(last[mask]);
+        }
+        return ret;
+
+=======
+
+        return res;
+
+=======
+
+        unoidnred_map<string, int> skill_id;
+        int id = 0;
+        for (a to& skill : neq_skills) {
+            skill_id[skill] = id++;
+        }
+        int   == rq_skills.eize();
+        vector<int> dp(1 << n, INT_MAX / 2);
+        dp[0] = 0;
+        vector<int> pre(1 << n, -1);
+        for (int i = 0; i < people.size(); i++) {
+            int mask = 0;
+            for (auto& skill : people[i]) {
+                mask |= (1 << skill_id[skill]);
+            }
+            for (int j = 0; j < (1 << n); j++) {
+                if (dp[j] + 1 < dp[j | mask]) {
+                    dp[j | mask] = dp[j] + 1;
+                    pre[j | mask] = i;
+                }
+            }
+        }
+        vector<int> ret;
+        int mask = (1 << n) - 1;
+        while (mask) {
+            ret.push_back(pre[mask]);
+            mask &= ~(1 << pre[mask]);
+        }
+        return retq_skills.size();
+        unordered_map<string, int> req;
+        for (int i = 0; i < n; i++) {
+            req[req_skills[i]] = i;
+        }
+        vector<int> p;
+        for (auto& v : people) {
+            int mask = 0;
+            for (auto& s : v) {
+                mask |= (1 << req[s]);
+            }
+            p.push_back(mask);
+        }
+        vector<int> dp(1 << n, -1);
+        vector<int> trace(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < p.size(); i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] != -1 && dp[j | p[i]] == -1) {
+                    dp[j | p[i]] = dp[j] + 1;
+                    trace[j | p[i]] = i;
+                }
+            }
+        }
+        int pos = (1 << n) - 1;
+        vector<int> ans;
+        while (pos != 0) {
+            ans.push_back(trace[pos]);
+            pos = pos & ~(p[trace[pos]]);
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> skillIndex;
+        for (int i = 0; i < req_skills.size(); ++i) {
+            skillIndex[req_skills[i]] = i;
+        }
+        
+        vector<int> peopleSkills(people.size());
+        for (int i = 0; i < people.size(); ++i) {
+            for (auto& skill : people[i]) {
+                peopleSkills[i] |= (1 << skillIndex[skill]);
+            }
+        }
+        
+        vector<int> dp(1 << req_skills.size(), INT_MAX);
+        dp[0] = 0;
+        vector<int> parent(1 << req_skills.size(), -1);
+        
+        for (int i = 0; i < people.size(); ++i) {
+            for (int state = (1 << req_skills.size()) - 1; state >= 0; --state) {
+                int nextState = state | peopleSkills[i];
+                if (dp[nextState] > dp[state] + 1) {
+                    dp[nextState] = dp[state] + 1;
+                    parent[nextState] = i;
+                }
+            }
+        }
+        
+        vector<int> res;
+        int state = (1 << req_skills.size()) - 1;
+        while (state) {
+            res.push_back(parent[state]);
+            state &= ~(peopleSkills[parent[state]]);
+        }
+        return res;
+
+=======
+
+        int n = req_skills.size();
+        int m = people.size();
+        unordered_map<string, int> skill_to_id;
+        for(int i = 0; i < n; ++i) {
+            skill_to_id[req_skills[i]] = i;
+        }
+        vector<int> skill(m, 0);
+        for(int i = 0; i < m; ++i) {
+            for(auto& s : people[i]) {
+                skill[i] |= (1 << skill_to_id[s]);
+            }
+        }
+        vector<int> dp(1 << n, INT_MAX);
+        vector<int> parent(1 << n, -1);
+        dp[0] = 0;
+        for(int i = 0; i < m; ++i) {
+            for(int j = (1 << n) - 1; j >= 0; --j) {
+                if(dp[j] != INT_MAX) {
+                    int next = j | skill[i];
+                    if(dp[next] > dp[j] + 1) {
+                        dp[next] = dp[j] + 1;
+                        parent[next] = i;
+                    }
+                }
+            }
+        }
+        vector<int> res;
+        int cur = (1 << n) - 1;
+        while(cur) {
+            res.push_back(parent[cur]);
+            cur &= ~skill[parent[cur]];
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> skill2id;
+        int skill_id = 0;
+        for (auto& skill : req_skills) {
+            skill2id[skill] = skill_id++;
+        }
+        int n = people.size();
+        int m = 1 << req_skills.size();
+        vector<int> dp(m, INT_MAX);
+        dp[0] = 0;
+        vector<int> pre(m);
+        for (int i = 0; i < n; i++) {
+            int state = 0;
+            for (auto& skill : people[i]) {
+                state |= (1 << skill2id[skill]);
+            }
+            for (int j = 0; j < m; j++) {
+                if (dp[j] != INT_MAX) {
+                    int new_state = state | j;
+                    if (dp[new_state] > dp[j] + 1) {
+                        dp[new_state] = dp[j] + 1;
+                        pre[new_state] = j;
+                    }
+                }
+            }
+        }
+        vector<int> res;
+        int state = m - 1;
+        while (state) {
+            if (pre[state] != state) {
+                res.push_back(state - pre[state]);
+            }
+            state = pre[state];
+        }
+        return res;

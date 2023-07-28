@@ -1,0 +1,259 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut image = image;
+        Self::dfs(&mut image, sr as usize, sc as usize, color, image[sr as usize][sc as usize]);
+        image
+    }
+    fn dfs(image: &mut Vec<Vec<i32>>, sr: usize, sc: usize, color: i32, old_color: i32) {
+        if image[sr][sc] != old_color {
+            return;
+        }
+        image[sr][sc] = color;
+        if sr > 0 {
+            Self::dfs(image, sr - 1, sc, color, old_color);
+        }
+        if sr < image.len() - 1 {
+            Self::dfs(image, sr + 1, sc, color, old_color);
+        }
+        if sc > 0 {
+            Self::dfs(image, sr, sc - 1, color, old_color);
+        }
+        if sc < image[0].len() - 1 {
+            Self::dfs(image, sr, sc + 1, color, old_color);
+        }
+
+=======
+
+        let mut image = image;
+        let sr = sr as usize;
+        let sc = sc as usize;
+        let color = color as u16;
+        let m = image.len();
+        let n = image[0].len();
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((sr, sc));
+        let mut visited = vec![vec![false; n]; m];
+        while let Some((r, c)) = queue.pop_front() {
+            if visited[r][c] {
+                continue;
+            }
+            visited[r][c] = true;
+            image[r][c] = color as i32;
+            if r > 0 && image[r - 1][c] == image[sr][sc] as i32 {
+                queue.push_back((r - 1, c));
+            }
+            if r < m - 1 && image[r + 1][c] == image[sr][sc] as i32 {
+                queue.push_back((r + 1, c));
+            }
+            if c > 0 && image[r][c - 1] == image[sr][sc] as i32 {
+                queue.push_back((r, c - 1));
+            }
+            if c < n - 1 && image[r][c + 1] == image[sr][sc] as i32 {
+                queue.push_back((r, c + 1));
+            }
+        }
+        image
+
+=======
+
+        let mut image = image;
+        let (sr, sc) = (sr as usize, sc as usize);
+        let (m, n) = (image.len(), image[0].len());
+        let old_color = image[sr][sc];
+        if old_color == color {
+            return image;
+        }
+        let mut stack = vec![(sr, sc)];
+        while let Some((i, j)) = stack.pop() {
+            image[i][j] = color;
+            if i > 0 && image[i - 1][j] == old_color {
+                stack.push((i - 1, j));
+            }
+            if i + 1 < m && image[i + 1][j] == old_color {
+                stack.push((i + 1, j));
+            }
+            if j > 0 && image[i][j - 1] == old_color {
+                stack.push((i, j - 1));
+            }
+            if j + 1 < n && image[i][j + 1] == old_color {
+                stack.push((i, j + 1));
+            }
+        }
+        image
+
+=======
+
+        let mut image = image;
+        let sr = sr as usize;
+        let sc = sc as usize;
+        let color = color as usize;
+        let (m, n) = (image.len(), image[0].len());
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = vec![vec![false; n]; m];
+        let mut dir = vec![(1, 0), (-1, 0), (0, 1), (0, -1)];
+        q.push_back((sr, sc));
+        visited[sr][sc] = true;
+        while !q.is_empty() {
+            let (x, y) = q.pop_front().unwrap();
+            image[x][y] = color as i32;
+            for (dx, dy) in dir.iter() {
+                let (nx, ny) = (x as i32 + dx, y as i32 + dy);
+                if nx >= 0 && nx < m as i32 && ny >= 0 && ny < n as i32 {
+                    let (nx, ny) = (nx as usize, ny as usize);
+                    if !visited[nx][ny] && image[nx][ny] == image[sr][sc] {
+                        q.push_back((nx, ny));
+                        visited[nx][ny] = true;
+                    }
+                }
+            }
+        }
+        image
+
+=======
+
+        let mut image = image;
+        let sr = sr as usize;
+        let sc = sc as usize;
+        let color = color as usize;
+        let old_color = image[sr][sc] as usize;
+        let m = image.len();
+        let n = image[0].len();
+        let mut stack = vec![(sr, sc)];
+        while !stack.is_empty() {
+            let (r, c) = stack.pop().unwrap();
+            if image[r][c] == old_color as i32 {
+                image[r][c] = color as i32;
+                if r > 0 {
+                    stack.push((r - 1, c));
+                }
+                if r < m - 1 {
+                    stack.push((r + 1, c));
+                }
+                if c > 0 {
+                    stack.push((r, c - 1));
+                }
+                if c < n - 1 {
+                    stack.push((r, c + 1));
+                }
+            }
+        }
+        image
+    }
+}
+
+=======
+
+        let mut image = image;
+        let sr = sr as usize;
+        let sc = sc as usize;
+        let color = color as i32;
+        let mut visited = vec![vec![false; image[0].len()]; image.len()];
+        let mut q = vec![(sr, sc)];
+        let mut from = image[sr][sc];
+        visited[sr][sc] = true;
+        while !q.is_empty() {
+            let (x, y) = q.pop().unwrap();
+            image[x][y] = color;
+            if x > 0 && !visited[x-1][y] && image[x-1][y] == from {
+                q.push((x-1, y));
+                visited[x-1][y] = true;
+            }
+            if x < image.len()-1 && !visited[x+1][y] && image[x+1][y] == from {
+                q.push((x+1, y));
+                visited[x+1][y] = true;
+            }
+            if y > 0 && !visited[x][y-1] && image[x][y-1] == from {
+                q.push((x, y-1));
+                visited[x][y-1] = true;
+            }
+            if y < image[0].len()-1 && !visited[x][y+1] && image[x][y+1] == from {
+                q.push((x, y+1));
+                visited[x][y+1] = true;
+            }
+        }
+        image
+    }
+}
+
+=======
+
+        let mut image = image;
+        let color_old = image[sr as usize][sc as usize];
+        if color_old == color {
+            return image;
+        }
+        let mut stack = vec![(sr, sc)];
+        while !stack.is_empty() {
+            let (r, c) = stack.pop().unwrap();
+            if image[r as usize][c as usize] == color_old {
+                image[r as usize][c as usize] = color;
+                if r > 0 {
+                    stack.push((r - 1, c));
+                }
+                if c > 0 {
+                    stack.push((r, c - 1));
+                }
+                if r < image.len() as i32 - 1 {
+                    stack.push((r + 1, c));
+                }
+                if c < image[0].len() as i32 - 1 {
+                    stack.push((r, c + 1));
+                }
+            }
+        }
+        image
+
+=======
+
+        let mut image = image;
+        let (sr, sc) = (sr as usize, sc as usize);
+        let (m, n) = (image.len(), image[0].len());
+        let color2 = image[sr][sc];
+        let mut stack = vec![(sr, sc)];
+        while !stack.is_empty() {
+            let (i, j) = stack.pop().unwrap();
+            if image[i][j] == color2 {
+                image[i][j] = color;
+                if i > 0 { stack.push((i-1, j)); }
+                if i < m-1 { stack.push((i+1, j)); }
+                if j > 0 { stack.push((i, j-1)); }
+                if j < n-1 { stack.push((i, j+1)); }
+            }
+        }
+        image
+
+=======
+
+        let mut image = image;
+        let sr = sr as usize;
+        let sc = sc as usize;
+        let color = color as u8;
+        let origin = image[sr][sc] as u8;
+        let mut stack = vec![(sr, sc)];
+        while !stack.is_empty() {
+            let (i, j) = stack.pop().unwrap();
+            if image[i][j] == origin as i32 {
+                image[i][j] = color as i32;
+                if i > 0 {
+                    stack.push((i-1, j));
+                }
+                if j > 0 {
+                    stack.push((i, j-1));
+                }
+                if i < image.len() - 1 {
+                    stack.push((i+1, j));
+                }
+                if j < image[0].len() - 1 {
+                    stack.push((i, j+1));
+                }
+            }
+        }
+        image
+
+=======
+
+        
+    }
+}

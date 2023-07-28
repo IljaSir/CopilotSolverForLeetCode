@@ -1,0 +1,310 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = maze.length;
+        int n = maze[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(entrance);
+        visited[entrance[0]][entrance[1]] = true;
+        int step = 0;
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                if (cur[0] == 0 || cur[0] == m - 1 || cur[1] == 0 || cur[1] == n - 1) {
+                    if (!(cur[0] == entrance[0] && cur[1] == entrance[1])) {
+                        return step;
+                    }
+                }
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= m || y < 0 || y >= n || maze[x][y] == '+' || visited[x][y]) {
+                        continue;
+                    }
+                    q.offer(new int[]{x, y});
+                    visited[x][y] = true;
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = maze.length, n = maze[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{entrance[0], entrance[1]});
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                int r = cur[0], c = cur[1];
+                if (visited[r][c]) continue;
+                visited[r][c] = true;
+                if ((r == 0 || r == m - 1 || c == 0 || c == n - 1) && !(r == entrance[0] && c == entrance[1])) return step;
+                if (r - 1 >= 0 && maze[r - 1][c] == '.' && !visited[r - 1][c]) q.offer(new int[]{r - 1, c});
+                if (r + 1 < m && maze[r + 1][c] == '.' && !visited[r + 1][c]) q.offer(new int[]{r + 1, c});
+                if (c - 1 >= 0 && maze[r][c - 1] == '.' && !visited[r][c - 1]) q.offer(new int[]{r, c - 1});
+                if (c + 1 < n && maze[r][c + 1] == '.' && !visited[r][c + 1]) q.offer(new int[]{r, c + 1});
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = maze.length;
+        int n = maze[0].length;
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{entrance[0], entrance[1]});
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            while (size-- > 0) {
+                int[] cur = q.poll();
+                int i = cur[0], j = cur[1];
+                if (maze[i][j] == '+') {
+                    continue;
+                }
+                if (i == 0 || i == m - 1 || j == 0 || j == n - 1) {
+                    if (!(i == entrance[0] && j == entrance[1])) {
+                        return step;
+                    }
+                }
+                maze[i][j] = '+';
+                for (int[] dir : dirs) {
+                    int x = i + dir[0], y = j + dir[1];
+                    if (x >= 0 && x < m && y >= 0 && y < n && maze[x][y] == '.') {
+                        q.offer(new int[]{x, y});
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int[][] visited = new int[maze.length][maze[0].length];
+        for (int i = 0; i < maze.length; i++) {
+            for (int j = 0; j < maze[i].length; j++) {
+                visited[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        int[] dr = new int[]{-1, 0, 1, 0};
+        int[] dc = new int[]{0, 1, 0, -1};
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(entrance);
+        visited[entrance[0]][entrance[1]] = 0;
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            if (isBorder(maze, cell[0], cell[1])) {
+                if (cell[0] != entrance[0] || cell[1] != entrance[1]) {
+                    return visited[cell[0]][cell[1]];
+                }
+            }
+            for (int i = 0; i < 4; i++) {
+                int r = cell[0] + dr[i];
+                int c = cell[1] + dc[i];
+                if (r >= 0 && r < maze.length && c >= 0 && c < maze[0].length && maze[r][c] == '.' && visited[r][c] == Integer.MAX_VALUE) {
+                    queue.offer(new int[]{r, c});
+                    visited[r][c] = visited[cell[0]][cell[1]] + 1;
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = maze.length;
+        int n = maze[0].length;
+        int[][] dirs = new int[][]{{0,1},{1,0},{-1,0},{0,-1}};
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> q = new LinkedList<>();
+        q.add(entrance);
+        visited[entrance[0]][entrance[1]] = true;
+        int steps = 0;
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i=0;i<size;i++){
+                int[] curr = q.poll();
+                if(isExit(curr,m,n)){
+                    return steps;
+                }
+                for(int[] dir: dirs){
+                    int x = curr[0]+dir[0];
+                    int y = curr[1]+dir[1];
+                    if(x>=0 && y>=0 && x<m && y<n && !visited[x][y] && maze[x][y] == '.'){
+                        q.add(new int[]{x,y});
+                        visited[x][y] = true;
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+    public boolean isExit(int[] curr, int m, int n){
+        if(curr[0] == 0 || curr[1] == 0 || curr[0] == m-1 || curr[1] == n-1){
+            return true;
+        }
+        return false;
+
+=======
+
+        int m = maze.length, n = maze[0].length;
+        int[][] dir = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(entrance);
+        int steps = 0;
+        while(!q.isEmpty()){
+            steps++;
+            for(int i=q.size(); i>0; i--){
+                int[] cur = q.poll();
+                for(int[] d: dir){
+                    int x = cur[0] + d[0];
+                    int y = cur[1] + d[1];
+                    if(x < 0 || x >= m || y < 0 || y >= n || maze[x][y] != '.')
+                        continue;
+                    if(x == 0 || x == m-1 || y == 0 || y == n-1)
+                        return steps;
+                    maze[x][y] = '+';
+                    q.offer(new int[]{x, y});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = maze.length;
+        int n = maze[0].length;
+        int[][] dirs = {{0,1},{1,0},{-1,0},{0,-1}};
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(entrance);
+        int step = 0;
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            for(int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                int x = cur[0];
+                int y = cur[1];
+                if((x == 0 || y == 0 || x == m - 1 || y == n - 1) && (x != entrance[0] || y != entrance[1])) {
+                    return step;
+                }
+                for(int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if(nx >= 0 && nx < m && ny >= 0 && ny < n && maze[nx][ny] == '.') {
+                        queue.offer(new int[]{nx,ny});
+                        maze[nx][ny] = '+';
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = maze.length;
+        int m = maze[0].length;
+        int[][] dirs = {{0,1},{0,-1},{1,0},{-1,0}};
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{entrance[0], entrance[1]});
+        int[][] dist = new int[n][m];
+        dist[entrance[0]][entrance[1]] = 1;
+        while(!q.isEmpty()){
+            int[] p = q.poll();
+            for(int[] dir: dirs){
+                int x = p[0] + dir[0];
+                int y = p[1] + dir[1];
+                if(x < 0 || y < 0 || x >= n || y >= m || maze[x][y] == '+' || dist[x][y] != 0){
+                    continue;
+                }
+                dist[x][y] = dist[p[0]][p[1]] + 1;
+                q.add(new int[]{x, y});
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if((i == 0 || j == 0 || i == n-1 || j == m-1) && maze[i][j] == '.' && dist[i][j] != 0){
+                    ans = Math.min(ans, dist[i][j]);
+                }
+            }
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans - 1;
+
+=======
+
+        int m = maze.length, n = maze[0].length;
+        int[][] dir = {{0,1},{1,0},{0,-1},{-1,0}};
+        Queue<int[]> q = new LinkedList<>();
+        q.add(entrance);
+        boolean[][] visited = new boolean[m][n];
+        visited[entrance[0]][entrance[1]] = true;
+        int steps = 0;
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i=0;i<size;i++){
+                int[] curr = q.poll();
+                int x = curr[0], y = curr[1];
+                if((x==0 || x==m-1 || y==0 || y==n-1) && !(x==entrance[0] && y==entrance[1])){
+                    return steps;
+                }
+                for(int[] d: dir){
+                    int xx = x + d[0], yy = y + d[1];
+                    if(xx>=0 && xx<m && yy>=0 && yy<n && maze[xx][yy]=='.' && !visited[xx][yy]){
+                        q.add(new int[]{xx,yy});
+                        visited[xx][yy] = true;
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int m = maze.length;
+        int n = maze[0].length;
+        int[][] visited = new int[m][n];
+        int[] dr = new int[]{0, 0, 1, -1};
+        int[] dc = new int[]{1, -1, 0, 0};
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(entrance);
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int cr = curr[0];
+            int cc = curr[1];
+            if (visited[cr][cc] > 0) {
+                continue;
+            }
+            visited[cr][cc] = 1;
+            for (int i = 0; i < 4; i++) {
+                int nr = cr + dr[i];
+                int nc = cc + dc[i];
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                    continue;
+                }
+                if (maze[nr][nc] == '+') {
+                    continue;
+                }
+                if (visited[nr][nc] > 0) {
+                    continue;
+                }
+                if (nr == 0 || nr == m - 1 || nc == 0 || nc == n - 1) {
+                    return visited[cr][cc];
+                }
+                queue.offer(new int[]{nr, nc});
+            }
+        }
+        return -1;

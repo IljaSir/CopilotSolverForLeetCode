@@ -1,0 +1,284 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<long long> result;
+        for (auto& query : queries) {
+            if (query[0] == 1) {
+                for (int i = query[1]; i <= query[2]; ++i) {
+                    nums1[i] = 1 - nums1[i];
+                }
+            } else if (query[0] == 2) {
+                for (int i = 0; i < nums1.size(); ++i) {
+                    nums2[i] += nums1[i] * query[1];
+                }
+            } else {
+                long long sum = 0;
+                for (int i = 0; i < nums2.size(); ++i) {
+                    sum += nums2[i];
+                }
+                result.push_back(sum);
+            }
+        }
+        return result;
+
+=======
+
+        vector<long long> res;
+        for (auto &q : queries) {
+            if (q[0] == 1) {
+                for (int i = q[1]; i <= q[2]; i++) {
+                    nums1[i] = 1 - nums1[i];
+                }
+            } else if (q[0] == 2) {
+                for (int i = 0; i < nums1.size(); i++) {
+                    nums2[i] += q[1] * nums1[i];
+                }
+            } else {
+                long long sum = 0;
+                for (int i = 0; i < nums2.size(); i++) {
+                    sum += nums2[i];
+                }
+                res.push_back(sum);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums1.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums1[i];
+        }
+        vector<long long> ans;
+        for (auto& q : queries) {
+            if (q[0] == 1) {
+                for (int i = q[1] + 1; i <= q[2] + 1; ++i) {
+                    nums1[i - 1] ^= 1;
+                }
+                for (int i = q[1] + 1; i <= n; ++i) {
+                    sum[i] = sum[i - 1] + nums1[i - 1];
+                }
+            } else if (q[0] == 2) {
+                ans.push_back(1ll * sum[q[2] + 1] * q[1]);
+            } else {
+                ans.push_back(1ll * sum[n] * q[1]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<long long> ans;
+        int n = nums1.size();
+        vector<long long> sum(n, 0);
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums2[i];
+            if (i) sum[i] += sum[i - 1];
+        }
+        for (auto& q : queries) {
+            if (q[0] == 1) {
+                for (int i = q[1]; i <= q[2]; i++) {
+                    nums1[i] ^= 1;
+                    if (nums1[i]) {
+                        sum[i] += nums2[i];
+                    } else {
+                        sum[i] -= nums2[i];
+                    }
+                }
+            } else if (q[0] == 2) {
+                for (int i = 0; i < n; i++) {
+                    nums2[i] += nums1[i] * q[1];
+                    if (nums1[i]) {
+                        sum[i] += nums2[i];
+                    } else {
+                        sum[i] -= nums2[i];
+                    }
+                }
+            } else {
+                int l = q[1], r = q[2];
+                if (l == 0) {
+                    ans.push_back(sum[r]);
+                } else {
+                    ans.push_back(sum[r] - sum[l - 1]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<long long> ans;
+        vector<long long> sum(nums2.size(), 0);
+        for (int i = 0; i < nums2.size(); i++) {
+            sum[i] = nums2[i];
+            if (i) sum[i] += sum[i - 1];
+        }
+        vector<long long> diff(nums2.size(), 0);
+        for (int i = 0; i < queries.size(); i++) {
+            if (queries[i][0] == 1) {
+                for (int j = queries[i][1]; j <= queries[i][2]; j++) {
+                    nums1[j] ^= 1;
+                    diff[j] = -diff[j];
+                }
+            } else if (queries[i][0] == 2) {
+                for (int j = queries[i][1]; j < nums2.size(); j++) {
+                    diff[j] += queries[i][2];
+                }
+            } else {
+                ans.push_back(sum[queries[i][2]]);
+                if (queries[i][1]) ans.back() -= sum[queries[i][1] - 1];
+                for (int j = queries[i][1]; j <= queries[i][2]; j++) {
+                    ans.back() += diff[j] * nums1[j];
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> sum(n, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i] = nums2[i];
+        }
+        vector<long long> ans;
+        for (auto& q : queries) {
+            int t = q[0];
+            if (t == 1) {
+                for (int i = q[1]; i <= q[2]; ++i) {
+                    nums1[i] ^= 1;
+                }
+            } else if (t == 2) {
+                for (int i = 0; i < n; ++i) {
+                    sum[i] += nums1[i] * q[1];
+                }
+            } else {
+                long long res = 0;
+                for (int i = 0; i < n; ++i) {
+                    res += sum[i];
+                }
+                ans.push_back(res);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> res;
+        vector<long long> sum(n+1);
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i-1] + nums2[i-1];
+        }
+        for (auto& query : queries) {
+            if (query[0] == 1) {
+                for (int i = query[1]; i <= query[2]; i++) {
+                    nums1[i] = 1 - nums1[i];
+                }
+            } else if (query[0] == 2) {
+                for (int i = 1; i <= n; i++) {
+                    nums2[i-1] += nums1[i-1] * query[1];
+                    sum[i] = sum[i-1] + nums2[i-1];
+                }
+            } else {
+                res.push_back(sum[query[2]+1] - sum[query[1]]);
+            }
+        }
+        return res;
+
+=======
+
+        vector<long long> res;
+        int n = nums1.size();
+        int m = queries.size();
+        long long s = 0;
+        for (int i = 0; i < n; ++i) {
+            s += nums2[i];
+        }
+        for (int i = 0; i < m; ++i) {
+            if (queries[i][0] == 1) {
+                int l = queries[i][1];
+                int r = queries[i][2];
+                for (int j = l; j <= r; ++j) {
+                    nums1[j] = 1 - nums1[j];
+                    s += (1 - 2 * nums1[j]) * nums2[j];
+                }
+            } else if (queries[i][0] == 2) {
+                int p = queries[i][1];
+                s += 1LL * n * p;
+            } else {
+                res.push_back(s);
+            }
+        }
+        return res;
+
+=======
+
+        vector<long long> result;
+        int n = nums1.size();
+        vector<int> flip(n + 1, 0);
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums2[i];
+        }
+        for (auto& q : queries) {
+            if (q[0] == 1) {
+                int l = q[1];
+                int r = q[2];
+                flip[l]++;
+                flip[r + 1]--;
+            } else if (q[0] == 2) {
+                int p = q[1];
+                sum += p * (n - flip[0]);
+                for (int i = 1; i <= n; i++) {
+                    flip[i] += flip[i - 1];
+                    sum += p * (flip[i] - flip[i - 1]) * (n - i);
+                }
+            } else {
+                result.push_back(sum);
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums1.size();
+        vector<long long> res;
+        vector<long long> sum(n + 1, 0);
+        int flip = 0;
+        for (auto& q : queries) {
+            if (q[0] == 1) {
+                flip ^= 1;
+            } else if (q[0] == 2) {
+                int p = q[1];
+                if (flip == 0) {
+                    sum[0] += p;
+                    sum[q[1] + 1] -= p;
+                } else {
+                    sum[0] -= p;
+                    sum[q[1] + 1] += p;
+                }
+            } else {
+                long long sum1 = 0;
+                for (int i = 0; i < n; ++i) {
+                    sum1 += nums1[i];
+                }
+                long long sum2 = 0;
+                for (int i = 0; i < n; ++i) {
+                    sum2 += nums2[i];
+                }
+                if (flip == 0) {
+                    res.push_back(sum1 + sum2);
+                } else {
+                    res.push_back(sum1 - sum2);
+                }
+            }
+        }
+        long long cur = 0;
+        for (int i = 0; i < n; ++i) {
+            cur += sum[i];
+            nums2[i] += cur;
+        }
+        return res;

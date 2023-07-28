@@ -1,0 +1,111 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int n = rods.size();
+        int sum = accumulate(rods.begin(), rods.end(), 0);
+        vector<vector<int>> dp(n+1, vector<int>(sum+1, -1));
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            int w = rods[i-1];
+            for (int j = 0; j <= sum; ++j) {
+                if (dp[i-1][j] >= 0) {
+                    dp[i][j] = max(dp[i][j], dp[i-1][j]);
+                    dp[i][j+w] = max(dp[i][j+w], dp[i-1][j]);
+                    dp[i][abs(j-w)] = max(dp[i][abs(j-w)], dp[i-1][j]+min(j, w));
+                }
+            }
+        }
+        return dp[n][0];
+
+=======
+
+        int n = rods.size();
+        int sum = accumulate(rods.begin(), rods.end(), 0);
+        vector<vector<int>> dp(n+1, vector<int>(sum+1, -1));
+        dp[0][0] = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j <= sum; ++j) {
+                if (dp[i][j] == -1) continue;
+                dp[i+1][j] = max(dp[i+1][j], dp[i][j]);
+                dp[i+1][j+rods[i]] = max(dp[i+1][j+rods[i]], dp[i][j]);
+                dp[i+1][abs(j-rods[i])] = max(dp[i+1][abs(j-rods[i])], dp[i][j] + min(j, rods[i]));
+            }
+        }
+        return dp[n][0];
+
+=======
+
+        int n = rods.size();
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += rods[i];
+        }
+        vector<vector<int>> dp(n+1, vector<int>(sum+1, -1));
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= sum; j++) {
+                dp[i][j] = dp[i-1][j];
+                if (j >= rods[i-1] && dp[i-1][j-rods[i-1]] != -1) {
+                    dp[i][j] = max(dp[i][j], dp[i-1][j-rods[i-1]] + rods[i-1]);
+                }
+                if (j + rods[i-1] <= sum && dp[i-1][j+rods[i-1]] != -1) {
+                    dp[i][j] = max(dp[i][j], dp[i-1][j+rods[i-1]]);
+                }
+            }
+        }
+        return dp[n][0] / 2;
+
+=======
+
+        int n = rods.size();
+        vector<int> dp(5001, -1);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            vector<int> tmp(5001, -1);
+            for (int j = 0; j <= 5000; j++) {
+                if (dp[j] >= 0) {
+                    tmp[j] = dp[j];
+                    tmp[j + rods[i]] = max(tmp[j + rods[i]], dp[j]);
+                    tmp[abs(j - rods[i])] = max(tmp[abs(j - rods[i])], dp[j] + min(j, rods[i]));
+                }
+            }
+            dp = tmp;
+        }
+        return dp[0];
+
+=======
+
+        int sum = 0;
+        for (auto rod : rods) sum += rod;
+        vector<int> dp(sum + 1, -1);
+        dp[0] = 0;
+        for (auto rod : rods) {
+            vector<int> dp2 = dp;
+            for (int i = 0; i <= sum - rod; i++) {
+                if (dp[i] >= 0) {
+                    dp2[i + rod] = max(dp2[i + rod], dp[i]);
+                    dp2[abs(i - rod)] = max(dp2[abs(i - rod)], dp[i] + min(i, rod));
+                }
+            }
+            dp = dp2;
+        }
+        return dp[0];
+
+=======
+
+        int sum = 0;
+        for (int i = 0; i < rods.size(); i++) {
+            sum += rods[i];
+        }
+        int target = sum / 2;
+        vector<int> dp(target + 1, -1);
+        dp[0] = 0;
+        for (int i = 0; i < rods.size(); i++) {
+            for (int j = target; j >= rods[i]; j--) {
+                if (dp[j - rods[i]] >= 0) {
+                    dp[j] = max(dp[j], dp[j - rods[i]] + rods[i]);
+                }
+            }
+        }
+        return dp[target];

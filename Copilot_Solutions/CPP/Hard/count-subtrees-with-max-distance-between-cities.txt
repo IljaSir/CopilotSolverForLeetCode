@@ -1,0 +1,353 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& edge: edges) {
+            graph[edge[0]-1].push_back(edge[1]-1);
+            graph[edge[1]-1].push_back(edge[0]-1);
+        }
+        vector<int> result(n-1, 0);
+        for (int i = 0; i < (1 << n); i++) {
+            if (i & (i - 1)) {
+                vector<int> nodes;
+                for (int j = 0; j < n; j++) {
+                    if (i & (1 << j)) {
+                        nodes.push_back(j);
+                    }
+                }
+                vector<vector<int>> path(n, vector<int>(n, n));
+                for (int j = 0; j < nodes.size(); j++) {
+                    path[nodes[j]][nodes[j]] = 0;
+                    for (int k = 0; k < graph[nodes[j]].size(); k++) {
+                        path[graph[nodes[j]][k]][nodes[j]] = 1;
+                    }
+                }
+                for (int j = 0; j < n; j++) {
+                    for (int k = 0; k < n; k++) {
+                        for (int l = 0; l < n; l++) {
+                            path[k][l] = min(path[k][l], path[k][j] + path[j][l]);
+                        }
+                    }
+                }
+                int maxDist = 0;
+                for (int j = 0; j < nodes.size(); j++) {
+                    for (int k = 0; k < nodes.size(); k++) {
+                        maxDist = max(maxDist, path[nodes[j]][nodes[k]]);
+                    }
+                }
+                result[maxDist - 1]++;
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> res(n - 1);
+        vector<vector<int>> graph(n + 1);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        for (int i = 1; i < (1 << n); i++) {
+            int count = 0;
+            for (int j = 1; j <= n; j++) {
+                if (i & (1 << (j - 1))) count++;
+            }
+            if (count < 2) continue;
+            bool flag = true;
+            for (int j = 1; j <= n; j++) {
+                if (i & (1 << (j - 1))) {
+                    for (int k = j + 1; k <= n; k++) {
+                        if (i & (1 << (k - 1))) {
+                            if (!check(graph, j, k, i)) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!flag) break;
+            }
+            if (!flag) continue;
+            int max_dist = 0;
+            for (int j = 1; j <= n; j++) {
+                if (i & (1 << (j - 1))) {
+                    int dist = 0;
+                    dfs(graph, j, i, 0, dist);
+                    max_dist = max(max_dist, dist);
+                }
+            }
+            res[max_dist - 1]++;
+        }
+        return res;
+    }
+    void dfs(vector<vector<int>>& graph, int curr, int mask, int dist, int& max_dist) {
+        max_dist = max(max_dist, dist);
+        for (auto& next : graph[curr]) {
+            if (mask & (1 << (next - 1))) {
+                dfs(graph, next, mask, dist + 1, max_dist);
+            }
+        }
+
+=======
+
+        vector<vector<int>> graph(n, vector<int>(n));
+        for (auto &edge : edges) {
+            graph[edge[0] - 1][edge[1] - 1] = 1;
+            graph[edge[1] - 1][edge[0] - 1] = 1;
+        }
+        vector<int> ans(n - 1);
+        for (int i = 1; i < (1 << n); ++i) {
+            int count = 0;
+            int maxDistance = 0;
+            for (int j = 0; j < n; ++j) {
+                if (i & (1 << j)) {
+                    ++count;
+                    for (int k = j + 1; k < n; ++k) {
+                        if (i & (1 << k)) {
+                            maxDistance = max(maxDistance, graph[j][k]);
+                        }
+                    }
+                }
+            }
+            if (count > 1) {
+                ++ans[maxDistance - 1];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res(n - 1);
+        for (int mask = 1; mask < (1 << n); ++mask) {
+            int cnt = 0;
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) ++cnt;
+            }
+            if (cnt <= 1) continue;
+            vector<vector<int>> g(n);
+            for (auto& e : edges) {
+                int u = e[0] - 1, v = e[1] - 1;
+                if ((mask & (1 << u)) && (mask & (1 << v))) {
+                    g[u].push_back(v);
+                    g[v].push_back(u);
+                }
+            }
+            vector<int> dist(n, -1);
+            queue<int> q;
+            q.push(0);
+            dist[0] = 0;
+            while (!q.empty()) {
+                int u = q.front(); q.pop();
+                for (int v : g[u]) {
+                    if (dist[v] == -1) {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    }
+                }
+            }
+            int maxDist = 0;
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1 << i)) {
+                    maxDist = max(maxDist, dist[i]);
+                }
+            }
+            ++res[maxDist - 1];
+        }
+        return res;
+
+=======
+
+        vector<int> ans(n-1, 0);
+        vector<vector<int>> g(n+1);
+        for (auto e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        for (int mask = 1; mask < (1<<n); ++mask) {
+            vector<int> path;
+            int root = 0;
+            for (int i = 0; i < n; ++i) {
+                if (mask & (1<<i)) {
+                    root = i + 1;
+                    break;
+                }
+            }
+            dfs(root, g, mask, path);
+            int maxd = 0;
+            for (int i = 0; i < path.size(); ++i) {
+                for (int j = i+1; j < path.size(); ++j) {
+                    maxd = max(maxd, dist(path[i], path[j], g));
+                }
+            }
+            if (maxd > 0) ans[maxd-1] += 1;
+        }
+        return ans;
+    }
+    void dfs(int root, vector<vector<int>>& g, int mask, vector<int>& path) {
+        path.push_back(root);
+        for (auto v : g[root]) {
+            if ((mask & (1<<(v-1))) && find(path.begin(), path.end(), v) == path.end()) {
+                dfs(v, g, mask, path);
+            }
+        }
+    }
+    int dist(int x, int y, vector<vector<int>>& g) {
+        queue<int> q;
+        q.push(x);
+        vector<int> dist(g.size(), -1);
+        dist[x] = 0;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (auto v : g[u]) {
+                if (dist[v] == -1) {
+                    dist[v] = dist[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+        return dist[y];
+
+=======
+
+        vector<int> ans(n - 1, 0);
+        for (int mask = 1; mask < (1 << n); mask++) {
+            int cnt = 0;
+            for (int i = 0; i < n; i++) {
+                if (mask & (1 << i)) cnt++;
+            }
+            if (cnt <= 1) continue;
+            vector<vector<int>> g(n);
+            for (auto e : edges) {
+                if ((mask & (1 << (e[0] - 1))) && (mask & (1 << (e[1] - 1)))) {
+                    g[e[0] - 1].push_back(e[1] - 1);
+                    g[e[1] - 1].push_back(e[0] - 1);
+                }
+            }
+            queue<int> q;
+            vector<int> dist(n, -1);
+            for (int i = 0; i < n; i++) {
+                if (mask & (1 << i)) {
+                    q.push(i);
+                    dist[i] = 0;
+                    break;
+                }
+            }
+            int maxDist = 0;
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                maxDist = max(maxDist, dist[u]);
+                for (auto v : g[u]) {
+                    if (dist[v] == -1) {
+                        dist[v] = dist[u] + 1;
+                        q.push(v);
+                    }
+                }
+            }
+            ans[maxDist - 1]++;
+        }
+        return ans;
+
+=======
+
+        vector<int> res(n-1, 0);
+        for (int mask = 1; mask < (1<<n); mask++) {
+            vector<int> v;
+            for (int i = 0; i < n; i++) {
+                if (mask & (1 << i)) {
+                    v.push_back(i);
+                }
+            }
+            if (v.size() <= 1) {
+                continue;
+            }
+            int dist = 0;
+            for (int i = 0; i < v.size(); i++) {
+                for (int j = i+1; j < v.size(); j++) {
+                    dist = max(dist, getDist(n, edges, mask, v[i], v[j]));
+                }
+            }
+            res[dist-1]++;
+        }
+        return res;
+    }
+    
+    int getDist(int n, vector<vector<int>>& edges, int mask, int u, int v) {
+        int dist = 0;
+        vector<int> visited(n, 0);
+        queue<int> q;
+        q.push(u);
+        visited[u] = 1;
+        while (!q.empty()) {
+            int size = q.size();
+            dist++;
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                for (int j = 0; j < edges.size(); j++) {
+                    if (edges[j][0] == cur+1 && mask & (1 << (edges[j][1]-1))) {
+                        if (!visited[edges[j][1]-1]) {
+                            q.push(edges[j][1]-1);
+                            visited[edges[j][1]-1] = 1;
+                        }
+                    }
+                    if (edges[j][1] == cur+1 && mask & (1 << (edges[j][0]-1))) {
+                        if (!visited[edges[j][0]-1]) {
+                            q.push(edges[j][0]-1);
+                            visited[edges[j][0]-1] = 1;
+                        }
+                    }
+                }
+            }
+            if (visited[v]) {
+                break;
+            }
+        }
+        return dist;
+
+=======
+
+        vector<int> ans(n - 1, 0);
+        vector<int> g[n];
+        int m = edges.size();
+        for (int i = 0; i < m; i++) {
+            int u = edges[i][0] - 1;
+            int v = edges[i][1] - 1;
+            g[u].push_back(v);
+            g[v].push_back(u);
+        }
+        for (int i = 1; i < (1 << n); i++) {
+            vector<int> nodes;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    nodes.push_back(j);
+                }
+            }
+            int m = nodes.size();
+            if (m <= 1) continue;
+            vector<int> dist(m, 0);
+            queue<int> q;
+            q.push(0);
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for (int j = 0; j < g[nodes[u]].size(); j++) {
+                    int v = g[nodes[u]][j];
+                    for (int k = 0; k < m; k++) {
+                        if (nodes[k] == v && dist[k] == 0) {
+                            dist[k] = dist[u] + 1;
+                            q.push(k);
+                        }
+                    }
+                }
+            }
+            int mx = 0;
+            for (int j = 0; j < m; j++) {
+                mx = max(mx, dist[j]);
+            }
+            ans[mx - 1]++;
+        }
+        return ans;

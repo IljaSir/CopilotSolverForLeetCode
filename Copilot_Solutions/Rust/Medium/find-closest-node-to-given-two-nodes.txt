@@ -1,0 +1,240 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut graph = vec![vec![]; edges.len()];
+        for i in 0..edges.len() {
+            if edges[i] != -1 {
+                graph[i].push(edges[i] as usize);
+            }
+        }
+        let mut visited = vec![false; edges.len()];
+        let mut queue = Vec::new();
+        let mut node1_path = vec![false; edges.len()];
+        let mut node2_path = vec![false; edges.len()];
+        queue.push(node1 as usize);
+        while !queue.is_empty() {
+            let node = queue.remove(0);
+            if node == node2 as usize {
+                return node2;
+            }
+            visited[node] = true;
+            node1_path[node] = true;
+            for &child in graph[node].iter() {
+                if !visited[child] {
+                    queue.push(child);
+                }
+            }
+        }
+        visited = vec![false; edges.len()];
+        queue.push(node2 as usize);
+        while !queue.is_empty() {
+            let node = queue.remove(0);
+            if node1_path[node] {
+                return node as i32;
+            }
+            visited[node] = true;
+            node2_path[node] = true;
+            for &child in graph[node].iter() {
+                if !visited[child] {
+                    queue.push(child);
+                }
+            }
+        }
+        -1
+
+=======
+
+        let mut node1 = node1 as usize;
+        let mut node2 = node2 as usize;
+        let n = edges.len();
+        let mut visited1 = vec![false; n];
+        let mut visited2 = vec![false; n];
+        let mut distance1 = vec![0; n];
+        let mut distance2 = vec![0; n];
+        let mut stack1 = vec![node1];
+        let mut stack2 = vec![node2];
+        while !stack1.is_empty() || !stack2.is_empty() {
+            if !stack1.is_empty() {
+                node1 = stack1.pop().unwrap();
+                visited1[node1] = true;
+                if edges[node1] != -1 {
+                    let next = edges[node1] as usize;
+                    if !visited1[next] {
+                        distance1[next] = distance1[node1] + 1;
+                        stack1.push(next);
+                    }
+                }
+            }
+            if !stack2.is_empty() {
+                node2 = stack2.pop().unwrap();
+                visited2[node2] = true;
+                if edges[node2] != -1 {
+                    let next = edges[node2] as usize;
+                    if !visited2[next] {
+                        distance2[next] = distance2[node2] + 1;
+                        stack2.push(next);
+                    }
+                }
+            }
+        }
+        let mut result = -1;
+        let mut max_distance = 0;
+        for i in 0..n {
+            if visited1[i] && visited2[i] {
+                let distance = std::cmp::max(distance1[i], distance2[i]);
+                if distance < max_distance || result == -1 {
+                    result = i as i32;
+                    max_distance = distance;
+                }
+            }
+        }
+        result
+
+=======
+
+        let mut node1 = node1;
+        let mut node2 = node2;
+        let mut visited1 = vec![false; edges.len()];
+        let mut visited2 = vec![false; edges.len()];
+        while node1 != -1 || node2 != -1 {
+            if node1 != -1 {
+                if visited1[node1 as usize] {
+                    return node1;
+                }
+                visited1[node1 as usize] = true;
+                node1 = edges[node1 as usize];
+            }
+            if node2 != -1 {
+                if visited2[node2 as usize] {
+                    return node2;
+                }
+                visited2[node2 as usize] = true;
+                node2 = edges[node2 as usize];
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut node1 = node1 as usize;
+        let mut node2 = node2 as usize;
+        let mut visited = vec![false; edges.len()];
+        while node1 != node2 {
+            if visited[node1] || visited[node2] {
+                return -1;
+            }
+            visited[node1] = true;
+            visited[node2] = true;
+            if node1 != node2 {
+                node1 = if edges[node1] == -1 { node1 } else { edges[node1] as usize };
+            }
+            if node1 != node2 {
+                node2 = if edges[node2] == -1 { node2 } else { edges[node2] as usize };
+            }
+        }
+        node1 as i32
+
+=======
+
+        let mut visited = vec![false; edges.len()];
+        let mut nodes = vec![(node1, 0), (node2, 0)];
+        let mut min = std::i32::MAX;
+        let mut min_node = -1;
+        while !nodes.is_empty() {
+            let (node, dist) = nodes.pop().unwrap();
+            if visited[node as usize] {
+                continue;
+            }
+            visited[node as usize] = true;
+            if edges[node as usize] == -1 {
+                continue;
+            }
+            if dist > min {
+                continue;
+            }
+            let neighbor = edges[node as usize];
+            if visited[neighbor as usize] {
+                if dist < min {
+                    min = dist;
+                    min_node = node;
+                }
+            } else {
+                nodes.push((neighbor, dist + 1));
+            }
+        }
+        min_node
+
+=======
+
+        let mut parent = vec![0; edges.len()];
+        let mut visited = vec![false; edges.len()];
+        for (i, &e) in edges.iter().enumerate() {
+            visited[i] = true;
+            if e != -1 {
+                parent[e as usize] = i as i32;
+            }
+        }
+        let mut node1_parent = vec![];
+        let mut node2_parent = vec![];
+        let mut node1 = node1;
+        let mut node2 = node2;
+        while node1 != -1 {
+            node1_parent.push(node1);
+            node1 = parent[node1 as usize];
+        }
+        while node2 != -1 {
+            node2_parent.push(node2);
+            node2 = parent[node2 as usize];
+        }
+        node1_parent.reverse();
+        node2_parent.reverse();
+        let mut i = 0;
+        let mut j = 0;
+        while i < node1_parent.len() && j < node2_parent.len() && node1_parent[i] == node2_parent[j] {
+            i += 1;
+            j += 1;
+        }
+        node1_parent[i-1]
+
+=======
+
+        let mut parent = vec![-1; edges.len()];
+        let mut max_dist = vec![0; edges.len()];
+        let mut queue = Vec::new();
+        let mut visited = vec![false; edges.len()];
+        queue.push(node1);
+        while !queue.is_empty() {
+            let node = queue.pop().unwrap();
+            if visited[node as usize] {
+                continue;
+            }
+            visited[node as usize] = true;
+            if edges[node as usize] != -1 {
+                parent[edges[node as usize] as usize] = node;
+                max_dist[edges[node as usize] as usize] = max_dist[node as usize].max(1);
+                queue.push(edges[node as usize]);
+            }
+        }
+        queue.push(node2);
+        while !queue.is_empty() {
+            let node = queue.pop().unwrap();
+            if visited[node as usize] {
+                return node;
+            }
+            visited[node as usize] = true;
+            if edges[node as usize] != -1 {
+                parent[edges[node as usize] as usize] = node;
+                max_dist[edges[node as usize] as usize] = max_dist[node as usize].max(1);
+                queue.push(edges[node as usize]);
+            }
+        }
+        -1

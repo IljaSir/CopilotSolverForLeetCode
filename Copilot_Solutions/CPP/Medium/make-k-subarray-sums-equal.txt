@@ -1,0 +1,291 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.size();
+        vector<long long> sum(n+1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i+1] = sum[i] + arr[i];
+        }
+        long long ans = 1e18;
+        for (int i = 0; i < n; ++i) {
+            long long res = 0;
+            for (int j = 0; j < k; ++j) {
+                int l = i + j;
+                int r = i + j + n;
+                long long cur = sum[r] - sum[r-k];
+                long long expect = sum[l] - sum[l-k];
+                res += abs(cur - expect);
+            }
+            ans = min(ans, res);
+        }
+        return ans;
+    }
+    int minOperations(vector<int>& arr, int k) {
+        int n = arr.size();
+        if (k == n) {
+            return 0;
+        }
+        long long total = 0;
+        for (int i = 0; i < n; ++i) {
+            total += arr[i];
+        }
+        long long expect = total * k / n;
+        for (int i = 0; i < n; ++i) {
+            arr[i] = arr[i] * k - expect;
+        }
+        return makeSubKSumEqual(arr, k);
+
+=======
+
+        int n = arr.size();
+        vector<long long> sum(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + arr[i];
+        }
+        long long res = LONG_LONG_MAX;
+        int mod = n % k;
+        for (int i = 0; i < k; i++) {
+            long long tmp = 0;
+            for (int j = 0; j < n/k; j++) {
+                long long avg = sum[(i + (j+1)*k) % n + 1] - sum[(i + j*k) % n];
+                avg = avg / (j+1);
+                tmp += sum[(i + (j+1)*k) % n + 1] - sum[(i + j*k) % n] - avg * (j+1);
+            }
+            if (mod > 0) {
+                long long avg = sum[(i + (n/k+1)*k) % n + 1] - sum[(i + n/k*k) % n];
+                avg = avg / (n/k+1);
+                tmp += sum[(i + (n/k+1)*k) % n + 1] - sum[(i + n/k*k) % n] - avg * (n/k+1);
+                mod--;
+            }
+            res = min(res, tmp);
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<long long> sum(n, 0);
+        sum[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + arr[i];
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = (i + k - 1) % n;
+            long long cur = sum[j] - (i == 0 ? 0 : sum[i - 1]);
+            ans = max(ans, cur);
+        }
+        return ans;
+    }
+    long long makeEqual(vector<int>& arr) {
+        int n = arr.size();
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+        }
+        if (sum % n != 0) {
+            return -1;
+        }
+        long long avg = sum / n;
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            arr[i] -= avg;
+        }
+        for (int k = 1; k < n; k++) {
+            if (n % k == 0) {
+                ans = max(ans, makeSubKSumEqual(arr, k));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = arr.size();
+        vector<long long> preSum(n + 1);
+        for (int i = 0; i < n; ++i) {
+            preSum[i + 1] = preSum[i] + arr[i];
+        }
+        long long res = INT_MAX;
+        for (int i = 0; i < n; ++i) {
+            int j = i + k - 1;
+            if (j >= n) break;
+            long long sum = preSum[j + 1] - preSum[i];
+            long long minVal = sum / k;
+            long long maxVal = minVal + 1;
+            long long minCnt = k - sum % k;
+            long long maxCnt = sum % k;
+            long long val = minCnt * pow(minVal, 2) + maxCnt * pow(maxVal, 2);
+            res = min(res, val);
+        }
+        return res;
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < arr.size(); ++i)
+            sum += arr[i];
+        if (sum % k != 0)
+            return -1;
+        long long target = sum / k;
+        long long ans = 0;
+        long long cur = 0;
+        for (int i = 0; i < arr.size(); ++i) {
+            cur += arr[i];
+            if (i >= k - 1) {
+                long long diff = cur - target;
+                if (diff > 0)
+                    ans += diff;
+                else
+                    ans -= diff;
+                cur -= arr[i - k + 1];
+            }
+        }
+        return ans;
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < arr.size(); ++i) {
+            sum += arr[i];
+        }
+        int n = arr.size();
+        if (sum % k != 0) return -1;
+        long long target = sum / k;
+        long long ans = 0;
+        long long cur = 0;
+        for (int i = 0; i < n; ++i) {
+            cur += arr[i];
+            if (cur == target) {
+                cur = 0;
+            } else if (cur > target) {
+                ans += cur - target;
+                cur = 0;
+            }
+        }
+        return ans;
+    }
+    int minOperations(vector<int>& arr, int k) {
+        int n = arr.size();
+        if (k == n) {
+            return makeSubKSumEqual(arr, k);
+        }
+        int ans = 1e9;
+        for (int i = 0; i < n; ++i) {
+            int l = i;
+            int r = (i + k - 1) % n;
+            // cout << l << " " << r << endl;
+            vector<int> sub;
+            if (l <= r) {
+                for (int j = l; j <= r; ++j) {
+                    sub.push_back(arr[j]);
+                }
+            } else {
+                for (int j = l; j < n; ++j) {
+                    sub.push_back(arr[j]);
+                }
+                for (int j = 0; j <= r; ++j) {
+                    sub.push_back(arr[j]);
+                }
+            }
+            // for (int j = 0; j < sub.size(); ++j) {
+            //     cout << sub[j] << " ";
+            // }
+            // cout << endl;
+            int cur = makeSubKSumEqual(sub, k);
+            if (cur != -1) {
+                ans = min(ans, cur);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = arr.size();
+        vector<int> sum(n+1, 0);
+        for(int i=1; i<=n; i++){
+            sum[i] = sum[i-1] + arr[i-1];
+        }
+        unordered_map<int, int> mp;
+        long long ans = INT_MAX;
+        for(int i=0; i<n; i++){
+            int current = sum[i+1] - sum[i];
+            int need = (i+1)*k - current;
+            if(mp.count(need)){
+                ans = min(ans, (long long)mp[need] + (i+1));
+            }
+            mp[current]++;
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = arr.size();
+        vector<int> prefixSum(n+1, 0);
+        for(int i = 0; i < n; i++){
+            prefixSum[i+1] = prefixSum[i] + arr[i];
+        }
+        long long res = LONG_LONG_MAX;
+        unordered_map<int, int> count;
+        for(int i = 0; i < n; i++){
+            int mod = prefixSum[i+1] % k;
+            if(mod < 0) mod += k;
+            if(mod == 0){
+                res = min(res, (long long)prefixSum[i+1] / k);
+                continue;
+            }
+            int target = (prefixSum[i+1] / k + 1) * k;
+            int need = target - prefixSum[i+1];
+            if(count.count(mod)){
+                res = min(res, (long long)(prefixSum[i+1] - prefixSum[count[mod]]) / k);
+            }
+            count[mod] = i+1;
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<long long> pre(n+1);
+        for(int i=0;i<n;i++){
+            pre[i+1] = pre[i] + arr[i];
+        }
+        long long res = 1e18;
+        for(int i=0;i<n;i++){
+            long long sum = pre[i+k] - pre[i];
+            if(sum == 0){
+                res = min(res, (long long)k);
+            }
+            else{
+                for(int j=1;j<=k;j++){
+                    if(sum%j == 0){
+                        long long target = sum/j;
+                        long long cnt = 0;
+                        for(int p=0;p<j;p++){
+                            long long l = i + p*(k/j);
+                            long long r = i + (p+1)*(k/j);
+                            long long mid = (l+r)/2;
+                            cnt += pre[mid] - pre[l];
+                            cnt += pre[r] - pre[mid];
+                        }
+                        res = min(res, cnt);
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        long long sum = accumulate(begin(arr), end(arr), 0LL);
+        long long target = sum / k;
+        if (target * k != sum) return -1;
+        long long res = 0;
+        long long cur = 0;
+        for (int i = 0; i < n; ++i) {
+            cur += arr[i];
+            if (i >= k) cur -= arr[i - k];
+            if (i >= k - 1) res = max(res, cur);
+        }
+        return target * k - res;

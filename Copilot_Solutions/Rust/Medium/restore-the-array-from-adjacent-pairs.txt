@@ -1,0 +1,90 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for pair in adjacent_pairs {
+            map.entry(pair[0]).or_insert(vec![]).push(pair[1]);
+            map.entry(pair[1]).or_insert(vec![]).push(pair[0]);
+        }
+        let mut res = vec![];
+        for (k, v) in map.iter() {
+            if v.len() == 1 {
+                res.push(*k);
+                break;
+            }
+        }
+        let mut prev = res[0];
+        while res.len() < adjacent_pairs.len() + 1 {
+            let next = map.get(&prev).unwrap();
+            let next = if next[0] == res[res.len() - 2] {
+                next[1]
+            } else {
+                next[0]
+            };
+            res.push(next);
+            prev = next;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for pair in adjacent_pairs {
+            map.entry(pair[0]).or_insert_with(Vec::new).push(pair[1]);
+            map.entry(pair[1]).or_insert_with(Vec::new).push(pair[0]);
+        }
+        let mut res = Vec::new();
+        let mut prev = None;
+        let mut start = 0;
+        for (k, v) in map.iter() {
+            if v.len() == 1 {
+                start = *k;
+                break;
+            }
+        }
+        res.push(start);
+        while let Some(v) = map.get_mut(&start) {
+            if let Some(p) = prev {
+                if v[0] == p {
+                    start = v[1];
+                } else {
+                    start = v[0];
+                }
+            } else {
+                start = v[0];
+            }
+            res.push(start);
+            prev = Some(start);
+        }
+        res
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut adj = std::collections::HashMap::new();
+        for pair in adjacent_pairs {
+            adj.entry(pair[0]).or_insert_with(Vec::new).push(pair[1]);
+            adj.entry(pair[1]).or_insert_with(Vec::new).push(pair[0]);
+        }
+        let mut ans = Vec::new();
+        let mut start = *adj.iter().find(|(_, v)| v.len() == 1).unwrap().0;
+        ans.push(start);
+        loop {
+            let next = adj.get_mut(&start).unwrap().pop().unwrap();
+            ans.push(next);
+            if adj.get(&next).unwrap().len() == 1 {
+                break;
+            }
+            start = next;
+        }
+        ans

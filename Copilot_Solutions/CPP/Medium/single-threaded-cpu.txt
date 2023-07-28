@@ -1,0 +1,297 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tasks.size();
+        for (int i = 0; i < n; ++i) {
+            tasks[i].push_back(i);
+        }
+        sort(tasks.begin(), tasks.end());
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<int> ans;
+        long long curTime = 0;
+        int i = 0;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                curTime = tasks[i][0];
+            }
+            while (i < n && tasks[i][0] <= curTime) {
+                pq.emplace(tasks[i][1], tasks[i][2]);
+                ++i;
+            }
+            auto [len, idx] = pq.top();
+            pq.pop();
+            curTime += len;
+            ans.push_back(idx);
+        }
+        return ans;
+
+=======
+
+        int n = tasks.size();
+        vector<int> res(n);
+        for (int i = 0; i < n; i++)
+            tasks[i].push_back(i);
+        sort(tasks.begin(), tasks.end());
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        long long time = 0;
+        int i = 0;
+        for (int j = 0; j < n; j++) {
+            if (pq.empty()) {
+                time = max(time, (long long)tasks[i][0]);
+            }
+            while (i < n && time >= tasks[i][0]) {
+                pq.push({tasks[i][1], tasks[i][2]});
+                i++;
+            }
+            res[j] = pq.top().second;
+            time += pq.top().first;
+            pq.pop();
+        }
+        return res;
+
+=======
+
+        int n = tasks.size();
+        vector<int> result;
+        vector<int> index(n);
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        sort(index.begin(), index.end(), [&](int i, int j) {
+            return tasks[i][0] < tasks[j][0];
+        });
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0;
+        long long time = 0;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                time = tasks[index[i]][0];
+            }
+            while (i < n && tasks[index[i]][0] <= time) {
+                pq.emplace(tasks[index[i]][1], index[i]);
+                i++;
+            }
+            auto [processingTime, taskIndex] = pq.top();
+            pq.pop();
+            time += processingTime;
+            result.push_back(taskIndex);
+        }
+        return result;
+
+=======
+
+        int n = tasks.size();
+        vector<int> ans(n);
+        vector<vector<int>> t(n, vector<int>(3));
+        for (int i = 0; i < n; ++i) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        sort(t.begin(), t.end());
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        long long time = t[0][0];
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            if (pq.empty()) {
+                time = max(time, (long long)t[i][0]);
+            }
+            while (i < n && t[i][0] <= time) {
+                pq.push({t[i][1], t[i][2]});
+                ++i;
+            }
+            auto p = pq.top();
+            pq.pop();
+            ans[j] = p[1];
+            time += p[0];
+            ++j;
+        }
+        while (!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            ans[j] = p[1];
+            ++j;
+        }
+        return ans;
+
+=======
+
+        int n = tasks.size();
+        vector<int> res(n);
+        vector<pair<int, int>> task(n);
+        for (int i = 0; i < n; ++i) {
+            task[i] = {tasks[i][0], i};
+        }
+        sort(task.begin(), task.end());
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0;
+        long long cur = 0;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                cur = max(cur, (long long)task[i].first);
+            }
+            while (i < n && task[i].first <= cur) {
+                pq.push({tasks[task[i].second][1], task[i].second});
+                ++i;
+            }
+            auto [t, idx] = pq.top();
+            pq.pop();
+            cur += t;
+            res.push_back(idx);
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0, t = 0, n = tasks.size();
+        vector<int> idx(n);
+        for (int i = 0; i < n; ++i) idx[i] = i;
+        sort(idx.begin(), idx.end(), [&](int a, int b) { return tasks[a][0] < tasks[b][0]; });
+        while (i < n) {
+            if (pq.empty()) t = max(t, tasks[idx[i]][0]);
+            while (i < n && tasks[idx[i]][0] <= t) {
+                pq.push({tasks[idx[i]][1], idx[i]});
+                ++i;
+            }
+            auto p = pq.top(); pq.pop();
+            res.push_back(p.second);
+            t += p.first;
+        }
+        while (!pq.empty()) {
+            auto p = pq.top(); pq.pop();
+            res.push_back(p.second);
+        }
+        return res;
+
+=======
+
+        vector<int> ret;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int time = 0;
+        int index = 0;
+        int n = tasks.size();
+        while (index < n || !pq.empty()) {
+            if (pq.empty()) {
+                time = max(time, tasks[index][0]);
+            }
+            while (index < n && tasks[index][0] <= time) {
+                pq.push({tasks[index][1], tasks[index][0]});
+                index++;
+            }
+            auto p = pq.top();
+            pq.pop();
+            time += p.first;
+            ret.push_back(p.second);
+        }
+        return ret;
+
+=======
+
+        vector<int> ans;
+        int n = tasks.size();
+        vector<pair<int, int>> task;
+        for (int i = 0; i < n; ++i) {
+            task.push_back(make_pair(tasks[i][0], tasks[i][1]));
+        }
+        sort(task.begin(), task.end());
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0;
+        long long time = 0;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                time = max(time, (long long)task[i].first);
+            }
+            while (i < n && task[i].first <= time) {
+                pq.push(make_pair(task[i].second, task[i].first));
+                ++i;
+            }
+            auto p = pq.top();
+            pq.pop();
+            ans.push_back(p.second);
+            time += p.first;
+        }
+        return ans;
+
+=======
+
+        vector<int> result;
+        int n = tasks.size();
+        vector<pair<int,int>> taskIndex(n);
+        for(int i=0;i<n;i++){
+            taskIndex[i] = {tasks[i][0],i};
+        }
+        sort(taskIndex.begin(), taskIndex.end());
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+        int i = 0;
+        long long time = taskIndex[i].first;
+        while(i<n || !pq.empty()){
+            if(i<n && time >= taskIndex[i].first){
+                int index = taskIndex[i].second;
+                pq.push({tasks[index][1], index});
+                i++;
+            }else{
+                if(pq.empty()){
+                    time = taskIndex[i].first;
+                    continue;
+                }
+                auto top = pq.top();
+                pq.pop();
+                time += top.first;
+                result.push_back(top.second);
+            }
+        }
+        return result;
+
+=======
+
+        // 1. sort based on enqueue time
+        // 2. add to priority queue based on processing time
+        // 3. pop the top of priority queue and add to result
+        // 4. if there are more tasks in the queue, pop the top of priority queue and add to result
+        // 5. if there are no more tasks in the queue, add the next task to the queue and repeat 3-5
+        // 6. if there are no more tasks in the queue, add the task with the shortest enqueue time to the queue and repeat 3-5
+        // 7. repeat 3-6 until there are no more tasks
+        // 8. return result
+        
+        // 1. sort based on enqueue time
+        vector<pair<int, int>> taskTimes;
+        for (int i = 0; i < tasks.size(); i++) {
+            taskTimes.push_back({tasks[i][0], tasks[i][1]});
+        }
+        sort(taskTimes.begin(), taskTimes.end());
+        
+        // 2. add to priority queue based on processing time
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int i = 0; i < taskTimes.size(); i++) {
+            pq.push({taskTimes[i].second, i});
+        }
+        
+        vector<int> result;
+        int time = 0;
+        while (!pq.empty()) {
+            // 3. pop the top of priority queue and add to result
+            pair<int, int> currentTask = pq.top();
+            pq.pop();
+            time += currentTask.first;
+            result.push_back(currentTask.second);
+            
+            // 4. if there are more tasks in the queue, pop the top of priority queue and add to result
+            while (!pq.empty() && pq.top().first == currentTask.first) {
+                currentTask = pq.top();
+                pq.pop();
+                time += currentTask.first;
+                result.push_back(currentTask.second);
+            }
+            
+            // 5. if there are no more tasks in the queue, add the next task to the queue and repeat 3-5
+            if (pq.empty()) {
+                if (result.size() < tasks.size()) {
+                    pq.push({taskTimes[result.size()].second, result.size()});
+                }
+            }
+            
+            // 6.

@@ -1,0 +1,287 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        Set<Integer> visited = new HashSet<>();
+        return dfs(graph, source, destination, visited);
+    }
+    
+    private boolean dfs(Map<Integer, List<Integer>> graph, int source, int destination, Set<Integer> visited) {
+        if (source == destination) {
+            return true;
+        }
+        visited.add(source);
+        for (int neighbor : graph.get(source)) {
+            if (!visited.contains(neighbor) && dfs(graph, neighbor, destination, visited)) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.putIfAbsent(edge[1], new ArrayList<>());
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(source);
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            if (node == destination) {
+                return true;
+            }
+            visited.add(node);
+            for (int neighbor : graph.getOrDefault(node, new ArrayList<>())) {
+                if (!visited.contains(neighbor)) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(edge[0]);
+        }
+        return dfs(source, destination, graph, new boolean[n]);
+    }
+    
+    private boolean dfs(int curr, int destination, Map<Integer, List<Integer>> graph, boolean[] visited) {
+        if (curr == destination) return true;
+        if (visited[curr]) return false;
+        visited[curr] = true;
+        List<Integer> adjacents = graph.getOrDefault(curr, new ArrayList<>());
+        for (Integer adjacent : adjacents) {
+            if (dfs(adjacent, destination, graph, visited)) return true;
+        }
+        return false;
+
+=======
+
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(source);
+        visited[source] = true;
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            if (node == destination) {
+                return true;
+            }
+            for (int nei : graph[node]) {
+                if (!visited[nei]) {
+                    visited[nei] = true;
+                    queue.add(nei);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            adj[edge[0]].add(edge[1]);
+            adj[edge[1]].add(edge[0]);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> q = new LinkedList<>();
+        q.add(source);
+        visited[source] = true;
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            if (node == destination) {
+                return true;
+            }
+            for (int neighbor : adj[node]) {
+                if (!visited[neighbor]) {
+                    q.add(neighbor);
+                    visited[neighbor] = true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        boolean[] visited = new boolean[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            map.putIfAbsent(edge[0], new ArrayList<>());
+            map.putIfAbsent(edge[1], new ArrayList<>());
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+        return dfs(map, visited, source, destination);
+    }
+    
+    private boolean dfs(Map<Integer, List<Integer>> map, boolean[] visited, int source, int destination) {
+        if (source == destination) return true;
+        if (visited[source]) return false;
+        visited[source] = true;
+        if (map.containsKey(source)) {
+            for (int next : map.get(source)) {
+                if (dfs(map, visited, next, destination)) return true;
+            }
+        }
+        return false;
+
+=======
+
+        if (source == destination) return true;
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            Set<Integer> set = map.getOrDefault(edge[0], new HashSet<>());
+            set.add(edge[1]);
+            map.put(edge[0], set);
+            set = map.getOrDefault(edge[1], new HashSet<>());
+            set.add(edge[0]);
+            map.put(edge[1], set);
+        }
+        boolean[] visited = new boolean[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(source);
+        visited[source] = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                if (map.get(curr) != null) {
+                    for (int next : map.get(curr)) {
+                        if (next == destination) return true;
+                        if (!visited[next]) {
+                            queue.offer(next);
+                            visited[next] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        if (source == destination) {
+            return true;
+        }
+        int[] visited = new int[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        q.add(source);
+        visited[source] = 1;
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            for (int next : map.get(cur)) {
+                if (next == destination) {
+                    return true;
+                }
+                if (visited[next] == 0) {
+                    visited[next] = 1;
+                    q.add(next);
+                }
+            }
+        }
+        return false;
+
+=======
+
+        if (n == 1) {
+            return true;
+        }
+        if (edges.length == 0) {
+            return false;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            List<Integer> list = map.getOrDefault(edge[0], new ArrayList<>());
+            list.add(edge[1]);
+            map.put(edge[0], list);
+            list = map.getOrDefault(edge[1], new ArrayList<>());
+            list.add(edge[0]);
+            map.put(edge[1], list);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        q.offer(source);
+        visited.add(source);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int node = q.poll();
+                if (node == destination) {
+                    return true;
+                }
+                if (map.containsKey(node)) {
+                    for (int next : map.get(node)) {
+                        if (!visited.contains(next)) {
+                            q.offer(next);
+                            visited.add(next);
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+
+=======
+
+        // create graph
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge: edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        
+        // bfs
+        Set<Integer> visited = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(source);
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            if (node == destination) {
+                return true;
+            }
+            visited.add(node);
+            for (int neighbor: graph[node]) {
+                if (!visited.contains(neighbor)) {
+                    queue.offer(neighbor);
+                }
+            }
+        }
+        return false;

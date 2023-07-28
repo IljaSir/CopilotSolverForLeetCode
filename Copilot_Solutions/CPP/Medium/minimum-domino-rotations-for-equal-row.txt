@@ -1,0 +1,280 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tops.size();
+        int cnt[7] = {0};
+        for (int i = 0; i < n; ++i) {
+            cnt[tops[i]]++;
+            cnt[bottoms[i]]++;
+        }
+        for (int i = 1; i <= 6; ++i) {
+            if (cnt[i] >= n) {
+                return n - max(count(tops.begin(), tops.end(), i), count(bottoms.begin(), bottoms.end(), i));
+            }
+        }
+        return -1;
+
+=======
+
+        int n = tops.size();
+        int cnt[7] = {0};
+        for (int i = 0; i < n; ++i) {
+            ++cnt[tops[i]];
+            ++cnt[bottoms[i]];
+        }
+        int target = -1;
+        for (int i = 1; i <= 6; ++i) {
+            if (cnt[i] >= n) {
+                target = i;
+                break;
+            }
+        }
+        if (target == -1) {
+            return -1;
+        }
+        int result = 0;
+        for (int i = 0; i < n; ++i) {
+            if (tops[i] == target) {
+                continue;
+            }
+            if (bottoms[i] == target) {
+                ++result;
+            } else {
+                return -1;
+            }
+        }
+        return result;
+
+=======
+
+        int n = tops.size();
+        vector<int> count(7, 0);
+        for (int i = 0; i < n; ++i) {
+            ++count[tops[i]];
+            if (tops[i] != bottoms[i]) ++count[bottoms[i]];
+        }
+        int ans = INT_MAX;
+        for (int i = 1; i <= 6; ++i) {
+            if (count[i] < n) continue;
+            int a = 0, b = 0;
+            for (int j = 0; j < n; ++j) {
+                if (tops[j] != i && bottoms[j] != i) break;
+                if (tops[j] == i) ++a;
+                if (bottoms[j] == i) ++b;
+                if (j == n - 1) ans = min(ans, min(a, b));
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = tops.size();
+        vector<int> t(7, 0), b(7, 0), same(7, 0);
+        for (int i = 0; i < n; i++) {
+            t[tops[i]]++;
+            b[bottoms[i]]++;
+            if (tops[i] == bottoms[i]) same[tops[i]]++;
+        }
+        
+        int res = INT_MAX;
+        for (int i = 1; i <= 6; i++) {
+            if (t[i] + b[i] - same[i] == n) {
+                res = min(res, min(t[i], b[i]) - same[i]);
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int n = tops.size();
+        int cnt[7] = {0};
+        for (int i = 0; i < n; ++i) {
+            if (tops[i] == bottoms[i]) {
+                cnt[tops[i]]++;
+            } else {
+                cnt[tops[i]]++;
+                cnt[bottoms[i]]++;
+            }
+        }
+        int ans = INT_MAX;
+        for (int i = 1; i <= 6; ++i) {
+            if (cnt[i] == n) {
+                int a = 0, b = 0;
+                for (int j = 0; j < n; ++j) {
+                    if (tops[j] != i) a++;
+                    if (bottoms[j] != i) b++;
+                }
+                ans = min(ans, min(a, b));
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = tops.size();
+        int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
+        int t1 = tops[0], t2 = bottoms[0];
+        for (int i = 0; i < n; i++) {
+            if (tops[i] != t1 && bottoms[i] != t1) {
+                c1 = -1;
+            }
+            if (tops[i] != t2 && bottoms[i] != t2) {
+                c2 = -1;
+            }
+            if (tops[i] != t1 && bottoms[i] != t1) {
+                c3 = -1;
+            }
+            if (tops[i] != t2 && bottoms[i] != t2) {
+                c4 = -1;
+            }
+            if (c1 != -1) {
+                if (tops[i] != t1) c1++;
+            }
+            if (c2 != -1) {
+                if (bottoms[i] != t2) c2++;
+            }
+            if (c3 != -1) {
+                if (tops[i] != t1) c3++;
+            }
+            if (c4 != -1) {
+                if (tops[i] != t2) c4++;
+            }
+        }
+        int r = -1;
+        if (c1 != -1) r = c1;
+        if (c2 != -1) {
+            if (r == -1) r = c2;
+            else r = min(r, c2);
+        }
+        if (c3 != -1) {
+            if (r == -1) r = c3;
+            else r = min(r, c3);
+        }
+        if (c4 != -1) {
+            if (r == -1) r = c4;
+            else r = min(r, c4);
+        }
+        return r;
+
+=======
+
+        int n = tops.size();
+        int ans = -1;
+        for (int i = 1; i <= 6; i++) {
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (tops[j] == i || bottoms[j] == i) {
+                    cnt++;
+                }
+            }
+            if (cnt == n) {
+                int cnt1 = 0, cnt2 = 0;
+                for (int j = 0; j < n; j++) {
+                    if (tops[j] != i) {
+                        cnt1++;
+                    }
+                    if (bottoms[j] != i) {
+                        cnt2++;
+                    }
+                }
+                ans = min(ans, min(cnt1, cnt2));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = tops.size();
+        for (int i = 1; i < n; i++)
+            if (tops[i] != tops[0] && bottoms[i] != tops[0])
+                tops[i] = -1;
+        for (int i = 1; i < n; i++)
+            if (bottoms[i] != bottoms[0] && tops[i] != bottoms[0])
+                bottoms[i] = -1;
+        int res = 0;
+        for (int i = 0; i < n; i++)
+            if (tops[i] != bottoms[0]) {
+                res = -1;
+                break;
+            }
+        if (res != -1)
+            return res;
+        res = 0;
+        for (int i = 0; i < n; i++)
+            if (bottoms[i] != tops[0]) {
+                res = -1;
+                break;
+            }
+        if (res != -1)
+            return res;
+        res = 0;
+        for (int i = 0; i < n; i++)
+            if (tops[i] == -1) {
+                res = -1;
+                break;
+            }
+        if (res != -1)
+            return res;
+        res = 0;
+        for (int i = 0; i < n; i++)
+            if (bottoms[i] == -1) {
+                res = -1;
+                break;
+            }
+        if (res != -1)
+            return res;
+        res = 0;
+        for (int i = 0; i < n; i++)
+            if (tops[i] == bottoms[0])
+                res++;
+        return n - res;
+
+=======
+
+        int n = tops.size();
+        int c1 = 0, c2 = 0, t = tops[0], b = bottoms[0];
+        for(int i = 0; i < n; i++) {
+            if(tops[i] != t && bottoms[i] != t) t = -1;
+            if(tops[i] != b && bottoms[i] != b) b = -1;
+            if(t == -1 && b == -1) return -1;
+        }
+        for(int i = 0; i < n; i++) {
+            if(tops[i] != t) c1++;
+            if(bottoms[i] != t) c1++;
+            if(tops[i] != b) c2++;
+            if(bottoms[i] != b) c2++;
+        }
+        return min(c1, c2)/2;
+
+=======
+
+        int n = tops.size();
+        int top = tops[0], bottom = bottoms[0], top_count = 0, bottom_count = 0;
+        for (int i = 0; i < n; ++i) {
+            if (tops[i] != top && bottoms[i] != top) {
+                top = -1;
+            }
+            if (tops[i] != bottom && bottoms[i] != bottom) {
+                bottom = -1;
+            }
+            if (top == -1 && bottom == -1) {
+                return -1;
+            }
+        }
+        if (top == -1) {
+            return count_rotations(bottoms, bottom);
+        }
+        if (bottom == -1) {
+            return count_rotations(tops, top);
+        }
+        return min(count_rotations(tops, top), count_rotations(bottoms, bottom));
+    }
+    int count_rotations(vector<int>& arr, int target) {
+        int n = arr.size(), count = 0;
+        for (int i = 0; i < n; ++i) {
+            if (arr[i] != target) {
+                ++count;
+            }
+        }
+        return count;

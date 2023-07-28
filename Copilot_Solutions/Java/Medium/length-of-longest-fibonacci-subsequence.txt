@@ -1,0 +1,218 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+        }
+        int res = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                int k = map.getOrDefault(arr[j] - arr[i], -1);
+                if (k >= 0 && k < i) {
+                    dp[i][j] = dp[k][i] + 1;
+                    res = Math.max(res, dp[i][j]);
+                } else {
+                    dp[i][j] = 2;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        int max = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = map.getOrDefault(arr[j] - arr[i], -1);
+                if (k >= 0 && k < i) {
+                    dp[i][j] = dp[k][i] + 1;
+                }
+                max = Math.max(max, dp[i][j]);
+            }
+        }
+        return max < 3 ? 0 : max;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], 2);
+        }
+        Map<Integer, Integer> valToIndex = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            valToIndex.put(arr[i], i);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int a = arr[i];
+                int b = arr[j];
+                int c = a + b;
+                if (valToIndex.containsKey(c)) {
+                    int k = valToIndex.get(c);
+                    dp[j][k] = dp[i][j] + 1;
+                    ans = Math.max(ans, dp[j][k]);
+                }
+            }
+        }
+        return ans >= 3 ? ans : 0;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        int max = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int sum = arr[i] + arr[j];
+                if (map.containsKey(sum)) {
+                    int k = map.get(sum);
+                    dp[j][k] = Math.max(dp[j][k], dp[i][j] + 1);
+                    max = Math.max(max, dp[j][k]);
+                }
+            }
+        }
+        return max;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        int max = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int target = arr[i] + arr[j];
+                if (map.containsKey(target)) {
+                    int k = map.get(target);
+                    dp[j][k] = dp[i][j] + 1;
+                    max = Math.max(max, dp[j][k]);
+                }
+            }
+        }
+        return max == 0 ? 0 : max + 2;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = Arrays.binarySearch(arr, arr[j] - arr[i]);
+                if (k >= 0 && k < i) {
+                    dp[i][j] = dp[k][i] + 1;
+                    max = Math.max(max, dp[i][j]);
+                }
+            }
+        }
+        return max;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = arr[j] - arr[i];
+                if (k >= arr[i]) {
+                    break;
+                }
+                if (map.containsKey(k)) {
+                    dp[i][j] = dp[map.get(k)][i] + 1;
+                    max = Math.max(max, dp[i][j]);
+                }
+            }
+        }
+        return max;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int k = binarySearch(arr, 0, i, arr[j] - arr[i]);
+                if (k >= 0) {
+                    dp[i][j] = dp[k][i] + 1;
+                    max = Math.max(max, dp[i][j]);
+                }
+            }
+        }
+        return max == 0 ? 0 : max + 2;
+    }
+    
+    private int binarySearch(int[] arr, int start, int end, int target) {
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+            if (arr[mid] < target) {
+                start = mid + 1;
+            } else if (arr[mid] > target) {
+                end = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        for (int[] row: dp)
+            Arrays.fill(row, 2);
+        Map<Integer, Integer> index = new HashMap();
+        for (int i = 0; i < n; ++i)
+            index.put(arr[i], i);
+
+        int ans = 0;
+        for (int k = 0; k < n; ++k)
+            for (int j = k+1; j < n; ++j) {
+                if (arr[j] - arr[k] < arr[k] && index.containsKey(arr[j] - arr[k]))
+                    dp[k][j] = dp[index.get(arr[j]-arr[k])][k] + 1;
+                ans = Math.max(ans, dp[k][j]);
+            }
+
+        return ans >= 3 ? ans : 0;

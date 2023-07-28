@@ -1,0 +1,141 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = languages.size();
+        vector<vector<int>> common(m, vector<int>(m, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                if (i == j) continue;
+                for (int l1 : languages[i]) {
+                    for (int l2 : languages[j]) {
+                        if (l1 == l2) {
+                            common[i][j] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        vector<int> cnt(n+1, 0);
+        for (auto& f : friendships) {
+            int a = f[0]-1, b = f[1]-1;
+            if (common[a][b] == 0) {
+                for (int l : languages[a]) {
+                    cnt[l]++;
+                }
+                for (int l : languages[b]) {
+                    cnt[l]++;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            ans = max(ans, cnt[i]);
+        }
+        return ans;
+
+=======
+
+        int m = languages.size();
+        vector<int> lang(m);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].size(); j++) {
+                lang[i] |= 1 << (languages[i][j] - 1);
+            }
+        }
+        vector<int> cnt(n + 1);
+        for (auto& f : friendships) {
+            if ((lang[f[0] - 1] & lang[f[1] - 1]) == 0) {
+                cnt[f[0]]++;
+                cnt[f[1]]++;
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= m; i++) {
+            res = max(res, cnt[i]);
+        }
+        return res;
+
+=======
+
+        int m = languages.size();
+        vector<vector<int>> can_talk(m, vector<int>(m, 0));
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int l1 : languages[i]) {
+                    for (int l2 : languages[j]) {
+                        if (l1 == l2) {
+                            can_talk[i][j] = 1;
+                        }
+                    }
+                }
+            }
+        }
+        vector<int> teach(m, 0);
+        for (auto& f : friendships) {
+            if (can_talk[f[0] - 1][f[1] - 1] == 0) {
+                teach[f[0] - 1] = 1;
+                teach[f[1] - 1] = 1;
+            }
+        }
+        vector<int> cnt(n + 1, 0);
+        for (auto& t : teach) {
+            if (t == 1) {
+                for (auto& l : languages[t]) {
+                    cnt[l]++;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            res = max(res, cnt[i]);
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> lang;
+        for(auto& v: languages) {
+            sort(v.begin(), v.end());
+            lang.push_back(v);
+        }
+        int m = languages.size();
+        vector<int> cnt(n+1, 0);
+        vector<vector<int>> lang_cnt(m+1, vector<int>(n+1, 0));
+        for(auto& f: friendships) {
+            int u = f[0], v = f[1];
+            if(lang[u-1] == lang[v-1]) continue;
+            for(auto l: lang[u-1]) {
+                cnt[l]++;
+                lang_cnt[u][l]++;
+            }
+            for(auto l: lang[v-1]) {
+                cnt[l]++;
+                lang_cnt[v][l]++;
+            }
+        }
+        int ans = 0;
+        for(auto& f: friendships) {
+            int u = f[0], v = f[1];
+            if(lang[u-1] == lang[v-1]) continue;
+            bool ok = false;
+            for(auto l: lang[u-1]) {
+                if(lang_cnt[u][l] + lang_cnt[v][l] == cnt[l]) {
+                    ok = true;
+                    break;
+                }
+            }
+            if(!ok) {
+                for(auto l: lang[v-1]) {
+                    if(lang_cnt[u][l] + lang_cnt[v][l] == cnt[l]) {
+                        ok = true;
+                        break;
+                    }
+                }
+            }
+            if(!ok) {
+                ans++;
+            }
+        }
+        return ans;

@@ -1,0 +1,150 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = days[days.size() - 1];
+        vector<int> dp(n + 1, 0);
+        for (int i = 1, j = 0; i <= n; i++) {
+            if (i == days[j]) {
+                dp[i] = min(dp[i - 1] + costs[0], min(dp[max(0, i - 7)] + costs[1], dp[max(0, i - 30)] + costs[2]));
+                j++;
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = days.size();
+        int dp[n+1];
+        dp[0] = 0;
+        int j = 0;
+        for (int i = 1; i <= 365; i++) {
+            if (j < n && i == days[j]) {
+                dp[j+1] = min(dp[j] + costs[0], min(dp[max(0, j-6)] + costs[1], dp[max(0, j-29)] + costs[2]));
+                j++;
+            } else {
+                dp[j] = dp[j-1];
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = days.size();
+        vector<int> dp(n+1, 0);
+        for (int i = n-1; i >= 0; --i) {
+            int j = i;
+            dp[i] = dp[i+1] + costs[0];
+            while (j < n && days[j] - days[i] < 7) ++j;
+            dp[i] = min(dp[i], dp[j] + costs[1]);
+            while (j < n && days[j] - days[i] < 30) ++j;
+            dp[i] = min(dp[i], dp[j] + costs[2]);
+        }
+        return dp[0];
+
+=======
+
+        vector<int> dp(366, 0);
+        int dayIndex = 0;
+        for (int i = 1; i <= 365; i++) {
+            if (dayIndex < days.size() && i == days[dayIndex]) {
+                dp[i] = min(dp[i-1] + costs[0], min(dp[max(0, i-7)] + costs[1], dp[max(0, i-30)] + costs[2]));
+                dayIndex++;
+            } else {
+                dp[i] = dp[i-1];
+            }
+        }
+        return dp[365];
+
+=======
+
+        int n = days.size();
+        int dp[n];
+        dp[0] = min({costs[0], costs[1], costs[2]});
+        for (int i = 1; i < n; i ++) {
+            dp[i] = dp[i - 1] + costs[0];
+            for (int j = i - 1; j >= 0; j --) {
+                if (days[i] - days[j] < 7) {
+                    dp[i] = min(dp[i], dp[j] + costs[1]);
+                    break;
+                }
+            }
+            for (int j = i - 1; j >= 0; j --) {
+                if (days[i] - days[j] < 30) {
+                    dp[i] = min(dp[i], dp[j] + costs[2]);
+                    break;
+                }
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = days.size();
+        vector<int> dp(n+1, 0);
+        for (int i = n-1; i >= 0; i--) {
+            int j = i;
+            while (j < n && days[j] - days[i] < 7) j++;
+            int a = dp[j] + costs[1];
+            while (j < n && days[j] - days[i] < 30) j++;
+            int b = dp[j] + costs[2];
+            dp[i] = min(a, b);
+            dp[i] = min(dp[i], dp[i+1] + costs[0]);
+        }
+        return dp[0];
+
+=======
+
+        int n = days.size();
+        int dp[n+1];
+        dp[n] = 0;
+        int j = 0;
+        for(int i = n-1; i >= 0; i--){
+            dp[i] = INT_MAX;
+            for(int k = 0; k < 3; k++){
+                while(j < n && days[j] < days[i] + (k == 0 ? 1 : k == 1 ? 7 : 30)) j++;
+                dp[i] = min(dp[i], dp[j] + costs[k]);
+            }
+        }
+        return dp[0];
+
+=======
+
+        int n = days.size();
+        int dp[366];
+        dp[0] = 0;
+        for (int i = 1; i < 366; i++) {
+            dp[i] = 0x3f3f3f3f;
+        }
+        for (int i = 0; i < n; i++) {
+            dp[days[i]] = 0x3f3f3f3f;
+        }
+        for (int i = 1; i < 366; i++) {
+            if (dp[i] == 0x3f3f3f3f) {
+                dp[i] = min(dp[i - 1] + costs[0], min(dp[max(i - 7, 0)] + costs[1], dp[max(i - 30, 0)] + costs[2]));
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        return dp[365];
+
+=======
+
+        int n = days.size();
+        int dp[n+1];
+        dp[0] = 0;
+        int i=0, j=0;
+        while(i<n){
+            int d1 = days[i] + 1;
+            int d2 = days[i] + 7;
+            int d3 = days[i] + 30;
+            int next = min({d1, d2, d3});
+            while(j<n && days[j]<next){
+                j++;
+            }
+            dp[i+1] = min(dp[i] + costs[0], min(dp[j] + costs[1], dp[upper_bound(days.begin(), days.end(), days[i] + 29) - days.begin()] + costs[2]));
+            i++;
+        }
+        return dp[n];

@@ -1,0 +1,74 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < (1 << requests.size()); i++) {
+            int count = 0;
+            vector<int> buildings(n, 0);
+            for (int j = 0; j < requests.size(); j++) {
+                if (i & (1 << j)) {
+                    buildings[requests[j][0]]--;
+                    buildings[requests[j][1]]++;
+                    count++;
+                }
+            }
+            bool flag = true;
+            for (int j = 0; j < buildings.size(); j++) {
+                if (buildings[j] != 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag && count > max) {
+                max = count;
+            }
+        }
+        return max;
+
+=======
+
+        int result = 0;
+        for (int i = 0; i < (1 << requests.size()); ++i) {
+            vector<int> count(n);
+            int countRequests = 0;
+            for (int j = 0; j < requests.size(); ++j) {
+                if ((i >> j) & 1) {
+                    ++count[requests[j][0]];
+                    --count[requests[j][1]];
+                    ++countRequests;
+                }
+            }
+            if (all_of(count.begin(), count.end(), [](int x) {return x == 0;})) {
+                result = max(result, countRequests);
+            }
+        }
+        return result;
+
+=======
+
+        int result = 0;
+        int max = 1 << requests.size();
+        for (int i = 0; i < max; ++i) {
+            vector<int> in(n, 0);
+            vector<int> out(n, 0);
+            int count = 0;
+            for (int j = 0; j < requests.size(); ++j) {
+                if (i & (1 << j)) {
+                    ++out[requests[j][0]];
+                    ++in[requests[j][1]];
+                    ++count;
+                }
+            }
+            bool ok = true;
+            for (int k = 0; k < n; ++k) {
+                if (in[k] != out[k]) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) {
+                result = max(result, count);
+            }
+        }
+        return result;

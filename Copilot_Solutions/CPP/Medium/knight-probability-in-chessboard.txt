@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<vector<vector<double>>> dp(n, vector<vector<double>>(n, vector<double>(k + 1, -1)));
+        return dfs(n, k, row, column, dp);
+    }
+    
+    double dfs(int n, int k, int row, int column, vector<vector<vector<double>>>& dp) {
+        if (row < 0 || row >= n || column < 0 || column >= n) {
+            return 0;
+        }
+        if (k == 0) {
+            return 1;
+        }
+        if (dp[row][column][k] != -1) {
+            return dp[row][column][k];
+        }
+        double res = 0;
+        res += 0.125 * dfs(n, k - 1, row + 2, column + 1, dp);
+        res += 0.125 * dfs(n, k - 1, row + 2, column - 1, dp);
+        res += 0.125 * dfs(n, k - 1, row - 2, column + 1, dp);
+        res += 0.125 * dfs(n, k - 1, row - 2, column - 1, dp);
+        res += 0.125 * dfs(n, k - 1, row + 1, column + 2, dp);
+        res += 0.125 * dfs(n, k - 1, row + 1, column - 2, dp);
+        res += 0.125 * dfs(n, k - 1, row - 1, column + 2, dp);
+        res += 0.125 * dfs(n, k - 1, row - 1, column - 2, dp);
+        dp[row][column][k] = res;
+        return res;
+
+=======
+
+        vector<vector<vector<double>>> dp(k + 1, vector<vector<double>>(n, vector<double>(n, 0)));
+        dp[0][row][column] = 1;
+        for (int i = 1; i <= k; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int l = 0; l < n; ++l) {
+                    for (const auto& d : directions) {
+                        int x = j + d[0];
+                        int y = l + d[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n) {
+                            dp[i][j][l] += dp[i - 1][x][y];
+                        }
+                    }
+                }
+            }
+        }
+        double sum = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                sum += dp[k][i][j];
+            }
+        }
+        return sum / pow(8, k);
+
+=======
+
+        vector<vector<vector<double>>> dp(n, vector<vector<double>>(n, vector<double>(k + 1, -1.0)));
+        return dfs(n, k, row, column, dp);
+    }
+    double dfs(int n, int k, int row, int column, vector<vector<vector<double>>> &dp) {
+        if (row < 0 || row >= n || column < 0 || column >= n) return 0.0;
+        if (k == 0) return 1.0;
+        if (dp[row][column][k] >= 0.0) return dp[row][column][k];
+        double res = 0.0;
+        vector<vector<int>> dirs = {{-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}};
+        for (auto dir : dirs) {
+            int x = row + dir[0], y = column + dir[1];
+            res += 0.125 * dfs(n, k - 1, x, y, dp);
+        }
+        dp[row][column][k] = res;
+        return res;
+
+=======
+
+        vector<vector<double>> dp(n, vector<double>(n, 0));
+        dp[row][column] = 1;
+        vector<vector<int>> dirs = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+        for (int step = 0; step < k; ++step) {
+            vector<vector<double>> dp2(n, vector<double>(n, 0));
+            for (int r = 0; r < n; ++r) {
+                for (int c = 0; c < n; ++c) {
+                    for (auto& dir : dirs) {
+                        int nr = r + dir[0];
+                        int nc = c + dir[1];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n) {
+                            dp2[nr][nc] += dp[r][c] / 8.0;
+                        }
+                    }
+                }
+            }
+            dp = dp2;
+        }
+        double ans = 0;
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < n; ++c) {
+                ans += dp[r][c];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<double>> dp(n, vector<double>(n, 0));
+        dp[row][column] = 1;
+        vector<vector<int>> dirs = {{-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}};
+        for (int i = 0; i < k; ++i) {
+            vector<vector<double>> dp2(n, vector<double>(n, 0));
+            for (int r = 0; r < n; ++r) {
+                for (int c = 0; c < n; ++c) {
+                    for (auto &dir : dirs) {
+                        int nr = r + dir[0], nc = c + dir[1];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n) {
+                            dp2[nr][nc] += dp[r][c] / 8.0;
+                        }
+                    }
+                }
+            }
+            dp = dp2;
+        }
+        double ans = 0;
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < n; ++c) {
+                ans += dp[r][c];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<double>>> dp(n, vector<vector<double>>(n, vector<double>(k+1, 0)));
+        return dfs(n, k, row, column, dp);
+    }
+    
+    double dfs(int n, int k, int row, int column, vector<vector<vector<double>>>& dp) {
+        if (row < 0 || row >= n || column < 0 || column >= n) return 0;
+        if (k == 0) return 1;
+        if (dp[row][column][k] != 0) return dp[row][column][k];
+        double res = 0;
+        vector<vector<int>> dirs = {{-2, -1}, {-2, 1}, {2, -1}, {2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}};
+        for (auto dir : dirs) {
+            res += 0.125 * dfs(n, k-1, row+dir[0], column+dir[1], dp);
+        }
+        dp[row][column][k] = res;
+        return res;
+
+=======
+
+        vector<vector<double>> dp(n, vector<double>(n, 0));
+        dp[row][column] = 1;
+        vector<int> dx = {-2, -2, -1, -1, 1, 1, 2, 2};
+        vector<int> dy = {-1, 1, -2, 2, -2, 2, -1, 1};
+        for (int i = 0; i < k; i++) {
+            vector<vector<double>> dp2(n, vector<double>(n, 0));
+            for (int x = 0; x < n; x++) {
+                for (int y = 0; y < n; y++) {
+                    for (int j = 0; j < 8; j++) {
+                        int nx = x + dx[j];
+                        int ny = y + dy[j];
+                        if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+                        dp2[nx][ny] += dp[x][y] / 8.0;
+                    }
+                }
+            }
+            dp = dp2;
+        }
+        double ans = 0;
+        for (int x = 0; x < n; x++) {
+            for (int y = 0; y < n; y++) {
+                ans += dp[x][y];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<vector<double>>> dp(n, vector<vector<double>>(n, vector<double>(k+1, 0)));
+        return helper(n, k, row, column, dp);
+
+=======
+
+        vector<vector<vector<double>>> dp(k+1, vector<vector<double>>(n, vector<double>(n, 0)));
+        int dir[8][2] = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+        dp[0][row][column] = 1;
+        for (int i = 1; i <= k; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int l = 0; l < n; ++l) {
+                    for (auto d : dir) {
+                        int x = j + d[0];
+                        int y = l + d[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n) {
+                            dp[i][j][l] += dp[i-1][x][y];
+                        }
+                    }
+                }
+            }
+        }
+        double ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans += dp[k][i][j];
+            }
+        }
+        return ans / pow(8, k);
+
+=======
+
+        double dp[25][25][101];
+        memset(dp, 0, sizeof(dp));
+        dp[row][column][0] = 1;
+        for (int i = 0; i < k; ++i) {
+            for (int r = 0; r < n; ++r) {
+                for (int c = 0; c < n; ++c) {
+                    for (int j = 0; j < 8; ++j) {
+                        int nr = r + dr[j];
+                        int nc = c + dc[j];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n) {
+                            dp[nr][nc][i+1] += dp[r][c][i] / 8;
+                        }
+                    }
+                }
+            }
+        }
+        double ans = 0;
+        for (int i = 0; i < k; ++i) {
+            for (int r = 0; r < n; ++r) {
+                for (int c = 0; c < n; ++c) {
+                    ans += dp[r][c][i];
+                }
+            }
+        }
+        return ans;

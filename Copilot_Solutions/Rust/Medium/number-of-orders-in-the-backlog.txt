@@ -1,0 +1,475 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        for order in orders {
+            let (price, amount, order_type) = (order[0], order[1], order[2]);
+            if order_type == 0 {
+                while amount > 0 && !sell.is_empty() && -sell.peek().unwrap().0 >= price {
+                    let (sell_price, mut sell_amount) = -sell.pop().unwrap();
+                    if sell_amount > amount {
+                        sell_amount -= amount;
+                        sell.push((-sell_price, sell_amount));
+                        amount = 0;
+                    } else {
+                        amount -= sell_amount;
+                    }
+                }
+                if amount > 0 {
+                    buy.push((price, amount));
+                }
+            } else {
+                while amount > 0 && !buy.is_empty() && buy.peek().unwrap().0 <= price {
+                    let (buy_price, mut buy_amount) = buy.pop().unwrap();
+                    if buy_amount > amount {
+                        buy_amount -= amount;
+                        buy.push((buy_price, buy_amount));
+                        amount = 0;
+                    } else {
+                        amount -= buy_amount;
+                    }
+                }
+                if amount > 0 {
+                    sell.push((-price, amount));
+                }
+            }
+        }
+        let mut ans = 0;
+        for (_, amount) in buy {
+            ans += amount;
+            ans %= 1_000_000_007;
+        }
+        for (_, amount) in sell {
+            ans += amount;
+            ans %= 1_000_000_007;
+        }
+        ans as i32
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        for order in orders {
+            if order[2] == 0 {
+                buy.push((order[0], order[1]));
+            } else {
+                sell.push((-(order[0] as i64), order[1] as i64));
+            }
+            while !buy.is_empty() && !sell.is_empty() {
+                let (buy_price, buy_amount) = buy.peek().unwrap();
+                let (sell_price, sell_amount) = sell.peek().unwrap();
+                if *buy_price >= -(*sell_price as i32) {
+                    break;
+                }
+                buy.pop();
+                sell.pop();
+                if buy_amount > sell_amount {
+                    buy.push((*buy_price, buy_amount - sell_amount));
+                } else if buy_amount < sell_amount {
+                    sell.push((*sell_price, sell_amount - buy_amount));
+                }
+            }
+        }
+        let mut result = 0;
+        for (_, amount) in buy {
+            result = (result + amount) % 1_000_000_007;
+        }
+        for (_, amount) in sell {
+            result = (result + amount) % 1_000_000_007;
+        }
+        result as i32
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        for order in orders {
+            if order[2] == 0 {
+                while order[1] > 0 && !sell.is_empty() {
+                    let min = sell.pop().unwrap();
+                    if min.0 >= order[0] {
+                        let diff = min.1 - order[1];
+                        if diff > 0 {
+                            sell.push((min.0, diff));
+                            break;
+                        } else if diff < 0 {
+                            order[1] = -diff;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        sell.push(min);
+                        break;
+                    }
+                }
+                if order[1] > 0 {
+                    buy.push((order[0], order[1]));
+                }
+            } else {
+                while order[1] > 0 && !buy.is_empty() {
+                    let max = buy.pop().unwrap();
+                    if max.0 <= order[0] {
+                        let diff = max.1 - order[1];
+                        if diff > 0 {
+                            buy.push((max.0, diff));
+                            break;
+                        } else if diff < 0 {
+                            order[1] = -diff;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        buy.push(max);
+                        break;
+                    }
+                }
+                if order[1] > 0 {
+                    sell.push((order[0], order[1]));
+                }
+            }
+        }
+        let mut res = 0;
+        while !buy.is_empty() {
+            res = (res + buy.pop().unwrap().1) % 1_000_000_007;
+        }
+        while !sell.is_empty() {
+            res = (res + sell.pop().unwrap().1) % 1_000_000_007;
+        }
+        res as i32
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        for order in orders {
+            let p = order[0];
+            let a = order[1];
+            let t = order[2];
+            if t == 0 {
+                while !sell.is_empty() && sell.peek().unwrap().0 <= p && a > 0 {
+                    let (price, amount) = sell.pop().unwrap();
+                    if a >= amount {
+                        a -= amount;
+                    } else {
+                        sell.push((price, amount - a));
+                        a = 0;
+                    }
+                }
+                if a > 0 {
+                    buy.push((p, a));
+                }
+            } else {
+                while !buy.is_empty() && buy.peek().unwrap().0 >= p && a > 0 {
+                    let (price, amount) = buy.pop().unwrap();
+                    if a >= amount {
+                        a -= amount;
+                    } else {
+                        buy.push((price, amount - a));
+                        a = 0;
+                    }
+                }
+                if a > 0 {
+                    sell.push((p, a));
+                }
+            }
+        }
+        let mut ans = 0;
+        while !buy.is_empty() {
+            ans = (ans + buy.pop().unwrap().1) % 1000000007;
+        }
+        while !sell.is_empty() {
+            ans = (ans + sell.pop().unwrap().1) % 1000000007;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut res = 0;
+        for order in orders {
+            let price = order[0];
+            let amount = order[1];
+            let order_type = order[2];
+            if order_type == 0 {
+                while let Some(s) = sell.pop() {
+                    if s.1 <= price {
+                        if amount >= s.0 {
+                            res = (res + s.0) % 1000000007;
+                            amount -= s.0;
+                        } else {
+                            res = (res + amount) % 1000000007;
+                            sell.push((s.0 - amount, s.1));
+                            amount = 0;
+                        }
+                    } else {
+                        sell.push(s);
+                        break;
+                    }
+                }
+                if amount > 0 {
+                    buy.push((amount, price));
+                }
+            } else {
+                while let Some(b) = buy.pop() {
+                    if b.1 >= price {
+                        if amount >= b.0 {
+                            res = (res + b.0) % 1000000007;
+                            amount -= b.0;
+                        } else {
+                            res = (res + amount) % 1000000007;
+                            buy.push((b.0 - amount, b.1));
+                            amount = 0;
+                        }
+                    } else {
+                        buy.push(b);
+                        break;
+                    }
+                }
+                if amount > 0 {
+                    sell.push((amount, price));
+                }
+            }
+        }
+        res as i32
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut res = 0;
+        for order in orders {
+            let (price, amount, order_type) = (order[0], order[1], order[2]);
+            if order_type == 0 {
+                while amount > 0 && !sell.is_empty() && sell.peek().unwrap().0 <= price {
+                    let (p, mut a) = sell.pop().unwrap();
+                    if a > amount {
+                        a -= amount;
+                        amount = 0;
+                        sell.push((p, a));
+                    } else {
+                        amount -= a;
+                    }
+                }
+                if amount > 0 {
+                    buy.push((price, amount));
+                }
+            } else {
+                while amount > 0 && !buy.is_empty() && buy.peek().unwrap().0 >= price {
+                    let (p, mut a) = buy.pop().unwrap();
+                    if a > amount {
+                        a -= amount;
+                        amount = 0;
+                        buy.push((p, a));
+                    } else {
+                        amount -= a;
+                    }
+                }
+                if amount > 0 {
+                    sell.push((price, amount));
+                }
+            }
+        }
+        while !buy.is_empty() {
+            let (_, a) = buy.pop().unwrap();
+            res = (res + a) % 1000000007;
+        }
+        while !sell.is_empty() {
+            let (_, a) = sell.pop().unwrap();
+            res = (res + a) % 1000000007;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut ret = 0;
+        for order in orders {
+            if order[2] == 0 {
+                let mut amount = order[1];
+                while amount > 0 && !sell.is_empty() && sell.peek().unwrap()[0] <= order[0] {
+                    let mut s = sell.pop().unwrap();
+                    if s[1] <= amount {
+                        amount -= s[1];
+                        s[1] = 0;
+                    } else {
+                        s[1] -= amount;
+                        amount = 0;
+                        sell.push(s);
+                    }
+                }
+                if amount > 0 {
+                    buy.push(vec![order[0], amount]);
+                }
+            } else {
+                let mut amount = order[1];
+                while amount > 0 && !buy.is_empty() && buy.peek().unwrap()[0] >= order[0] {
+                    let mut b = buy.pop().unwrap();
+                    if b[1] <= amount {
+                        amount -= b[1];
+                        b[1] = 0;
+                    } else {
+                        b[1] -= amount;
+                        amount = 0;
+                        buy.push(b);
+                    }
+                }
+                if amount > 0 {
+                    sell.push(vec![order[0], amount]);
+                }
+            }
+        }
+        for order in buy {
+            ret = (ret + order[1]) % 1000000007;
+        }
+        for order in sell {
+            ret = (ret + order[1]) % 1000000007;
+        }
+        ret
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut count = 0;
+        for order in orders {
+            if order[2] == 0 {
+                while let Some(&x) = sell.peek() {
+                    if x > order[0] {
+                        break;
+                    }
+                    let mut p = sell.pop().unwrap();
+                    let mut a = p & 0x00000000ffffffff;
+                    if a <= order[1] {
+                        order[1] -= a;
+                    } else {
+                        a -= order[1];
+                        order[1] = 0;
+                        sell.push(p - a);
+                    }
+                }
+                if order[1] > 0 {
+                    buy.push(order[0] << 32 | order[1]);
+                }
+            } else {
+                while let Some(&x) = buy.peek() {
+                    if x >> 32 < order[0] {
+                        break;
+                    }
+                    let mut p = buy.pop().unwrap();
+                    let mut a = p & 0x00000000ffffffff;
+                    if a <= order[1] {
+                        order[1] -= a;
+                    } else {
+                        a -= order[1];
+                        order[1] = 0;
+                        buy.push(p - a);
+                    }
+                }
+                if order[1] > 0 {
+                    sell.push(order[0] << 32 | order[1]);
+                }
+            }
+            count = (count + order[1]) % 1000000007;
+        }
+        count
+
+=======
+
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut modu = 1_000_000_007;
+        for order in orders {
+            let (price, amount, order_type) = (order[0], order[1], order[2]);
+            if order_type == 0 {
+                while amount > 0 && !sell.is_empty() && price >= sell.peek().unwrap().0 {
+                    let (p, a) = sell.pop().unwrap();
+                    if amount >= a {
+                        amount -= a;
+                    } else {
+                        sell.push((p, a - amount));
+                        amount = 0;
+                    }
+                }
+                if amount > 0 {
+                    buy.push((price, amount));
+                }
+            } else {
+                while amount > 0 && !buy.is_empty() && price <= buy.peek().unwrap().0 {
+                    let (p, a) = buy.pop().unwrap();
+                    if amount >= a {
+                        amount -= a;
+                    } else {
+                        buy.push((p, a - amount));
+                        amount = 0;
+                    }
+                }
+                if amount > 0 {
+                    sell.push((price, amount));
+                }
+            }
+        }
+        let mut ans = 0;
+        while !buy.is_empty() {
+            ans = (ans + buy.pop().unwrap().1) % modu;
+        }
+        while !sell.is_empty() {
+            ans = (ans + sell.pop().unwrap().1) % modu;
+        }
+        ans
+
+=======
+
+        let mut sell = std::collections::BinaryHeap::new();
+        let mut buy = std::collections::BinaryHeap::new();
+        let mut res = 0;
+        for order in orders {
+            let price = order[0];
+            let amount = order[1];
+            let order_type = order[2];
+            if order_type == 0 {
+                while let Some(&[p, a]) = sell.peek() {
+                    if p > price {
+                        break;
+                    }
+                    let x = std::cmp::min(a, amount);
+                    res -= x;
+                    if a > amount {
+                        sell.push([p, a - amount]);
+                        break;
+                    } else {
+                        sell.pop();
+                    }
+                }
+                if res < amount {
+                    buy.push([-price, amount - res]);
+                    res = amount;
+                }
+            } else {
+                while let Some(&[p, a]) = buy.peek() {
+                    if p < price {
+                        break;
+                    }
+                    let x = std::cmp::min(a, amount);
+                    res -= x;
+                    if a > amount {
+                        buy.push([p, a - amount]);
+                        break;
+                    } else {
+                        buy.pop();
+                    }
+                }
+                if res < amount {
+                    sell.push([price, amount - res]);
+                    res = amount;
+                }
+            }
+        }
+        (res % 1_000_000_007) as i32

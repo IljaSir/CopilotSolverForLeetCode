@@ -1,0 +1,123 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        dp = [defaultdict(int) for _ in range(n)]
+        dp[0][nums[0]] += 1
+        dp[0][-nums[0]] += 1
+        for i in range(1, n):
+            for k, v in dp[i-1].items():
+                dp[i][k+nums[i]] += v
+                dp[i][k-nums[i]] += v
+        return dp[n-1][target]
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        if sum(nums) < target or (sum(nums) + target) % 2 == 1:
+            return 0
+        p = (sum(nums) + target) // 2
+        dp = [1] + [0] * p
+        for num in nums:
+            for i in range(p, num - 1, -1):
+                dp[i] += dp[i - num]
+        return dp[p]
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        if sum(nums) < target:
+            return 0
+        dp = [[0 for _ in range(2 * sum(nums) + 1)] for _ in range(len(nums))]
+        dp[0][nums[0] + sum(nums)] += 1
+        dp[0][-nums[0] + sum(nums)] += 1
+        for i in range(1, len(nums)):
+            for j in range(2 * sum(nums) + 1):
+                if dp[i - 1][j] > 0:
+                    dp[i][j + nums[i]] += dp[i - 1][j]
+                    dp[i][j - nums[i]] += dp[i - 1][j]
+        return dp[-1][target + sum(nums)]
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        if not nums: return 0
+        if len(nums) == 1: return (nums[0] == target) + (nums[0] == -target)
+        return self.findTargetSumWays(nums[1:], target - nums[0]) + self.findTargetSumWays(nums[1:], target + nums[0])
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        memo = {}
+        def dfs(index, s):
+            if index == len(nums):
+                return 1 if s == target else 0
+            if (index, s) in memo:
+                return memo[(index, s)]
+            memo[(index, s)] = dfs(index + 1, s + nums[index]) + dfs(index + 1, s - nums[index])
+            return memo[(index, s)]
+        return dfs(0, 0)
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        return self.findTargetSumWays2(nums, target)
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        def dfs(nums, target, index, sum):
+            if index == len(nums):
+                if sum == target:
+                    return 1
+                else:
+                    return 0
+            else:
+                return dfs(nums, target, index+1, sum+nums[index]) + dfs(nums, target, index+1, sum-nums[index])
+        return dfs(nums, target, 0, 0)
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        def dfs(i, cur):
+            if i == n:
+                if cur == target:
+                    return 1
+                else:
+                    return 0
+            return dfs(i+1, cur+nums[i]) + dfs(i+1, cur-nums[i])
+        n = len(nums)
+        return dfs(0, 0)
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        def dfs(nums, target, index, sum, memo):
+            if index == len(nums):
+                if sum == target:
+                    return 1
+                else:
+                    return 0
+            if (index, sum) in memo:
+                return memo[(index, sum)]
+            add = dfs(nums, target, index + 1, sum + nums[index], memo)
+            minus = dfs(nums, target, index + 1, sum - nums[index], memo)
+            memo[(index, sum)] = add + minus
+            return memo[(index, sum)]
+        return dfs(nums, target, 0, 0, {})
+
+=======
+
+def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        self.ans = 0
+        def dfs(nums, target, pos, sum):
+            if pos == len(nums):
+                if sum == target:
+                    self.ans += 1
+            else:
+                dfs(nums, target, pos+1, sum+nums[pos])
+                dfs(nums, target, pos+1, sum-nums[pos])
+        dfs(nums, target, 0, 0)
+        return self.ans

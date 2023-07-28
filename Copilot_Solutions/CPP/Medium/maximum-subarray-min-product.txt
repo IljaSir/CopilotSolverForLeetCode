@@ -1,0 +1,290 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        vector<int> left(n, -1), right(n, n);
+        stack<int> st;
+        for (int i = 0; i < n; ++i) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) {
+                right[st.top()] = i;
+                st.pop();
+            }
+            if (!st.empty()) {
+                left[i] = st.top();
+            }
+            st.push(i);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int l = left[i] + 1, r = right[i] - 1;
+            int cur = (sum[r + 1] - sum[l]) * nums[i];
+            ans = max(ans, cur);
+        }
+        return ans % 1000000007;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        vector<int> stack;
+        vector<int> left(n, -1), right(n, n);
+        for (int i = 0; i < n; ++i) {
+            while (!stack.empty() && nums[stack.back()] >= nums[i]) {
+                right[stack.back()] = i;
+                stack.pop_back();
+            }
+            if (!stack.empty()) {
+                left[i] = stack.back();
+            }
+            stack.push_back(i);
+        }
+        int64_t result = 0;
+        for (int i = 0; i < n; ++i) {
+            int64_t area = sum[right[i]] - sum[left[i] + 1];
+            result = max(result, area * nums[i]);
+        }
+        return result % 1000000007;
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n, -1), right(n, n);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) {
+                right[s.top()] = i;
+                s.pop();
+            }
+            if (!s.empty()) {
+                left[i] = s.top();
+            }
+            s.push(i);
+        }
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            long cur = (long)(sum[right[i]] - sum[left[i] + 1]) * nums[i];
+            ans = max(ans, cur);
+        }
+        return ans % 1000000007;
+
+=======
+
+        int n = nums.size();
+        vector<long long> pre(n + 1);
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        vector<int> stack;
+        vector<int> left(n);
+        for (int i = 0; i < n; i++) {
+            while (!stack.empty() && nums[stack.back()] >= nums[i]) {
+                stack.pop_back();
+            }
+            left[i] = stack.empty() ? -1 : stack.back();
+            stack.push_back(i);
+        }
+        stack.clear();
+        vector<int> right(n);
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.empty() && nums[stack.back()] >= nums[i]) {
+                stack.pop_back();
+            }
+            right[i] = stack.empty() ? n : stack.back();
+            stack.push_back(i);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, nums[i] * (pre[right[i]] - pre[left[i] + 1]));
+        }
+        return ans % (int)(1e9 + 7);
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n), right(n);
+        stack<int> st;
+        for (int i = 0; i < n; ++i) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) {
+                st.pop();
+            }
+            left[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+        while (!st.empty()) {
+            st.pop();
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) {
+                st.pop();
+            }
+            right[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+        vector<int> sum(n + 1);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int l = left[i] + 1, r = right[i] - 1;
+            int s = sum[r + 1] - sum[l];
+            long long cur = 1LL * nums[i] * s;
+            ans = max(ans, (int)(cur % 1000000007));
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> left(n), right(n);
+        stack<int> st;
+        for (int i = 0; i < n; i++) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) st.pop();
+            left[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+        st = stack<int>();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) st.pop();
+            right[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+        vector<int> sum(n + 1);
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            int l = left[i] + 1, r = right[i] - 1;
+            ans = max(ans, (long long)nums[i] * (sum[r + 1] - sum[l]));
+        }
+        return ans % 1000000007;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n+1, 0);
+        for (int i = 1; i <= n; ++i) {
+            pre[i] = pre[i-1] + nums[i-1];
+        }
+        vector<int> left(n, -1), right(n, n);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && nums[s.top()] >= nums[i]) {
+                right[s.top()] = i;
+                s.pop();
+            }
+            if (!s.empty()) {
+                left[i] = s.top();
+            }
+            s.push(i);
+        }
+        long long res = 0, mod = 1e9 + 7;
+        for (int i = 0; i < n; ++i) {
+            res = max(res, (long long)nums[i] * (pre[right[i]] - pre[left[i]+1]));
+        }
+        return res % mod;
+
+=======
+
+        const int mod = 1e9 + 7;
+        int n = nums.size();
+        vector<int> sum(n + 1);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        vector<int> left(n);
+        vector<int> right(n);
+        stack<int> stk;
+        for (int i = 0; i < n; ++i) {
+            while (!stk.empty() && nums[stk.top()] >= nums[i]) {
+                stk.pop();
+            }
+            left[i] = stk.empty() ? -1 : stk.top();
+            stk.push(i);
+        }
+        while (!stk.empty()) {
+            stk.pop();
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            while (!stk.empty() && nums[stk.top()] >= nums[i]) {
+                stk.pop();
+            }
+            right[i] = stk.empty() ? n : stk.top();
+            stk.push(i);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = max(ans, (long long)(sum[right[i]] - sum[left[i] + 1]) * nums[i]);
+        }
+        return ans % mod;
+
+=======
+
+        int n = nums.size();
+        vector<int> l(n), r(n);
+        for (int i = 0; i < n; ++i) {
+            l[i] = i;
+            while (l[i] > 0 && nums[l[i] - 1] >= nums[i]) {
+                l[i] = l[l[i] - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            r[i] = i;
+            while (r[i] < n - 1 && nums[r[i] + 1] >= nums[i]) {
+                r[i] = r[r[i] + 1];
+            }
+        }
+        vector<int> sum(n + 1);
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            res = max(res, nums[i] * (sum[r[i] + 1] - sum[l[i]]));
+        }
+        return res % 1000000007;
+
+=======
+
+        const int mod = 1000000007;
+        int n = nums.size();
+        vector<int> sum(n + 1, 0);
+        vector<int> left(n, -1);
+        vector<int> right(n, n);
+        stack<int> st;
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+            while (!st.empty() && nums[st.top()] >= nums[i]) {
+                st.pop();
+            }
+            left[i] = st.empty() ? -1 : st.top();
+            st.push(i);
+        }
+        while (!st.empty()) {
+            st.pop();
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.empty() && nums[st.top()] >= nums[i]) {
+                st.pop();
+            }
+            right[i] = st.empty() ? n : st.top();
+            st.push(i);
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, (long long)nums[i] * (sum[right[i]] - sum[left[i] + 1]));
+        }
+        return ans % mod;

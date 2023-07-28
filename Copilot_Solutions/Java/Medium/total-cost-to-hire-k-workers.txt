@@ -1,0 +1,332 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = costs.length;
+        long[] dp = new long[n];
+        dp[0] = costs[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] + costs[i];
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            long cur = 0;
+            int left = k - 1;
+            int start = i;
+            while (left > 0) {
+                int end = Math.min(start + candidates - 1, n - 1);
+                cur += dp[end] - (start > 0 ? dp[start - 1] : 0);
+                start = end + 1;
+                left--;
+            }
+            if (start < n) {
+                cur += dp[n - 1] - (start > 0 ? dp[start - 1] : 0);
+            }
+            res = Math.min(res, cur);
+        }
+        return res;
+
+=======
+
+        int n = costs.length;
+        long[][] dp = new long[k][n];
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = costs[i];
+        }
+        for (int i = 1; i < k; i++) {
+            int minIndex = i - 1;
+            for (int j = i; j < n; j++) {
+                dp[i][j] = dp[i - 1][j - 1] + costs[j];
+                if (j - candidates >= 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - candidates] + costs[j]);
+                }
+                if (minIndex >= 0 && dp[i][j] > dp[i][minIndex]) {
+                    dp[i][j] = dp[i][minIndex];
+                }
+                minIndex = dp[i][j] < dp[i][minIndex] ? j : minIndex;
+            }
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = k - 1; i < n; i++) {
+            res = Math.min(res, dp[k - 1][i]);
+        }
+        return res;
+
+=======
+
+        int n = costs.length;
+        long[][] dp = new long[k][n];
+        for (int i = 0; i < n; i++) {
+            dp[0][i] = costs[i];
+        }
+        for (int i = 1; i < k; i++) {
+            int minIndex = i - 1;
+            for (int j = i; j < n; j++) {
+                dp[i][j] = dp[i - 1][j - 1] + costs[j];
+                if (j - candidates >= 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][j - candidates] + costs[j]);
+                }
+                if (minIndex >= 0 && dp[i][j] > dp[i][minIndex]) {
+                    dp[i][j] = dp[i][minIndex];
+                }
+                minIndex = dp[i][j] < dp[i][minIndex] ? j : minIndex;
+            }
+        }
+        long res = Long.MAX_VALUE;
+        for (int i = k - 1; i < n; i++) {
+            res = Math.min(res, dp[k - 1][i]);
+        }
+        return res;
+
+=======
+n][ 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(costs, k, candidates, 0, dp);
+    }
+    
+    private long dfs(int[] costs, int k, int candidates, int start, long[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+       if (dp[start][k] != -) {
+            return dp[startk];
+        }
+        int n = costs.length;
+        long ans = Long.MAX_VALUE;
+        for (it i = start; i < n; i++) {
+            if (i -start  > candidates) {
+                break;
+            }
+            ans = Math.min(ans, costs[i + dfs(costs, k - 1, candidates, i + 1, dp))
+        }
+        return dp[start][k] = ans;
+
+=======
+
+        int n = costs.length;
+        long[][] dp = new long[k + 1][n + 1];
+        int n = costs.length;
+        long[] dp = new long[k + 1];
+        Arrays.fill(dp, Long.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i <= k; i++) {
+            long[] next = new long[k + 1];
+            Arrays.fill(next, Long.MAX_VALUE);
+            for (int j = 0; j <= i; j++) {
+                long min = Long.MAX_VALUE;
+                for (int t = Math.max(0, j - candidates); t < Math.min(i, j + candidates); t++) {
+                    min = Math.min(min, dp[t]);
+                }
+                next[j] = min + costs[i - 1];
+            }
+            dp = next;
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = k - candidates; i <= k; i++) {
+            ans = Math.min(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = costs.length;
+        long[][] dp = new long[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(costs, k, candidates, 0, dp);
+    }
+    
+    private long dfs(int[] costs, int k, int candidates, int start, long[][] dp) {
+        if (k == 0) {
+            return 0;
+        }
+        if (dp[start][k] != -1) {
+            return dp[start][k];
+        }
+        int n = costs.length;
+        long ans = Long.MAX_VALUE;
+        for (int i = start; i < n; i++) {
+            if (i - start + 1 > candidates) {
+                break;
+            }
+            ans = Math.min(ans, costs[i] + dfs(costs, k - 1, candidates, i + 1, dp));
+        }
+        return dp[start][k] = ans;
+
+=======
+
+        int n = costs.length;
+        long[][] dp = new long[k + 1][n + 1];
+        for (int i = 1; i <= k; i++) {
+            PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+            for (int j = 0; j < candidates; j++) {
+                pq.add(new int[]{costs[j], j});
+            }
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + pq.peek()[0];
+                if (j + candidates < n) {
+                    pq.add(new int[]{costs[j + candidates], j + candidates});
+                }
+                while (pq.peek()[1] <= j) {
+                    pq.poll();]));
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int n = costs.length;
+        PriorityQueue<int[> pq = new PriorityQueue<>((a, b) -> a[0] - b[0];
+        for(int i = 0; i < candidates; i++) {
+            pq.offer(new int[]{costs[i], i}
+         
+        long res = 0;
+        for(int i = 0; i < k; i++) {       }
+            int[] cu  = pq.poll();
+            r s += cur[0];
+            if(cur[1] + candida es < n) {
+                pq.offer(new int[]{costs[c }[1] + cadidates],cur[1] + cdidate})
+                }
+         
+        return res;
+
+=======
+
+        Arrays.sort(costs);
+        long[] dp = new long[candidates + 1];
+        long[] sum = new long[candidates + 1];
+        long res = Long.MAX_VALUE;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= candidates; j++) {
+                dp[j] = sum[j - 1] + costs[i - 1];
+                sum[j] = sum[j - 1] + dp[j];
+            }
+            res = Math.min(res, dp[candidates]);
+        }
+        return res;
+
+=======
+
+        // DP
+        // dp[i][j] = min(dp[i][j], dp[i-1][j-1] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+1] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+2] + costs[i-1])
+        // ...
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+candidates] + costs[i-1])
+        int n = costs.length;
+        long[][] dp = new long[n+1][k+1];
+        for (int i = 0; i < n+1; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i < n+1; i++) {
+            for (int j = 0; j < k+1; j++) {
+                for (int c = 1; c <= candidates; c++) {
+                    if (j-c < 0) break;
+                    dp[i][j] = Math.min(dp[i][j], dp[i-1][j-c] + costs[i-1]);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        // DP
+        // dp[i][j] = min(dp[i][j], dp[i-1][j-1] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+1] + costs[i-1])
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+2] + costs[i-1])
+        // ...
+        // dp[i][j] = min(dp[i][j], dp[i-1][j+candidates] + costs[i-1])
+        int n = costs.length;
+        long[][] dp = new long[n+1][k+1];
+        for (int i = 0; i < n+1; i++) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i < n+1; i++) {
+            for (int j = 0; j < k+1; j++) {
+                for (int c = 1; c <= candidates; c++) {
+                    if (j-c < 0) break;
+                    dp[i][j] = Math.min(dp[i][j], dp[i-1][j-c] + costs[i-1]);
+                }
+            }
+        }
+        return dp[n][k];       long ans = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            ans = Math.min(ans, dp[k][i]);
+        }
+        return ans;
+
+=======
+
+        int n = costs.length;
+        long[] dp = new long[n];
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i < candidates; ++i) {
+            dp[i] = costs[i];
+        }
+        for (int i = 1; i < k; ++i) {
+            long min = Long.MAX_VALUE;
+            for (int j = i; j < n - k + i + 1; ++j) {
+                min = Math.min(min, dp[j - 1]);
+                dp[j] = min + costs[j];
+            }
+        }
+        for (int i = n - k; i < n; ++i) {
+            ans = Math.min(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = costs.length;
+        if (k == n) {
+            long ans = 0;
+            for (int cost : costs) {
+                ans += cost;
+            }
+            return ans;
+        }
+        long ans = Long.MAX_VALUE;
+        Arrays.sort(costs);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        long sum = 0;
+        for (int i = 0; i < k; i++) {
+            pq.add(costs[i]);
+            sum += costs[i];
+        }
+        ans = Math.min(ans, sum + (long) (k - 1) * (costs[k - 1] - costs[0]));
+        for (int i = k; i < n; i++) {
+            pq.add(costs[i]);
+            sum += costs[i];
+            sum -= pq.poll();
+            ans = Math.min(ans, sum + (long) (k - 1) * (costs[i] - costs[i - k + 1]));
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int n = costs.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for(int i = 0; i < candidates; i++) {
+            pq.offer(new int[]{costs[i], i});
+        }
+        long res = 0;
+        for(int i = 0; i < k; i++) {
+            int[] cur = pq.poll();
+            res += cur[0];
+            if(cur[1] + candidates < n) {
+                pq.offer(new int[]{costs[cur[1] + candidates], cur[1] + candidates});
+            }
+        }
+        return res;

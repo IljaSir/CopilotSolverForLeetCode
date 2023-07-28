@@ -1,0 +1,163 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = text.size();
+        int m = pattern.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(m + 1, 0));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (text[i - 1] == pattern[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        int n = text.size();
+        int m = pattern.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(m + 1));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (text[i - 1] == pattern[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        int n = text.size();
+        int m = pattern.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(m + 1, 0));
+        for(int i = 0; i <= n; i++) dp[i][0] = 1;
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j <= m; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if(text[i - 1] == pattern[j - 1]) {
+                    dp[i][j] += dp[i - 1][j - 1];
+                }
+            }
+        }
+        long long ans = 0;
+        for(int i = 0; i <= n; i++) {
+            if(text[i] == pattern[0]) {
+                ans += dp[i][1] * dp[n - i][1];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = text.size();
+        int m = pattern.size();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                dp[i][j] = dp[i-1][j];
+                if (text[i-1] == pattern[j-1])
+                    dp[i][j] += dp[i-1][j-1];
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        long long n = text.length();
+        long long m = pattern.length();
+        long long dp[n + 1][m + 1];
+        memset(dp, 0, sizeof(dp));
+        for (long long i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+        }
+        for (long long i = 1; i <= n; i++) {
+            for (long long j = 1; j <= m; j++) {
+                if (text[i - 1] == pattern[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        int n = text.size();
+        int m = pattern.size();
+        vector<int> pos[26];
+        for (int i = 0; i < n; i++) {
+            pos[text[i] - 'a'].push_back(i);
+        }
+        vector<int> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 0; i < m; i++) {
+            int c = pattern[i] - 'a';
+            if (pos[c].empty()) {
+                return 0;
+            }
+            vector<int> ndp(n + 1);
+            for (int j = 0; j < n; j++) {
+                ndp[j + 1] = (ndp[j] + dp[j + 1]) % 1000000007;
+            }
+            for (int j = 0; j < n; j++) {
+                int p = lower_bound(pos[c].begin(), pos[c].end(), j) - pos[c].begin();
+                if (p < pos[c].size()) {
+                    ndp[pos[c][p] + 1] = (ndp[pos[c][p] + 1] - dp[j + 1] + 1000000007) % 1000000007;
+                }
+            }
+            dp = ndp;
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans = (ans + dp[i]) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = text.length();
+        int m = pattern.length();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        dp[0][0] = 1;
+        for(int i = 1; i <= n; ++i){
+            dp[i][0] = 1;
+            for(int j = 1; j <= m; ++j){
+                if(text[i-1] == pattern[j-1]){
+                    dp[i][j] = dp[i-1][j-1];
+                }
+                dp[i][j] += dp[i-1][j];
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        long long dp[2][2] = {0};
+        for (char c : text) {
+            if (c == pattern[0]) {
+                dp[0][0]++;
+            }
+            if (c == pattern[1]) {
+                dp[1][0] += dp[0][0];
+            }
+            dp[0][1] += dp[0][0];
+            dp[1][1] += dp[1][0];
+        }
+        return dp[1][1];

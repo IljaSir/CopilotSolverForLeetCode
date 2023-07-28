@@ -1,0 +1,315 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def is_palindrome(word):
+            return word == word[::-1]
+        words = {word: i for i, word in enumerate(words)}
+        res = []
+        for word, i in words.items():
+            for j in range(len(word) + 1):
+                prefix, suffix = word[:j], word[j:]
+                if is_palindrome(prefix):
+                    rev_suffix = suffix[::-1]
+                    if rev_suffix in words and words[rev_suffix] != i:
+                        res.append([words[rev_suffix], i])
+                if j != len(word) and is_palindrome(suffix):
+                    rev_prefix = prefix[::-1]
+                    if rev_prefix in words and words[rev_prefix] != i:
+                        res.append([i, words[rev_prefix]])
+        return res
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def is_palindrome(word):
+            return word == word[::-1]
+        
+        res = []
+        for i, word1 in enumerate(words):
+            for j, word2 in enumerate(words[i+1:]):
+                if is_palindrome(word1 + word2):
+                    res.append([i, i+j+1])
+                if is_palindrome(word2 + word1):
+                    res.append([i+j+1, i])
+        return res
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def is_palindrome(word):
+            return word == word[::-1]
+        word_index = {w: i for i, w in enumerate(words)}
+        pairs = []
+        for i, word in enumerate(words):
+            for j in range(len(word) + 1):
+                prefix, suffix = word[:j], word[j:]
+                if is_palindrome(prefix):
+                    rev_suffix = suffix[::-1]
+                    if rev_suffix in word_index and word_index[rev_suffix] != i:
+                        pairs.append([word_index[rev_suffix], i])
+                if suffix and is_palindrome(suffix):
+                    rev_prefix = prefix[::-1]
+                    if rev_prefix in word_index and word_index[rev_prefix] != i:
+                        pairs.append([i, word_index[rev_prefix]])
+        return pairs
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def isPalindrome(word):
+            return word == word[::-1]
+        
+        def findWord(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return False
+                l += 1
+                r -= 1
+            return True
+        
+        def findWord2(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return word[l:r]
+                l += 1
+                r -= 1
+            return ""
+        
+        def findWord3(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return word[l+1:r+1]
+                l += 1
+                r -= 1
+            return ""
+        
+        def findWord4(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return word[l:r+1]
+                l += 1
+                r -= 1
+            return ""
+        
+        def findWord5(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return word[l+1:r]
+                l += 1
+                r -= 1
+            return ""
+        
+        def findWord6(word):
+            l = 0
+            r = len(word) - 1
+            while l < r:
+                if word[l] != word[r]:
+                    return word[l+1:r+1]
+                l += 1
+                r -= 1
+            return ""
+        
+        res = []
+        for i in range(len(words)):
+            for j in range(len(words)):
+                if i == j:
+                    continue
+                if isPalindrome(words[i] + words[j]):
+                    res.append([i, j])
+        return res
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        # build a trie
+        trie = {}
+        for i, word in enumerate(words):
+            node = trie
+            for j, c in enumerate(word):
+                node = node.setdefault(c, {})
+                if word[j+1:][::-1] in words:
+                    node.setdefault('_palindrome', []).append(i)
+            node.setdefault('_end', []).append(i)
+        
+        # search in the trie
+        res = []
+        for i, word in enumerate(words):
+            node = trie
+            for j, c in enumerate(word):
+                if '_end' in node and word[j:][::-1] in words:
+                    res.append([i, node['_end'][0]])
+                if c not in node:
+                    break
+                node = node[c]
+            else:
+                if '_palindrome' in node:
+                    for j in node['_palindrome']:
+                        if i != j:
+                            res.append([i, j])
+        return res
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def is_palindrome(word):
+            return word == word[::-1]
+        
+        def find_word(word):
+            return word_to_index.get(word, -1)
+        
+        def find_reverse_word(word):
+            return word_to_index.get(word[::-1], -1)
+        
+        def find_prefix(word):
+            for i in range(len(word)):
+                if is_palindrome(word[i:]):
+                    return find_word(word[:i])
+            return -1
+        
+        def find_suffix(word):
+            for i in range(len(word)):
+                if is_palindrome(word[:i+1]):
+                    return find_word(word[i+1:])
+            return -1
+        
+        word_to_index = {}
+        for i, word in enumerate(words):
+            word_to_index[word] = i
+        
+        result = []
+        for i, word in enumerate(words):
+            if word == "":
+                for j in range(len(words)):
+                    if i == j: continue
+                    if is_palindrome(words[j]):
+                        result.append([i, j])
+                        result.append([j, i])
+                continue
+            
+            reverse_word_index = find_reverse_word(word)
+            if reverse_word_index != -1 and reverse_word_index != i:
+                result.append([i, reverse_word_index])
+            
+            prefix_index = find_prefix(word)
+            if prefix_index != -1:
+                result.append([i, prefix_index])
+            
+            suffix_index = find_suffix(word)
+            if suffix_index != -1:
+                result.append([suffix_index, i])
+        
+        return result
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def is_palin(s):
+            return s == s[::-1]
+        
+        def find_palin(s):
+            nonlocal words
+            if s in words:
+                return words[s]
+            for i in range(len(s)):
+                if is_palin(s[:i]) and s[i:] in words:
+                    return words[s[i:]]
+            return -1
+        
+        words = {w:i for i, w in enumerate(words)}
+        res = set()
+        for i, w in enumerate(words):
+            for j in range(len(w)+1):
+                if is_palin(w[j:]):
+                    left = find_palin(w[:j][::-1])
+                    if left != -1 and left != i:
+                        res.add((left, i))
+                if j != 0 and is_palin(w[:j]):
+                    right = find_palin(w[j:][::-1])
+                    if right != -1 and right != i:
+                        res.add((i, right))
+        return list(res)
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        # words = sorted(words, key=len)
+        # print(words)
+        # print('len(words):', len(words))
+        res = []
+        for i in range(len(words)):
+            for j in range(len(words)):
+                if i != j:
+                    if (words[i] + words[j]) == (words[i] + words[j])[::-1]:
+                        res.append([i, j])
+        return res
+
+=======
+
+def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        # create a dict to store the index of each word
+        # we can use this dict to get the index of a word in O(1) time
+        word_dict = {word: i for i, word in enumerate(words)}
+        # create a list to store the result
+        result = []
+        # loop through all the words
+        for i, word in enumerate(words):
+            # loop through all the possible suffixes
+            for j in range(len(word) + 1):
+                # get the prefix and suffix of the current word
+                prefix, suffix = word[:j], word[j:]
+                # if the prefix is a palindrome and the reversed suffix is in the dict
+                # and the reversed suffix is not the current word
+                if prefix == prefix[::-1] and suffix[::-1] in word_dict and word_dict[suffix[::-1]] != i:
+                    # add the reversed suffix index and the current word index to the result
+                    result.append([word_dict[suffix[::-1]], i])
+                # if the suffix is a palindrome and the reversed prefix is in the dict
+                # and the reversed prefix is not the current word
+                if j != len(word) and suffix == suffix[::-1] and prefix[::-1] in word_dict and word_dict[prefix[::-1]] != i:
+                    # add the current word index and the reversed prefix index to the result
+                    result.append([i, word_dict[prefix[::-1]]])
+        # return the result
+        return result
+
+=======
+
+class Solution:
+    def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        # create a dictionary for the words
+        # iterate through the words, for each word, iterate through the word, 
+        # check if the left and right part are palindrome
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the left and right part are both palindrome, check if the right part is in the dictionary
+        # if the left part is palindrome, check if the right part is in the dictionary
+        # if the right part is palindrome, check if the left part is in the dictionary
+        # if the

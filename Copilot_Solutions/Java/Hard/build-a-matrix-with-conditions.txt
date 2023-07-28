@@ -1,0 +1,117 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        int[][] matrix = new int[k][k];
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < k; j++) {
+                matrix[i][j] = 0;
+            }
+        }
+        for (int i = 0; i < rowConditions.length; i++) {
+            matrix[rowConditions[i][0] - 1][rowConditions[i][1] - 1] = 1;
+            matrix[rowConditions[i][1] - 1][rowConditions[i][0] - 1] = 1;
+        }
+        for (int i = 0; i < colConditions.length; i++) {
+            matrix[colConditions[i][0] - 1][colConditions[i][1] - 1] = 1;
+            matrix[colConditions[i][1] - 1][colConditions[i][0] - 1] = 1;
+        }
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < k; j++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][j] = 2;
+                }
+            }
+        }
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < k; j++) {
+                if (matrix[i][j] == 2) {
+                    matrix[i][j] = 3;
+                }
+            }
+        }
+        return matrix;
+
+=======
+
+        int[][] matrix = new int[k][k];
+        int n = rowConditions.length;
+        int m = colConditions.length;
+        for (int i = 0; i < n; i++) {
+            int above = rowConditions[i][0];
+            int below = rowConditions[i][1];
+            if (above == below) {
+                return new int[0][0];
+            }
+            if (above > below) {
+                matrix[above - 1][below - 1] = below;
+                matrix[below - 1][above - 1] = above;
+            } else {
+                matrix[below - 1][above - 1] = above;
+                matrix[above - 1][below - 1] = below;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            int left = colConditions[i][0];
+            int right = colConditions[i][1];
+            if (left == right) {
+                return new int[0][0];
+            }
+            if (left > right) {
+                matrix[right - 1][left - 1] = left;
+                matrix[left - 1][right - 1] = right;
+            } else {
+                matrix[left - 1][right - 1] = right;
+                matrix[right - 1][left - 1] = left;
+            }
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < k; j++) {
+                if (matrix[i][j] == 0) {
+                    for (int l = 1; l <= k; l++) {
+                        if (!set.contains(l)) {
+                            matrix[i][j] = l;
+                            set.add(l);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return matrix;
+
+=======
+
+        int[][] matrix = new int[k][k];
+        for (int[] row: matrix) {
+            Arrays.fill(row, 1);
+        }
+        for (int[] rowCondition: rowConditions) {
+            int above = rowCondition[0] - 1;
+            int below = rowCondition[1] - 1;
+            for (int i = 0; i < k; i++) {
+                if (i < above || i > below) {
+                    matrix[i][below] = 0;
+                }
+            }
+        }
+        for (int[] colCondition: colConditions) {
+            int left = colCondition[0] - 1;
+            int right = colCondition[1] - 1;
+            for (int i = 0; i < k; i++) {
+                if (i < left || i > right) {
+                    matrix[right][i] = 0;
+                }
+            }
+        }
+        int counter = k;
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < k; j++) {
+                if (matrix[i][j] == 1) {
+                    matrix[i][j] = counter;
+                    counter++;
+                }
+            }
+        }
+        return matrix;

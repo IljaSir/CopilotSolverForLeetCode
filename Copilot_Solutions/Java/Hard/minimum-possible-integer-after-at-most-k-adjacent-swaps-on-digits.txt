@@ -1,0 +1,244 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = num.length();
+        int[] pos = new int[10];
+        for (int i = 0; i < n; i++) {
+            pos[num.charAt(i) - '0'] = i;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            for (int d = 0; d < 10; d++) {
+                if (pos[d] >= i && pos[d] - i <= k) {
+                    sb.append(d);
+                    k -= pos[d] - i;
+                    pos[d] = n;
+                    for (int j = 0; j < 10; j++) {
+                        if (pos[j] < pos[d]) {
+                            pos[j]++;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = num.length();
+        int[] a = new int[n];
+        for (int i = 0; i < n; ++i) {
+            a[i] = num.charAt(i) - '0';
+        }
+        int[] pos = new int[10];
+        for (int i = 0; i < 10; ++i) {
+            pos[i] = -1;
+        }
+        for (int i = 0; i < n; ++i) {
+            int x = a[i];
+            for (int d = 0; d < x; ++d) {
+                if (pos[d] >= 0 && i - pos[d] <= k) {
+                    for (int j = pos[d]; j < i; ++j) {
+                        a[j] = a[j + 1];
+                        --k;
+                    }
+                    a[i] = d;
+                    break;
+                }
+            }
+            pos[x] = i;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; ++i) {
+            sb.append((char) (a[i] + '0'));
+        }
+        return sb.toString();
+
+=======
+
+        char[] chars = num.toCharArray();
+        int n = chars.length;
+        int[] pos = new int[10];
+        for (int i = 0; i < n; i++) {
+            pos[chars[i] - '0'] = i;
+        }
+        for (int i = 0; i < n && k > 0; i++) {
+            for (int d = 0; d < 10; d++) {
+                if (pos[d] > i && pos[d] - i <= k) {
+                    k -= pos[d] - i;
+                    for (int j = pos[d]; j > i; j--) {
+                        chars[j] = chars[j - 1];
+                    }
+                    chars[i] = (char) ('0' + d);
+                    for (int j = d; j < 10; j++) {
+                        pos[j]--;
+                    }
+                    break;
+                }
+            }
+        }
+        return new String(chars);
+
+=======
+
+        int n = num.length();
+        int[] pos = new int[10];
+        char[] ans = new char[n];
+        for (int i = 0; i < n; ++i) {
+            pos[num.charAt(i) - '0'] = i;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int d = 0; d < 10; ++d) {
+                if (pos[d] < i || pos[d] - i > k) {
+                    continue;
+                }
+                k -= pos[d] - i;
+                ans[i] = (char) ('0' + d);
+                for (int d2 = 0; d2 < 10; ++d2) {
+                    if (pos[d2] < pos[d]) {
+                        pos[d2]++;
+                    }
+                }
+                pos[d] = n;
+                break;
+            }
+        }
+        return new String(ans);
+
+=======
+
+        int n = num.length();
+        char[] chars = num.toCharArray();
+        int[] pos = new int[10];
+        for (int i = 0; i < n; i++) {
+            pos[chars[i] - '0'] = i;
+        }
+        for (int i = 0; i < n && k > 0; i++) {
+            for (int d = 0; d < 10; d++) {
+                if (pos[d] > i && pos[d] - i <= k) {
+                    for (int j = pos[d]; j > i; j--) {
+                        char t = chars[j];
+                        chars[j] = chars[j - 1];
+                        chars[j - 1] = t;
+                        pos[chars[j] - '0'] = j;
+                        pos[chars[j - 1] - '0'] = j - 1;
+                    }
+                    k -= pos[d] - i;
+                    break;
+                }
+            }
+        }
+        return new String(chars);
+
+=======
+
+        int n = num.length();
+        int[] pos = new int[10];
+        char[] ans = new char[n];
+        for (int i = 0; i < 10; ++i) {
+            pos[i] = -1;
+        }
+        for (int i = 0; i < n; ++i) {
+            int d = num.charAt(i) - '0';
+            int best = d;
+            for (int j = 0; j < d; ++j) {
+                if (pos[j] >= 0 && i - pos[j] <= k) {
+                    best = j;
+                    break;
+                }
+            }
+            ans[i] = (char)(best + '0');
+            k -= i - pos[best];
+            pos[best] = i;
+        }
+        return new String(ans);
+
+=======
+
+        int n = num.length();
+        int[] pos = new int[10];
+        for (int i = 0; i < 10; ++i) {
+            pos[i] = -1;
+        }
+        char[] ans = new char[n];
+        for (int i = 0; i < n; ++i) {
+            int d = num.charAt(i) - '0';
+            int best = -1, bestPos = n + 1;
+            for (int j = 0; j < d; ++j) {
+                if (pos[j] != -1 && i - pos[j] <= k) {
+                    if (pos[j] < bestPos) {
+                        best = j;
+                        bestPos = pos[j];
+                    }
+                }
+            }
+            if (best != -1) {
+                ans[bestPos] = (char)('0' + d);
+                pos[d] = bestPos;
+                k -= bestPos - i;
+            } else {
+                ans[i] = num.charAt(i);
+                pos[d] = i;
+            }
+        }
+        return new String(ans);
+
+=======
+
+        int n = num.length();
+        char[] chars = num.toCharArray();
+        int[] count = new int[10];
+        for (int i = 0; i < n; i++) {
+            count[chars[i] - '0']++;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (count[j] == 0) {
+                    continue;
+                }
+                int index = -1;
+                for (int l = i; l < n; l++) {
+                    if (chars[l] - '0' == j) {
+                        index = l;
+                        break;
+                    }
+                }
+                int steps = index - i;
+                if (steps <= k) {
+                    k -= steps;
+                    count[j]--;
+                    while (index > i) {
+                        chars[index] = chars[index - 1];
+                        index--;
+                    }
+                    chars[i] = (char) (j + '0');
+                    break;
+                }
+            }
+        }
+        return new String(chars);
+
+=======
+
+        int[] count = new int[10];
+        int n = num.length();
+        char[] s = num.toCharArray();
+        for (int i = 0; i < n; ++i) {
+            ++count[s[i] - '0'];
+            for (int d = 0; d < 10; ++d) {
+                if (count[d] == 0) continue;
+                int need = (s[i] - '0' - d) * count[d];
+                if (need <= k) {
+                    k -= need;
+                    for (int j = i - 1; j >= 0 && s[j] - '0' != d; --j) {
+                        --count[s[j] - '0'];
+                        s[j + 1] = s[j];
+                    }
+                    s[i - count[d] + 1] = (char) ('0' + d);
+                    break;
+                }
+            }
+        }
+        return new String(s);

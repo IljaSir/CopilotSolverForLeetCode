@@ -1,0 +1,286 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int maxProfit = 0;
+        int maxRotate = 0;
+        int profit = 0;
+        int rotate = 0;
+        int wait = 0;
+        for (int i = 0; i < customers.size(); ++i) {
+            wait += customers[i];
+            profit -= runningCost;
+            rotate++;
+            int board = min(4, wait);
+            wait -= board;
+            profit += board * boardingCost;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                maxRotate = rotate;
+            }
+        }
+        while (wait > 0) {
+            profit -= runningCost;
+            rotate++;
+            int board = min(4, wait);
+            wait -= board;
+            profit += board * boardingCost;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                maxRotate = rotate;
+            }
+        }
+        return maxProfit <= 0 ? -1 : maxRotate;
+
+=======
+
+        int n = customers.size();
+        int i = 0;
+        int total = 0;
+        int profit = 0;
+        int maxProfit = 0;
+        int maxIndex = -1;
+        while (i < n || total) {
+            if (i < n) {
+                total += customers[i];
+            }
+            int board = min(total, 4);
+            total -= board;
+            profit += board * boardingCost - runningCost;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                maxIndex = i + 1;
+            }
+            ++i;
+        }
+        return maxIndex;
+
+=======
+
+        int maxProfit = 0;
+        int maxProfitRotation = -1;
+        int totalProfit = 0;
+        int totalCustomers = 0;
+        int rotation = 0;
+        for (int i = 0; i < customers.size(); i++) {
+            totalCustomers += customers[i];
+            int boarded = min(totalCustomers, 4);
+            totalCustomers -= boarded;
+            totalProfit += boarded * boardingCost - runningCost;
+            rotation++;
+            if (totalProfit > maxProfit) {
+                maxProfit = totalProfit;
+                maxProfitRotation = rotation;
+            }
+        }
+        while (totalCustomers > 0) {
+            int boarded = min(totalCustomers, 4);
+            totalCustomers -= boarded;
+            totalProfit += boarded * boardingCost - runningCost;
+            rotation++;
+            if (totalProfit > maxProfit) {
+                maxProfit = totalProfit;
+                maxProfitRotation = rotation;
+            }
+        }
+        return maxProfitRotation;
+
+=======
+
+        int n = customers.size();
+        int maxProfit = 0;
+        int maxProfitIndex = -1;
+        int currentProfit = 0;
+        int currentCustomers = 0;
+        int currentRotation = 0;
+        for (int i = 0; i < n; ++i) {
+            currentCustomers += customers[i];
+            ++currentRotation;
+            int boardingCustomers = min(4, currentCustomers);
+            currentCustomers -= boardingCustomers;
+            currentProfit += boardingCustomers * boardingCost - runningCost;
+            if (currentProfit > maxProfit) {
+                maxProfit = currentProfit;
+                maxProfitIndex = currentRotation;
+            }
+        }
+        while (currentCustomers > 0) {
+            ++currentRotation;
+            int boardingCustomers = min(4, currentCustomers);
+            currentCustomers -= boardingCustomers;
+            currentProfit += boardingCustomers * boardingCost - runningCost;
+            if (currentProfit > maxProfit) {
+                maxProfit = currentProfit;
+                maxProfitIndex = currentRotation;
+            }
+        }
+        return maxProfit > 0 ? maxProfitIndex : -1;
+
+=======
+
+        int n = customers.size();
+        int i = 0;
+        int profit = 0;
+        int maxProfit = 0;
+        int maxProfitCycle = -1;
+        int waiting = 0;
+        int cycle = 0;
+        while (i < n || waiting > 0) {
+            if (i < n) {
+                waiting += customers[i];
+            }
+            int boarding = min(waiting, 4);
+            waiting -= boarding;
+            profit += boarding * boardingCost - runningCost;
+            ++cycle;
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                maxProfitCycle = cycle;
+            }
+            ++i;
+        }
+        return maxProfitCycle;
+
+=======
+
+        int n = customers.size();
+        int res = -1, maxProfit = 0;
+        int cur = 0, wait = 0, i = 0;
+        while (i < n || wait > 0) {
+            if (i < n) {
+                wait += customers[i++];
+            }
+            int board = min(4, wait);
+            wait -= board;
+            cur += board;
+            int profit = cur * boardingCost - (i * runningCost);
+            if (profit > maxProfit) {
+                maxProfit = profit;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int sum = 0;
+        int maxProfit = 0;
+        int maxRotations = 0;
+        int rotations = 0;
+        int n = customers.size();
+        int i = 0;
+        int waiting = 0;
+        while (i < n || waiting > 0) {
+            if (i < n) {
+                waiting += customers[i];
+            }
+            int boarding = min(4, waiting);
+            waiting -= boarding;
+            sum += boarding * boardingCost - runningCost;
+            rotations++;
+            if (sum > maxProfit) {
+                maxProfit = sum;
+                maxRotations = rotations;
+            }
+            i++;
+        }
+        return maxProfit > 0 ? maxRotations : -1;
+
+=======
+
+        int total = 0;
+        int count = 0;
+        int maxProfit = 0;
+        int maxCount = -1;
+        int i = 0;
+        int n = customers.size();
+        while (i < n || total > 0) {
+            if (i < n) {
+                total += customers[i];
+            }
+            int cur = min(total, 4);
+            total -= cur;
+            int profit = cur * boardingCost - runningCost;
+            count++;
+            if (profit > 0) {
+                maxProfit += profit;
+                if (maxProfit > maxCount) {
+                    maxCount = maxProfit;
+                    maxCount = count;
+                }
+            }
+        }
+        return maxCount;
+
+=======
+
+        int sum = 0, profit = 0, max_profit = 0, max_rotations = -1, wait = 0, rotations = 0;
+        for (int i = 0; i < customers.size(); i++) {
+            wait += customers[i];
+            if (wait >= 4) {
+                sum += 4 * boardingCost;
+                wait -= 4;
+            }
+            else {
+                sum += wait * boardingCost;
+                wait = 0;
+            }
+            sum -= runningCost;
+            rotations++;
+            if (sum > max_profit) {
+                max_profit = sum;
+                max_rotations = rotations;
+            }
+        }
+        while (wait > 0) {
+            if (wait >= 4) {
+                sum += 4 * boardingCost;
+                wait -= 4;
+            }
+            else {
+                sum += wait * boardingCost;
+                wait = 0;
+            }
+            sum -= runningCost;
+            rotations++;
+            if (sum > max_profit) {
+                max_profit = sum;
+                max_rotations = rotations;
+            }
+        }
+        return max_rotations;
+
+=======
+
+        int n= customers.size();
+        int maxProfit=0;
+        int maxProfitIndex=0;
+        int currentProfit=0;
+        int currentCustomers=0;
+        int currentRotations=0;
+        int currentBoarding=0;
+        for(int i=0;i<n;i++){
+            currentRotations++;
+            currentCustomers+=customers[i];
+            currentBoarding=min(currentCustomers,4);
+            currentCustomers-=currentBoarding;
+            currentProfit+=currentBoarding*boardingCost-runningCost;
+            if(currentProfit>maxProfit){
+                maxProfit=currentProfit;
+                maxProfitIndex=currentRotations;
+            }
+        }
+        while(currentCustomers>0){
+            currentRotations++;
+            currentBoarding=min(currentCustomers,4);
+            currentCustomers-=currentBoarding;
+            currentProfit+=currentBoarding*boardingCost-runningCost;
+            if(currentProfit>maxProfit){
+                maxProfit=currentProfit;
+                maxProfitIndex=currentRotations;
+            }
+        }
+        if(maxProfit<=0)
+            return -1;
+        else
+            return maxProfitIndex;

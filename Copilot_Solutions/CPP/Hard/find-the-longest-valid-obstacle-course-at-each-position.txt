@@ -1,0 +1,155 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = obstacles.size();
+        vector<int> ans(n, 1);
+        vector<int> dp;
+        dp.push_back(obstacles[0]);
+        for (int i = 1; i < n; ++i) {
+            if (obstacles[i] >= dp.back()) {
+                dp.push_back(obstacles[i]);
+                ans[i] = dp.size();
+            } else {
+                auto it = lower_bound(dp.begin(), dp.end(), obstacles[i]);
+                ans[i] = it - dp.begin() + 1;
+                *it = obstacles[i];
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> dp;
+        vector<int> ans;
+        for (int i = 0; i < obstacles.size(); ++i) {
+            auto it = lower_bound(dp.begin(), dp.end(), obstacles[i]);
+            if (it == dp.end()) {
+                dp.push_back(obstacles[i]);
+            } else {
+                *it = obstacles[i];
+            }
+            ans.push_back(dp.size());
+        }
+        return ans;
+
+=======
+
+        int n = obstacles.size();
+        vector<int> res(n, 0);
+        vector<int> dp = {obstacles[0]};
+        res[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            if (obstacles[i] >= dp.back()) {
+                dp.push_back(obstacles[i]);
+                res[i] = dp.size();
+            } else {
+                int pos = upper_bound(dp.begin(), dp.end(), obstacles[i]) - dp.begin();
+                dp[pos] = obstacles[i];
+                res[i] = pos + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = obstacles.size();
+        vector<int> dp;
+        vector<int> res(n);
+        for (int i = 0; i < n; ++i) {
+            int num = obstacles[i];
+            auto it = lower_bound(dp.begin(), dp.end(), num);
+            if (it == dp.end()) {
+                dp.push_back(num);
+                res[i] = dp.size();
+            } else {
+                *it = num;
+                res[i] = it - dp.begin() + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = obstacles.size();
+        vector<int> ans(n, 1);
+        vector<int> dp;
+        for (int i = 0; i < n; ++i) {
+            int x = obstacles[i];
+            auto it = lower_bound(dp.begin(), dp.end(), x);
+            if (it == dp.end()) {
+                dp.push_back(x);
+                ans[i] = dp.size();
+            } else {
+                *it = x;
+                ans[i] = it - dp.begin() + 1;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        for (int i = 0; i < obstacles.size(); ++i) {
+            int left = 0, right = res.size();
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (res[mid] <= obstacles[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            if (left == res.size()) {
+                res.push_back(obstacles[i]);
+            } else {
+                res[left] = obstacles[i];
+            }
+        }
+        return vector<int>(res.size(), 1);
+
+=======
+
+        vector<int> res;
+        set<int> s;
+        for (int i = 0; i < obstacles.size(); ++i) {
+            auto it = s.upper_bound(obstacles[i]);
+            if (it != s.end()) {
+                s.erase(it);
+            }
+            s.insert(obstacles[i]);
+            res.push_back(s.size());
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        vector<int> dp;
+        for (auto x: obstacles) {
+            int i = lower_bound(dp.begin(), dp.end(), x) - dp.begin();
+            if (i == dp.size()) {
+                dp.push_back(x);
+            } else {
+                dp[i] = x;
+            }
+            ans.push_back(i + 1);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        vector<int> stack;
+        for (int i = 0; i < obstacles.size(); i++) {
+            int cur = obstacles[i];
+            if (stack.empty() || stack.back() <= cur) {
+                stack.push_back(cur);
+                ans.push_back(stack.size());
+            } else {
+                int pos = lower_bound(stack.begin(), stack.end(), cur) - stack.begin();
+                stack[pos] = cur;
+                ans.push_back(pos + 1);
+            }
+        }
+        return ans;

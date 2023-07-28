@@ -1,0 +1,246 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int task : tasks) {
+            map.put(task, map.getOrDefault(task, 0) + 1);
+        }
+        int ans = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            int count = entry.getValue();
+            if (count % 2 == 1) {
+                ans += count / 2 + 1;
+            } else {
+                ans += count / 2;
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Integer> taskMap = new HashMap<>();
+        for (int task : tasks) {
+            taskMap.put(task, taskMap.getOrDefault(task, 0) + 1);
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int task : taskMap.keySet()) {
+            pq.offer(task);
+        }
+        int rounds = 0;
+        while (!pq.isEmpty()) {
+            int task = pq.poll();
+            int count = taskMap.get(task);
+            if (count == 0) {
+                continue;
+            }
+            rounds++;
+            count--;
+            if (count > 0) {
+                taskMap.put(task, count);
+                pq.offer(task);
+            }
+            int nextTask = task + 1;
+            count = taskMap.getOrDefault(nextTask, 0);
+            if (count > 0) {
+                count--;
+                taskMap.put(nextTask, count);
+                pq.offer(nextTask);
+            }
+        }
+        return rounds;
+
+=======
+
+        int n = tasks.length;
+        int[] arr = new int[1000001];
+        for (int i = 0; i < n; i++) {
+            arr[tasks[i]]++;
+        }
+        int res = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 0) continue;
+            arr[i] -= 2;
+            if (arr[i] > 0) {
+                if (arr[i] % 3 == 0) {
+                    res += arr[i] / 3;
+                } else {
+                    res += arr[i] / 3 + 1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[] count = new int[10];
+        for (int task : tasks) {
+            int i = (int) (Math.log(task - 1) / Math.log(2)) + 1;
+            count[i]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < 10; i++) {
+            if (count[i] > 0) {
+                ans += count[i] / 2;
+                if (count[i] % 2 == 1) {
+                    ans++;
+                    count[i + 1]++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int[] cnt = new int[1000010];
+        for (int i = 0; i < n; i++) {
+            int t = (tasks[i] + 1) / 2;
+            cnt[t]++;
+        }
+        int res = 0;
+        for (int i = 0; i <= 1000000; i++) {
+            if (cnt[i] == 0) continue;
+            if (cnt[i] % 2 == 1) {
+                cnt[i]--;
+                res++;
+            }
+            if (i <= 1000000 - 2) {
+                cnt[i + 2] += cnt[i] / 2;
+            } else {
+                res += cnt[i] / 2;
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[][] dp = new int[n][n];
+        for(int i = 0; i < n; i++) {
+            for(int j = i; j < n; j++) {
+                dp[i][j] = tasks[j];
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            for(int j = i + 1; j < n; j++) {
+                dp[i][j] = Math.max(dp[i][j], dp[i][j - 1]);
+            }
+        }
+        int[] f = new int[n];
+        Arrays.fill(f, 0x3f3f3f3f);
+        f[0] = 0;
+        for(int i = 0; i < n; i++) {
+            for(int j = i; j < n; j++) {
+                int max = dp[i][j];
+                int r = (max + 1) / 2;
+                int l = (max + 2) / 3;
+                f[j] = Math.min(f[j], f[i] + r + l);
+            }
+        }
+        return f[n - 1];
+
+=======
+
+        int n = tasks.length;
+        if (n == 1) {
+            return 1;
+        }
+        Arrays.sort(tasks);
+        int i = 0;
+        int j = n-1;
+        int rounds = 0;
+        while (i <= j) {
+            int max = tasks[j];
+            int min = tasks[i];
+            int diff = max - min;
+            if (diff == 0) {
+                rounds += 1;
+                i++;
+                j--;
+            } else {
+                int num = j-i+1;
+                int minRounds = (num+2)/3;
+                int maxRounds = num/2;
+                int r = 0;
+                if (diff <= 1) {
+                    r = minRounds;
+                } else {
+                    r = maxRounds;
+                }
+                rounds += r;
+                i += r*2;
+                j -= r;
+            }
+        }
+        return rounds;
+
+=======
+
+        int[] freq = new int[1000001];
+        for(int task: tasks){
+            freq[task]++;
+        }
+        int res = 0;
+        for(int i = 1; i < freq.length; i++){
+            if(freq[i] == 0) continue;
+            if(freq[i] % 2 == 1){
+                freq[i]--;
+                freq[i+1]++;
+            }
+            res += freq[i] / 2;
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[] arr = new int[100000000];
+        for(int i = 0; i < n; i++) {
+            arr[tasks[i]]++;
+        }
+        int ans = 0;
+        for(int i = 0; i < arr.length; i++) {
+            if(arr[i] > 0) {
+                if(arr[i] % 2 == 0) {
+                    ans += arr[i] / 2;
+                } else {
+                    ans += arr[i] / 2 + 1;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        if (n == 1) return (tasks[0] + 1) / 2;
+        Arrays.sort(tasks);
+        int[] count = new int[1000001];
+        int max = 0;
+        for (int t : tasks) {
+            count[t]++;
+            max = Math.max(max, t);
+        }
+        int res = 0;
+        int i = 1;
+        while (i <= max) {
+            if (count[i] == 0) {
+                i++;
+                continue;
+            }
+            if (count[i] % 2 == 1) {
+                count[i + 1]++;
+                res++;
+            }
+            count[i + 2] += count[i] / 2;
+            i++;
+        }
+        while (i <= 1000000) {
+            if (count[i] > 0) {
+                res += (count[i] + 1) / 2;
+            }
+            i++;
+        }
+        return res;

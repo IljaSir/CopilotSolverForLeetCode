@@ -1,0 +1,187 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; m + 1];
+        for i in 1..=m {
+            dp[i][0] = dp[i - 1][0] + nums[i - 1] * multipliers[i - 1];
+            dp[0][i] = dp[0][i - 1] + nums[n - i] * multipliers[i - 1];
+        }
+        for i in 1..=m {
+            for j in 1..=m - i {
+                dp[i][j] = std::cmp::max(
+                    dp[i - 1][j] + nums[i - 1] * multipliers[i + j - 1],
+                    dp[i][j - 1] + nums[n - j] * multipliers[i + j - 1],
+                );
+            }
+        }
+        dp[m][0]
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; m + 1];
+        for i in 0..m {
+            dp[i][0] = dp[i][0] + multipliers[i] * nums[i];
+            dp[i + 1][0] = dp[i][0] + multipliers[i] * nums[n - i - 1];
+        }
+        for j in 1..m {
+            for i in 0..m - j {
+                dp[i][j] = std::cmp::max(
+                    dp[i][j],
+                    dp[i][j - 1] + multipliers[i + j] * nums[i],
+                );
+                dp[i][j] = std::cmp::max(
+                    dp[i][j],
+                    dp[i + 1][j - 1] + multipliers[i + j] * nums[n - j - 1 - i],
+                );
+            }
+        }
+        return *dp[0].iter().max().unwrap();
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; m + 1];
+        for i in 0..m {
+            dp[i + 1][0] = dp[i][0] + nums[i] * multipliers[i];
+            dp[0][i + 1] = dp[0][i] + nums[n - 1 - i] * multipliers[i];
+        }
+        for i in 0..m {
+            for j in 0..m - i {
+                dp[i + 1][j + 1] = std::cmp::max(
+                    dp[i][j + 1] + nums[i] * multipliers[i + j + 1],
+                    dp[i + 1][j] + nums[n - 1 - j] * multipliers[i + j + 1],
+                );
+            }
+        }
+        dp[m][m]
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; m + 1];
+        for k in 0..m {
+            for i in 0..=k {
+                let j = k - i;
+                let a = if i == 0 { i32::MIN } else { dp[i - 1][j] + nums[i - 1] * multipliers[k] };
+                let b = if j == 0 { i32::MIN } else { dp[i][j - 1] + nums[n - j] * multipliers[k] };
+                dp[i][j] = a.max(b);
+            }
+        }
+        dp[m][0]
+    }
+}
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; 2];
+        for i in 0..m {
+            for j in 0..=i {
+                let k = i - j;
+                let a = if j == 0 { std::i32::MIN } else { dp[i % 2][j - 1] + nums[j - 1] * multipliers[i] };
+                let b = if k == 0 { std::i32::MIN } else { dp[(i - 1) % 2][j] + nums[n - k] * multipliers[i] };
+                dp[i % 2][j] = std::cmp::max(a, b);
+            }
+        }
+        dp[m % 2][m]
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; 2];
+        for i in 0..m {
+            dp[0][i] = dp[0][i + 1] + multipliers[i] * nums[i];
+        }
+        for i in 1..m {
+            dp[i % 2][0] = dp[(i - 1) % 2][0] + multipliers[i] * nums[n - i];
+            for j in 1..=i {
+                dp[i % 2][j] = std::cmp::max(dp[(i - 1) % 2][j] + multipliers[i] * nums[n - i + j], dp[i % 2][j - 1] + multipliers[i] * nums[j - 1]);
+            }
+        }
+        let mut ans = dp[0][m - 1];
+        for i in 0..m {
+            ans = std::cmp::max(ans, dp[(m - 1) % 2][i]);
+        }
+        ans
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; 2];
+        for i in 0..=m {
+            dp[0][i] = std::i32::MIN;
+            dp[1][i] = std::i32::MIN;
+        }
+        dp[0][0] = 0;
+        for i in 1..=m {
+            for j in 0..=i {
+                let k = i - j;
+                if j > 0 {
+                    dp[i & 1][j] = dp[i & 1][j].max(dp[!(i & 1)][j - 1] + nums[j - 1] * multipliers[i - 1]);
+                }
+                if k > 0 {
+                    dp[i & 1][j] = dp[i & 1][j].max(dp[!(i & 1)][j] + nums[n - k] * multipliers[i - 1]);
+                }
+            }
+        }
+        dp[m & 1].iter().max().unwrap().to_owned()
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; multipliers.len()]; multipliers.len()];
+        for i in 0..multipliers.len() {
+            for j in 0..multipliers.len() {
+                if i == 0 && j == 0 {
+                    dp[i][j] = nums[0] * multipliers[0];
+                } else if i == 0 {
+                    dp[i][j] = dp[i][j-1] + nums[nums.len() - j] * multipliers[j];
+                } else if j == 0 {
+                    dp[i][j] = dp[i-1][j] + nums[i] * multipliers[i];
+                } else {
+                    dp[i][j] = std::cmp::max(dp[i-1][j] + nums[i] * multipliers[i], dp[i][j-1] + nums[nums.len() - j] * multipliers[j]);
+                }
+            }
+        }
+        dp[multipliers.len() - 1][multipliers.len() - 1]
+
+=======
+
+        let n = nums.len();
+        let m = multipliers.len();
+        let mut dp = vec![vec![0; m + 1]; 2];
+        for i in 0..m {
+            let (x, y) = (i % 2, (i + 1) % 2);
+            dp[x][i + 1] = dp[x][i] + multipliers[i] * nums[i];
+            dp[y][i + 1] = dp[y][i] + multipliers[i] * nums[n - i - 1];
+            for j in (0..i).rev() {
+                dp[x][j + 1] = (dp[x][j] + multipliers[i] * nums[i - j]).max(dp[x][j + 1] + multipliers[i] * nums[n - i + j]);
+                dp[y][j + 1] = (dp[y][j] + multipliers[i] * nums[n - i + j]).max(dp[y][j + 1] + multipliers[i] * nums[i - j]);
+            }
+        }
+        dp[0].iter().chain(dp[1].iter()).max().unwrap().clone()
+    }
+}
+
+=======
+
+        
+    }
+}

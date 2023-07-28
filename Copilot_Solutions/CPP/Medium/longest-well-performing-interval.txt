@@ -1,0 +1,207 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = hours.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        stack<int> s;
+        for (int i = 0; i <= n; ++i) {
+            if (s.empty() || sum[s.top()] > sum[i]) {
+                s.push(i);
+            }
+        }
+        int res = 0;
+        for (int i = n; i >= 0; --i) {
+            while (!s.empty() && sum[i] > sum[s.top()]) {
+                res = max(res, i - s.top());
+                s.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        unordered_map<int, int> m;
+        for (int i = 0; i <= n; ++i) {
+            if (!m.count(sum[i])) {
+                m[sum[i]] = i;
+            }
+            if (m.count(sum[i] - 1)) {
+                res = max(res, i - m[sum[i] - 1]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        vector<int> preSum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            preSum[i + 1] = preSum[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        stack<int> stk;
+        for (int i = 0; i < n + 1; ++i) {
+            if (stk.empty() || preSum[stk.top()] > preSum[i]) {
+                stk.push(i);
+            }
+        }
+        for (int i = n; i >= 0; --i) {
+            while (!stk.empty() && preSum[stk.top()] < preSum[i]) {
+                res = max(res, i - stk.top());
+                stk.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        vector<int> preSum(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            preSum[i] = preSum[i - 1] + (hours[i - 1] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        stack<int> st;
+        for (int i = 0; i <= n; ++i) {
+            if (st.empty() || preSum[st.top()] > preSum[i]) {
+                st.push(i);
+            }
+        }
+        for (int i = n; i >= 0; --i) {
+            while (!st.empty() && preSum[st.top()] < preSum[i]) {
+                res = max(res, i - st.top());
+                st.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size(), res = 0;
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        vector<int> stk = {0};
+        for (int i = 1; i <= n; ++i) {
+            if (sum[i] < sum[stk.back()]) {
+                stk.push_back(i);
+            }
+        }
+        for (int i = n; i > res; --i) {
+            while (stk.size() && sum[i] > sum[stk.back()]) {
+                res = max(res, i - stk.back());
+                stk.pop_back();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        vector<int> pre(n+1);
+        for (int i = 0; i < n; ++i) {
+            pre[i+1] = pre[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + ans; j < n; ++j) {
+                if (pre[i] < pre[j+1]) {
+                    ans = max(ans, j - i + 1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int len = hours.size();
+        vector<int> prefix(len + 1, 0);
+        for (int i = 1; i <= len; i++) {
+            prefix[i] = prefix[i - 1] + (hours[i - 1] > 8 ? 1 : -1);
+        }
+        stack<int> stk;
+        for (int i = 0; i <= len; i++) {
+            if (stk.empty() || prefix[i] < prefix[stk.top()]) {
+                stk.push(i);
+            }
+        }
+        int res = 0;
+        for (int i = len; i >= 0; i--) {
+            while (!stk.empty() && prefix[i] > prefix[stk.top()]) {
+                res = max(res, i - stk.top());
+                stk.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        vector<int> accu(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            accu[i+1] = accu[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i+res; j < n; j++) {
+                if (accu[j+1] > accu[i]) {
+                    res = j-i+1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        int res = 0;
+        vector<int> score(n+1, 0);
+        for (int i = 0; i < n; ++i) {
+            score[i+1] = score[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        stack<int> st;
+        for (int i = 0; i < n+1; ++i) {
+            if (st.empty() || score[st.top()] > score[i]) {
+                st.push(i);
+            }
+        }
+        for (int i = n; i >= 0; --i) {
+            while (!st.empty() && score[st.top()] < score[i]) {
+                res = max(res, i - st.top());
+                st.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.size();
+        int ans = 0;
+        vector<int> score(n+1, 0);
+        for (int i = 0; i < n; ++i) {
+            score[i+1] = score[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        stack<int> stk;
+        for (int i = 0; i <= n; ++i) {
+            if (stk.empty() || score[stk.top()] > score[i]) {
+                stk.push(i);
+            }
+        }
+        for (int i = n; i >= 0; --i) {
+            while (!stk.empty() && score[stk.top()] < score[i]) {
+                ans = max(ans, i - stk.top());
+                stk.pop();
+            }
+        }
+        return ans;

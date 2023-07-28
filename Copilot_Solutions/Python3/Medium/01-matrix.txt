@@ -1,0 +1,207 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        q = collections.deque()
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    q.append((i, j))
+                else:
+                    mat[i][j] = -1
+        while q:
+            x, y = q.popleft()
+            for dx, dy in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < m and 0 <= ny < n and mat[nx][ny] == -1:
+                    mat[nx][ny] = mat[x][y] + 1
+                    q.append((nx, ny))
+        return mat
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf')] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i > 0:
+                        dp[i][j] = min(dp[i][j], dp[i-1][j] + 1)
+                    if j > 0:
+                        dp[i][j] = min(dp[i][j], dp[i][j-1] + 1)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i < m - 1:
+                        dp[i][j] = min(dp[i][j], dp[i+1][j] + 1)
+                    if j < n - 1:
+                        dp[i][j] = min(dp[i][j], dp[i][j+1] + 1)
+        return dp
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        q = collections.deque()
+        for i in range(len(mat)):
+            for j in range(len(mat[0])):
+                if mat[i][j] == 0:
+                    q.append((i, j))
+                else:
+                    mat[i][j] = float('inf')
+        while q:
+            i, j = q.popleft()
+            for x, y in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+                if 0 <= x < len(mat) and 0 <= y < len(mat[0]) and mat[x][y] > mat[i][j] + 1:
+                    mat[x][y] = mat[i][j] + 1
+                    q.append((x, y))
+        return mat
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        q = collections.deque()
+        m, n = len(mat), len(mat[0])
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    q.append((i, j))
+                else:
+                    mat[i][j] = float('inf')
+        while q:
+            i, j = q.popleft()
+            for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                ni, nj = i + di, j + dj
+                if 0 <= ni < m and 0 <= nj < n and mat[ni][nj] > mat[i][j] + 1:
+                    mat[ni][nj] = mat[i][j] + 1
+                    q.append((ni, nj))
+        return mat
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[float('inf') for _ in range(n)] for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i > 0:
+                        dp[i][j] = min(dp[i][j], dp[i-1][j] + 1)
+                    if j > 0:
+                        dp[i][j] = min(dp[i][j], dp[i][j-1] + 1)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if mat[i][j] == 0:
+                    dp[i][j] = 0
+                else:
+                    if i < m - 1:
+                        dp[i][j] = min(dp[i][j], dp[i+1][j] + 1)
+                    if j < n - 1:
+                        dp[i][j] = min(dp[i][j], dp[i][j+1] + 1)
+        return dp
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        queue = collections.deque([(i, j) for i in range(m) for j in range(n) if mat[i][j] == 0])
+        dist = [[0] * n for _ in range(m)]
+        while queue:
+            i, j = queue.popleft()
+            for x, y in ((i+1, j), (i-1, j), (i, j+1), (i, j-1)):
+                if 0 <= x < m and 0 <= y < n and dist[x][y] == 0 and mat[x][y] == 1:
+                    dist[x][y] = dist[i][j] + 1
+                    queue.append((x, y))
+        return dist
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m = len(mat)
+        n = len(mat[0])
+        dp = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 1:
+                    dp[i][j] = float('inf')
+                    if i > 0:
+                        dp[i][j] = min(dp[i][j], dp[i-1][j] + 1)
+                    if j > 0:
+                        dp[i][j] = min(dp[i][j], dp[i][j-1] + 1)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if mat[i][j] == 1:
+                    if i < m - 1:
+                        dp[i][j] = min(dp[i][j], dp[i+1][j] + 1)
+                    if j < n - 1:
+                        dp[i][j] = min(dp[i][j], dp[i][j+1] + 1)
+        return dp
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        dp = [[0 if mat[i][j] == 0 else m*n for j in range(n)] for i in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if i > 0:
+                    dp[i][j] = min(dp[i][j], dp[i-1][j] + 1)
+                if j > 0:
+                    dp[i][j] = min(dp[i][j], dp[i][j-1] + 1)
+        for i in range(m-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if i < m-1:
+                    dp[i][j] = min(dp[i][j], dp[i+1][j] + 1)
+                if j < n-1:
+                    dp[i][j] = min(dp[i][j], dp[i][j+1] + 1)
+        return dp
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0])
+        res = [[0 for _ in range(n)] for _ in range(m)]
+        q = collections.deque()
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    q.append((i, j))
+                else:
+                    res[i][j] = 10000
+        while q:
+            i, j = q.popleft()
+            for x, y in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                if 0 <= i+x < m and 0 <= j+y < n:
+                    if res[i+x][j+y] > res[i][j] + 1:
+                        res[i+x][j+y] = res[i][j] + 1
+                        q.append((i+x, j+y))
+        return res
+
+=======
+
+def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        if not mat or not mat[0]: return mat
+        m, n = len(mat), len(mat[0])
+        res = [[0] * n for _ in range(m)]
+        queue = collections.deque()
+        for i in range(m):
+            for j in range(n):
+                if mat[i][j] == 0:
+                    queue.append((i, j))
+                else:
+                    res[i][j] = float('inf')
+        while queue:
+            i, j = queue.popleft()
+            for x, y in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+                if 0 <= x < m and 0 <= y < n and res[x][y] > res[i][j] + 1:
+                    res[x][y] = res[i][j] + 1
+                    queue.append((x, y))
+        return res

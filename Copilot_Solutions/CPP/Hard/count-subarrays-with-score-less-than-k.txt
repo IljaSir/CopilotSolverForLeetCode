@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<long long> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long long res = 0;
+        int l = 0, r = 0;
+        for (int i = 0; i < n; ++i) {
+            while (l < n && sum[l + 1] - sum[i] < k) {
+                ++l;
+            }
+            if (sum[l + 1] - sum[i] >= k) {
+                --l;
+            }
+            r = max(r, i);
+            while (r < n && sum[r + 1] - sum[i] <= k) {
+                ++r;
+            }
+            if (sum[r + 1] - sum[i] > k) {
+                --r;
+            }
+            res += r - l;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<long long> sum(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + nums[i];
+        }
+        long long res = 0;
+        deque<int> dq;
+        for (int i = 0; i <= n; i++) {
+            while (!dq.empty() && sum[i] <= sum[dq.back()]) {
+                dq.pop_back();
+            }
+            while (!dq.empty() && sum[i] >= sum[dq.front()] + k) {
+                res += i - dq.front();
+                dq.pop_front();
+            }
+            dq.push_back(i);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<long long> prefix(n + 1);
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        long long ans = 0;
+        deque<int> q;
+        for (int i = 0; i <= n; i++) {
+            while (!q.empty() && prefix[i] <= prefix[q.back()]) {
+                q.pop_back();
+            }
+            while (!q.empty() && prefix[i] * (i - q.front()) >= k) {
+                ans += i - q.front();
+                q.pop_front();
+            }
+            q.push_back(i);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        deque<int> q;
+        long long ans = 0;
+        for (int i = 0; i <= n; i++) {
+            while (!q.empty() && sum[i] <= sum[q.back()]) {
+                q.pop_back();
+            }
+            while (!q.empty() && sum[i] >= sum[q.front()] + k) {
+                ans += q.back() - q.front();
+                q.pop_front();
+            }
+            q.push_back(i);
+        }
+        while (!q.empty()) {
+            ans += q.back() - q.front();
+            q.pop_front();
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n + 1);
+        for (int i = 0; i < n; ++i) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        long long ans = 0;
+        for (int i = 1; i <= n; ++i) {
+            int l = 0, r = i;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (pre[i] - pre[mid] < k) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            ans += i - l;
+        }
+        return ans;
+
+=======
+
+        long long ans = 0;
+        int n = nums.size();
+        vector<long long> pre(n + 1);
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        deque<int> q;
+        for (int i = 0; i <= n; i++) {
+            while (!q.empty() && pre[i] <= pre[q.back()]) {
+                q.pop_back();
+            }
+            while (!q.empty() && pre[i] * (i - q.front()) >= k) {
+                ans += i - q.front();
+                q.pop_front();
+            }
+            q.push_back(i);
+        }
+        return ans;
+
+=======
+
+        long long res = 0;
+        int n = nums.size();
+        vector<long long> prefix(n+1, 0);
+        for (int i = 1; i <= n; ++i) {
+            prefix[i] = prefix[i-1] + nums[i-1];
+        }
+        deque<int> q;
+        for (int i = 0; i <= n; ++i) {
+            while (!q.empty() && prefix[i] <= prefix[q.back()]) {
+                q.pop_back();
+            }
+            while (!q.empty() && prefix[i]*q.size() >= prefix[q.front()]*i) {
+                q.pop_front();
+            }
+            q.push_back(i);
+            res += q.size()-1;
+        }
+        return res;
+
+=======
+
+        long long sum = 0;
+        int n = nums.size();
+        long long ans = 0;
+        int l = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            while (sum * (i - l + 1) >= k) {
+                sum -= nums[l++];
+            }
+            ans += i - l + 1;
+        }
+        return ans;
+
+=======
+
+        long long res = 0;
+        long long sum = 0;
+        int n = nums.size();
+        int i = 0;
+        int j = 0;
+        while (j < n) {
+            sum += nums[j];
+            while (i < n && sum * (j - i + 1) >= k) {
+                sum -= nums[i];
+                i++;
+            }
+            res += j - i + 1;
+            j++;
+        }
+        return res;
+
+=======
+
+        long long n = nums.size();
+        long long ans = 0;
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (sum < k) {
+                ans += (i + 1);
+            } else {
+                int l = 0;
+                int r = i;
+                while (l < r) {
+                    int mid = (l + r) / 2;
+                    if (sum - nums[mid] >= k) {
+                        l = mid + 1;
+                    } else {
+                        r = mid;
+                    }
+                }
+                if (sum - nums[l] >= k) {
+                    l++;
+                }
+                ans += (i - l);
+                sum -= nums[l];
+            }
+        }
+        return ans;

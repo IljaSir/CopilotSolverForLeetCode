@@ -1,0 +1,177 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        if matrix.is_empty() {
+            return 0;
+        }
+        let m = matrix.len();
+        let n = matrix[0].len();
+        let mut dp = vec![vec![0; n]; m];
+        let mut ans = 0;
+        for i in 0..m {
+            for j in 0..n {
+                ans = ans.max(Solution::dfs(&matrix, i, j, &mut dp));
+            }
+        }
+        ans
+    }
+    fn dfs(matrix: &Vec<Vec<i32>>, i: usize, j: usize, dp: &mut Vec<Vec<i32>>) -> i32 {
+        if dp[i][j] != 0 {
+            return dp[i][j];
+        }
+        let m = matrix.len();
+        let n = matrix[0].len();
+        let mut ans = 1;
+        if i > 0 && matrix[i - 1][j] > matrix[i][j] {
+            ans = ans.max(Solution::dfs(matrix, i - 1, j, dp) + 1);
+        }
+        if i + 1 < m && matrix[i + 1][j] > matrix[i][j] {
+            ans = ans.max(Solution::dfs(matrix, i + 1, j, dp) + 1);
+        }
+        if j > 0 && matrix[i][j - 1] > matrix[i][j] {
+            ans = ans.max(Solution::dfs(matrix, i, j - 1, dp) + 1);
+        }
+        if j + 1 < n && matrix[i][j + 1] > matrix[i][j] {
+            ans = ans.max(Solution::dfs(matrix, i, j + 1, dp) + 1);
+        }
+        dp[i][j] = ans;
+        ans
+
+=======
+
+        let (m, n) = (matrix.len(), matrix[0].len());
+        let mut dp = vec![vec![0; n]; m];
+        let mut ans = 0;
+        for i in 0..m {
+            for j in 0..n {
+                ans = ans.max(Solution::dfs(&matrix, i, j, &mut dp));
+            }
+        }
+        ans
+    }
+    fn dfs(matrix: &Vec<Vec<i32>>, i: usize, j: usize, dp: &mut Vec<Vec<i32>>) -> i32 {
+        if dp[i][j] != 0 {
+            return dp[i][j];
+        }
+        let mut ans = 1;
+        let (m, n) = (matrix.len(), matrix[0].len());
+        let directions = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+        for (dx, dy) in directions.iter() {
+            let (x, y) = (i as i32 + dx, j as i32 + dy);
+            if x < 0 || y < 0 || x >= m as i32 || y >= n as i32 {
+                continue;
+            }
+            let (x, y) = (x as usize, y as usize);
+            if matrix[x][y] <= matrix[i][j] {
+                continue;
+            }
+            ans = ans.max(Solution::dfs(matrix, x, y, dp) + 1);
+        }
+        dp[i][j] = ans;
+        ans
+
+=======
+
+        let mut dp = vec![vec![-1; matrix[0].len()]; matrix.len()];
+        let mut max = 0;
+        for i in 0..matrix.len() {
+            for j in 0..matrix[0].len() {
+                max = max.max(Solution::dfs(i, j, &matrix, &mut dp));
+            }
+        }
+        max
+    }
+    fn dfs(i: usize, j: usize, matrix: &Vec<Vec<i32>>, dp: &mut Vec<Vec<i32>>) -> i32 {
+        if dp[i][j] != -1 {
+            return dp[i][j];
+        }
+        let mut max = 1;
+        if i > 0 && matrix[i][j] < matrix[i - 1][j] {
+            max = max.max(Solution::dfs(i - 1, j, matrix, dp) + 1);
+        }
+        if i < matrix.len() - 1 && matrix[i][j] < matrix[i + 1][j] {
+            max = max.max(Solution::dfs(i + 1, j, matrix, dp) + 1);
+        }
+        if j > 0 && matrix[i][j] < matrix[i][j - 1] {
+            max = max.max(Solution::dfs(i, j - 1, matrix, dp) + 1);
+        }
+        if j < matrix[0].len() - 1 && matrix[i][j] < matrix[i][j + 1] {
+            max = max.max(Solution::dfs(i, j + 1, matrix, dp) + 1);
+        }
+        dp[i][j] = max;
+        max
+
+=======
+
+        let (m, n) = (matrix.len(), matrix[0].len());
+        let mut dp = vec![vec![0; n]; m];
+        let mut res = 0;
+        for i in 0..m {
+            for j in 0..n {
+                res = res.max(Self::dfs(&matrix, i, j, &mut dp));
+            }
+        }
+        res
+    }
+    fn dfs(matrix: &[Vec<i32>], i: usize, j: usize, dp: &mut Vec<Vec<i32>>) -> i32 {
+        if dp[i][j] != 0 {
+            return dp[i][j];
+        }
+        let (m, n) = (matrix.len(), matrix[0].len());
+        let mut res = 1;
+        if i > 0 && matrix[i][j] < matrix[i - 1][j] {
+            res = res.max(Self::dfs(matrix, i - 1, j, dp) + 1);
+        }
+        if i < m - 1 && matrix[i][j] < matrix[i + 1][j] {
+            res = res.max(Self::dfs(matrix, i + 1, j, dp) + 1);
+        }
+        if j > 0 && matrix[i][j] < matrix[i][j - 1] {
+            res = res.max(Self::dfs(matrix, i, j - 1, dp) + 1);
+        }
+        if j < n - 1 && matrix[i][j] < matrix[i][j + 1] {
+            res = res.max(Self::dfs(matrix, i, j + 1, dp) + 1);
+        }
+        dp[i][j] = res;
+        res
+    }
+}
+
+=======
+
+        let m = matrix.len();
+        let n = matrix[0].len();
+        let mut memo = vec![vec![-1; n]; m];
+        let mut res = 0;
+        for i in 0..m {
+            for j in 0..n {
+                res = res.max(Self::dfs(&matrix, i, j, &mut memo));
+            }
+        }
+        res
+    }
+    fn dfs(matrix: &Vec<Vec<i32>>, i: usize, j: usize, memo: &mut Vec<Vec<i32>>) -> i32 {
+        if memo[i][j] != -1 {
+            return memo[i][j];
+        }
+        let mut res = 1;
+        if i > 0 && matrix[i - 1][j] > matrix[i][j] {
+            res = res.max(1 + Self::dfs(matrix, i - 1, j, memo));
+        }
+        if i < matrix.len() - 1 && matrix[i + 1][j] > matrix[i][j] {
+            res = res.max(1 + Self::dfs(matrix, i + 1, j, memo));
+        }
+        if j > 0 && matrix[i][j - 1] > matrix[i][j] {
+            res = res.max(1 + Self::dfs(matrix, i, j - 1, memo));
+        }
+        if j < matrix[0].len() - 1 && matrix[i][j + 1] > matrix[i][j] {
+            res = res.max(1 + Self::dfs(matrix, i, j + 1, memo));
+        }
+        memo[i][j] = res;
+        res
+
+=======
+
+        
+    }
+}

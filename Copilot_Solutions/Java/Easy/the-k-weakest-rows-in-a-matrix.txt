@@ -1,0 +1,272 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] res = new int[k];
+        int[] sum = new int[mat.length];
+        for (int i = 0; i < mat.length; i++) {
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 1) {
+                    sum[i]++;
+                }
+            }
+        }
+        for (int i = 0; i < k; i++) {
+            int min = Integer.MAX_VALUE;
+            int index = -1;
+            for (int j = 0; j < sum.length; j++) {
+                if (sum[j] < min) {
+                    min = sum[j];
+                    index = j;
+                }
+            }
+            res[i] = index;
+            sum[index] = Integer.MAX_VALUE;
+        }
+        return res;
+
+=======
+
+        int[] result = new int[k];
+        int[] counts = new int[mat.length];
+        for (int i = 0; i < mat.length; i++) {
+            int count = 0;
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 1) {
+                    count++;
+                }
+            }
+            counts[i] = count;
+        }
+        int[] countsCopy = counts.clone();
+        Arrays.sort(countsCopy);
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < counts.length; j++) {
+                if (counts[j] == countsCopy[i]) {
+                    result[i] = j;
+                    counts[j] = -1;
+                    break;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] result = new int[k];
+        int[][] temp = new int[mat.length][2];
+        for (int i = 0; i < mat.length; i++) {
+            int count = 0;
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 1) {
+                    count++;
+                }
+            }
+            temp[i][0] = count;
+            temp[i][1] = i;
+        }
+        Arrays.sort(temp, (a, b) -> {
+            if (a[0] == b[0]) {
+                return a[1] - b[1];
+            } else {
+                return a[0] - b[0];
+            }
+        });
+        for (int i = 0; i < k; i++) {
+            result[i] = temp[i][1];
+        }
+        return result;
+
+=======
+
+        int[][] sorted = new int[mat.length][2];
+        for (int i = 0; i < mat.length; i++) {
+            sorted[i][0] = i;
+            for (int j = 0; j < mat[i].length; j++) {
+                if (mat[i][j] == 0) {
+                    break;
+                }
+                sorted[i][1]++;
+            }
+        }
+        Arrays.sort(sorted, (a, b) -> a[1] == b[1] ? a[0] - b[0] : a[1] - b[1]);
+        int[] result = new int[k];
+        for (int i = 0; i < k; i++) {
+            result[i] = sorted[i][0];
+        }
+        return result;
+
+=======
+
+        int[] result = new int[k];
+        int[] count = new int[mat.length];
+        for(int i = 0; i < mat.length; i++) {
+            for(int j = 0; j < mat[0].length; j++) {
+                if(mat[i][j] == 0) {
+                    break;
+                } else {
+                    count[i]++;
+                }
+            }
+        }
+        int index = 0;
+        while(k > 0) {
+            int min = 0;
+            for(int i = 0; i < mat.length; i++) {
+                if(count[i] < count[min]) {
+                    min = i;
+                }
+            }
+            result[index] = min;
+            count[min] = Integer.MAX_VALUE;
+            index++;
+            k--;
+        }
+        return result;
+
+=======
+
+        int[] result = new int[k];
+        int[] sums = new int[mat.length];
+        for (int i = 0; i < mat.length; i++) {
+            int sum = 0;
+            for (int j = 0; j < mat[i].length; j++) {
+                sum += mat[i][j];
+            }
+            sums[i] = sum;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < sums.length; i++) {
+            if (!map.containsKey(sums[i])) {
+                map.put(sums[i], new ArrayList<>());
+            }
+            map.get(sums[i]).add(i);
+        }
+        Arrays.sort(sums);
+        int count = 0;
+        for (int i = 0; i < sums.length; i++) {
+            List<Integer> list = map.get(sums[i]);
+            for (int j = 0; j < list.size(); j++) {
+                if (count < k) {
+                    result[count++] = list.get(j);
+                } else {
+                    return result;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] ans = new int[k];
+        int[] count = new int[mat.length];
+        for (int i = 0; i < mat.length; i++) {
+            int sum = 0;
+            for (int j = 0; j < mat[i].length; j++) {
+                sum += mat[i][j];
+            }
+            count[i] = sum;
+        }
+        int index = 0;
+        while (k > 0) {
+            int min = 0;
+            for (int i = 0; i < count.length; i++) {
+                if (count[i] < count[min]) {
+                    min = i;
+                }
+            }
+            count[min] = Integer.MAX_VALUE;
+            ans[index++] = min;
+            k--;
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[k];
+        int[] count = new int[mat.length];
+        for (int i = 0; i < mat.length; i++) {
+            int[] row = mat[i];
+            for (int j = 0; j < row.length; j++) {
+                if (row[j] == 0) {
+                    break;
+                }
+                count[i]++;
+            }
+        }
+        int[] indexes = new int[mat.length];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i;
+        }
+        Arrays.sort(indexes, new Comparator<Integer>() {
+            public int compare(Integer i1, Integer i2) {
+                if (count[i1] == count[i2]) {
+                    return i1 - i2;
+                }
+                return count[i1] - count[i2];
+            }
+        });
+        for (int i = 0; i < k; i++) {
+            res[i] = indexes[i];
+        }
+        return res;
+
+=======
+
+        int[] res = new int[k];
+        PriorityQueue<int[]> q = new PriorityQueue<>((a, b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            return a[1] - b[1];
+        });
+        for (int i = 0; i < mat.length; i++) {
+            int[] row = mat[i];
+            int s = 0;
+            for (int j = 0; j < row.length; j++) {
+                if (row[j] == 1) s++;
+            }
+            q.offer(new int[]{s, i});
+        }
+        for (int i = 0; i < k; i++) {
+            res[i] = q.poll()[1];
+        }
+        return res;
+
+=======
+
+        int[] ans = new int[k];
+        int[] cnt = new int[mat.length];
+        for(int i=0; i<mat.length; i++) {
+            for(int j=0; j<mat[0].length; j++) {
+                if(mat[i][j] == 1) {
+                    cnt[i]++;
+                } else {
+                    break;
+                }
+            }
+        }
+        int[] index = new int[cnt.length];
+        for(int i=0; i<index.length; i++) {
+            index[i] = i;
+        }
+        for(int i=0; i<cnt.length-1; i++) {
+            for(int j=i+1; j<cnt.length; j++) {
+                if(cnt[i] > cnt[j]) {
+                    int tmp = cnt[i];
+                    cnt[i] = cnt[j];
+                    cnt[j] = tmp;
+                    tmp = index[i];
+                    index[i] = index[j];
+                    index[j] = tmp;
+                } else if(cnt[i] == cnt[j]) {
+                    if(index[i] > index[j]) {
+                        int tmp = index[i];
+                        index[i] = index[j];
+                        index[j] = tmp;
+                    }
+                }
+            }
+        }
+        for(int i=0; i<k; i++) {
+            ans[i] = index[i];
+        }
+        return ans;

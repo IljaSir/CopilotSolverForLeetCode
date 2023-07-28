@@ -1,0 +1,201 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<String, Integer> count = new HashMap();
+        for (String w: words)
+            count.put(w, count.getOrDefault(w, 0) + 1);
+
+        int ans = 0;
+        for (String w: count.keySet()) {
+            int v = count.get(w);
+            String r = new StringBuilder(w).reverse().toString();
+            if (w.equals(r)) {
+                ans += v / 2 * 2;
+                if (v % 2 == 1 && ans % 2 == 0)
+                    ans++;
+            } else if (count.containsKey(r)) {
+                ans += Math.min(v, count.get(r));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = words.length;
+        int[] mask = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (char c : words[i].toCharArray()) {
+                mask[i] |= 1 << (c - 'a');
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if ((mask[i] & mask[j]) == 0) {
+                    res = Math.max(res, words[i].length() * words[j].length());
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] count = new int[26 * 26];
+        for (String word : words) {
+            int x = word.charAt(0) - 'a';
+            int y = word.charAt(1) - 'a';
+            count[x * 26 + y]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            ans += count[i * 26 + i] / 2 * 2;
+        }
+        for (int i = 0; i < 26; i++) {
+            for (int j = i + 1; j < 26; j++) {
+                int num = Math.min(count[i * 26 + j], count[j * 26 + i]);
+                ans += num * 2;
+            }
+        }
+        return ans < words.length ? ans + 1 : ans;
+
+=======
+
+        int n = words.length;
+        int[] mask = new int[n];
+        for (int i = 0; i < n; i++) {
+            mask[i] = 0;
+            for (int j = 0; j < 2; j++) {
+                mask[i] |= 1 << (words[i].charAt(j) - 'a');
+            }
+        }
+        int[] count = new int[1 << 10];
+        for (int i = 0; i < n; i++) {
+            count[mask[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << 10); i++) {
+            for (int j = i; j < (1 << 10); j++) {
+                if ((i & j) == 0) {
+                    ans = Math.max(ans, count[i] * count[j]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = words.length;
+        int[] mask = new int[n];
+        for (int i = 0; i < n; i++) {
+            mask[i] = 0;
+            for (int j = 0; j < 2; j++) {
+                mask[i] |= 1 << (words[i].charAt(j) - 'a');
+            }
+        }
+        int[] count = new int[1 << 10];
+        for (int i = 0; i < n; i++) {
+            count[mask[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < (1 << 10); j++) {
+                if ((mask[i] & j) == 0) {
+                    ans = Math.max(ans, count[j] * 2 + count[mask[i] | j]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] count = new int[26];
+        for (String word : words) {
+            count[word.charAt(0) - 'a']++;
+        }
+        int res = 0;
+        for (String word : words) {
+            count[word.charAt(0) - 'a']--;
+            if (count[word.charAt(1) - 'a'] > 0) {
+                res += 2;
+            }
+            count[word.charAt(0) - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (count[i] > 1) {
+                return res + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int[] count = new int[26];
+        for (String word : words) {
+            count[word.charAt(0) - 'a']++;
+            count[word.charAt(1) - 'a']++;
+        }
+        int result = 0;
+        for (int c : count) {
+            result += c / 2 * 2;
+        }
+        return result < words.length ? result + 1 : result;
+
+=======
+
+        int res = 0;
+        int[] count = new int[52];
+        for (String word : words) {
+            int mask = 1 << (word.charAt(0) - 'a');
+            mask |= 1 << (word.charAt(1) - 'a' + 26);
+            count[mask]++;
+        }
+        for (int i = 0; i < 52; i++) {
+            for (int j = i; j < 52; j++) {
+                if ((i & j) == 0) {
+                    res += count[i] * count[j];
+                }
+            }
+        }
+        res += count[0] * (count[0] - 1) / 2;
+        return res;
+
+=======
+
+        int[] count = new int[52];
+        for (String word : words) {
+            int mask = 1 << (word.charAt(0) - 'a');
+            count[mask]++;
+            mask = 1 << (word.charAt(1) - 'a' + 26);
+            count[mask]++;
+        }
+        int res = 0;
+        for (int i = 0; i < 52; i++) {
+            if (count[i] > 0) {
+                res += (count[i] / 2) * 2;
+            }
+            for (int j = i + 1; j < 52; j++) {
+                if (count[i] > 0 && count[j] > 0 && (i & j) == 0) {
+                    res += 2;
+                }
+            }
+        }
+        return res == words.length ? res : res + 1;
+
+=======
+
+        int[] arr = new int[26 * 26];
+        for (String word : words) {
+            int temp = (word.charAt(0) - 'a') * 26 + (word.charAt(1) - 'a');
+            arr[temp] = Math.max(arr[temp], word.length());
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            ans = Math.max(ans, arr[i * 26 + i]);
+        }
+        for (int i = 0; i < 26; i++) {
+            for (int j = i + 1; j < 26; j++) {
+                ans = Math.max(ans, arr[i * 26 + j] + arr[j * 26 + i]);
+            }
+        }
+        return ans;

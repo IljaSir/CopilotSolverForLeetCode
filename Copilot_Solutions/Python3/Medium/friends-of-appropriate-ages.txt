@@ -1,0 +1,181 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        cnt = collections.Counter(ages)
+        ans = 0
+        for ageA, countA in cnt.items():
+            for ageB, countB in cnt.items():
+                if ageB <= 0.5 * ageA + 7:
+                    continue
+                if ageB > ageA:
+                    continue
+                if ageB > 100 and ageA < 100:
+                    continue
+                ans += countA * countB
+                if ageA == ageB:
+                    ans -= countA
+        return ans
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        count = collections.Counter(ages)
+        res = 0
+        for a in count:
+            for b in count:
+                if not (b <= 0.5 * a + 7 or b > a or b > 100 and a < 100):
+                    res += count[a] * (count[b] - (a == b))
+        return res
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        ages.sort()
+        count = 0
+        for i in range(len(ages)):
+            for j in range(i+1, len(ages)):
+                if ages[j] <= 0.5 * ages[i] + 7 or ages[j] > ages[i] or ages[j] > 100 and ages[i] < 100:
+                    break
+                else:
+                    count += 2
+        return count
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        ages.sort()
+        n = len(ages)
+        i = 0
+        j = 0
+        res = 0
+        while i < n:
+            while j < n and ages[j] <= 0.5 * ages[i] + 7:
+                j += 1
+            res += j - i - 1
+            i += 1
+            while i < n and ages[i] == ages[i - 1]:
+                res += j - i
+                i += 1
+        return res
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        from collections import Counter
+        c = Counter(ages)
+        res = 0
+        for i in range(1, 121):
+            for j in range(1, 121):
+                if i <= 0.5 * j + 7 or i > j or i > 100 and j < 100:
+                    continue
+                res += c[i] * c[j]
+                if i == j:
+                    res -= c[i]
+        return res
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        from collections import Counter
+        counter = Counter(ages)
+        ans = 0
+        for a, count_a in counter.items():
+            for b, count_b in counter.items():
+                if a * 0.5 + 7 < b <= a:
+                    ans += count_a * count_b
+                if a == b and count_a > 1:
+                    ans += count_a * (count_a - 1)
+        return ans
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        ages.sort()
+        n = len(ages)
+        ans = 0
+        for i in range(n):
+            j = i + 1
+            while j < n and ages[j] <= ages[i] * 0.5 + 7:
+                j += 1
+            ans += j - i - 1
+            j = i + 1
+            while j < n and ages[j] == ages[i]:
+                j += 1
+            ans += (j - i - 1) * (j - i - 2) // 2
+        return ans
+
+=======
+
+class Solution:
+    def numFriendRequests(self, ages: List[int]) -> int:
+        # age[i] <= 0.5 * age[x] + 7
+        # age[i] > age[x]
+        # age[i] > 100 && age[x] < 100
+        # x will send a request to y.
+        # x != y
+        # x will not send a friend request to a person y (x != y) if any of the following conditions is true:
+        # age[y] <= 0.5 * age[x] + 7
+        # age[y] > age[x]
+        # age[y] > 100 && age[x] < 100
+        # Otherwise, x will send a friend request to y.
+        # Note that if x sends a request to y, y will not necessarily send a request to x. Also, a person will not send a friend request to themself.
+        # Return the total number of friend requests made.
+        # n == ages.length
+        # 1 <= n <= 2 * 10^4
+        # 1 <= ages[i] <= 120
+        # ages = [16,16]
+        # ages = [16,17,18]
+        # ages = [20,30,100,110,120]
+        # ages = [16,17,18,20,30,100,110,120]
+        # ages = [16,17,18,20,30,100,110,120,100,110,120]
+        # ages = [16,17,18,20,30,100,110,120,100,110,120,100,110,120]
+        # ages = [16,17,18,20,30,100,110,120,100,110,120,100,110,120,100,110,120]
+        # ages = [16,17,18,20,30,100,110,120,100,110,120,100,110,120,100,110,120,100,110,120]
+        # age
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        ages.sort()
+        n = len(ages)
+        res = 0
+        for i in range(n):
+            if ages[i] < 15:
+                continue
+            j = i
+            while j < n and ages[j] == ages[i]:
+                j += 1
+            res += (j - i) * (j - i - 1) // 2
+            for k in range(j, n):
+                if ages[k] <= 0.5 * ages[i] + 7:
+                    continue
+                if ages[k] > ages[i]:
+                    break
+                res += j - i
+        return res
+
+=======
+
+def numFriendRequests(self, ages: List[int]) -> int:
+        if not ages:
+            return 0
+        ages.sort()
+        n = len(ages)
+        i, j = 0, 0
+        res = 0
+        while i < n:
+            j = max(j, i)
+            while j < n and ages[j] <= 0.5 * ages[i] + 7:
+                j += 1
+            res += j - i - 1
+            i += 1
+        i, j = 0, 0
+        while i < n:
+            j = max(j, i)
+            while j < n and ages[j] == ages[i]:
+                j += 1
+            res += (j - i) * (j - i - 1) // 2
+            i = j
+        return res

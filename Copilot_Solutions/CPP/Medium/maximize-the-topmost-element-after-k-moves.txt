@@ -1,0 +1,262 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        priority_queue<int> pq;
+        for (int i = 0; i < nums.size(); ++i) {
+            pq.push(nums[i]);
+        }
+        for (int i = 0; i < k; ++i) {
+            if (pq.empty()) {
+                return -1;
+            }
+            int cur = pq.top();
+            pq.pop();
+            if (cur > 0) {
+                pq.push(cur - 1);
+            }
+        }
+        if (pq.empty()) {
+            return -1;
+        }
+        return pq.top();
+
+=======
+
+        int n = nums.size();
+        priority_queue<int> pq;
+        for (int i = 0; i < n; i++) {
+            pq.push(nums[i]);
+        }
+        for (int i = 0; i < k; i++) {
+            if (pq.empty()) {
+                break;
+            }
+            int top = pq.top();
+            pq.pop();
+            if (top > 0) {
+                pq.push(top - 1);
+            }
+        }
+        if (pq.empty()) {
+            return -1;
+        }
+        return pq.top();
+
+=======
+
+        priority_queue<int> pq;
+        for (int num : nums) {
+            pq.push(num);
+        }
+        while (k > 0 && pq.top() > 0) {
+            pq.push(pq.top() - 1);
+            pq.pop();
+            k--;
+        }
+        return pq.top();
+    }
+    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+        int n = profits.size();
+        vector<pair<int, int>> projects(n);
+        for (int i = 0; i < n; ++i) {
+            projects[i] = {capital[i], profits[i]};
+        }
+        sort(projects.begin(), projects.end());
+        priority_queue<int> pq;
+        int i = 0;
+        while (k > 0) {
+            while (i < n && projects[i].first <= w) {
+                pq.push(projects[i].second);
+                ++i;
+            }
+            if (!pq.empty()) {
+                w += pq.top();
+                pq.pop();
+            }
+            --k;
+        }
+        return w;
+
+=======
+
+        int n = nums.size();
+        if (n == 1) return nums[0] > k ? -1 : nums[0];
+        priority_queue<int> pq;
+        for (int i = 0; i < n; ++i) {
+            pq.push(nums[i]);
+        }
+        int res = pq.top();
+        for (int i = 0; i < k; ++i) {
+            int top = pq.top();
+            pq.pop();
+            if (top == 0) return -1;
+            pq.push(top - 1);
+            res = max(res, top - 1);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> v;
+        for (int i = 0; i < n; ++i) {
+            v.push_back(nums[i]);
+        }
+        sort(v.begin(), v.end());
+        int ans = nums[0];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (v[j] > ans) {
+                    ans = v[j];
+                    --k;
+                    if (k == 0) {
+                        return ans;
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = nums.size();
+        int l = 0, r = n-1;
+        while (l <= r) {
+            int m = l + (r-l)/2;
+            if (check(nums, m, k)) {
+                l = m+1;
+            } else {
+                r = m-1;
+            }
+        }
+        return l-1;
+    }
+    
+    bool check(vector<int>& nums, int m, int k) {
+        int n = nums.size();
+        int cnt = 0;
+        for (int i = n-1; i >= m; --i) {
+            cnt += nums[i];
+        }
+        return cnt <= k;
+
+=======
+
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        vector<long long> pre_sum(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            pre_sum[i] = pre_sum[i - 1] + nums[i - 1];
+        }
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            long long cur = nums[i];
+            long long cnt = i + 1;
+            long long rem = n - i - 1;
+            long long left = k - cnt;
+            if (left < 0) break;
+            if (left >= rem) {
+                ans = max(ans, cur * cnt + pre_sum[n]);
+            } else {
+                ans = max(ans, cur * cnt + pre_sum[n] - pre_sum[n - left]);
+            }
+        }
+        return ans;
+    }
+    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {
+        int n = profits.size();
+        vector<pair<int, int>> p(n);
+        for (int i = 0; i < n; ++i) {
+            p[i] = {capital[i], profits[i]};
+        }
+        sort(p.begin(), p.end());
+        priority_queue<int> pq;
+        int i = 0;
+        while (k--) {
+            while (i < n && p[i].first <= w) {
+                pq.push(p[i].second);
+                ++i;
+            }
+            if (pq.empty()) break;
+            w += pq.top();
+            pq.pop();
+        }
+        return w;
+    }
+    int findMaximizedCapital2(int k, int w, vector<int>& profits, vector<int>& capital) {
+        int n = profits.size();
+        vector<pair<int, int>> p(n);
+        for (int i = 0; i < n; ++i) {
+            p[i] = {capital[i], profits[i]};
+        }
+        sort(p.begin(), p.end());
+        int i = 0;
+        while (k--) {
+            while (i < n && p[i].first <= w) {
+                ++i;
+            }
+            if (i == 0) break;
+            w += maximumTop(profits, i);
+        }
+        return w;
+
+=======
+
+        int len = nums.size();
+        if (len == 1) return -1;
+        if (len == 2) {
+            if (k == 1) return max(nums[0], nums[1]);
+            else return -1;
+        }
+        priority_queue<int> q;
+        for (int i = 0; i < len; i++) {
+            q.push(nums[i]);
+        }
+        int res = 0;
+        int remove = 0;
+        while (k > 0 && !q.empty()) {
+            int top = q.top();
+            q.pop();
+            if (top == remove) {
+                // remove the same element
+                k--;
+                remove++;
+            } else {
+                // remove the different element
+                k -= 2;
+                remove++;
+                q.push(top);
+            }
+        }
+        if (q.empty()) return -1;
+        else return q.top();
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        for (int i = 0; i < k; ++i) {
+            int j = 0;
+            while (j < n && nums[j] == 0) ++j;
+            if (j == n) return -1;
+            nums[j] = 0;
+            while (j > 0 && nums[j-1] == 0) --j;
+            ++nums[j];
+        }
+        for (int i = 0; i < n; ++i) {
+            res = max(res, nums[i]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = -1;
+        for (int i = 0; i < n; ++ i) {
+            int t = nums[i];
+            int r = n - i - 1;
+            int c = nums[i] + min(k, r);
+            ans = max(ans, c);
+        }
+        return ans;

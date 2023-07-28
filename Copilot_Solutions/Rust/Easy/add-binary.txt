@@ -1,0 +1,230 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        format!("{:b}", i64::from_str_radix(&a, 2).unwrap() + i64::from_str_radix(&b, 2).unwrap())
+
+=======
+
+        let a = a.as_bytes();
+        let b = b.as_bytes();
+        let mut i = a.len() - 1;
+        let mut j = b.len() - 1;
+        let mut carry = 0;
+        let mut res = Vec::new();
+        while i < a.len() || j < b.len() || carry > 0 {
+            let mut sum = carry;
+            if i < a.len() {
+                sum += a[i] - b'0';
+                i -= 1;
+            }
+            if j < b.len() {
+                sum += b[j] - b'0';
+                j -= 1;
+            }
+            res.push((sum % 2 + b'0') as char);
+            carry = sum / 2;
+        }
+        res.reverse();
+        res.into_iter().collect()
+
+=======
+
+        let (a, b) = if a.len() > b.len() { (a, b) } else { (b, a) };
+        let mut a = a.chars().rev();
+        let mut b = b.chars().rev();
+        let mut c = 0;
+        let mut res = String::new();
+        loop {
+            match (a.next(), b.next()) {
+                (Some('1'), Some('1')) => {
+                    res.push(if c == 0 { '0' } else { '1' });
+                    c = 1;
+                }
+                (Some('1'), Some('0')) | (Some('0'), Some('1')) => {
+                    res.push(if c == 0 { '1' } else { '0' });
+                }
+                (Some('1'), None) | (Some('0'), None) => {
+                    res.push(if c == 0 { '1' } else { '0' });
+                    c = if c == 0 { 0 } else { 1 };
+                }
+                (None, None) => {
+                    if c == 1 {
+                        res.push('1');
+                    }
+                    break;
+                }
+                _ => unreachable!(),
+            }
+        }
+        res.chars().rev().collect()
+    }
+}
+
+=======
+
+        let mut ret = String::new();
+        let mut carry = 0;
+        let mut i = a.len() - 1;
+        let mut j = b.len() - 1;
+        while i < a.len() || j < b.len() || carry != 0 {
+            let mut sum = carry;
+            if i < a.len() {
+                sum += a.chars().nth(i).unwrap() as u8 - '0' as u8;
+                i -= 1;
+            }
+            if j < b.len() {
+                sum += b.chars().nth(j).unwrap() as u8 - '0' as u8;
+                j -= 1;
+            }
+            carry = sum / 2;
+            ret.push((sum % 2 + '0' as u8) as char);
+        }
+        ret.chars().rev().collect()
+    }
+}
+
+=======
+
+        let mut a = a;
+        let mut b = b;
+        let mut res = String::new();
+        let mut carry = false;
+        while !a.is_empty() || !b.is_empty() || carry {
+            let mut sum = 0;
+            if let Some(c) = a.pop() {
+                sum += c.to_digit(10).unwrap();
+            }
+            if let Some(c) = b.pop() {
+                sum += c.to_digit(10).unwrap();
+            }
+            if carry {
+                sum += 1;
+            }
+            carry = sum >= 2;
+            res.push((sum % 2).to_string().pop().unwrap());
+        }
+        res.chars().rev().collect()
+
+=======
+
+        let mut a = a.chars().collect::<Vec<char>>();
+        let mut b = b.chars().collect::<Vec<char>>();
+        let mut res = vec![];
+        let mut carry = 0;
+        while !a.is_empty() || !b.is_empty() || carry != 0 {
+            let mut sum = carry;
+            if let Some(x) = a.pop() {
+                sum += x as u8 - '0' as u8;
+            }
+            if let Some(x) = b.pop() {
+                sum += x as u8 - '0' as u8;
+            }
+            res.push((sum % 2 + '0' as u8) as char);
+            carry = sum / 2;
+        }
+        res.reverse();
+        res.into_iter().collect()
+
+=======
+
+        let mut a = a.as_bytes();
+        let mut b = b.as_bytes();
+        let mut carry = 0;
+        let mut ret = vec![];
+        while a.len() > 0 || b.len() > 0 || carry > 0 {
+            let mut sum = carry;
+            if a.len() > 0 {
+                sum += a[a.len() - 1] - '0' as u8;
+                a = &a[..a.len() - 1];
+            }
+            if b.len() > 0 {
+                sum += b[b.len() - 1] - '0' as u8;
+                b = &b[..b.len() - 1];
+            }
+            ret.push((sum % 2 + '0' as u8) as char);
+            carry = sum / 2;
+        }
+        ret.into_iter().rev().collect()
+    }
+}
+
+=======
+
+        let a = a.as_bytes();
+        let b = b.as_bytes();
+        let mut carry = 0;
+        let mut i = a.len();
+        let mut j = b.len();
+        let mut ans = Vec::new();
+        while i > 0 || j > 0 || carry > 0 {
+            let mut sum = carry;
+            if i > 0 {
+                i -= 1;
+                sum += a[i] - b'0';
+            }
+            if j > 0 {
+                j -= 1;
+                sum += b[j] - b'0';
+            }
+            carry = sum / 2;
+            sum %= 2;
+            ans.push((sum + b'0') as char);
+        }
+        ans.into_iter().rev().collect()
+    }
+}
+
+=======
+
+        let mut a = a.as_bytes().to_vec();
+        let mut b = b.as_bytes().to_vec();
+        let mut res = Vec::new();
+        let mut carry = 0;
+        loop {
+            if a.is_empty() && b.is_empty() {
+                break;
+            }
+            let mut sum = carry;
+            if !a.is_empty() {
+                sum += a.pop().unwrap() - b'0';
+            }
+            if !b.is_empty() {
+                sum += b.pop().unwrap() - b'0';
+            }
+            carry = sum / 2;
+            res.push((sum % 2 + b'0') as char);
+        }
+        if carry > 0 {
+            res.push('1');
+        }
+        res.into_iter().rev().collect()
+
+=======
+
+        let (a, b) = if a.len() > b.len() { (a, b) } else { (b, a) };
+
+        let mut a = a.bytes().rev().collect::<Vec<u8>>();
+        let mut b = b.bytes().rev().collect::<Vec<u8>>();
+        let mut carry = 0;
+        let mut result = Vec::new();
+
+        for i in 0..a.len() {
+            let (a, b) = if i < b.len() {
+                (a[i] - '0' as u8, b[i] - '0' as u8)
+            } else {
+                (a[i] - '0' as u8, 0)
+            };
+            let (a, b) = (a + carry, b);
+            carry = if a + b > 1 { 1 } else { 0 };
+            result.push((a + b) % 2 + '0' as u8);
+        }
+
+        if carry > 0 {
+            result.push('1' as u8);
+        }
+
+        result.reverse();
+        String::from_utf8(result).unwrap()
+    }
+}

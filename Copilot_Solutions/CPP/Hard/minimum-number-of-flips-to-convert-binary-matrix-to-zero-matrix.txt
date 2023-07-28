@@ -1,0 +1,435 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = mat.size(), n = mat[0].size();
+        int start = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                start |= mat[i][j] << (i * n + j);
+            }
+        }
+        if (start == 0) return 0;
+        queue<int> q;
+        q.push(start);
+        unordered_set<int> seen;
+        seen.insert(start);
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            step++;
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                for (int j = 0; j < m; j++) {
+                    for (int k = 0; k < n; k++) {
+                        int next = cur;
+                        for (int x = -1; x <= 1; x++) {
+                            for (int y = -1; y <= 1; y++) {
+                                if (abs(x) == abs(y)) continue;
+                                int nx = j + x, ny = k + y;
+                                if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                                next ^= (1 << (nx * n + ny));
+                            }
+                        }
+                        if (next == 0) return step;
+                        if (seen.count(next)) continue;
+                        q.push(next);
+                        seen.insert(next);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = mat.size(), n = mat[0].size();
+        int target = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                target |= (mat[i][j] << (i * n + j));
+            }
+        }
+        int start = 0;
+        queue<int> q;
+        q.push(start);
+        unordered_set<int> visited;
+        visited.insert(start);
+        int steps = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                if (cur == target) {
+                    return steps;
+                }
+                for (int j = 0; j < m; j++) {
+                    for (int k = 0; k < n; k++) {
+                        int next = cur ^ (1 << (j * n + k));
+                        if (j > 0) {
+                            next ^= (1 << ((j - 1) * n + k));
+                        }
+                        if (j < m - 1) {
+                            next ^= (1 << ((j + 1) * n + k));
+                        }
+                        if (k > 0) {
+                            next ^= (1 << (j * n + k - 1));
+                        }
+                        if (k < n - 1) {
+                            next ^= (1 << (j * n + k + 1));
+                        }
+                        if (visited.count(next) == 0) {
+                            q.push(next);
+                            visited.insert(next);
+                        }
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 1) {
+                    res++;
+                }
+            }
+        }
+        if (res == 0) {
+            return 0;
+        }
+        if (res == m * n) {
+            return 1;
+        }
+        return -1;
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        int target = 0;
+        int start = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                target |= mat[i][j] << (i * n + j);
+            }
+        }
+        queue<int> q;
+        q.push(start);
+        unordered_set<int> visited;
+        visited.insert(start);
+        int res = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                if (cur == target) {
+                    return res;
+                }
+                for (int j = 0; j < m; j++) {
+                    for (int k = 0; k < n; k++) {
+                        int next = cur;
+                        next ^= 1 << (j * n + k);
+                        if (j > 0) {
+                            next ^= 1 << ((j - 1) * n + k);
+                        }
+                        if (j < m - 1) {
+                            next ^= 1 << ((j + 1) * n + k);
+                        }
+                        if (k > 0) {
+                            next ^= 1 << (j * n + k - 1);
+                        }
+                        if (k < n - 1) {
+                            next ^= 1 << (j * n + k + 1);
+                        }
+                        if (!visited.count(next)) {
+                            visited.insert(next);
+                            q.push(next);
+                        }
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+
+=======
+
+        int n = mat.size();
+        int m = mat[0].size();
+        int target = 0;
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < m; j++)
+                target |= mat[i][j] << (i * m + j);
+        if(target == 0) return 0;
+        vector<int> dirs = {0, 1, 0, -1, 0};
+        queue<int> q;
+        q.push(target);
+        int step = 0;
+        unordered_set<int> visited;
+        visited.insert(target);
+        while(!q.empty()) {
+            int size = q.size();
+            step++;
+            for(int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                for(int j = 0; j < n; j++) {
+                    for(int k = 0; k < m; k++) {
+                        int tmp = cur;
+                        for(int l = 0; l < 4; l++) {
+                            int x = j + dirs[l];
+                            int y = k + dirs[l + 1];
+                            if(x >= 0 && x < n && y >= 0 && y < m) {
+                                tmp ^= 1 << (x * m + y);
+                            }
+                        }
+                        if(tmp == 0) return step;
+                        if(visited.count(tmp)) continue;
+                        q.push(tmp);
+                        visited.insert(tmp);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        int res = 0;
+        int count = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 1) count++;
+            }
+        }
+        if(count == 0) return 0;
+        if(count == m*n) return 1;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    res = max(res, 1 + minFlips(mat, i, j));
+                }
+            }
+        }
+        return res;
+    }
+    int minFlips(vector<vector<int>>& mat, int i, int j){
+        int m = mat.size();
+        int n = mat[0].size();
+        int res = 0;
+        int count = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 1) count++;
+            }
+        }
+        if(count == 0) return 0;
+        if(count == m*n) return 1;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    res = max(res, 1 + minFlips(mat, i, j));
+                }
+            }
+        }
+        return res;
+    }
+    int minFlips(vector<vector<int>>& mat, int i, int j, int m, int n){
+        int res = 0;
+        int count = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 1) count++;
+            }
+        }
+        if(count == 0) return 0;
+        if(count == m*n) return 1;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    res = max(res
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        int res = 0;
+        vector<vector<int>> dirs = {{0, 0}, {0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        queue<vector<vector<int>>> q;
+        q.push(mat);
+        unordered_set<string> visited;
+        visited.insert(serialize(mat));
+        while(!q.empty()) {
+            int size = q.size();
+            for(int i = 0; i < size; i++) {
+                vector<vector<int>> cur = q.front();
+                q.pop();
+                if(isZero(cur)) {
+                    return res;
+                }
+                for(int x = 0; x < m; x++) {
+                    for(int y = 0; y < n; y++) {
+                        vector<vector<int>> next = cur;
+                        for(auto dir : dirs) {
+                            int nx = x + dir[0];
+                            int ny = y + dir[1];
+                            if(nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                                continue;
+                            }
+                            next[nx][ny] = next[nx][ny] == 1 ? 0 : 1;
+                        }
+                        string nextStr = serialize(next);
+                        if(visited.count(nextStr)) {
+                            continue;
+                        }
+                        q.push(next);
+                        visited.insert(nextStr);
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        int k = m*n;
+        unordered_set<int> visited;
+        queue<int> q;
+        int start = 0;
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                start |= mat[i][j] << (i*n+j);
+            }
+        }
+        if (start == 0) return 0;
+        visited.insert(start);
+        q.push(start);
+        int step = 0;
+        while (!q.empty()) {
+            step++;
+            int size = q.size();
+            for (int i=0; i<size; i++) {
+                int cur = q.front();
+                q.pop();
+                for (int j=0; j<k; j++) {
+                    int new_state = cur;
+                    int r = j/n;
+                    int c = j%n;
+                    new_state ^= 1 << j;
+                    if (r-1 >= 0) new_state ^= 1 << ((r-1)*n+c);
+                    if (r+1 < m) new_state ^= 1 << ((r+1)*n+c);
+                    if (c-1 >= 0) new_state ^= 1 << (r*n+c-1);
+                    if (c+1 < n) new_state ^= 1 << (r*n+c+1);
+                    if (new_state == 0) return step;
+                    if (visited.count(new_state) == 0) {
+                        q.push(new_state);
+                        visited.insert(new_state);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int row = mat.size();
+        int col = mat[0].size();
+        int total = row * col;
+        int res = 0;
+        queue<int> q;
+        unordered_set<int> visited;
+        int start = 0;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                start += mat[i][j] << (i * col + j);
+            }
+        }
+        q.push(start);
+        visited.insert(start);
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                if (cur == 0) {
+                    return res;
+                }
+                for (int j = 0; j < total; j++) {
+                    int next = cur;
+                    int x = j / col;
+                    int y = j % col;
+                    next = flip(next, x, y, col);
+                    next = flip(next, x - 1, y, col);
+                    next = flip(next, x + 1, y, col);
+                    next = flip(next, x, y - 1, col);
+                    next = flip(next, x, y + 1, col);
+                    if (visited.find(next) == visited.end()) {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+    }
+    int flip(int num, int x, int y, int col) {
+        if (x < 0 || x >= col || y < 0 || y >= col) {
+            return num;
+        }
+        int pos = x * col + y;
+        return num ^ (1 << pos);
+
+=======
+
+        int n = mat.size(), m = mat[0].size();
+        int end = 1 << (n * m), ans = -1;
+        unordered_map<int, int> dist;
+        dist[0] = 0;
+        queue<int> q;
+        q.push(0);
+        while (!q.empty()) {
+            int x = q.front();
+            q.pop();
+            if (x == end - 1) {
+                ans = dist[x];
+                break;
+            }
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    int y = x ^ (1 << (i * m + j));
+                    if (i > 0) {
+                        y ^= (1 << ((i - 1) * m + j));
+                    }
+                    if (i < n - 1) {
+                        y ^= (1 << ((i + 1) * m + j));
+                    }
+                    if (j > 0) {
+                        y ^= (1 << (i * m + j - 1));
+                    }
+                    if (j < m - 1) {
+                        y ^= (1 << (i * m + j + 1));
+                    }
+                    if (!dist.count(y)) {
+                        dist[y] = dist[x] + 1;
+                        q.push(y);
+                    }
+                }
+            }
+        }
+        return ans;

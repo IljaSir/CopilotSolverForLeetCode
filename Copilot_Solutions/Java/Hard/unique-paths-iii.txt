@@ -1,0 +1,337 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int empty = 1;
+        int sx = 0, sy = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) empty++;
+                if (grid[i][j] == 1) {
+                    sx = i;
+                    sy = j;
+                }
+            }
+        }
+        return dfs(grid, sx, sy, empty);
+
+=======
+
+        int startRow = 0;
+        int startCol = 0;
+        int empty = 1;
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[0].length; col++) {
+                if (grid[row][col] == 1) {
+                    startRow = row;
+                    startCol = col;
+                } else if (grid[row][col] == 0) {
+                    empty++;
+                }
+            }
+        }
+        return dfs(grid, startRow, startCol, empty);
+    }
+
+    private int dfs(int[][] grid, int row, int col, int empty) {
+        if (row < 0 || row >= grid.length || col < 0 || col >= grid[0].length || grid[row][col] == -1) {
+            return 0;
+        }
+        if (grid[row][col] == 2) {
+            return empty == 0 ? 1 : 0;
+        }
+        grid[row][col] = -1;
+        int paths = dfs(grid, row + 1, col, empty - 1) + dfs(grid, row - 1, col, empty - 1) + dfs(grid, row, col + 1, empty - 1) + dfs(grid, row, col - 1, empty - 1);
+        grid[row][col] = 0;
+        return paths;
+
+=======
+
+        int m = grid.length, n = grid[0].length;
+        int sx = 0, sy = 0, tx = 0, ty = 0;
+        int empty = 1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    sx = i;
+                    sy = j;
+                } else if (grid[i][j] == 2) {
+                    tx = i;
+                    ty = j;
+                } else if (grid[i][j] == 0) {
+                    empty++;
+                }
+            }
+        }
+        return dfs(grid, sx, sy, tx, ty, empty);
+    }
+
+    public int dfs(int[][] grid, int x, int y, int tx, int ty, int empty) {
+        if (x == tx && y == ty) {
+            return empty == 0 ? 1 : 0;
+        }
+        int[][] d = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int ret = 0;
+        int m = grid.length, n = grid[0].length;
+        grid[x][y] = -1;
+        for (int i = 0; i < 4; i++) {
+            int nx = x + d[i][0], ny = y + d[i][1];
+            if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] != -1) {
+                ret += dfs(grid, nx, ny, tx, ty, empty - 1);
+            }
+        }
+        grid[x][y] = 0;
+        return ret;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] start = new int[2];
+        int[] end = new int[2];
+        int empty = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    start[0] = i;
+                    start[1] = j;
+                } else if (grid[i][j] == 2) {
+                    end[0] = i;
+                    end[1] = j;
+                } else if (grid[i][j] == 0) {
+                    empty++;
+                }
+            }
+        }
+        return dfs(grid, start, end, empty, m, n);
+    }
+    
+    private int dfs(int[][] grid, int[] start, int[] end, int empty, int m, int n) {
+        int i = start[0];
+        int j = start[1];
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == -1) {
+            return 0;
+        }
+        if (grid[i][j] == 2) {
+            return empty == 0 ? 1 : 0;
+        }
+        grid[i][j] = -1;
+        int res = dfs(grid, new int[]{i - 1, j}, end, empty - 1, m, n)
+                + dfs(grid, new int[]{i + 1, j}, end, empty - 1, m, n)
+                + dfs(grid, new int[]{i, j - 1}, end, empty - 1, m, n)
+                + dfs(grid, new int[]{i, j + 1}, end, empty - 1, m, n);
+        grid[i][j] = 0;
+        return res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int total = 0;
+        int sr = 0;
+        int sc = 0;
+        int er = 0;
+        int ec = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] != -1) {
+                    total++;
+                }
+                if (grid[i][j] == 1) {
+                    sr = i;
+                    sc = j;
+                }
+                if (grid[i][j] == 2) {
+                    er = i;
+                    ec = j;
+                }
+            }
+        }
+        return dfs(grid, sr, sc, er, ec, 0, total);
+    }
+    public int dfs(int[][] grid, int sr, int sc, int er, int ec, int count, int total) {
+        if (sr < 0 || sr >= grid.length || sc < 0 || sc >= grid[0].length || grid[sr][sc] == -1) {
+            return 0;
+        }
+        if (grid[sr][sc] == 2) {
+            if (count == total - 1) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        grid[sr][sc] = -1;
+        int ans = dfs(grid, sr + 1, sc, er, ec, count + 1, total) + dfs(grid, sr - 1, sc, er, ec, count + 1, total) + dfs(grid, sr, sc + 1, er, ec, count + 1, total) + dfs(grid, sr, sc - 1, er, ec, count + 1, total);
+        grid[sr][sc] = 0;
+        return ans;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int total = 0;
+        int starti = 0;
+        int startj = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    total++;
+                } else if (grid[i][j] == 1) {
+                    starti = i;
+                    startj = j;
+                }
+            }
+        }
+        return dfs(grid, starti, startj, total);
+    }
+
+    public int dfs(int[][] grid, int i, int j, int total) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == -1) {
+            return 0;
+        }
+        if (grid[i][j] == 2) {
+            return total == 0 ? 1 : 0;
+        }
+        grid[i][j] = -1;
+        int res = dfs(grid, i - 1, j, total - 1) + dfs(grid, i + 1, j, total - 1)
+                + dfs(grid, i, j - 1, total - 1) + dfs(grid, i, j + 1, total - 1);
+        grid[i][j] = 0;
+        return res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[] start = new int[2];
+        int[] end = new int[2];
+        int count = 0;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(grid[i][j] == 1){
+                    start[0] = i;
+                    start[1] = j;
+                }
+                if(grid[i][j] == 2){
+                    end[0] = i;
+                    end[1] = j;
+                }
+                if(grid[i][j] == 0){
+                    count++;
+                }
+            }
+        }
+        return dfs(grid, start[0], start[1], end[0], end[1], count);
+    }
+    public int dfs(int[][] grid, int x, int y, int endX, int endY, int count){
+        int m = grid.length;
+        int n = grid[0].length;
+        if(x < 0 || x >= m || y < 0 || y >= n || grid[x][y] == -1){
+            return 0;
+        }
+        if(x == endX && y == endY){
+            return count == -1 ? 1 : 0;
+        }
+        grid[x][y] = -1;
+        int res = dfs(grid, x + 1, y, endX, endY, count - 1) + dfs(grid, x - 1, y, endX, endY, count - 1) + dfs(grid, x, y + 1, endX, endY, count - 1) + dfs(grid, x, y - 1, endX, endY, count - 1);
+        grid[x][y] = 0;
+        return res;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int startI = 0, startJ = 0;
+        int endI = 0, endJ = 0;
+        int total = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    startI = i;
+                    startJ = j;
+                } else if (grid[i][j] == 2) {
+                    endI = i;
+                    endJ = j;
+                } else if (grid[i][j] == 0) {
+                    total++;
+                }
+            }
+        }
+        return dfs(grid, startI, startJ, endI, endJ, total);
+    }
+    private int dfs(int[][] grid, int i, int j, int endI, int endJ, int total) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == -1) {
+            return 0;
+        }
+        if (i == endI && j == endJ) {
+            return total == 0 ? 1 : 0;
+        }
+        grid[i][j] = -1;
+        int result = dfs(grid, i + 1, j, endI, endJ, total - 1)
+            + dfs(grid, i - 1, j, endI, endJ, total - 1)
+            + dfs(grid, i, j + 1, endI, endJ, total - 1)
+            + dfs(grid, i, j - 1, endI, endJ, total - 1);
+        grid[i][j] = 0;
+        return result;
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][][] dp = new int[m][n][1 << m * n];
+        return dfs(grid, 0, 0, 0, dp);
+    }
+    private int dfs(int[][] grid, int x, int y, int mask, int[][][] dp) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (x < 0 || x >= m || y < 0 || y >= n || grid[x][y] == -1) {
+            return 0;
+        }
+        if (grid[x][y] == 2) {
+            return mask == (1 << m * n) - 1 ? 1 : 0;
+        }
+        if (dp[x][y][mask] != 0) {
+            return dp[x][y][mask];
+        }
+        grid[x][y] = -1;
+        dp[x][y][mask] = dfs(grid, x + 1, y, mask | (1 << (x * n + y)), dp)
+            + dfs(grid, x - 1, y, mask | (1 << (x * n + y)), dp)
+            + dfs(grid, x, y + 1, mask | (1 << (x * n + y)), dp)
+            + dfs(grid, x, y - 1, mask | (1 << (x * n + y)), dp);
+        grid[x][y] = 0;
+        return dp[x][y][mask];
+
+=======
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int total = 0;
+        int startRow = 0;
+        int startCol = 0;
+        for(int i=0; i<m; i++) {
+            for(int j=0; j<n; j++) {
+                if(grid[i][j] != -1) {
+                    total++;
+                }
+                if(grid[i][j] == 1) {
+                    startRow = i;
+                    startCol = j;
+                }
+            }
+        }
+        return dfs(grid, startRow, startCol, total);
+    }
+    public int dfs(int[][] grid, int row, int col, int total) {
+        if(row < 0 || row >= grid.length || col < 0 || col >= grid[0].length || grid[row][col] == -1) {
+            return 0;
+        }
+        if(grid[row][col] == 2) {
+            return total == 1 ? 1 : 0;
+        }
+        grid[row][col] = -1;
+        int count = dfs(grid, row-1, col, total-1) + dfs(grid, row+1, col, total-1) + dfs(grid, row, col-1, total-1) + dfs(grid, row, col+1, total-1);
+        grid[row][col] = 0;
+        return count;

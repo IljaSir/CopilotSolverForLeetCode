@@ -1,0 +1,131 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+
+        unordered_map<int, vector<int>> graph;
+        unordered_map<int, int> inDegree;
+        for (auto& p : pairs) {
+            graph[p[0]].push_back(p[1]);
+            graph[p[1]].push_back(p[0]);
+            inDegree[p[0]]++;
+            inDegree[p[1]]++;
+        }
+        unordered_map<int, int> parents;
+        queue<int> q;
+        for (auto& p : inDegree)
+            if (p.second == 1)
+                q.push(p.first);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v : graph[u])
+                if (--inDegree[v] == 1)
+                    q.push(v);
+            if (parents.count(u)) {
+                int p = parents[u];
+                if (graph[p].size() == 1)
+                    return 0;
+                graph[p].erase(find(graph[p].begin(), graph[p].end(), u));
+                graph[u].erase(find(graph[u].begin(), graph[u].end(), p));
+                inDegree[u]--;
+                inDegree[p]--;
+                if (inDegree[p] == 1)
+                    q.push(p);
+            }
+            if (graph[u].size() == 1) {
+                int v = graph[u][0];
+                parents[v] = u;
+            }
+        }
+        return graph.size() == inDegree.size() ? 1 : 2;
+
+=======
+
+        int n = pairs.size();
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        vector<vector<int>> g(501);
+        for (auto& p : pairs) {
+            g[p[0]].push_back(p[1]);
+            g[p[1]].push_back(p[0]);
+        }
+        vector<int> in(501);
+        for (int i = 1; i <= 500; i++) {
+            for (int j : g[i]) {
+                in[j]++;
+            }
+        }
+        queue<int> q;
+        for (int i = 1; i <= 500; i++) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        int cnt = 0;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            cnt++;
+            for (int v : g[u]) {
+                if (--in[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+        return cnt == n ? 1 : 2;
+
+=======
+
+        int n = pairs.size();
+        if (n == 1) return 1;
+        vector<vector<int>> g(501);
+        for (auto &pair : pairs) {
+            g[pair[0]].push_back(pair[1]);
+            g[pair[1]].push_back(pair[0]);
+        }
+        vector<int> vis(501, 0);
+        int ans = 0;
+        for (int i = 1; i <= 500; ++i) {
+            if (g[i].size() == 0) continue;
+            if (vis[i]) continue;
+            ++ans;
+            if (ans > 1) return 2;
+            dfs(g, i, vis);
+        }
+        return ans;
+    }
+    void dfs(vector<vector<int>> &g, int u, vector<int> &vis) {
+        vis[u] = 1;
+        for (auto &v : g[u]) {
+            if (vis[v]) continue;
+            dfs(g, v, vis);
+        }
+
+=======
+
+        int n = pairs.size();
+        vector<int> parent(501, 0);
+        for (auto& p : pairs) {
+            parent[p[1]] = p[0];
+        }
+        vector<int> cnt(501, 0);
+        for (auto& p : pairs) {
+            int node = p[1];
+            while (node != 0) {
+                cnt[node]++;
+                node = parent[node];
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= 500; i++) {
+            if (cnt[i] == 1) {
+                res++;
+            }
+        }
+        if (res == 0) {
+            return 0;
+        }
+        if (res == 1) {
+            return 1;
+        }
+        return 2;

@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = fast = i
+            while True:
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast]) % n
+                fast = (fast + nums[fast]) % n
+                if nums[slow] * nums[fast] < 0 or nums[slow] * nums[(slow + nums[slow]) % n] < 0:
+                    break
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = fast = i
+            while nums[slow] * nums[fast] > 0 and nums[slow] * nums[(fast + nums[fast]) % n] > 0:
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast]) % n
+                fast = (fast + nums[fast]) % n
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = i
+            fast = (i + nums[i]) % n
+            while nums[fast] * nums[i] > 0 and nums[(fast + nums[fast]) % n] * nums[i] > 0:
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast]) % n
+                fast = (fast + nums[fast]) % n
+            slow = i
+            while nums[slow] * nums[i] > 0:
+                next = (slow + nums[slow]) % n
+                nums[slow] = 0
+                slow = next
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = fast = i
+            while nums[fast] * nums[(fast + nums[fast]) % n] > 0 and nums[fast] * nums[(fast + nums[fast] * 2) % n] > 0:
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast] * 2) % n
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+            slow = i
+            val = nums[i]
+            while nums[slow] * val > 0:
+                next_ = (slow + nums[slow]) % n
+                nums[slow] = 0
+                slow = next_
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = fast = i
+            direction = nums[i]
+            while nums[slow] * direction > 0 and nums[fast] * direction > 0 and nums[(fast + nums[fast]) % n] * direction > 0:
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast]) % n
+                fast = (fast + nums[fast]) % n
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        def next(i):
+            return (i + nums[i]) % len(nums)
+        
+        for i in range(len(nums)):
+            if nums[i] == 0:
+                continue
+            slow = fast = i
+            while nums[slow] * nums[next(slow)] > 0 and nums[fast] * nums[next(fast)] > 0 and nums[fast] * nums[next(next(fast))] > 0:
+                slow = next(slow)
+                fast = next(next(fast))
+                if slow == fast:
+                    if slow == next(slow):
+                        break
+                    return True
+            j = i
+            while nums[j] * nums[next(j)] > 0:
+                nums[j] = 0
+                j = next(j)
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        n = len(nums)
+        for i in range(n):
+            if nums[i] == 0:
+                continue
+            slow = i
+            fast = (i + nums[i]) % n
+            if nums[fast] * nums[i] < 0:
+                continue
+            while nums[fast] * nums[i] > 0 and nums[(fast + nums[fast]) % n] * nums[i] > 0:
+                if slow == fast:
+                    if slow == (slow + nums[slow]) % n:
+                        break
+                    return True
+                slow = (slow + nums[slow]) % n
+                fast = (fast + nums[fast]) % n
+                fast = (fast + nums[fast]) % n
+            slow = i
+            val = nums[i]
+            while nums[slow] * val > 0:
+                tmp = slow
+                slow = (slow + nums[slow]) % n
+                nums[tmp] = 0
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        
+        def next_index(i):
+            n = len(nums)
+            return (i + nums[i]) % n
+        
+        for i in range(len(nums)):
+            if nums[i] == 0:
+                continue
+            slow, fast = i, next_index(i)
+            # If nums[i] * nums[next_index(i)] is negative, this means the direction of the cycle is different from the direction of i.
+            # So, we should break and continue for the next i.
+            while nums[i] * nums[fast] > 0 and nums[i] * nums[next_index(fast)] > 0:
+                if slow == fast:
+                    # Check for loop with only one element
+                    if slow == next_index(slow):
+                        break
+                    return True
+                slow = next_index(slow)
+                fast = next_index(next_index(fast))
+            # We need to set all elements along the way to 0.
+            j = i
+            while nums[j] * nums[next_index(j)] > 0:
+                nums[j] = 0
+                j = next_index(j)
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        for i, n in enumerate(nums):
+            if n == 0:
+                continue
+            slow, fast = i, self.next(i, nums)
+            while nums[fast] * nums[i] > 0 and nums[self.next(fast, nums)] * nums[i] > 0:
+                if slow == fast:
+                    if slow == self.next(slow, nums):
+                        break
+                    return True
+                slow = self.next(slow, nums)
+                fast = self.next(self.next(fast, nums), nums)
+            slow = i
+            while nums[slow] * nums[i] > 0:
+                nums[slow] = 0
+                slow = self.next(slow, nums)
+        return False
+
+=======
+
+def circularArrayLoop(self, nums: List[int]) -> bool:
+        for i in range(len(nums)):
+            j = i
+            while True:
+                j = (j + nums[j]) % len(nums)
+                if j == i:
+                    if nums[j] > 0:
+                        if nums[j] % len(nums) == 0:
+                            break
+                        else:
+                            return True
+                    else:
+                        break
+                if nums[j] * nums[i] < 0:
+                    break
+        return False

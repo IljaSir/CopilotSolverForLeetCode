@@ -1,0 +1,349 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] indegree = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] relation : relations) {
+            int prev = relation[0] - 1;
+            int next = relation[1] - 1;
+            graph.get(prev).add(next);
+            indegree[next]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        int[] dp = new int[n];
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            for (int next : graph.get(cur)) {
+                dp[next] = Math.max(dp[next], dp[cur] + time[cur]);
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i] + time[i]);
+        }
+        return res;
+
+=======
+
+        int[] indegree = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] r : relations) {
+            indegree[r[1] - 1]++;
+            graph.get(r[0] - 1).add(r[1] - 1);
+        }
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+                dp[i] = time[i];
+            }
+        }
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int next : graph.get(node)) {
+                indegree[next]--;
+                dp[next] = Math.max(dp[next], dp[node] + time[next]);
+                if (indegree[next] == 0) {
+                    queue.add(next);
+                }
+            }
+        }
+        int res = 0;
+        for (int d : dp) {
+            res = Math.max(res, d);
+        }
+        return res;
+
+=======
+
+        int[] indegree = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] relation : relations) {
+            int prevCourse = relation[0] - 1;
+            int nextCourse = relation[1] - 1;
+            graph.get(prevCourse).add(nextCourse);
+            indegree[nextCourse]++;
+        }
+        int[] dp = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            for (int nextCourse : graph.get(course)) {
+                indegree[nextCourse]--;
+                dp[nextCourse] = Math.max(dp[nextCourse], dp[course] + time[course]);
+                if (indegree[nextCourse] == 0) {
+                    queue.offer(nextCourse);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i] + time[i]);
+        }
+        return ans;
+
+=======
+
+        int[] inDegree = new int[n];
+        for (int[] r : relations) {
+            inDegree[r[1] - 1]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        int[] dp = new int[n];
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            dp[cur] += time[cur];
+            for (int[] r : relations) {
+                if (r[0] - 1 == cur) {
+                    dp[r[1] - 1] = Math.max(dp[r[1] - 1], dp[cur]);
+                    if (--inDegree[r[1] - 1] == 0) {
+                        q.offer(r[1] - 1);
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int[] inDegree = new int[n + 1];
+        for (int[] r : relations) {
+            inDegree[r[1]]++;
+        }
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i] = time[i - 1];
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 1; i <= n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            for (int[] r : relations) {
+                if (r[0] == course) {
+                    dp[r[1]] = Math.max(dp[r[1]], dp[course] + time[r[1] - 1]);
+                    if (--inDegree[r[1]] == 0) {
+                        queue.offer(r[1]);
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        // Build graph
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] relation: relations) {
+            graph.get(relation[0] - 1).add(relation[1] - 1);
+        }
+        // Topological sort
+        int[] inDegree = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int next: graph.get(i)) {
+                inDegree[next]++;
+            }
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int[] dp = new int[n];
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int next: graph.get(cur)) {
+                inDegree[next]--;
+                dp[next] = Math.max(dp[next], dp[cur] + time[cur]);
+                if (inDegree[next] == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i] + time[i]);
+        }
+        return res;
+
+=======
+
+        int[] indegree = new int[n];
+        int[] dp = new int[n];
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] r : relations) {
+            adj[r[0] - 1].add(r[1] - 1);
+            indegree[r[1] - 1]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+                dp[i] = time[i];
+            }
+        }
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int nei : adj[node]) {
+                indegree[nei]--;
+                dp[nei] = Math.max(dp[nei], dp[node] + time[nei]);
+                if (indegree[nei] == 0) {
+                    queue.add(nei);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int[] inDegree = new int[n];
+        int[] dp = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for(int[] relation : relations) {
+            int prev = relation[0] - 1;
+            int next = relation[1] - 1;
+            graph.get(prev).add(next);
+            inDegree[next]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 0; i < n; i++) {
+            if(inDegree[i] == 0) {
+                q.add(i);
+            }
+        }
+        int ans = 0;
+        while(!q.isEmpty()) {
+            int cur = q.poll();
+            ans = Math.max(ans, dp[cur] + time[cur]);
+            for(int next : graph.get(cur)) {
+                inDegree[next]--;
+                dp[next] = Math.max(dp[next], dp[cur] + time[cur]);
+                if(inDegree[next] == 0) {
+                    q.add(next);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] indegree = new int[n];
+        int[] dp = new int[n];
+        for(int[] r : relations){
+            indegree[r[1]-1]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 0; i < n; i++){
+            if(indegree[i] == 0){
+                q.offer(i);
+                dp[i] = time[i];
+            }
+        }
+        while(!q.isEmpty()){
+            int cur = q.poll();
+            for(int[] r : relations){
+                if(r[0] == cur + 1){
+                    int next = r[1] - 1;
+                    dp[next] = Math.max(dp[next], dp[cur] + time[next]);
+                    indegree[next]--;
+                    if(indegree[next] == 0){
+                        q.offer(next);
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for(int i = 0; i < n; i++){
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        if (n == 0 || relations.length == 0) return 0;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        int[] indegree = new int[n + 1];
+        for (int[] relation: relations) {
+            int prev = relation[0], next = relation[1];
+            indegree[next]++;
+            graph.computeIfAbsent(prev, k -> new ArrayList<>()).add(next);
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+                dp[i] = time[i - 1];
+            }
+        }
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            if (graph.containsKey(course)) {
+                for (int next: graph.get(course)) {
+                    indegree[next]--;
+                    dp[next] = Math.max(dp[next], dp[course] + time[next - 1]);
+                    if (indegree[next] == 0) queue.offer(next);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;

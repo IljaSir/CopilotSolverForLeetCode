@@ -1,0 +1,316 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut result = Vec::new();
+        for word in words {
+            if Self::is_match(&word, &pattern) {
+                result.push(word);
+            }
+        }
+        result
+    }
+    fn is_match(word: &str, pattern: &str) -> bool {
+        let mut map = std::collections::HashMap::new();
+        let mut used = std::collections::HashSet::new();
+        for (w, p) in word.chars().zip(pattern.chars()) {
+            if !map.contains_key(&p) {
+                if used.contains(&w) {
+                    return false;
+                }
+                map.insert(p, w);
+                used.insert(w);
+            } else {
+                if *map.get(&p).unwrap() != w {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut result = Vec::new();
+        let pattern: Vec<char> = pattern.chars().collect();
+        for word in words {
+            let word: Vec<char> = word.chars().collect();
+            if word.len() != pattern.len() {
+                continue;
+            }
+            let mut map = [0; 26];
+            let mut used = [false; 26];
+            let mut i = 0;
+            for i in 0..word.len() {
+                let w = word[i] as usize - 'a' as usize;
+                let p = pattern[i] as usize - 'a' as usize;
+                if map[p] == 0 {
+                    if used[w] {
+                        break;
+                    }
+                    map[p] = w + 1;
+                    used[w] = true;
+                } else if map[p] != w + 1 {
+                    break;
+                }
+                i += 1;
+            }
+            if i == word.len() {
+                result.push(String::from_utf8(word.iter().map(|c| *c as u8).collect()).unwrap());
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res: Vec<String> = vec![];
+        for word in words {
+            let mut m1: std::collections::HashMap<char, char> = std::collections::HashMap::new();
+            let mut m2: std::collections::HashMap<char, char> = std::collections::HashMap::new();
+            let mut flag = true;
+            for (i, c) in pattern.chars().enumerate() {
+                if m1.contains_key(&c) {
+                    if m1[&c] != word.chars().nth(i).unwrap() {
+                        flag = false;
+                        break;
+                    }
+                } else {
+                    m1.insert(c, word.chars().nth(i).unwrap());
+                }
+                if m2.contains_key(&word.chars().nth(i).unwrap()) {
+                    if m2[&word.chars().nth(i).unwrap()] != c {
+                        flag = false;
+                        break;
+                    }
+                } else {
+                    m2.insert(word.chars().nth(i).unwrap(), c);
+                }
+            }
+            if flag {
+                res.push(word);
+            }
+        }
+        res
+
+=======
+
+        let mut result = vec![];
+        let pattern: Vec<char> = pattern.chars().collect();
+        for word in words {
+            let mut map = std::collections::HashMap::new();
+            let mut used = std::collections::HashSet::new();
+            let mut ok = true;
+            let word: Vec<char> = word.chars().collect();
+            for (i, c) in pattern.iter().enumerate() {
+                if let Some(&v) = map.get(c) {
+                    if v != word[i] {
+                        ok = false;
+                        break;
+                    }
+                } else {
+                    if used.contains(&word[i]) {
+                        ok = false;
+                        break;
+                    }
+                    map.insert(c, word[i]);
+                    used.insert(word[i]);
+                }
+            }
+            if ok {
+                result.push(word.iter().collect());
+            }
+        }
+        result
+
+=======
+
+        let mut result = Vec::new();
+        let mut pattern_vec = Vec::new();
+        for c in pattern.chars() {
+            pattern_vec.push(c);
+        }
+        for word in &words {
+            let mut word_vec = Vec::new();
+            for c in word.chars() {
+                word_vec.push(c);
+            }
+            if Solution::is_pattern(&word_vec, &pattern_vec) {
+                result.push(word.clone());
+            }
+        }
+        result
+    }
+    
+    pub fn is_pattern(word: &Vec<char>, pattern: &Vec<char>) -> bool {
+        let mut map = std::collections::HashMap::new();
+        for i in 0..word.len() {
+            let c = word[i];
+            match map.get(&c) {
+                Some(&p) => {
+                    if p != pattern[i] {
+                        return false;
+                    }
+                },
+                None => {
+                    map.insert(c, pattern[i]);
+                }
+            }
+        }
+        let mut map = std::collections::HashMap::new();
+        for i in 0..word.len() {
+            let c = pattern[i];
+            match map.get(&c) {
+                Some(&p) => {
+                    if p != word[i] {
+                        return false;
+                    }
+                },
+                None => {
+                    map.insert(c, word[i]);
+                }
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut result:Vec<String> = Vec::new();
+        for word in words {
+            let mut map:std::collections::HashMap<char, char> = std::collections::HashMap::new();
+            let mut used:std::collections::HashSet<char> = std::collections::HashSet::new();
+            let mut flag = true;
+            for (i, ch) in pattern.chars().enumerate() {
+                let wch = word.chars().nth(i).unwrap();
+                if let Some(&c) = map.get(&ch) {
+                    if c != wch {
+                        flag = false;
+                        break;
+                    }
+                } else {
+                    if used.contains(&wch) {
+                        flag = false;
+                        break;
+                    }
+                    map.insert(ch, wch);
+                    used.insert(wch);
+                }
+            }
+            if flag {
+                result.push(word);
+            }
+        }
+        result
+
+=======
+
+        let mut result = Vec::new();
+        let p = pattern.chars().collect::<Vec<char>>();
+        for word in words {
+            let w = word.chars().collect::<Vec<char>>();
+            let mut map = HashMap::new();
+            let mut is_match = true;
+            for i in 0..p.len() {
+                if !map.contains_key(&p[i]) {
+                    if !map.values().any(|&v| v == w[i]) {
+                        map.insert(p[i], w[i]);
+                    } else {
+                        is_match = false;
+                        break;
+                    }
+                } else {
+                    if *map.get(&p[i]).unwrap() != w[i] {
+                        is_match = false;
+                        break;
+                    }
+                }
+            }
+            if is_match {
+                result.push(word);
+            }
+        }
+        result
+
+=======
+
+        let mut res = Vec::new();
+        for word in words {
+            let w = word.as_bytes();
+            let p = pattern.as_bytes();
+            let mut map = [0; 26];
+            let mut used = [false; 26];
+            let mut i = 0;
+            while i < w.len() {
+                let wi = w[i] - b'a';
+                let pi = p[i] - b'a';
+                if map[wi as usize] == 0 {
+                    if used[pi as usize] {
+                        break;
+                    }
+                    map[wi as usize] = pi + 1;
+                    used[pi as usize] = true;
+                } else if map[wi as usize] != pi + 1 {
+                    break;
+                }
+                i += 1;
+            }
+            if i == w.len() {
+                res.push(word);
+            }
+        }
+        res
+
+=======
+
+        let mut result = vec![];
+        for word in words.iter() {
+            let mut map1 = vec![0; 26];
+            let mut map2 = vec![0; 26];
+            let mut is_match = true;
+            for i in 0..word.len() {
+                let c1 = word.chars().nth(i).unwrap() as usize - 97;
+                let c2 = pattern.chars().nth(i).unwrap() as usize - 97;
+                if map1[c1] == 0 && map2[c2] == 0 {
+                    map1[c1] = c2 + 1;
+                    map2[c2] = c1 + 1;
+                } else if map1[c1] != c2 + 1 || map2[c2] != c1 + 1 {
+                    is_match = false;
+                    break;
+                }
+            }
+            if is_match {
+                result.push(word.to_string());
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        let mut pattern = pattern.chars().collect::<Vec<char>>();
+        for word in words {
+            let mut word = word.chars().collect::<Vec<char>>();
+            let mut m1 = vec![0; 26];
+            let mut m2 = vec![0; 26];
+            let mut flag = true;
+            for i in 0..word.len() {
+                if m1[word[i] as usize - 'a' as usize] == 0 {
+                    m1[word[i] as usize - 'a' as usize] = pattern[i] as usize - 'a' as usize + 1;
+                }
+                if m2[pattern[i] as usize - 'a' as usize] == 0 {
+                    m2[pattern[i] as usize - 'a' as usize] = word[i] as usize - 'a' as usize + 1;
+                }
+                if m1[word[i] as usize - 'a' as usize] != pattern[i] as usize - 'a' as usize + 1 || m2[pattern[i] as usize - 'a' as usize] != word[i] as usize - 'a' as usize + 1 {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag {
+                res.push(word.iter().collect::<String>());
+            }
+        }
+        res

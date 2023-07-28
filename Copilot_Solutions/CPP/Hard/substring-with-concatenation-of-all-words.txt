@@ -1,0 +1,310 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> ans;
+        int n = words.size();
+        if (n == 0) return ans;
+        int m = words[0].size();
+        if (m == 0) return ans;
+        unordered_map<string, int> mp;
+        for (auto& word : words) {
+            mp[word]++;
+        }
+        for (int i = 0; i < m; i++) {
+            unordered_map<string, int> cur;
+            int cnt = 0;
+            for (int j = i; j <= s.size() - m; j += m) {
+                string curWord = s.substr(j, m);
+                if (mp.find(curWord) == mp.end()) {
+                    cur.clear();
+                    cnt = 0;
+                } else {
+                    cur[curWord]++;
+                    cnt++;
+                    while (cur[curWord] > mp[curWord]) {
+                        string leftWord = s.substr(j - (cnt - 1) * m, m);
+                        cur[leftWord]--;
+                        cnt--;
+                    }
+                    if (cnt == n) {
+                        ans.push_back(j - (n - 1) * m);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        unordered_map<string, int> wordCnt;
+        for (auto& word : words) {
+            ++wordCnt[word];
+        }
+        int n = s.size(), num = words.size(), len = words[0].size();
+        vector<int> ans;
+        for (int i = 0; i < n - num * len + 1; ++i) {
+            unordered_map<string, int> seen;
+            int j = 0;
+            while (j < num) {
+                string word = s.substr(i + j * len, len);
+                if (wordCnt.find(word) != wordCnt.end()) {
+                    ++seen[word];
+                    if (seen[word] > wordCnt[word]) {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+                ++j;
+            }
+            if (j == num) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        if (words.size() == 0) return res;
+        int len = words[0].size();
+        if (s.size() < len * words.size()) return res;
+        
+        unordered_map<string, int> cnt;
+        for (auto& word : words) cnt[word]++;
+        
+        for (int i = 0; i < len; i++) {
+            int l = i, r = i;
+            unordered_map<string, int> tmp;
+            int match = 0;
+            while (r + len <= s.size()) {
+                string w = s.substr(r, len);
+                r += len;
+                if (cnt.find(w) != cnt.end()) {
+                    tmp[w]++;
+                    if (tmp[w] <= cnt[w]) match++;
+                    while (tmp[w] > cnt[w]) {
+                        string leftmost = s.substr(l, len);
+                        l += len;
+                        tmp[leftmost]--;
+                        if (tmp[leftmost] < cnt[leftmost]) match--;
+                    }
+                    if (match == words.size()) res.push_back(l);
+                } else {
+                    l = r;
+                    tmp.clear();
+                    match = 0;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        if (words.size() == 0) return result;
+        unordered_map<string, int> wordMap;
+        int wordLength = words[0].length();
+        int wordCount = words.size();
+        int wordTotalLength = wordLength * wordCount;
+        int sLength = s.length();
+        for (auto word : words) {
+            wordMap[word]++;
+        }
+        for (int i = 0; i <= sLength - wordTotalLength; i++) {
+            unordered_map<string, int> wordSeen;
+            int count = 0;
+            for (int j = i; j < i + wordTotalLength; j += wordLength) {
+                string word = s.substr(j, wordLength);
+                if (wordMap.find(word) != wordMap.end()) {
+                    wordSeen[word]++;
+                    if (wordSeen[word] > wordMap[word]) {
+                        break;
+                    }
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count == wordCount) {
+                result.push_back(i);
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> res;
+        if (words.size() == 0) return res;
+        int m = words.size(), n = words[0].length();
+        unordered_map<string, int> wordMap;
+        for (string word : words) {
+            wordMap[word]++;
+        }
+        for (int i = 0; i < n; i++) {
+            int left = i, count = 0;
+            unordered_map<string, int> seen;
+            for (int j = i; j <= (int)s.length() - n; j += n) {
+                string str = s.substr(j, n);
+                if (wordMap.find(str) != wordMap.end()) {
+                    seen[str]++;
+                    if (seen[str] <= wordMap[str]) {
+                        count++;
+                    } else {
+                        while (seen[str] > wordMap[str]) {
+                            string str1 = s.substr(left, n);
+                            seen[str1]--;
+                            if (seen[str1] < wordMap[str1]) {
+                                count--;
+                            }
+                            left += n;
+                        }
+                    }
+                    if (count == m) {
+                        res.push_back(left);
+                        string str1 = s.substr(left, n);
+                        seen[str1]--;
+                        count--;
+                        left += n;
+                    }
+                } else {
+                    seen.clear();
+                    count = 0;
+                    left = j + n;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        if (words.empty()) return res;
+        int wordLen = words[0].length();
+        int wordNum = words.size();
+        int sLen = s.length();
+        int totalLen = wordLen * wordNum;
+        if (sLen < totalLen) return res;
+        unordered_map<string, int> wordCount;
+        for (string word : words) {
+            wordCount[word]++;
+        }
+        for (int i = 0; i <= sLen - totalLen; i++) {
+            unordered_map<string, int> seen;
+            int j = 0;
+            for (; j < wordNum; j++) {
+                string word = s.substr(i + j * wordLen, wordLen);
+                if (wordCount.find(word) == wordCount.end() || seen[word] >= wordCount[word]) {
+                    break;
+                }
+                seen[word]++;
+            }
+            if (j == wordNum) {
+                res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        int m = words.size();
+        int w = words[0].size();
+        vector<int> ans;
+        unordered_map<string, int> mp;
+        for (string word : words) mp[word]++;
+        for (int i = 0; i < n - m * w + 1; i++) {
+            unordered_map<string, int> temp;
+            int j = 0;
+            while (j < m) {
+                string word = s.substr(i + j * w, w);
+                if (mp.find(word) == mp.end() || temp[word] == mp[word]) break;
+                temp[word]++;
+                j++;
+            }
+            if (j == m) ans.push_back(i);
+        }
+        return ans;
+
+=======
+
+        if (words.empty()) return {};
+        const int n = s.size();
+        const int m = words.size();
+        const int k = words[0].size();
+        const int l = m * k;
+        vector<int> res;
+        unordered_map<string, int> freq;
+        for (const auto& w : words) {
+            ++freq[w];
+        }
+        for (int i = 0; i < n - l + 1; ++i) {
+            unordered_map<string, int> seen;
+            int j = 0;
+            for (; j < m; ++j) {
+                string t = s.substr(i + j * k, k);
+                if (freq.find(t) == freq.end() || seen[t] == freq[t]) {
+                    break;
+                }
+                ++seen[t];
+            }
+            if (j == m) {
+                res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        if (words.size() == 0 || s.size() == 0) return res;
+        int wl = words[0].size();
+        int n = words.size();
+        int l = wl * n;
+        unordered_map<string, int> m, t;
+        for (string w : words) {
+            if (m.count(w)) m[w]++;
+            else m[w] = 1;
+        }
+        for (int i = 0; i < s.size() - l + 1; i++) {
+            string sub = s.substr(i, l);
+            int j = 0;
+            for (; j < n; j++) {
+                string w = sub.substr(j * wl, wl);
+                if (m.count(w) == 0) break;
+                if (t.count(w) == 0) t[w] = 1;
+                else t[w]++;
+                if (t[w] > m[w]) break;
+            }
+            if (j == n) res.push_back(i);
+            t.clear();
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        unordered_map<string, int> hash;
+        for (auto word: words) {
+            hash[word]++;
+        }
+        int wl = words[0].length();
+        int n = s.length();
+        int len = wl * words.size();
+        for (int i = 0; i < n - len + 1; i++) {
+            unordered_map<string, int> seen;
+            int j = 0;
+            for (; j < words.size(); j++) {
+                string word = s.substr(i + j * wl, wl);
+                if (hash.find(word) == hash.end() || seen[word] == hash[word]) {
+                    break;
+                }
+                seen[word]++;
+            }
+            if (j == words.size()) {
+                res.push_back(i);
+            }
+        }
+        return res;

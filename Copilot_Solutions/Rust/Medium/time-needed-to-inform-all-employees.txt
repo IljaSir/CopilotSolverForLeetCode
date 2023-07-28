@@ -1,0 +1,190 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut graph: Vec<Vec<i32>> = vec![vec![]; n as usize];
+        for i in 0..n {
+            if manager[i as usize] != -1 {
+                graph[manager[i as usize] as usize].push(i);
+            }
+        }
+        let mut max = 0;
+        let mut stack: Vec<(i32, i32)> = vec![(head_id, inform_time[head_id as usize])];
+        while !stack.is_empty() {
+            let (node, time) = stack.pop().unwrap();
+            if time > max {
+                max = time;
+            }
+            for child in graph[node as usize].iter() {
+                stack.push((*child, time + inform_time[*child as usize]));
+            }
+        }
+        max
+
+=======
+
+        let mut adj = vec![vec![]; n as usize];
+        for i in 0..n {
+            if manager[i as usize] != -1 {
+                adj[manager[i as usize] as usize].push(i as usize);
+            }
+        }
+        Solution::dfs(&adj, head_id as usize, &inform_time)
+    }
+    fn dfs(adj: &Vec<Vec<usize>>, u: usize, inform_time: &Vec<i32>) -> i32 {
+        let mut res = 0;
+        for v in &adj[u] {
+            res = res.max(Solution::dfs(adj, *v, inform_time));
+        }
+        res + inform_time[u]
+
+=======
+
+        let mut tree: Vec<Vec<i32>> = vec![vec![]; n as usize];
+        for i in 0..n as usize {
+            if manager[i] != -1 {
+                tree[manager[i] as usize].push(i as i32);
+            }
+        }
+        let mut ans = 0;
+        let mut q: Vec<(i32, i32)> = vec![];
+        q.push((head_id, 0));
+        while !q.is_empty() {
+            let (i, t) = q.remove(0);
+            ans = ans.max(t);
+            for &j in tree[i as usize].iter() {
+                q.push((j, t + inform_time[i as usize]));
+            }
+        }
+        ans
+
+=======
+
+        let mut subordinates = vec![Vec::new(); n as usize];
+        for i in 0..n {
+            if manager[i as usize] != -1 {
+                subordinates[manager[i as usize] as usize].push(i);
+            }
+        }
+        
+        fn dfs(subordinates: &Vec<Vec<i32>>, inform_time: &Vec<i32>, i: i32) -> i32 {
+            if subordinates[i as usize].is_empty() {
+                return 0;
+            }
+            let mut max = 0;
+            for &j in subordinates[i as usize].iter() {
+                max = max.max(dfs(subordinates, inform_time, j));
+            }
+            max + inform_time[i as usize]
+        }
+        
+        dfs(&subordinates, &inform_time, head_id)
+
+=======
+
+        let mut subordinates = vec![vec![]; n as usize];
+        for (i, &m) in manager.iter().enumerate() {
+            if m != -1 {
+                subordinates[m as usize].push(i as i32);
+            }
+        }
+
+        fn dfs(i: i32, subordinates: &Vec<Vec<i32>>, inform_time: &Vec<i32>) -> i32 {
+            if subordinates[i as usize].len() == 0 {
+                return 0;
+            }
+            let mut max = 0;
+            for &s in &subordinates[i as usize] {
+                max = max.max(dfs(s, subordinates, inform_time));
+            }
+            max + inform_time[i as usize]
+        }
+
+        dfs(head_id, &subordinates, &inform_time)
+
+=======
+
+        let mut subordinates = vec![vec![]; n as usize];
+        for (i, &m) in manager.iter().enumerate() {
+            if m != -1 {
+                subordinates[m as usize].push(i as i32);
+            }
+        }
+        fn dfs(id: i32, subordinates: &Vec<Vec<i32>>, inform_time: &Vec<i32>) -> i32 {
+            let mut max = 0;
+            for &s in &subordinates[id as usize] {
+                max = std::cmp::max(max, dfs(s, subordinates, inform_time));
+            }
+            max + inform_time[id as usize]
+        }
+        dfs(head_id, &subordinates, &inform_time)
+
+=======
+
+        let mut tree = vec![vec![]; n as usize];
+        for i in 0..n {
+            let m = manager[i as usize];
+            if m != -1 {
+                tree[m as usize].push(i);
+            }
+        }
+        let mut max = 0;
+        let mut stack = vec![(head_id, 0)];
+        while let Some((node, time)) = stack.pop() {
+            let time = time + inform_time[node as usize];
+            if time > max {
+                max = time;
+            }
+            for child in &tree[node as usize] {
+                stack.push((*child, time));
+            }
+        }
+        max
+
+=======
+
+        let mut ans = 0;
+        let mut m = vec![vec![]; n as usize];
+        for (i, &v) in manager.iter().enumerate() {
+            if v >= 0 {
+                m[v as usize].push(i as i32);
+            }
+        }
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((head_id, 0));
+        while let Some((id, time)) = q.pop_front() {
+            ans = ans.max(time);
+            for &v in &m[id as usize] {
+                q.push_back((v, time + inform_time[id as usize]));
+            }
+        }
+        ans
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for (i, &m) in manager.iter().enumerate() {
+            if m == -1 {
+                continue;
+            }
+            let key = m as usize;
+            if let Some(v) = map.get_mut(&key) {
+                v.push(i as i32);
+            } else {
+                map.insert(key, vec![i as i32]);
+            }
+        }
+        let mut max = 0;
+        let mut stack = vec![(head_id, 0)];
+        while !stack.is_empty() {
+            let (id, t) = stack.pop().unwrap();
+            let id = id as usize;
+            if let Some(v) = map.get(&id) {
+                for &i in v {
+                    stack.push((i, t + inform_time[id]));
+                }
+            } else {
+                max = std::cmp::max(max, t + inform_time[id]);
+            }
+        }
+        max

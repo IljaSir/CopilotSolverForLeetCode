@@ -1,0 +1,283 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] count = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+            last[text.charAt(i) - 'a'] = i;
+        }
+        int max = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            int j = i;
+            while (j < text.length() && (text.charAt(j) - 'a' == c || count[c] > 1)) {
+                if (text.charAt(j) - 'a' != c) {
+                    count[c]--;
+                }
+                j++;
+            }
+            max = Math.max(max, j - i);
+            count[c] = last[c] - i + 1;
+        }
+        return max;
+
+=======
+
+        int[] count = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+            last[text.charAt(i) - 'a'] = i;
+        }
+        int max = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            int j = i;
+            while (j < text.length() && (text.charAt(j) - 'a') == c) j++;
+            int k = j;
+            while (k < text.length() && (text.charAt(k) - 'a') == c) k++;
+            int l = i;
+            while (l >= 0 && (text.charAt(l) - 'a') == c) l--;
+            int m = l;
+            while (m >= 0 && (text.charAt(m) - 'a') == c) m--;
+            int len = j - i;
+            if (j - l - 1 > 0 && j - l - 1 <= count[c]) len += j - l - 1;
+            else if (k - i - 1 > 0 && k - i - 1 <= count[c]) len += k - i - 1;
+            else if (k - i - 1 > 0 && k - i - 1 <= count[c] + 1) len += k - i - 1;
+            max = Math.max(max, len);
+            i = j - 1;
+        }
+        return max;
+
+=======
+
+        int[] count = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+            last[text.charAt(i) - 'a'] = i;
+        }
+        int res = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            int j = i;
+            while (j < text.length() && (text.charAt(j) == text.charAt(i) || count[text.charAt(j) - 'a'] < 2)) {
+                j++;
+            }
+            res = Math.max(res, j - i);
+            if (j < text.length() && count[text.charAt(j) - 'a'] >= 2 && last[text.charAt(j) - 'a'] >= j) {
+                res = Math.max(res, j - i + 1);
+            }
+        }
+        return res;
+
+=======
+
+        int[] counts = new int[26];
+        int[] ends = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            counts[text.charAt(i) - 'a']++;
+            ends[text.charAt(i) - 'a'] = i;
+        }
+        int max = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            int j = i + 1;
+            while (j < text.length() && text.charAt(j) == text.charAt(i)) {
+                j++;
+            }
+            max = Math.max(max, Math.min(counts[c], j - i + 1));
+            if (j < text.length()) {
+                int nc = text.charAt(j) - 'a';
+                if (counts[nc] + counts[c] >= j - i + 1) {
+                    max = Math.max(max, j - i + 1);
+                }
+            }
+            i = j - 1;
+        }
+        return max;
+
+=======
+
+        int n = text.length();
+        int[] count = new int[26];
+        for (char c : text.toCharArray()) {
+            count[c - 'a']++;
+        }
+        int ans = 0;
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && text.charAt(j) == text.charAt(i)) {
+                j++;
+            }
+            int cur = j - i;
+            if (cur < count[text.charAt(i) - 'a']) {
+                cur++;
+            }
+            ans = Math.max(ans, cur);
+            i = j;
+        }
+        return ans;
+
+=======
+
+        int n = text.length();
+        int[] count = new int[26];
+        int[] pos = new int[26];
+        for (int i = 0; i < n; i++) {
+            char c = text.charAt(i);
+            count[c - 'a']++;
+            pos[c - 'a'] = i;
+        }
+        int max = 0;
+        for (int i = 0; i < 26; i++) {
+            int c = count[i];
+            int p = pos[i];
+            int j = p + 1;
+            while (j < n && c < count[text.charAt(j) - 'a']) {
+                j++;
+                c++;
+            }
+            max = Math.max(max, j - p);
+        }
+        return max;
+
+=======
+
+        int[] count = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+        }
+        int[] index = new int[26];
+        for (int i = 0; i < 26; i++) {
+            index[i] = -1;
+        }
+        int max = 0;
+        int cur = 0;
+        for (int i = 0; i < text.length(); i++) {
+            int c = text.charAt(i) - 'a';
+            if (index[c] == -1) {
+                index[c] = i;
+            } else {
+                if (i - index[c] == count[c]) {
+                    cur--;
+                }
+            }
+            cur++;
+            max = Math.max(max, cur);
+            if (i == text.length() - 1 || text.charAt(i) != text.charAt(i + 1)) {
+                if (count[c] > 1) {
+                    if (i - index[c] + 1 == count[c]) {
+                        cur--;
+                    }
+                    cur++;
+                    max = Math.max(max, cur);
+                }
+                cur = 0;
+                for (int j = 0; j < 26; j++) {
+                    index[j] = -1;
+                }
+            }
+        }
+        return max;
+
+=======
+
+        int n = text.length();
+        int[] count = new int[26];
+        for (char c : text.toCharArray()) {
+            count[c - 'a']++;
+        }
+        int[] left = new int[n];
+        left[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            if (text.charAt(i) == text.charAt(i - 1)) {
+                left[i] = left[i - 1] + 1;
+            } else {
+                left[i] = 1;
+            }
+        }
+        int[] right = new int[n];
+        right[n - 1] = 1;
+        for (int i = n - 2; i >= 0; --i) {
+            if (text.charAt(i) == text.charAt(i + 1)) {
+                right[i] = right[i + 1] + 1;
+            } else {
+                right[i] = 1;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int c = text.charAt(i) - 'a';
+            if (count[c] == 1) {
+                continue;
+            }
+            int x = left[i];
+            int y = right[i];
+            if (x + y == count[c]) {
+                ans = Math.max(ans, x + y - 1);
+            } else {
+                ans = Math.max(ans, x + y);
+            }
+        }
+        return ans;
+
+=======
+
+        int N = text.length();
+        int[] count = new int[26];
+        int[] rightmost = new int[26];
+        for (int i = 0; i < N; ++i) {
+            count[text.charAt(i) - 'a']++;
+            rightmost[text.charAt(i) - 'a'] = i;
+        }
+
+        int ans = 0;
+        for (int i = 0; i < N; ) {
+            int j = i;
+            while (j < N && text.charAt(j) == text.charAt(i)) j++;
+            int same = j - i;  // How many of the same character?
+
+            // Try to extend the window by one character on each side.
+            int extend = Math.min(count[text.charAt(i) - 'a'] - same, 1);
+            int left = i - 1;
+            int right = j;
+            while (left >= 0 && right < N && text.charAt(left) == text.charAt(right) && right - left - 1 <= same + extend) {
+                if (text.charAt(left) == text.charAt(i)) same++;
+                left--;
+                right++;
+            }
+
+            ans = Math.max(ans, right - left - 1);
+            i = j;
+        }
+
+        return ans;
+
+=======
+
+        int[] count = new int[26];
+        int[] length = new int[26];
+        int max = 0;
+        int cur = 0;
+        int prev = 0;
+        char prevChar = ' ';
+        for (char c : text.toCharArray()) {
+            int index = c - 'a';
+            count[index]++;
+            if (c != prevChar) {
+                cur = 0;
+                prev = 0;
+                prevChar = c;
+            }
+            cur++;
+            if (count[index] >= cur) {
+                prev = cur;
+            }
+            length[index] = Math.max(length[index], cur + prev);
+            max = Math.max(max, length[index]);
+        }
+        return max;

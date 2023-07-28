@@ -1,0 +1,234 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        if (source == target) return 0;
+        unordered_map<int, vector<int>> stops;
+        for (int i = 0; i < routes.size(); ++i) {
+            for (int j = 0; j < routes[i].size(); ++j) {
+                stops[routes[i][j]].push_back(i);
+            }
+        }
+        vector<int> visited(routes.size(), 0);
+        queue<int> q;
+        q.push(source);
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            ++step;
+            for (int i = 0; i < size; ++i) {
+                int stop = q.front();
+                q.pop();
+                for (int j = 0; j < stops[stop].size(); ++j) {
+                    if (visited[stops[stop][j]]) continue;
+                    visited[stops[stop][j]] = 1;
+                    for (int k = 0; k < routes[stops[stop][j]].size(); ++k) {
+                        if (routes[stops[stop][j]][k] == target) return step;
+                        q.push(routes[stops[stop][j]][k]);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        if (source == target) return 0;
+        int n = routes.size();
+        vector<vector<int>> g(n);
+        unordered_map<int, vector<int>> rec;
+        for (int i = 0; i < n; i++) {
+            for (auto site : routes[i]) {
+                for (auto j : rec[site]) {
+                    g[i].push_back(j);
+                    g[j].push_back(i);
+                }
+                rec[site].push_back(i);
+            }
+        }
+        queue<int> q;
+        vector<int> dist(n, INT_MAX);
+        for (auto site : rec[source]) {
+            q.push(site);
+            dist[site] = 1;
+        }
+        while (!q.empty()) {
+            int x = q.front();
+            q.pop();
+            for (auto y : g[x]) {
+                if (dist[y] > dist[x] + 1) {
+                    dist[y] = dist[x] + 1;
+                    q.push(y);
+                }
+            }
+        }
+        int ret = INT_MAX;
+        for (auto site : rec[target]) {
+            if (dist[site] != INT_MAX) {
+                ret = min(ret, dist[site]);
+            }
+        }
+        return ret == INT_MAX ? -1 : ret;
+
+=======
+
+        if (source == target) return 0;
+        int n = routes.size();
+        unordered_map<int, vector<int>> rec;
+        for (int i = 0; i < n; ++i) {
+            for (auto x : routes[i]) {
+                rec[x].push_back(i);
+            }
+        }
+        vector<bool> vis(n);
+        queue<int> q;
+        for (auto x : rec[source]) {
+            q.push(x);
+            vis[x] = true;
+        }
+        int res = 0;
+        while (!q.empty()) {
+            ++res;
+            for (int i = q.size(); i > 0; --i) {
+                int t = q.front();
+                q.pop();
+                for (auto x : routes[t]) {
+                    if (x == target) return res;
+                    for (auto y : rec[x]) {
+                        if (!vis[y]) {
+                            q.push(y);
+                            vis[y] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        if (source == target) return 0;
+        unordered_map<int, vector<int>> stops;
+        for (int i = 0; i < routes.size(); i++) {
+            for (auto stop : routes[i]) {
+                stops[stop].push_back(i);
+            }
+        }
+        unordered_set<int> seen;
+        queue<int> q;
+        q.push(source);
+        int steps = 0;
+        while (!q.empty()) {
+            steps++;
+            int size = q.size();
+            while (size--) {
+                int curr = q.front();
+                q.pop();
+                for (auto bus : stops[curr]) {
+                    if (seen.count(bus)) continue;
+                    seen.insert(bus);
+                    for (auto next : routes[bus]) {
+                        if (next == target) return steps;
+                        q.push(next);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        if (source == target) return 0;
+        unordered_map<int, vector<int>> m;
+        for (int i = 0; i < routes.size(); ++i) {
+            for (auto j : routes[i]) {
+                m[j].push_back(i);
+            }
+        }
+        vector<int> visited(routes.size(), 0);
+        queue<int> q;
+        q.push(source);
+        int step = 0;
+        while (!q.empty()) {
+            ++step;
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int t = q.front();
+                q.pop();
+                for (auto j : m[t]) {
+                    if (visited[j] == 1) continue;
+                    visited[j] = 1;
+                    for (auto k : routes[j]) {
+                        if (k == target) return step;
+                        q.push(k);
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        if (source == target) return 0;
+        unordered_map<int, vector<int>> bus;
+        for (int i = 0; i < routes.size(); ++i) {
+            for (int j = 0; j < routes[i].size(); ++j) {
+                bus[routes[i][j]].push_back(i);
+            }
+        }
+        vector<int> visited(routes.size(), 0);
+        queue<int> q;
+        for (int i = 0; i < bus[source].size(); ++i) {
+            q.push(bus[source][i]);
+            visited[bus[source][i]] = 1;
+        }
+        int res = 1;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int cur = q.front();
+                q.pop();
+                for (int j = 0; j < routes[cur].size(); ++j) {
+                    if (routes[cur][j] == target) return res;
+                    for (int k = 0; k < bus[routes[cur][j]].size(); ++k) {
+                        if (visited[bus[routes[cur][j]][k]] == 0) {
+                            q.push(bus[routes[cur][j]][k]);
+                            visited[bus[routes[cur][j]][k]] = 1;
+                        }
+                    }
+                }
+            }
+            ++res;
+        }
+        return -1;
+
+=======
+
+        if(source == target) return 0;
+        unordered_map<int, vector<int>> stops;
+        unordered_set<int> visited;
+        for(int i = 0; i < routes.size(); i++) {
+            for(auto stop : routes[i]) {
+                stops[stop].push_back(i);
+            }
+        }
+        queue<int> q;
+        q.push(source);
+        int step = 0;
+        while(!q.empty()) {
+            int size = q.size();
+            for(int i = 0; i < size; i++) {
+                int stop = q.front();
+                q.pop();
+                for(auto bus : stops[stop]) {
+                    if(visited.count(bus)) continue;
+                    visited.insert(bus);
+                    for(auto next_stop : routes[bus]) {
+                        if(next_stop == target) return step + 1;
+                        q.push(next_stop);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;

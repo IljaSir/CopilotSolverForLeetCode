@@ -1,0 +1,379 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        let mut x = 0;
+        let mut y = 0;
+        for i in 0..n*n {
+            if grid[x][y] != i as i32 {
+                return false;
+            }
+            visited[x][y] = true;
+            let mut next_x = x;
+            let mut next_y = y;
+            if x + 2 < n && y + 1 < n && !visited[x+2][y+1] {
+                next_x = x + 2;
+                next_y = y + 1;
+            } else if x + 2 < n && y > 0 && !visited[x+2][y-1] {
+                next_x = x + 2;
+                next_y = y - 1;
+            } else if x + 1 < n && y + 2 < n && !visited[x+1][y+2] {
+                next_x = x + 1;
+                next_y = y + 2;
+            } else if x + 1 < n && y > 1 && !visited[x+1][y-2] {
+                next_x = x + 1;
+                next_y = y - 2;
+            } else if x > 1 && y + 2 < n && !visited[x-1][y+2] {
+                next_x = x - 1;
+                next_y = y + 2;
+            } else if x > 1 && y > 1 && !visited[x-1][y-2] {
+                next_x = x - 1;
+                next_y = y - 2;
+            } else if x > 0 && y + 1 < n && !visited[x-2][y+1] {
+                next_x = x - 2;
+                next_y = y + 1;
+            } else if x > 0 && y > 0 && !visited[x-2][y-1] {
+                next_x = x - 2;
+                next_y = y - 1;
+            } else {
+                return false;
+            }
+            x = next_x;
+            y = next_y;
+        }
+        true
+
+=======
+
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        visited[0][0] = true;
+        let mut i = 0;
+        let mut j = 0;
+        let dirs = vec![vec![2, 1], vec![2, -1], vec![1, 2], vec![1, -2], vec![-1, 2], vec![-1, -2], vec![-2, 1], vec![-2, -1]];
+        for k in 0..n * n - 1 {
+            let mut found = false;
+            for dir in &dirs {
+                let ni = i as i32 + dir[0];
+                let nj = j as i32 + dir[1];
+                if ni >= 0 && nj >= 0 && ni < n as i32 && nj < n as i32 {
+                    let ni = ni as usize;
+                    let nj = nj as usize;
+                    if grid[ni][nj] == (k + 1) as i32 {
+                        visited[ni][nj] = true;
+                        found = true;
+                        i = ni;
+                        j = nj;
+                        break;
+                    }
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+        for i in 0..n {
+            for j in 0..n {
+                if !visited[i][j] {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut dir = vec![(1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)];
+        let mut n = grid.len();
+        let mut m = grid[0].len();
+        let mut visited = vec![vec![false; m]; n];
+        let mut cur = (0, 0);
+        for i in 0..n * m {
+            visited[cur.0][cur.1] = true;
+            let mut found = false;
+            for j in 0..8 {
+                let nx = cur.0 as i32 + dir[j].0;
+                let ny = cur.1 as i32 + dir[j].1;
+                if nx < 0 || nx >= n as i32 || ny < 0 || ny >= m as i32 {
+                    continue;
+                }
+                if grid[nx as usize][ny as usize] == i as i32 + 1 {
+                    cur = (nx as usize, ny as usize);
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        let mut moves = Vec::new();
+        let n = grid.len();
+        for i in 0..n {
+            for j in 0..n {
+                moves.push((i as i32, j as i32));
+            }
+        }
+        let mut x = 0;
+        let mut y = 0;
+        for m in moves {
+            if m.0 == x && m.1 == y {
+                continue;
+            }
+            if m.0 - x == 1 || m.0 - x == -1 {
+                if m.1 - y == 2 || m.1 - y == -2 {
+                    x = m.0;
+                    y = m.1;
+                    continue;
+                }
+            }
+            if m.0 - x == 2 || m.0 - x == -2 {
+                if m.1 - y == 1 || m.1 - y == -1 {
+                    x = m.0;
+                    y = m.1;
+                    continue;
+                }
+            }
+            return false;
+        }
+        true
+
+=======
+
+        let n = grid.len();
+        let mut moves = vec![vec![0; n]; n];
+        let mut x = 0;
+        let mut y = 0;
+        for i in 0..n*n {
+            moves[x][y] = 1;
+            if i == n*n-1 {
+                break;
+            }
+            let mut found = false;
+            if x-1>=0 && y-2>=0 && grid[x-1][y-2]==i as i32+1 {
+                x = x-1;
+                y = y-2;
+                found = true;
+            }
+            if !found && x-1>=0 && y+2<n && grid[x-1][y+2]==i as i32+1 {
+                x = x-1;
+                y = y+2;
+                found = true;
+            }
+            if !found && x+1<n && y-2>=0 && grid[x+1][y-2]==i as i32+1 {
+                x = x+1;
+                y = y-2;
+                found = true;
+            }
+            if !found && x+1<n && y+2<n && grid[x+1][y+2]==i as i32+1 {
+                x = x+1;
+                y = y+2;
+                found = true;
+            }
+            if !found && x-2>=0 && y-1>=0 && grid[x-2][y-1]==i as i32+1 {
+                x = x-2;
+                y = y-1;
+                found = true;
+            }
+            if !found && x-2>=0 && y+1<n && grid[x-2][y+1]==i as i32+1 {
+                x = x-2;
+                y = y+1;
+                found = true;
+            }
+            if !found && x+2<n && y-1>=0 && grid[x+2][y-1]==i as i32+1 {
+                x = x+2;
+                y = y-1;
+                found = true;
+            }
+            if !found && x+2<n && y+1<n && grid[x+2][y+1]==i as i32+1 {
+                x = x+2;
+                y = y+1;
+                found = true;
+
+=======
+
+        let mut row = 0;
+        let mut col = 0;
+        let mut moves = 0;
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        while moves < n * n {
+            let r = grid[row][col] / n as i32;
+            let c = grid[row][col] % n as i32;
+            if visited[r as usize][c as usize] {
+                return false;
+            }
+            visited[r as usize][c as usize] = true;
+            moves += 1;
+            row = r as usize;
+            col = c as usize;
+        }
+        true
+
+=======
+
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        let mut x = 0;
+        let mut y = 0;
+        let mut i = 1;
+        while i < n * n {
+            visited[x][y] = true;
+            let mut found = false;
+            for dx in -2..3 {
+                for dy in -2..3 {
+                    if dx.abs() + dy.abs() == 3 {
+                        let nx = x as i32 + dx;
+                        let ny = y as i32 + dy;
+                        if nx >= 0 && nx < n as i32 && ny >= 0 && ny < n as i32 {
+                            if grid[nx as usize][ny as usize] == i as i32 {
+                                x = nx as usize;
+                                y = ny as usize;
+                                i += 1;
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if found {
+                    break;
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let n = grid.len();
+        let mut visited = vec![vec![false; n]; n];
+        let mut row = 0;
+        let mut col = 0;
+        let mut prev = 0;
+        for i in 0..n*n {
+            let r = row;
+            let c = col;
+            if visited[r][c] {
+                return false;
+            }
+            visited[r][c] = true;
+            if grid[r][c] != i as i32 {
+                return false;
+            }
+            let mut next = (prev + 1) % 8;
+            let mut found = false;
+            for _ in 0..8 {
+                let mut nr = r as i32;
+                let mut nc = c as i32;
+                match next {
+                    0 => {
+                        nr -= 2;
+                        nc -= 1;
+                    },
+                    1 => {
+                        nr -= 2;
+                        nc += 1;
+                    },
+                    2 => {
+                        nr -= 1;
+                        nc -= 2;
+                    },
+                    3 => {
+                        nr -= 1;
+                        nc += 2;
+                    },
+                    4 => {
+                        nr += 1;
+                        nc -= 2;
+                    },
+                    5 => {
+                        nr += 1;
+                        nc += 2;
+                    },
+                    6 => {
+                        nr += 2;
+                        nc -= 1;
+                    },
+                    7 => {
+                        nr += 2;
+                        nc += 1;
+                    },
+                    _ => {}
+                }
+                if nr >= 0 && nc >= 0 && nr < n as i32 && nc < n as i32 {
+                    found = true;
+                    break;
+                }
+                next = (next + 1) % 8;
+            }
+            if !found {
+                return false;
+            }
+            prev = next;
+            row = nr as usize;
+            col = nc as usize;
+        }
+        true
+
+=======
+
+        let mut n = grid.len();
+        let mut row = 0;
+        let mut col = 0;
+        let mut visited = vec![vec![false; n]; n];
+        for i in 0..n*n {
+            if grid[row][col] != i as i32 {
+                return false;
+            }
+            visited[row][col] = true;
+            if i == n*n-1 {
+                break;
+            }
+            let mut found = false;
+            if row-2 >= 0 && col-1 >= 0 && !visited[row-2][col-1] {
+                row -= 2;
+                col -= 1;
+                found = true;
+            } else if row-2 >= 0 && col+1 < n && !visited[row-2][col+1] {
+                row -= 2;
+                col += 1;
+                found = true;
+            } else if row-1 >= 0 && col-2 >= 0 && !visited[row-1][col-2] {
+                row -= 1;
+                col -= 2;
+                found = true;
+            } else if row-1 >= 0 && col+2 < n && !visited[row-1][col+2] {
+                row -= 1;
+                col += 2;
+                found = true;
+            } else if row+1 < n && col-2 >= 0 && !visited[row+1][col-2] {
+                row += 1;
+                col -= 2;
+                found = true;
+            } else if row+1 < n && col+2 < n && !visited[row+1][col+2] {
+                row += 1;
+                col += 2;
+                found = true;
+            } else if row+2 < n && col-1 >= 0 && !visited[row+2][col-1] {
+                row += 2;
+                col -= 1;
+                found = true;
+            } else if row+2 < n && col+1 < n && !visited[row+2][col+1] {
+                row += 2;
+                col += 1;
+                found = true;
+            }
+            if !found {
+                return false;
+            }
+        }
+        true

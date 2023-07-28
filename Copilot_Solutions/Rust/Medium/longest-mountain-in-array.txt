@@ -1,0 +1,269 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = arr.len();
+        let mut ans = 0;
+        let mut base = 0;
+        while base < n {
+            let mut end = base;
+            if end + 1 < n && arr[end] < arr[end + 1] {
+                while end + 1 < n && arr[end] < arr[end + 1] {
+                    end += 1;
+                }
+                if end + 1 < n && arr[end] > arr[end + 1] {
+                    while end + 1 < n && arr[end] > arr[end + 1] {
+                        end += 1;
+                    }
+                    ans = ans.max(end - base + 1);
+                }
+            }
+            base = end.max(base + 1);
+        }
+        ans as i32
+
+=======
+
+        let n = arr.len();
+        let mut ans = 0;
+        let mut base = 0;
+        while base < n {
+            let mut end = base;
+            if end + 1 < n && arr[end] < arr[end + 1] {
+                while end + 1 < n && arr[end] < arr[end + 1] {
+                    end += 1;
+                }
+                if end + 1 < n && arr[end] > arr[end + 1] {
+                    while end + 1 < n && arr[end] > arr[end + 1] {
+                        end += 1;
+                    }
+                    ans = ans.max(end - base + 1);
+                } else {
+                    end += 1;
+                }
+            }
+            base = end;
+        }
+        ans as i32
+
+=======
+
+        let mut max = 0;
+        let mut i = 1;
+        while i < arr.len() - 1 {
+            if arr[i] > arr[i - 1] && arr[i] > arr[i + 1] {
+                let mut left = i - 1;
+                let mut right = i + 1;
+                while left > 0 && arr[left] > arr[left - 1] {
+                    left -= 1;
+                }
+                while right < arr.len() - 1 && arr[right] > arr[right + 1] {
+                    right += 1;
+                }
+                max = std::cmp::max(max, right - left + 1);
+                i = right + 1;
+            } else {
+                i += 1;
+            }
+        }
+        max as i32
+
+=======
+
+        let n = arr.len();
+        let mut i = 0;
+        let mut ans = 0;
+        while i < n {
+            let mut j = i;
+            if j + 1 < n && arr[j] < arr[j + 1] {
+                while j + 1 < n && arr[j] < arr[j + 1] {
+                    j += 1;
+                }
+                if j + 1 < n && arr[j] > arr[j + 1] {
+                    while j + 1 < n && arr[j] > arr[j + 1] {
+                        j += 1;
+                    }
+                    ans = ans.max(j - i + 1);
+                }
+            }
+            i = j.max(i + 1);
+        }
+        ans as i32
+
+=======
+
+        let mut longest = 0;
+        let mut i = 1;
+        while i < arr.len() {
+            let mut j = i;
+            if arr[i - 1] < arr[i] {
+                while j < arr.len() && arr[j - 1] < arr[j] {
+                    j += 1;
+                }
+                if j < arr.len() && arr[j - 1] > arr[j] {
+                    while j < arr.len() && arr[j - 1] > arr[j] {
+                        j += 1;
+                    }
+                    longest = longest.max(j - i + 1);
+                } else {
+                    j += 1;
+                }
+            }
+            i = j;
+        }
+        longest as i32
+
+=======
+
+        let mut longest = 0;
+        let mut i = 1;
+        while i < arr.len() {
+            let mut up = false;
+            let mut down = false;
+            let mut length = 1;
+            while i < arr.len() && arr[i] > arr[i-1] {
+                up = true;
+                i += 1;
+                length += 1;
+            }
+            while i < arr.len() && arr[i] < arr[i-1] {
+                down = true;
+                i += 1;
+                length += 1;
+            }
+            if up && down {
+                longest = longest.max(length);
+            }
+            while i < arr.len() && arr[i] == arr[i-1] {
+                i += 1;
+            }
+        }
+        longest
+    }
+}
+
+=======
+
+        let mut max = 0;
+        let mut i = 1;
+        let mut up = false;
+        let mut down = false;
+        let mut count = 1;
+        while i < arr.len() {
+            if arr[i] > arr[i - 1] {
+                if down {
+                    if count > max {
+                        max = count;
+                    }
+                    count = 2;
+                    down = false;
+                } else {
+                    count += 1;
+                }
+                up = true;
+            } else if arr[i] < arr[i - 1] {
+                if up {
+                    count += 1;
+                    down = true;
+                }
+            } else {
+                if count > max {
+                    max = count;
+                }
+                count = 1;
+                up = false;
+                down = false;
+            }
+            i += 1;
+        }
+        if down && count > max {
+            max = count;
+        }
+        max
+
+=======
+
+        let mut res = 0;
+        let (mut left, mut right) = (0, 0);
+        while right < arr.len() {
+            while left < arr.len() && left + 1 < arr.len() && arr[left] >= arr[left + 1] {
+                left += 1;
+            }
+            right = left;
+            while right < arr.len() && right + 1 < arr.len() && arr[right] < arr[right + 1] {
+                right += 1;
+            }
+            while right < arr.len() && right + 1 < arr.len() && arr[right] > arr[right + 1] {
+                right += 1;
+            }
+            res = res.max(right - left + 1);
+            left = right;
+        }
+        if res < 3 { 0 } else { res as i32 }
+    }
+}
+
+=======
+
+        let mut longest = 0;
+        for i in 1..arr.len() - 1 {
+            let mut j = i;
+            let mut inc = 0;
+            let mut dec = 0;
+            while j > 0 && arr[j] > arr[j - 1] {
+                j -= 1;
+                inc += 1;
+            }
+            j = i;
+            while j < arr.len() - 1 && arr[j] > arr[j + 1] {
+                j += 1;
+                dec += 1;
+            }
+            if inc > 0 && dec > 0 {
+                longest = std::cmp::max(longest, inc + dec + 1);
+            }
+        }
+        longest as i32
+
+=======
+
+        let mut longest = 0;
+        let mut i = 1;
+        let mut is_mountain = false;
+        let mut mountain_start = 0;
+        let mut mountain_end = 0;
+        let mut mountain_length = 0;
+        
+        while i < arr.len() {
+            if arr[i] > arr[i-1] {
+                if is_mountain {
+                    mountain_length += 1;
+                } else {
+                    is_mountain = true;
+                    mountain_start = i-1;
+                    mountain_length = 2;
+                }
+            } else if arr[i] < arr[i-1] {
+                if is_mountain {
+                    mountain_length += 1;
+                    mountain_end = i;
+                } else {
+                    mountain_start = i;
+                    mountain_length = 1;
+                }
+            } else {
+                if is_mountain {
+                    is_mountain = false;
+                    if mountain_length > longest {
+                        longest = mountain_length;
+                    }
+                }
+            }
+            i += 1;
+        }
+        
+        if is_mountain && mountain_length > longest {
+            longest = mountain_length;
+        }
+        
+        longest as i32

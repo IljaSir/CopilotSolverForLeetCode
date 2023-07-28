@@ -1,0 +1,91 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        let mut stack = Vec::new();
+        for i in 0..nums.len() {
+            if stack.is_empty() || nums[stack[stack.len()-1]] > nums[i] {
+                stack.push(i);
+            }
+        }
+        let mut res = 0;
+        for i in (0..nums.len()).rev() {
+            while !stack.is_empty() && nums[stack[stack.len()-1]] <= nums[i] {
+                if i - stack[stack.len()-1] > res {
+                    res = i - stack[stack.len()-1];
+                }
+                stack.pop();
+            }
+        }
+        res as i32
+
+=======
+
+        let mut stack = vec![];
+        for (i, &num) in nums.iter().enumerate() {
+            if stack.is_empty() || num < nums[stack[stack.len() - 1]] {
+                stack.push(i);
+            }
+        }
+        let mut ans = 0;
+        for (i, &num) in nums.iter().enumerate().rev() {
+            while !stack.is_empty() && num >= nums[stack[stack.len() - 1]] {
+                ans = ans.max(i - stack.pop().unwrap());
+            }
+        }
+        ans as i32
+
+=======
+
+        let mut stack = vec![];
+        let mut max_width = 0;
+        for i in 0..nums.len() {
+            if stack.is_empty() || nums[i] < nums[*stack.last().unwrap()] {
+                stack.push(i);
+            }
+        }
+        for i in (0..nums.len()).rev() {
+            while !stack.is_empty() && nums[i] >= nums[*stack.last().unwrap()] {
+                max_width = max_width.max(i - stack.pop().unwrap());
+            }
+        }
+        max_width as i32
+    }
+}
+
+=======
+
+        let mut v = Vec::new();
+        for (i, &n) in nums.iter().enumerate() {
+            if v.is_empty() || nums[v[v.len() - 1]] > n {
+                v.push(i);
+            }
+        }
+        let mut ans = 0;
+        for (i, &n) in nums.iter().rev().enumerate() {
+            while !v.is_empty() && nums[v[v.len() - 1]] <= n {
+                ans = std::cmp::max(ans, i as i32 + v[v.len() - 1] as i32);
+                v.pop();
+            }
+        }
+        ans
+
+=======
+
+        let mut s = vec![];
+        let mut ans = 0;
+        for (i, n) in nums.iter().enumerate() {
+            if s.is_empty() || nums[s.last().unwrap()] > *n {
+                s.push(i);
+            }
+        }
+        for (i, n) in nums.iter().enumerate().rev() {
+            while let Some(&j) = s.last() {
+                if nums[j] > *n {
+                    break;
+                }
+                ans = ans.max(j - i);
+                s.pop();
+            }
+        }
+        ans as i32

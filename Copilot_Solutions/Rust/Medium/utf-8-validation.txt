@@ -1,0 +1,64 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        
+    }
+}
+
+=======
+Suggestion 2
+
+        let mut i = 0;
+        while i < data.len() {
+            let mut b = data[i];
+            let mut mask = 1 << 7;
+            let mut cnt = 0;
+            while b & mask != 0 {
+                b &= !mask;
+                mask >>= 1;
+                cnt += 1;
+            }
+            if cnt == 1 || cnt > 4 {
+                return false;
+            }
+            if cnt == 0 {
+                i += 1;
+                continue;
+            }
+            for _ in 0..cnt-1 {
+                i += 1;
+                if i == data.len() {
+                    return false;
+                }
+                let b = data[i];
+                if b & (1 << 7) == 0 || b & (1 << 6) != 0 {
+                    return false;
+                }
+            }
+            i += 1;
+        }
+        true
+
+=======
+Suggestion 3
+
+        let mut i = 0;
+        while i < data.len() {
+            let mut bits = data[i].leading_zeros() as i32;
+            if bits > 4 || bits == 1 {
+                return false;
+            }
+            if bits == 0 {
+                i += 1;
+                continue;
+            }
+            for j in 1..bits {
+                if i + j as usize >= data.len() || data[i + j as usize].leading_zeros() != 1 {
+                    return false;
+                }
+            }
+            i += bits as usize;
+        }
+        true

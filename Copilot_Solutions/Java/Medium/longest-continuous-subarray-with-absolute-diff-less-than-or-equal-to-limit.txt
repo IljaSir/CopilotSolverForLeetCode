@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        int ans = 0;
+        for (int i = 0, j = 0; i < nums.length; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+            while (map.lastKey() - map.firstKey() > limit) {
+                map.put(nums[j], map.get(nums[j]) - 1);
+                if (map.get(nums[j]) == 0) {
+                    map.remove(nums[j]);
+                }
+                j++;
+            }
+            ans = Math.max(ans, i - j + 1);
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        while (j < nums.length) {
+            map.put(nums[j], map.getOrDefault(nums[j], 0) + 1);
+            while (map.lastKey() - map.firstKey() > limit) {
+                map.put(nums[i], map.get(nums[i]) - 1);
+                if (map.get(nums[i]) == 0) {
+                    map.remove(nums[i]);
+                }
+                i++;
+            }
+            res = Math.max(res, j - i + 1);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int res = 0;
+        int i = 0, j = 0;
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        while (j < n) {
+            map.put(nums[j], map.getOrDefault(nums[j], 0) + 1);
+            while (map.lastKey() - map.firstKey() > limit) {
+                map.put(nums[i], map.get(nums[i]) - 1);
+                if (map.get(nums[i]) == 0) {
+                    map.remove(nums[i]);
+                }
+                i++;
+            }
+            res = Math.max(res, j - i + 1);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        Deque<Integer> max = new LinkedList<>();
+        Deque<Integer> min = new LinkedList<>();
+        int ans = 0;
+        for (int i = 0, j = 0; i < n; i++) {
+            while (!max.isEmpty() && nums[max.peekLast()] <= nums[i]) {
+                max.pollLast();
+            }
+            max.offerLast(i);
+            while (!min.isEmpty() && nums[min.peekLast()] >= nums[i]) {
+                min.pollLast();
+            }
+            min.offerLast(i);
+            while (nums[max.peekFirst()] - nums[min.peekFirst()] > limit) {
+                if (max.peekFirst() < min.peekFirst()) {
+                    j = max.pollFirst() + 1;
+                } else {
+                    j = min.pollFirst() + 1;
+                }
+            }
+            ans = Math.max(ans, i - j + 1);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        Deque<Integer> maxd = new ArrayDeque<>();
+        Deque<Integer> mind = new ArrayDeque<>();
+        int i = 0, j = 0, res = 0;
+        while (j < n) {
+            while (!maxd.isEmpty() && nums[j] > maxd.peekLast()) maxd.pollLast();
+            while (!mind.isEmpty() && nums[j] < mind.peekLast()) mind.pollLast();
+            maxd.offerLast(nums[j]);
+            mind.offerLast(nums[j]);
+            if (maxd.peekFirst() - mind.peekFirst() > limit) {
+                if (maxd.peekFirst() == nums[i]) maxd.pollFirst();
+                if (mind.peekFirst() == nums[i]) mind.pollFirst();
+                i++;
+            }
+            res = Math.max(res, j - i + 1);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int i = 0;
+        int j = 0;
+        int max = 0;
+        Deque<Integer> maxq = new LinkedList<>();
+        Deque<Integer> minq = new LinkedList<>();
+        while (j < n) {
+            while (!maxq.isEmpty() && maxq.peekLast() < nums[j]) {
+                maxq.pollLast();
+            }
+            while (!minq.isEmpty() && minq.peekLast() > nums[j]) {
+                minq.pollLast();
+            }
+            maxq.addLast(nums[j]);
+            minq.addLast(nums[j]);
+            while (!maxq.isEmpty() && !minq.isEmpty() && maxq.peekFirst() - minq.peekFirst() > limit) {
+                if (nums[i] == maxq.peekFirst()) {
+                    maxq.pollFirst();
+                }
+                if (nums[i] == minq.peekFirst()) {
+                    minq.pollFirst();
+                }
+                i++;
+            }
+            max = Math.max(max, j - i + 1);
+            j++;
+        }
+        return max;
+
+=======
+
+        int i = 0, j = 0, n = nums.length;
+        Deque<Integer> maxd = new ArrayDeque<>();
+        Deque<Integer> mind = new ArrayDeque<>();
+        int ans = 0;
+        while (j < n) {
+            while (!maxd.isEmpty() && maxd.peekLast() < nums[j]) maxd.pollLast();
+            while (!mind.isEmpty() && mind.peekLast() > nums[j]) mind.pollLast();
+            maxd.addLast(nums[j]);
+            mind.addLast(nums[j]);
+            while (maxd.peek() - mind.peek() > limit) {
+                if (maxd.peek() == nums[i]) maxd.poll();
+                if (mind.peek() == nums[i]) mind.poll();
+                i++;
+            }
+            ans = Math.max(ans, j - i + 1);
+            j++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] min = new int[n];
+        int[] max = new int[n];
+        int p = 0, q = 0;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            while (p > 0 && nums[i] < min[p - 1]) {
+                p--;
+            }
+            while (q > 0 && nums[i] > max[q - 1]) {
+                q--;
+            }
+            min[p] = nums[i];
+            max[q] = nums[i];
+            p++;
+            q++;
+            if (max[0] - min[0] > limit) {
+                if (nums[i - p + 1] == min[0]) {
+                    p--;
+                }
+                if (nums[i - q + 1] == max[0]) {
+                    q--;
+                }
+            }
+            res = Math.max(res, i - p + 2);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] max = new int[n];
+        int[] min = new int[n];
+        int i = 0, j = 0;
+        int ans = 0;
+        for (int k = 0; k < n; k++) {
+            int num = nums[k];
+            while (i < j && num > max[j - 1]) j--;
+            while (i < j && num < min[j - 1]) j--;
+            max[j] = num;
+            min[j] = num;
+            j++;
+            while (max[i] - min[i] > limit) i++;
+            ans = Math.max(ans, j - i);
+        }
+        return ans;
+
+=======
+
+        int i = 0;
+        int j = 1;
+        int len = nums.length;
+        int max = 0;
+        int min = 0;
+        while (j < len) {
+            if (Math.abs(nums[j] - nums[i]) > limit) {
+                i++;
+            } else {
+                j++;
+            }
+            max = Math.max(max, j - i);
+        }
+        return max;

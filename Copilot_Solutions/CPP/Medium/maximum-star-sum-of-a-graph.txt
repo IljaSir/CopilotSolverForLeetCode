@@ -1,0 +1,94 @@
+Synthesizing 2/10 solutions
+
+=======
+
+        int n = vals.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n, 0);
+        vector<int> st(n, 0);
+        vector<int> sz(n, 0);
+        vector<int> ms(n, 0);
+        vector<int> ms2(n, 0);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            ms[u] = vals[u];
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dfs(v, u);
+                sz[u] += sz[v];
+                ms[u] = max(ms[u], ms[v]);
+                if (ms[v] > ms[st[u]]) {
+                    st[u] = v;
+                }
+            }
+        };
+        function<void(int, int, bool)> dfs2 = [&](int u, int p, bool keep) {
+            for (int v : g[u]) {
+                if (v == p || v == st[u]) continue;
+                dfs2(v, u, false);
+            }
+            if (st[u] != 0) {
+                dfs2(st[u], u, true);
+            }
+            dp[u] = 0;
+            for (int v : g[u]) {
+                if (v == p || v == st[u]) continue;
+                for (int i = 0; i < sz[v]; i++) {
+                    dp[u] += vals[v];
+                }
+            }
+            dp[u] += vals[u];
+            if (keep) {
+                ms2[u] = ms[u];
+            } else {
+                ms2[u] = vals[u];
+            }
+            for (int v : g[u]) {
+                if (v == p || v == st[u]) continue;
+                ms2[u] = max(ms2[u], ms2[v]);
+            }
+        };
+        dfs(0, -1);
+        dfs2(0, -1, false);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (sz[i] <= k + 1) {
+                ans = max(ans, dp[i]);
+            }
+            if (sz
+
+=======
+
+        const int n = vals.size();
+        vector<vector<int>> adj(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        vector<int> dp(n);
+        vector<vector<int>> dp2(n, vector<int>(k + 1));
+        function<void(int, int)> dfs = [&](int u, int fa) {
+            dp[u] = vals[u];
+            dp2[u][0] = vals[u];
+            for (int v : adj[u]) {
+                if (v == fa) {
+                    continue;
+                }
+                dfs(v, u);
+                dp[u] += max(0, dp[v]);
+                for (int i = 1; i <= k; ++i) {
+                    dp2[u][i] = max(dp2[u][i], dp2[u][i - 1] + max(0, dp2[v][i - 1]));
+                }
+            }
+        };
+        dfs(0, -1);
+        int ans = 0;
+        for (int i = 0; i <= k; ++i) {
+            ans = max(ans, dp2[0][i]);
+        }
+        return ans;

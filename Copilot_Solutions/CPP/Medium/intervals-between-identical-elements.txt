@@ -1,0 +1,455 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.size();
+        vector<long long> ans(n, 0);
+        unordered_map<int, vector<int>> m;
+        for (int i = 0; i < n; ++i) {
+            m[arr[i]].push_back(i);
+        }
+        for (auto& [k, v] : m) {
+            for (int i = 0; i < v.size(); ++i) {
+                ans[v[i]] += (i + 1) * (v[i] - v[i - 1]);
+                ans[v[i]] += (v.size() - i) * (v[i + 1] - v[i]);
+            }
+        }
+        return ans;
+    }
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<int> ans(n, 0);
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> sz(n, 0);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz[u] = 1;
+            for (int v : g[u]) {
+                if (v != p) {
+                    dfs(v, u);
+                    sz[u] += sz[v];
+                    ans[u] += ans[v] + sz[v];
+                }
+            }
+        };
+        function<void(int, int)> dfs2 = [&](int u, int p) {
+            for (int v : g[u]) {
+                if (v != p) {
+                    ans[v] = ans[u] - sz[v] + n - sz[v];
+                    dfs2(v, u);
+                }
+            }
+        };
+        dfs(0, -1);
+        dfs2(0, -1);
+        return ans;
+    }
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<int> ans(n, 0);
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> sz(n, 0);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            sz
+
+=======
+
+        unordered_map<int, vector<int>> m;
+        for(int i = 0; i < arr.size(); i++) {
+            m[arr[i]].push_back(i);
+        }
+        vector<long long> res(arr.size(), 0);
+        for(auto& it : m) {
+            vector<int>& v = it.second;
+            for(int i = 0; i < v.size(); i++) {
+                res[v[i]] += (long long)(i) * (v[i] - v[i - 1]);
+            }
+            for(int i = v.size() - 1; i >= 0; i--) {
+                res[v[i]] += (long long)(v.size() - i - 1) * (v[i + 1] - v[i]);
+            }
+        }
+        return res;
+    }
+    vector<long long> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> g(n, vector<int>());
+        for(auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> arr(n);
+        vector<int> sz(n);
+        function<void(int, int)> dfs1 = [&](int u, int p) {
+            sz[u] = 1;
+            for(int v : g[u]) {
+                if(v == p) continue;
+                dfs1(v, u);
+                sz[u] += sz[v];
+                arr[u] += arr[v] + sz[v];
+            }
+        };
+        function<void(int, int)> dfs2 = [&](int u, int p) {
+            for(int v : g[u]) {
+                if(v == p) continue;
+                arr[v] = arr[u] - 2 * sz[v] + n;
+                dfs2(v, u);
+            }
+        };
+        dfs1(0, -1);
+        dfs2(0, -1);
+        return getDistances(arr);
+
+=======
+
+        int n = arr.size();
+        vector<long long> res(n, 0);
+        for (int i = 0; i < n; ++i) {
+            int j = i + 1;
+            while (j < n && arr[j] == arr[i]) {
+                ++j;
+            }
+            if (j < n) {
+                res[i] = j - i;
+            }
+            --j;
+            if (j > i) {
+                res[j] = j - i;
+            }
+            int k = i - 1;
+            while (k >= 0 && arr[k] == arr[i]) {
+                --k;
+            }
+            ++k;
+            if (k < i) {
+                res[k] = i - k;
+            }
+            while (k < i) {
+                res[k] += i - k;
+                res[i] += i - k;
+                ++k;
+            }
+            i = j;
+        }
+        return res;
+    }
+    vector<int> getSumAbsoluteDifferences(vector<int>& arr) {
+        vector<long long> res = getDistances(arr);
+        int n = arr.size();
+        vector<int> ans(n, 0);
+        for (int i = 0; i < n; ++i) {
+            ans[i] = res[i] * arr[i] - (res[i] * (res[i] - 1) / 2);
+        }
+        return ans;
+
+=======
+
+        vector<long long> res(arr.size(), 0);
+        unordered_map<int, vector<int>> map;
+        for(int i = 0; i < arr.size(); i++) {
+            map[arr[i]].push_back(i);
+        }
+        for(auto& p : map) {
+            vector<int>& indices = p.second;
+            for(int i = 0; i < indices.size(); i++) {
+                int idx = indices[i];
+                res[idx] += (i - 0) * 1LL * (indices[i] - indices[i - 1]);
+                res[idx] += (indices.size() - i - 1) * 1LL * (indices[i + 1] - indices[i]);
+            }
+        }
+        return res;
+    }
+    vector<long long> sumOfBeauties(vector<int>& arr) {
+        vector<long long> res(arr.size(), 0);
+        vector<long long> left = getDistances(arr);
+        reverse(arr.begin(), arr.end());
+        vector<long long> right = getDistances(arr);
+        reverse(right.begin(), right.end());
+        for(int i = 0; i < arr.size(); i++) {
+            if(i == 0 || i == arr.size() - 1) {
+                continue;
+            }
+            if(arr[i - 1] < arr[i] && arr[i] < arr[i + 1]) {
+                res[i] = left[i] + right[i];
+            }
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<long long> res(n, 0);
+        vector<int> left(n, -1);
+        vector<int> right(n, n);
+        for (int i = 0; i < n; ++i) {
+            if (left[arr[i]] != -1) {
+                res[i] += res[left[arr[i]]] + (i - left[arr[i]]);
+            }
+            left[arr[i]] = i;
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            if (right[arr[i]] != n) {
+                res[i] += res[right[arr[i]]] + (right[arr[i]] - i);
+            }
+            right[arr[i]] = i;
+        }
+        return res;
+    }
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> graph(n, vector<int>());
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> res(n, 0);
+        vector<int> count(n, 0);
+        vector<int> parent(n, -1);
+        vector<int> visited(n, 0);
+        queue<int> q;
+        q.push(0);
+        visited[0] = 1;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            for (auto& nei : graph[cur]) {
+                if (!visited[nei]) {
+                    q.push(nei);
+                    parent[nei] = cur;
+                    visited[nei] = 1;
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            if (parent[i] == -1) continue;
+            count[parent[i]] += count[i] + 1;
+            res[parent[i]] += res[i] + count[i] + 1;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == -1) continue;
+            res[i] = res[parent[i]] - count[i] + n - count[i] - 1;
+        }
+        return res;
+
+=======
+
+        int n = arr.size();
+        vector<long long> ret(n, 0);
+        unordered_map<int, int> last;
+        for (int i = 0; i < n; ++i) {
+            if (last.count(arr[i])) {
+                ret[i] = ret[i - 1] + i - last[arr[i]];
+            }
+            last[arr[i]] = i;
+        }
+        return ret;
+    }
+    vector<int> getSumOfIntervals(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> ret(n, 0);
+        vector<long long> left = getDistances(arr);
+        reverse(arr.begin(), arr.end());
+        vector<long long> right = getDistances(arr);
+        reverse(right.begin(), right.end());
+        for (int i = 0; i < n; ++i) {
+            ret[i] = left[i] + right[i];
+        }
+        return ret;
+    }
+    vector<int> sumOfBeauties(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ret(n, 0);
+        vector<int> left(n, 0);
+        vector<int> right(n, 0);
+        left[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            left[i] = max(left[i - 1], nums[i]);
+        }
+        right[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; --i) {
+            right[i] = min(right[i + 1], nums[i]);
+        }
+        vector<int> sum = getSumOfIntervals(nums);
+        for (int i = 1; i < n - 1; ++i) {
+            if (left[i - 1] < nums[i] && nums[i] < right[i + 1]) {
+                ret[i] = 2;
+            } else if (nums[i - 1] < nums[i] && nums[i] < nums[i + 1]) {
+                ret[i] = 1;
+            }
+            ret[i] += sum[i];
+        }
+        return ret;
+
+=======
+
+        vector<long long> distances(arr.size(), 0);
+        for (int i = 0; i < arr.size(); ++i) {
+            if (i > 0) {
+                distances[i] = distances[i - 1] + i;
+            }
+        }
+        for (int i = arr.size() - 1; i >= 0; --i) {
+            if (i < arr.size() - 1) {
+                distances[i] += distances[i + 1] - (arr.size() - i - 1);
+            }
+        }
+        return distances;
+    }
+    vector<int> countMoves(vector<int>& arr) {
+        vector<int> answer(arr.size(), 0);
+        unordered_map<int, vector<int>> positions;
+        for (int i = 0; i < arr.size(); ++i) {
+            positions[arr[i]].push_back(i);
+        }
+        for (auto& [_, pos] : positions) {
+            auto distances = getDistances(pos);
+            for (int i = 0; i < pos.size(); ++i) {
+                answer[pos[i]] = distances[i];
+            }
+        }
+        return answer;
+
+=======
+
+        int n = arr.size();
+        vector<long long> ans(n, 0);
+        vector<int> pos(100001, -1);
+        for (int i = 0; i < n; i++) {
+            if (pos[arr[i]] != -1) {
+                ans[i] = ans[pos[arr[i]]];
+            }
+            ans[i] += i - pos[arr[i]];
+            pos[arr[i]] = i;
+        }
+        return ans;
+    }
+    vector<int> getSumOfDistances(vector<int>& arr) {
+        vector<long long> left = getDistances(arr);
+        reverse(arr.begin(), arr.end());
+        vector<long long> right = getDistances(arr);
+        vector<int> ans(arr.size());
+        for (int i = 0; i < arr.size(); i++) {
+            ans[i] = left[i] + right[arr.size() - 1 - i];
+        }
+        return ans;
+
+=======
+
+        const int n = arr.size();
+        vector<long long> ans(n, 0);
+        vector<vector<int>> pos(100001);
+        for (int i = 0; i < n; ++i) {
+            pos[arr[i]].push_back(i);
+        }
+        for (const auto& p : pos) {
+            int m = p.size();
+            if (m == 1) continue;
+            for (int i = 0; i < m; ++i) {
+                ans[p[i]] += (i == 0 ? 0 : p[i] - p[i - 1]) * (m - i);
+            }
+            for (int i = m - 1; i >= 0; --i) {
+                ans[p[i]] += (i == m - 1 ? 0 : p[i + 1] - p[i]) * (i + 1);
+            }
+        }
+        return ans;
+    }
+    vector<long long> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> g(n);
+        for (const auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> sz(n, 1);
+        vector<int> dep(n);
+        function<void(int, int)> dfs = [&](int u, int p) {
+            for (int v : g[u]) {
+                if (v == p) continue;
+                dep[v] = dep[u] + 1;
+                dfs(v, u);
+                sz[u] += sz[v];
+            }
+        };
+        dfs(0, -1);
+        vector<long long> ans(n, 0);
+        function<void(int, int)> dfs2 = [&](int u, int p) {
+            for (int v : g[u]) {
+                if (v == p) continue;
+                ans[v] = ans[u] + n - sz[v] - sz[v];
+                dfs2(v, u);
+            }
+        };
+        dfs2(0, -1);
+        vector<long long> ans2 = getDistances(arr);
+        for (int i = 0; i < n; ++i) {
+            ans[i] += ans2[i];
+        }
+        return ans;
+
+=======
+
+        int n = arr.size();
+        vector<long long> result(n, 0);
+        vector<int> prev(n, -1);
+        vector<int> next(n, -1);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && arr[s.top()] != arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) {
+                prev[i] = s.top();
+            }
+            s.push(i);
+        }
+        while (!s.empty()) {
+            s.pop();
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && arr[s.top()] != arr[i]) {
+                s.pop();
+            }
+            if (!s.empty()) {
+                next[i] = s.top();
+            }
+            s.push(i);
+        }
+        for (int i = 0; i < n; ++i) {
+            if (prev[i] != -1) {
+                result[i] += i - prev[i];
+            }
+            if (next[i] != -1) {
+                result[i] += next[i] - i;
+            }
+        }
+        return result;
+    }
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> result(n, 0);
+        vector<int> sizes(n, 1);
+        vector<bool> visited(n, false);
+        function<void(int)> dfs = [&](int u) {
+            visited[u] = true;
+            for (auto v : graph[u]) {
+                if (!visited[v]) {
+                    dfs(v);
+                    sizes[u] += sizes[v];
+                    result[u] += result[v] + sizes[v];
+                }
+            }
+        };
+        dfs(0);
+        for (int i = 0; i < n; ++i) {
+            visited[i] = false;
+        }
+        function<void(int)> dfs2 = [&](int u) {
+            visited[u] = true;
+            for (auto v : graph[u]) {
+                if (!visited[v]) {
+                    result[v] = result[u] - sizes[v] + (

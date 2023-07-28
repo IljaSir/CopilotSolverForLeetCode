@@ -1,0 +1,13 @@
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        
+        vector<vector<int>> result;
+        sort(nums.begin(), nums.end());
+        result.push_back(nums);
+        while(nextPermutation(nums)){
+            result.push_back(nums);
+        }
+        return result;
+    }
+};

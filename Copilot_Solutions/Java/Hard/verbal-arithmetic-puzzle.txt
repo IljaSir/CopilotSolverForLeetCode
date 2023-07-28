@@ -1,0 +1,347 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = words.length;
+        int m = result.length();
+        int[] cnt = new int[26];
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                cnt[c - 'A']++;
+            }
+        }
+        for (char c : result.toCharArray()) {
+            cnt[c - 'A']++;
+        }
+        int[] digits = new int[26];
+        for (int i = 0; i < 26; i++) {
+            if (cnt[i] > 0) {
+                digits[i] = -1;
+            }
+        }
+        return dfs(words, result, digits, 0, 0);
+    }
+    private boolean dfs(String[] words, String result, int[] digits, int pos, int carry) {
+        if (pos == result.length()) {
+            return carry == 0;
+        }
+        int idx = result.charAt(pos) - 'A';
+        if (digits[idx] != -1) {
+            int sum = carry;
+            for (String word : words) {
+                if (word.length() > pos) {
+                    sum += digits[word.charAt(word.length() - pos - 1) - 'A'];
+                }
+            }
+            return sum % 10 == digits[idx] && dfs(words, result, digits, pos + 1, sum / 10);
+        }
+        for (int i = 0; i <= 9; i++) {
+            if (i == 0 && pos == result.length() - 1) {
+                continue;
+            }
+            boolean ok = true;
+            for (int j = 0; j < 26; j++) {
+                if (digits[j] == i) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) {
+                digits[idx] = i;
+                int sum = carry;
+                for (String word : words) {
+                    if (word.length() > pos) {
+                        sum += digits[word.charAt(word.length() - pos - 1) - 'A'];
+                    }
+                }
+                if (sum % 10 == i && dfs(words, result, digits, pos + 1, sum / 10)) {
+                    return true;
+                }
+                digits[idx] = -1;
+            }
+        }
+        return false;
+
+=======
+
+        int n = words.length;
+        int m = result.length();
+        int[] wordValues = new int[n];
+        int resultValue = 0;
+        int[] charValues = new int[26];
+        Arrays.fill(charValues, -1);
+        int[] charUsed = new int[26];
+        int[] charLength = new int[26];
+        int[] charPosition = new int[26];
+        int charCount = 0;
+        int charIndex = 0;
+        for (int i = 0; i < n; i++) {
+            int len = words[i].length();
+            for (int j = 0; j < len; j++) {
+                char c = words[i].charAt(j);
+                charValues[c-'A'] = 0;
+                charLength[c-'A'] = len - j;
+                charPosition[c-'A'] = i;
+                charUsed[c-'A'] = 1;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            char c = result.charAt(i);
+            charValues[c-'A'] = 0;
+            charLength[c-'A'] = m - i;
+            charPosition[c-'A'] = -1;
+            charUsed[c-'A'] = 1;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (charUsed[i] == 1) {
+                charIndex = i;
+                charCount++;
+            }
+        }
+        if (charCount > 10) {
+            return false;
+        }
+        return dfs(words, result, charValues, charLength, charPosition, charIndex, charCount, 0);
+
+=======
+
+        int n = words.length;
+        int[] digits = new int[26];
+        int[] carry = new int[10];
+        Arrays.fill(digits, -1);
+        Arrays.fill(carry, -1);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                int c = words[i].charAt(j) - 'A';
+                if (digits[c] == -1 && j == words[i].length() - 1 && words[i].length() > 1) {
+                    digits[c] = 0;
+                }
+            }
+        }
+        for (int i = 0; i < result.length(); i++) {
+            int c = result.charAt(i) - 'A';
+            if (digits[c] == -1 && i == result.length() - 1 && result.length() > 1) {
+                digits[c] = 0;
+            }
+        }
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < words[i].length(); j++) {
+                int c = words[i].charAt(j) - 'A';
+                nums[i] = nums[i] * 10 + digits[c];
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < result.length(); i++) {
+            int c = result.charAt(i) - 'A';
+            res = res * 10 + digits[c];
+        }
+        return dfs(digits, carry, nums, res, 0, 0);
+    }
+    private boolean dfs(int[] digits, int[] carry, int[] nums, int res, int index, int cur) {
+        if (index == digits.length) {
+            return cur == res;
+        }
+        if (digits[index] != -1) {
+            return dfs(digits, carry, nums, res, index + 1, cur);
+        }
+        for (int i = 0; i < 10; i++) {
+            if (carry[i] == -1) {
+                boolean valid = true;
+                for (int j = 0; j < nums.length; j++) {
+                    if (nums[j] % 10 == i) {
+                        valid = false;
+                        break;
+                    }
+
+=======
+
+        int[] letters = new int[26];
+        int[] digits = new int[10];
+        int[] wordDigits = new int[words.length];
+        int resultDigits = 0;
+        int maxLen = 0;
+        for (String word : words) {
+            maxLen = Math.max(maxLen, word.length());
+        }
+        maxLen = Math.max(maxLen, result.length());
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            for (int j = 0; j < word.length(); j++) {
+                int index = word.charAt(j) - 'A';
+                letters[index] = 1;
+                wordDigits[i] += (int) Math.pow(10, word.length() - j - 1);
+            }
+        }
+        for (int j = 0; j < result.length(); j++) {
+            int index = result.charAt(j) - 'A';
+            letters[index] = 1;
+            resultDigits += (int) Math.pow(10, result.length() - j - 1);
+        }
+        int[] letterDigits = new int[26];
+        int[] letterCount = new int[26];
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            for (int j = 0; j < word.length(); j++) {
+                int index = word.charAt(j) - 'A';
+                letterDigits[index] += wordDigits[i];
+                letterCount[index]++;
+            }
+        }
+        for (int j = 0; j < result.length(); j++) {
+            int index = result.charAt(j) - 'A';
+            letterDigits[index] -= resultDigits;
+            letterCount[index]++;
+        }
+        int[] letterMap = new int[26];
+        for (int i = 0; i < 26; i++) {
+            letterMap[i] = -1;
+        }
+        int[] digitMap = new int[10];
+        for (int i = 0; i < 10; i++) {
+            digitMap[i] = -1;
+        }
+        return dfs(letters, letterDigits, letterCount, letterMap, digitMap, 0, 0, maxLen);
+
+=======
+
+        int[] map = new int[26];
+        Arrays.fill(map, -1);
+        int[] mask = new int[words.length];
+        int[] sum = new int[words.length];
+        int carry = 0;
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            for (int j = word.length() - 1; j >= 0; j--) {
+                int index = word.charAt(j) - 'A';
+                mask[i] |= 1 << index;
+                sum[i] += (int) Math.pow(10, word.length() - j - 1);
+            }
+        }
+        for (int i = result.length() - 1; i >= 0; i--) {
+            carry += (int) Math.pow(10, result.length() - i - 1);
+        }
+        return dfs(map, mask, sum, carry, 0, 0, 0);
+    }
+    private boolean dfs(int[] map, int[] mask, int[] sum, int carry, int pos, int used, int cur) {
+        if (pos == 26) {
+            return cur == carry;
+        }
+        if (map[pos] != -1) {
+            return dfs(map, mask, sum, carry, pos + 1, used, cur);
+        }
+        for (int i = 0; i <= 9; i++) {
+            if ((used & (1 << i)) != 0) {
+                continue;
+            }
+            int next = cur;
+            for (int j = 0; j < mask.length; j++) {
+                if ((mask[j] & (1 << pos)) != 0) {
+                    next += sum[j] * i;
+                }
+            }
+            if (next > carry) {
+                continue;
+            }
+            map[pos] = i;
+            if (dfs(map, mask, sum, carry, pos + 1, used | (1 << i), next)) {
+                return true;
+            }
+            map[pos] = -1;
+        }
+        return false;
+
+=======
+
+        int[] char2num = new int[26];
+        int[] num2char = new int[10];
+        int[] word2num = new int[words.length];
+        int result2num = 0;
+        int maxLen = 0;
+        for (String word : words) {
+            maxLen = Math.max(maxLen, word.length());
+        }
+        maxLen = Math.max(maxLen, result.length());
+        for (int i = 0; i < 10; i++) {
+            num2char[i] = -1;
+        }
+        for (int i = 0; i < 26; i++) {
+            char2num[i] = -1;
+        }
+        for (int i = 0; i < words.length; i++) {
+            word2num[i] = 0;
+        }
+        result2num = 0;
+        for (int i = 0; i < maxLen; i++) {
+            for (int j = 0; j < words.length; j++) {
+                if (i < words[j].length()) {
+                    int c = words[j].charAt(words[j].length() - 1 - i) - 'A';
+                    if (char2num[c] == -1) {
+                        char2num[c] = 0;
+                    }
+                    word2num[j] *= 10;
+                    word2num[j] += char2num[c];
+                }
+            }
+            if (i < result.length()) {
+                int c = result.charAt(result.length() - 1 - i) - 'A';
+                if (char2num[c] == -1) {
+                    char2num[c] = 0;
+                }
+                result2num *= 10;
+                result2num += char2num[c];
+            }
+        }
+        for (int i = 0; i < 10; i++) {
+            num2char[i] = -1;
+        }
+        for (int i = 0; i < 26; i++) {
+            char2num[i] = -1;
+        }
+        return dfs(char2num, num2char, word2num, result2num, 0, 0);
+
+=======
+
+        int[] char2num = new int[26];
+        Arrays.fill(char2num, -1);
+        int[] char2cnt = new int[26];
+        int[] char2cnt2 = new int[26];
+        for (String word : words) {
+            char2cnt[word.charAt(0) - 'A']++;
+        }
+        char2cnt[result.charAt(0) - 'A']++;
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            int len = word.length();
+            for (int j = 0; j < len; j++) {
+                char c = word.charAt(j);
+                char2cnt2[c - 'A']++;
+                int num = (int) Math.pow(10, len - j - 1);
+                char2num[c - 'A'] = num;
+            }
+        }
+        int len = result.length();
+        for (int j = 0; j < len; j++) {
+            char c = result.charAt(j);
+            char2cnt2[c - 'A']++;
+            int num = (int) Math.pow(10, len - j - 1);
+            char2num[c - 'A'] = num;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (char2cnt[i] > 1 && char2num[i] == -1) {
+                return false;
+            }
+            if (char2cnt[i] == 1 && char2num[i] == -1) {
+                char2num[i] = 1;
+            }
+        }
+        for (int i = 0; i < 26; i++) {
+            if (char2cnt[i] == 1 && char2cnt2[i] > 1) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        return true;

@@ -1,0 +1,337 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        int[] parent = new int[n];
+        int[] depth = new int[n];
+        dfs(graph, parent, depth, 0, 0);
+        long[] sum = new long[n];
+        long[] max = new long[n];
+        long[] min = new long[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = price[i];
+            max[i] = price[i];
+            min[i] = price[i];
+        }
+        for (int i = n - 1; i > 0; i--) {
+            int p = parent[i];
+            sum[p] += sum[i];
+            max[p] = Math.max(max[p], max[i]);
+            min[p] = Math.min(min[p], min[i]);
+        }
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, max[i] - min[i]);
+        }
+        return ans;
+    }
+    private void dfs(List<List<Integer>> graph, int[] parent, int[] depth, int u, int p) {
+        parent[u] = p;
+        depth[u] = depth[p] + 1;
+        for (int v : graph.get(u)) {
+            if (v != p) {
+                dfs(graph, parent, depth, v, u);
+            }
+        }
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(edge[0]);
+        }
+        long[] res = dfs(graph, price, 0, -1);
+        return res[0];
+    }
+
+    private long[] dfs(Map<Integer, List<Integer>> graph, int[] price, int root, int parent) {
+        long[] res = new long[2];
+        res[0] = price[root];
+        res[1] = price[root];
+        for (int child : graph.getOrDefault(root, new ArrayList<>())) {
+            if (child == parent) {
+                continue;
+            }
+            long[] childRes = dfs(graph, price, child, root);
+            res[0] = Math.max(res[0], childRes[0]);
+            res[1] = Math.min(res[1], childRes[1]);
+        }
+        res[0] -= res[1];
+        return res;
+
+=======
+
+        Map<Integer, List<Integer>> g = new HashMap<>();
+        for (int[] e : edges) {
+            g.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);
+            g.computeIfAbsent(e[1], k -> new ArrayList<>()).add(e[0]);
+        }
+        long[] min = new long[n], max = new long[n], sum = new long[n];
+        boolean[] visited = new boolean[n];
+        dfs(0, g, price, min, max, sum, visited);
+        long res = Long.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, max[i] - min[i]);
+        }
+        return res;
+    }
+    private void dfs(int u, Map<Integer, List<Integer>> g, int[] price, long[] min, long[] max, long[] sum, boolean[] visited) {
+        visited[u] = true;
+        min[u] = max[u] = sum[u] = price[u];
+        for (int v : g.getOrDefault(u, Collections.emptyList())) {
+            if (visited[v]) continue;
+            dfs(v, g, price, min, max, sum, visited);
+            min[u] = Math.min(min[u], min[v]);
+            max[u] = Math.max(max[u], max[v]);
+            sum[u] += sum[v];
+        }
+        min[u] = Math.min(min[u], sum[u] - max[u]);
+        max[u] = Math.max(max[u], sum[u] - min[u]);
+
+=======
+
+        long[][] dp = new long[n][2];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        dfs(graph, 0, price, dp, visited);
+        return Math.max(dp[0][0], dp[0][1]);
+    }
+
+    private void dfs(List<List<Integer>> graph, int node, int[] price, long[][] dp, boolean[] visited) {
+        for (int next : graph.get(node)) {
+            if (!visited[next]) {
+                visited[next] = true;
+                dfs(graph, next, price, dp, visited);
+                dp[node][0] += Math.max(dp[next][0], dp[next][1]);
+                dp[node][1] += dp[next][0];
+            }
+        }
+        dp[node][1] += price[node];
+
+=======
+
+        // build graph
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        // dfs
+        long[] max = new long[n];
+        long[] min = new long[n];
+        dfs(graph, price, 0, -1, max, min);
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, max[i] - min[i]);
+        }
+        return res;
+    }
+    private void dfs(List<List<Integer>> graph, int[] price, int root, int parent, long[] max, long[] min) {
+        max[root] = min[root] = price[root];
+        for (int child : graph.get(root)) {
+            if (child == parent) {
+                continue;
+            }
+            dfs(graph, price, child, root, max, min);
+            max[root] = Math.max(max[root], max[child]);
+            min[root] = Math.min(min[root], min[child]);
+        }
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashMap<>());
+        }
+        for (int[] edge: edges) {
+            graph.get(edge[0]).put(edge[1], 1);
+            graph.get(edge[1]).put(edge[0], 1);
+        }
+        long[] res = new long[1];
+        dfs(graph, 0, -1, price, new boolean[n], res);
+        return res[0];
+    }
+    private void dfs(Map<Integer, Map<Integer, Integer>> graph, int cur, int parent, int[] price, boolean[] visited, long[] res) {
+        visited[cur] = true;
+        long sum = 0;
+        long max = 0;
+        long min = Long.MAX_VALUE;
+        for (Map.Entry<Integer, Integer> entry: graph.get(cur).entrySet()) {
+            if (entry.getKey() == parent || visited[entry.getKey()]) {
+                continue;
+            }
+            dfs(graph, entry.getKey(), cur, price, visited, res);
+            sum += entry.getValue();
+            max = Math.max(max, entry.getValue());
+            min = Math.min(min, entry.getValue());
+        }
+        if (sum > 0) {
+            res[0] = Math.max(res[0], max - min);
+        }
+        graph.get(cur).put(parent, (int)sum + price[cur]);
+
+=======
+
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            if (parent[u] == -1) {
+                parent[u] = v;
+            } else {
+                parent[v] = u;
+            }
+        }
+        int root = 0;
+        while (parent[root] != -1) {
+            root = parent[root];
+        }
+        long[] sums = new long[n];
+        long[] maxSums = new long[n];
+        long[] minSums = new long[n];
+        Arrays.fill(maxSums, Long.MIN_VALUE);
+        Arrays.fill(minSums, Long.MAX_VALUE);
+        dfs(root, parent, sums, maxSums, minSums, price);
+        long max = Long.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, maxSums[i] - minSums[i]);
+        }
+        return max;
+    }
+    private void dfs(int u, int[] parent, long[] sums, long[] maxSums, long[] minSums, int[] price) {
+        sums[u] = price[u];
+        maxSums[u] = price[u];
+        minSums[u] = price[u];
+        for (int v = 0; v < parent.length; v++) {
+            if (parent[v] == u) {
+                dfs(v, parent, sums, maxSums, minSums, price);
+                sums[u] += sums[v];
+                maxSums[u] = Math.max(maxSums[u], maxSums[v]);
+                minSums[u] = Math.min(minSums[u], minSums[v]);
+            }
+        }
+
+=======
+
+        long res = 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] e : edges) {
+            map.putIfAbsent(e[0], new ArrayList<>());
+            map.putIfAbsent(e[1], new ArrayList<>());
+            map.get(e[0]).add(e[1]);
+            map.get(e[1]).add(e[0]);
+        }
+        boolean[] visited = new boolean[n];
+        long[] sum = new long[n];
+        long[] count = new long[n];
+        dfs(map, visited, sum, count, price, 0);
+        res = sum[0];
+        for (int i = 1; i < n; i++) {
+            res = Math.max(res, Math.max(sum[i] - count[i] * price[i], sum[0] - sum[i] - (n - count[i]) * price[i]));
+        }
+        return res;
+    }
+    private void dfs(Map<Integer, List<Integer>> map, boolean[] visited, long[] sum, long[] count, int[] price, int node) {
+        visited[node] = true;
+        sum[node] = price[node];
+        count[node] = 1;
+        for (int next : map.getOrDefault(node, new ArrayList<>())) {
+            if (!visited[next]) {
+                dfs(map, visited, sum, count, price, next);
+                sum[node] += sum[next];
+                count[node] += count[next];
+            }
+        }
+
+=======
+
+        long[] dp = new long[n];
+        long[] sum = new long[n];
+        long[] min = new long[n];
+        long[] max = new long[n];
+        Arrays.fill(min, Long.MAX_VALUE);
+        Arrays.fill(max, Long.MIN_VALUE);
+        
+        for (int i = 0; i < n; i++) {
+            dp[i] = price[i];
+            sum[i] = price[i];
+            min[i] = price[i];
+            max[i] = price[i];
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            if (dp[u] > dp[v]) {
+                sum[v] += sum[u];
+                min[v] = Math.min(min[v], min[u]);
+                max[v] = Math.max(max[v], max[u]);
+                dp[v] = max[v] - min[v];
+            } else {
+                sum[u] += sum[v];
+                min[u] = Math.min(min[u], min[v]);
+                max[u] = Math.max(max[u], max[v]);
+                dp[u] = max[u] - min[u];
+            }
+        }
+        
+        long res = 0;
+        for (long x : dp) {
+            res = Math.max(res, x);
+        }
+        return res;
+
+=======
+
+        int[] min = new int[n];
+        int[] max = new int[n];
+        int[] count = new int[n];
+        int[] parent = new int[n];
+        long res = 0;
+        Arrays.fill(count, 1);
+        Arrays.fill(parent, -1);
+        for (int i = 0; i < n; i++) {
+            min[i] = max[i] = price[i];
+        }
+        for (int[] e : edges) {
+            int a = e[0];
+            int b = e[1];
+            if (count[a] > count[b]) {
+                parent[b] = a;
+                count[a] += count[b];
+                min[a] = Math.min(min[a], min[b]);
+                max[a] = Math.max(max[a], max[b]);
+            } else {
+                parent[a] = b;
+                count[b] += count[a];
+                min[b] = Math.min(min[a], min[b]);
+                max[b] = Math.max(max[a], max[b]);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == -1) {
+                res = Math.max(res, (long) max[i] - min[i]);
+            }
+        }
+        return res;

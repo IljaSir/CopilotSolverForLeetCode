@@ -1,0 +1,17 @@
+class Solution {
+    public int kthFactor(int n, int k) {
+        
+        int i = 1;
+        int j = 0;
+        while (i <= n) {
+            if (n % i == 0) {
+                j++;
+                if (j == k) {
+                    return i;
+                }
+            }
+            i++;
+        }
+        return -1;
+    }
+}

@@ -1,0 +1,346 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            count += nums[i] - target[i];
+        }
+        return count;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        long diff = makeSimilar(nums, target);
+        if (diff == 0) {
+            return 0;
+        }
+        int n = nums.length;
+        int m = target.length;
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                if (nums[i - 1] == target[j - 1]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - 1] + 1);
+                }
+            }
+        }
+        return n + m - 2 * dp[n][m];
+
+=======
+
+        long count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            count += nums[i] - target[i];
+        }
+        return count;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        int n = nums.length;
+        int m = target.length;
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= m; j++) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 0;
+                } else if (nums[i - 1] == target[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        int lcs = dp[n][m];
+        int count = n + m - 2 * lcs;
+        long sum = makeSimilar(nums, target);
+        if (sum % 2 != 0 || sum == 0) {
+            return count;
+        } else {
+            return count + 1;
+        }
+
+=======
+
+        long sum = 0;
+        for(int i = 0; i < nums.length; i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        long sum = makeSimilar(nums, target);
+        if(sum % 2 != 0) return -1;
+        sum /= 2;
+        int n = nums.length;
+        int[] a = new int[n];
+        int[] b = new int[n];
+        int p = 0;
+        int q = 0;
+        for(int i = 0; i < n; i++) {
+            if(nums[i] > target[i]) {
+                a[p++] = nums[i] - target[i];
+            } else {
+                b[q++] = target[i] - nums[i];
+            }
+        }
+        Arrays.sort(a, 0, p);
+        Arrays.sort(b, 0, q);
+        int i = p - 1;
+        int j = q - 1;
+        int count = 0;
+        while(sum != 0) {
+            if(i < 0 && j < 0) return -1;
+            if(i < 0) {
+                sum -= b[j--];
+            } else if(j < 0) {
+                sum -= a[i--];
+            } else {
+                if(a[i] > b[j]) {
+                    sum -= a[i--];
+                } else {
+                    sum -= b[j--];
+                }
+            }
+            count++;
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        long[] diff = new long[n];
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums[i] - target[i];
+        }
+        Arrays.sort(diff);
+        long ans = 0;
+        for (long d : diff) {
+            if (d > 0) {
+                ans += d;
+            }
+        }
+        return ans;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        int n = nums.length;
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        long targetSum = 0;
+        for (int i = 0; i < n; i++) {
+            targetSum += target[i];
+        }
+        long diff = sum - targetSum;
+        if (diff == 0) {
+            return 0;
+        }
+        long ans = makeSimilar(nums, target);
+        if (diff > 0) {
+            ans = Math.min(ans, diff / 2);
+        } else {
+            ans = Math.min(ans, -diff / 2);
+        }
+        return (int) ans;
+
+=======
+
+        int n = nums.length;
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+
+    public int minOperations(int[] nums, int[] target) {
+        int n = nums.length;
+        int m = target.length;
+        int max = n + m;
+        int min = Math.abs(max - 2 * Math.min(n, m));
+        long diff = makeSimilar(nums, target);
+        if (diff < min || diff > max || (diff & 1) != 0) {
+            return -1;
+        }
+        int half = (max + min) / 2;
+        long[][] dp = new long[2][half + 1];
+        for (int i = 0; i <= half; i++) {
+            dp[0][i] = Integer.MIN_VALUE;
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= half; j++) {
+                dp[(i + 1) & 1][j] = dp[i & 1][j];
+            }
+            for (int j = 0; j <= half; j++) {
+                int k = j + nums[i];
+                if (k <= half) {
+                    dp[(i + 1) & 1][k] = Math.max(dp[(i + 1) & 1][k], dp[i & 1][j] + nums[i]);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int j = 0; j <= half; j++) {
+            int k = j + (int) diff;
+            if (k <= half) {
+                ans = Math.min(ans, n - (int) (dp[n & 1][j] + dp[n & 1][k]) / 2);
+            }
+        }
+        return ans;
+
+=======
+
+        long count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            count += (nums[i] - target[i]);
+        }
+        return count;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        long sum = makeSimilar(nums, target);
+        if (sum == 0) {
+            return 0;
+        }
+        if (sum % 2 != 0) {
+            return -1;
+        }
+        sum /= 2;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+        List<Integer> numsList = new ArrayList<>();
+        for (int i = 0; i < target.length; i++) {
+            if (map.containsKey(target[i])) {
+                numsList.add(map.get(target[i]));
+            }
+        }
+        int[] numsArr = new int[numsList.size()];
+        for (int i = 0; i < numsArr.length; i++) {
+            numsArr[i] = numsList.get(i);
+        }
+        int n = numsArr.length;
+        int[][] dp = new int[n + 1][sum + 1];
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 0;
+        }
+        for (int i = 1; i <= sum; i++) {
+            dp[0][i] = Integer.MAX_VALUE;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= sum; j++) {
+                if (numsArr[i - 1] <= j) {
+                    dp[i][j] = Math.min(dp[i - 1][j], 1 + dp[i - 1][j - numsArr[i - 1]]);
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][sum] == Integer.MAX_VALUE ? -1 : dp[n][sum];
+
+=======
+
+        long res = 0;
+        int[] diff = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            diff[i] = nums[i] - target[i];
+        }
+        Arrays.sort(diff);
+        for (int i = 0; i < diff.length; i++) {
+            if (diff[i] < 0) {
+                res += -diff[i];
+            } else {
+                res -= diff[i];
+            }
+        }
+        if (res % 2 == 0) {
+            return res / 2;
+        } else {
+            return -1;
+        }
+
+=======
+
+        long ans = 0;
+        for (int i = 0; i < nums.length; i++) {
+            ans += Math.abs(nums[i] - target[i]);
+        }
+        return ans/2;
+    }
+    public int minOperations(int[] nums, int[] target) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        int targetSum = 0;
+        for (int i = 0; i < target.length; i++) {
+            targetSum += target[i];
+        }
+        if (sum == targetSum) {
+            return 0;
+        }
+        int ans = Integer.MAX_VALUE;
+        long diff = Math.abs(makeSimilar(nums, target));
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i];
+            nums[i] = target[i];
+            ans = Math.min(ans, 1 + (int)(diff - Math.abs(makeSimilar(nums, target)))/2);
+            nums[i] = temp;
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int[] diff = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            diff[i] = target[i] - nums[i];
+        }
+        Arrays.sort(diff);
+        int i = 0, j = diff.length - 1;
+        long count = 0;
+        while (i < j) {
+            if (diff[i] + diff[j] == 0) {
+                count++;
+                i++;
+                j--;
+            } else if (diff[i] + diff[j] < 0) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return count;
+    }
+    
+    public int minOperations(int[] nums, int[] target) {
+        long sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        long targetSum = 0;
+        for (int num : target) {
+            targetSum += num;
+        }
+        long diff = targetSum - sum;
+        if (diff % 2 != 0) {
+            return -1;
+        }
+        long half = diff / 2;
+        long similar = makeSimilar(nums, target);
+        if (Math.abs(half) > similar) {
+            return -1;
+        }
+        return (int) (similar - Math.abs(half));
+
+=======
+
+        long ans = 0;
+        long[] diff = new long[2000001];
+        for (int i = 0; i < nums.length; i++) {
+            diff[nums[i] + target[i]]++;
+            diff[Math.abs(nums[i] - target[i]) + 1]--;
+        }
+        for (int i = 2; i < diff.length; i++) {
+            diff[i] += diff[i - 2];
+            ans = Math.max(ans, diff[i]);
+        }
+        return nums.length - ans;

@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut starts = vec![];
+        for (i, interval) in intervals.iter().enumerate() {
+            starts.push((interval[0], i as i32));
+        }
+        starts.sort_by_key(|x| x.0);
+        let mut res = vec![];
+        for interval in intervals {
+            let mut left = 0;
+            let mut right = starts.len();
+            while left < right {
+                let mid = left + (right - left) / 2;
+                if starts[mid].0 < interval[1] {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            if left >= starts.len() {
+                res.push(-1);
+            } else {
+                res.push(starts[left].1);
+            }
+        }
+        res
+
+=======
+Suggestion 2
+
+        let mut result = vec![-1; intervals.len()];
+        let mut intervals: Vec<(i32, i32, usize)> = intervals.into_iter().enumerate().map(|(i, v)| (v[0], v[1], i)).collect();
+        intervals.sort_by(|a, b| a.0.cmp(&b.0));
+        for i in 0..intervals.len() {
+            let mut left = i + 1;
+            let mut right = intervals.len() - 1;
+            while left <= right {
+                let mid = (left + right) / 2;
+                if intervals[mid].0 >= intervals[i].1 {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            if left < intervals.len() {
+                result[intervals[i].2] = intervals[left].2 as i32;
+            }
+        }
+        result
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut res = vec![];
+        let mut starts = vec![];
+        for (i, interval) in intervals.iter().enumerate() {
+            starts.push((interval[0], i));
+        }
+        starts.sort_by(|a, b| a.0.cmp(&b.0));
+        for interval in intervals {
+            let mut l = 0;
+            let mut r = starts.len();
+            let mut ans = -1;
+            while l < r {
+                let m = l + (r - l) / 2;
+                if starts[m].0 >= interval[1] {
+                    ans = starts[m].1 as i32;
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            res.push(ans);
+        }
+        res
+
+=======
+Suggestion 4
+
+        
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut intervals = intervals;
+        let mut starts = vec![];
+        for i in 0..intervals.len() {
+            starts.push((intervals[i][0], i as i32));
+        }
+        starts.sort_by(|a, b| a.0.cmp(&b.0));
+        let mut res = vec![];
+        for i in 0..intervals.len() {
+            let mut l = 0;
+            let mut r = starts.len();
+            while l < r {
+                let mid = l + (r - l) / 2;
+                if starts[mid].0 >= intervals[i][1] {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if l == starts.len() {
+                res.push(-1);
+            } else {
+                res.push(starts[l].1);
+            }
+        }
+        res
+
+=======
+Suggestion 6
+
+        let mut v = intervals.iter().enumerate().map(|(i, v)| (v[0], i)).collect::<Vec<_>>();
+        v.sort();
+        intervals.iter().map(|v| {
+            match v[1].binary_search_by(|&i| v[0].cmp(&i)) {
+                Ok(i) => v[1][i + 1],
+                Err(i) => v[1][i],
+            }
+        }).collect()
+
+=======
+Suggestion 7
+
+        let mut result = vec![-1; intervals.len()];
+        let mut intervals: Vec<(usize, Vec<i32>)> = intervals.into_iter().enumerate().collect();
+        intervals.sort_by_key(|(_, v)| v[0]);
+        for (i, v) in intervals.iter().enumerate() {
+            if let Ok(j) = intervals.binary_search_by_key(&v[1], |(_, v)| v[0]) {
+                result[v.0] = intervals[j].0 as i32;
+            } else if j < intervals.len() {
+                result[v.0] = intervals[j].0 as i32;
+            }
+        }
+        result
+
+=======
+Suggestion 8
+
+        let mut intervals = intervals.iter().enumerate().collect::<Vec<_>>();
+        intervals.sort_by_key(|&(_, v)| v[0]);
+        let mut res = vec![-1; intervals.len()];
+        for i in 0..intervals.len() {
+            let mut l = i + 1;
+            let mut r = intervals.len();
+            while l < r {
+                let m = l + (r - l) / 2;
+                if intervals[m].1[0] < intervals[i].1[1] {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            if l < intervals.len() {
+                res[intervals[i].0] = intervals[l].0 as i32;
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut intervals = intervals;
+        let mut res = vec![-1; intervals.len()];
+        let mut left = vec![];
+        for i in 0..intervals.len() {
+            left.push((intervals[i][0], i));
+        }
+        left.sort_by(|a, b| a.0.cmp(&b.0));
+        for i in 0..intervals.len() {
+            let mut l = 0;
+            let mut r = intervals.len();
+            while l < r {
+                let m = (l + r) / 2;
+                if left[m].0 < intervals[i][1] {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            if l < intervals.len() {
+                res[i] = left[l].1 as i32;
+            }
+        }
+        res
+
+=======
+Suggestion 10
+
+        let mut start = intervals.iter().enumerate().map(|(i, v)| (v[0], i)).collect::<Vec<_>>();
+        start.sort();
+        let mut res = Vec::new();
+        for i in 0..intervals.len() {
+            let end = intervals[i][1];
+            let mut l = 0;
+            let mut r = start.len();
+            while l < r {
+                let mid = (l + r) / 2;
+                if start[mid].0 >= end {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if l == start.len() {
+                res.push(-1);
+            } else {
+                res.push(start[l].1 as i32);
+            }
+        }
+        res

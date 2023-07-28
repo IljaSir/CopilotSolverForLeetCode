@@ -1,0 +1,179 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = blocks.size();
+        vector<int> b(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            b[i] = b[i - 1] + (blocks[i - 1] == 'B');
+        }
+        vector<int> f(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            int l = max(1, i - k + 1), r = i;
+            f[i] = f[i - 1] + (blocks[i - 1] == 'W');
+            if (r - l + 1 >= k) {
+                f[i] = min(f[i], f[l - 1] + (b[r] - b[l - 1] == 0));
+            }
+        }
+        return f[n];
+
+=======
+
+        int n = blocks.size();
+        vector<int> sum(n+1, 0);
+        for(int i = 1; i <= n; ++i) {
+            sum[i] = sum[i-1] + (blocks[i-1] == 'B');
+        }
+        int ans = INT_MAX;
+        for(int i = 0; i <= n-k; ++i) {
+            int cur = sum[i+k] - sum[i];
+            ans = min(ans, cur);
+        }
+        return k - ans;
+
+=======
+
+        int n = blocks.size();
+        vector<int> prefix(n+1, 0);
+        for(int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i-1] + (blocks[i-1] == 'B');
+        }
+        int ans = INT_MAX;
+        for(int i = 1; i <= n - k + 1; i++) {
+            int cur = prefix[i + k - 1] - prefix[i - 1];
+            int need = k - cur;
+            int cost = need - (blocks[i-1] == 'B') - (blocks[i+k-1] == 'B');
+            ans = min(ans, cost);
+        }
+        return ans;
+
+=======
+
+        int n = blocks.size();
+        vector<int> cnt(n+1);
+        for(int i = 0; i < n; ++i) {
+            cnt[i+1] = cnt[i] + (blocks[i] == 'B');
+        }
+        int res = INT_MAX;
+        for(int i = 0; i + k <= n; ++i) {
+            int j = i + k;
+            int cur = cnt[j] - cnt[i];
+            res = min(res, cur + (j - i - cur) / 2);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        int ans = INT_MAX;
+        for (int i = 0; i < n - k + 1; i++) {
+            int count = 0;
+            for (int j = i; j < i + k; j++) {
+                if (blocks[j] == 'W') {
+                    count++;
+                }
+            }
+            ans = min(ans, count);
+        }
+        return ans;
+
+=======
+
+        int n = blocks.size();
+        vector<int> dp(n+1, 0);
+        int sum = 0;
+        for (int i = 0; i < k; ++i) {
+            if (blocks[i] == 'B') {
+                ++sum;
+            }
+        }
+        dp[k] = sum;
+        for (int i = k; i < n; ++i) {
+            dp[i+1] = dp[i] + (blocks[i] == 'B' ? 1 : 0) - (blocks[i-k] == 'B' ? 1 : 0);
+        }
+        int ans = INT_MAX;
+        for (int i = k; i <= n; ++i) {
+            ans = min(ans, dp[i] + i - k - dp[i-k]);
+        }
+        return ans;
+
+=======
+
+        int n = blocks.size();
+        vector<int> dp(n + 1);
+        vector<int> sum(n + 1);
+        int ans = INT_MAX;
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + (blocks[i - 1] == 'B');
+            dp[i] = i;
+            if (i >= k) {
+                dp[i] = min(dp[i], dp[i - k] + (sum[i] - sum[i - k] == 0));
+            }
+            if (i >= k + 1) {
+                dp[i] = min(dp[i], dp[i - k - 1] + (sum[i] - sum[i - k - 1] == 0));
+            }
+            if (i == n) {
+                ans = min(ans, dp[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = blocks.size();
+        vector<int> dp(n, 0);
+        int l = 0, r = 0;
+        int cnt = 0;
+        while (r < n) {
+            if (blocks[r] == 'W') {
+                cnt++;
+            }
+            while (cnt > k) {
+                if (blocks[l] == 'W') {
+                    cnt--;
+                }
+                l++;
+            }
+            dp[r] = l;
+            r++;
+        }
+        vector<int> dp2(n, 0);
+        l = n - 1, r = n - 1;
+        cnt = 0;
+        while (l >= 0) {
+            if (blocks[l] == 'W') {
+                cnt++;
+            }
+            while (cnt > k) {
+                if (blocks[r] == 'W') {
+                    cnt--;
+                }
+                r--;
+            }
+            dp2[l] = r;
+            l--;
+        }
+        int res = INT_MAX;
+        for (int i = 0; i + k - 1 < n; i++) {
+            res = min(res, dp[i + k - 1] - dp[i] + dp2[i + k - 1] - dp2[i]);
+        }
+        return res;
+
+=======
+
+        int n = blocks.size();
+        vector<int> dp(n + 1, 0);
+        int j = 0;
+        int ans = INT_MAX;
+        for(int i = 0; i < n; ++i) {
+            if(blocks[i] == 'B') {
+                dp[i + 1] = dp[i] + 1;
+            } else {
+                dp[i + 1] = dp[i];
+            }
+            if(i - j + 1 == k) {
+                ans = min(ans, dp[i + 1] - dp[j]);
+                j++;
+            }
+        }
+        return ans;

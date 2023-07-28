@@ -1,0 +1,291 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        use std::collections::HashMap;
+        let mut word_map = HashMap::new();
+        let mut word = String::new();
+        for c in paragraph.chars() {
+            if c.is_alphabetic() {
+                word.push(c.to_ascii_lowercase());
+            } else if !word.is_empty() {
+                *word_map.entry(word).or_insert(0) += 1;
+                word.clear();
+            }
+        }
+        if !word.is_empty() {
+            *word_map.entry(word).or_insert(0) += 1;
+        }
+        let mut max_count = 0;
+        let mut max_word = String::new();
+        for (word, count) in word_map {
+            if !banned.contains(&word) && count > max_count {
+                max_word = word;
+                max_count = count;
+            }
+        }
+        max_word
+
+=======
+
+        let mut banned_set = std::collections::HashSet::new();
+        for word in banned {
+            banned_set.insert(word);
+        }
+        let mut words = paragraph
+            .split(|c: char| !c.is_alphabetic())
+            .filter(|word| !word.is_empty())
+            .map(|word| word.to_lowercase())
+            .filter(|word| !banned_set.contains(word))
+            .collect::<Vec<String>>();
+        words.sort();
+        let mut cur_word = "".to_string();
+        let mut cur_count = 0;
+        let mut max_word = "".to_string();
+        let mut max_count = 0;
+        for word in words {
+            if word != cur_word {
+                if cur_count > max_count {
+                    max_count = cur_count;
+                    max_word = cur_word;
+                }
+                cur_word = word;
+                cur_count = 1;
+            } else {
+                cur_count += 1;
+            }
+        }
+        if cur_count > max_count {
+            max_count = cur_count;
+            max_word = cur_word;
+        }
+        max_word
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        let mut max = 0;
+        let mut res = String::new();
+        for word in paragraph.split(|c: char| !c.is_alphabetic()).map(|s| s.to_lowercase()) {
+            if word.is_empty() || banned.contains(&word) {
+                continue;
+            }
+            let counter = map.entry(word).or_insert(0);
+            *counter += 1;
+            if *counter > max {
+                max = *counter;
+                res = map.iter().find(|&(_, v)| *v == max).unwrap().0.to_string();
+            }
+        }
+        res
+
+=======
+
+        let mut map: HashMap<String, i32> = HashMap::new();
+        for word in paragraph.split(|c: char| !c.is_alphanumeric()).map(|s| s.to_lowercase()) {
+            if word.len() > 0 && !banned.contains(&word) {
+                *map.entry(word).or_insert(0) += 1;
+            }
+        }
+        let mut max = 0;
+        let mut res = "".to_string();
+        for (k, v) in map {
+            if v > max {
+                max = v;
+                res = k;
+            }
+        }
+        res
+
+=======
+
+        let mut word_count: HashMap<String, i32> = HashMap::new();
+        let mut word = String::new();
+        let mut max_count = 0;
+        let mut max_word = String::new();
+        for c in paragraph.chars() {
+            if c.is_alphabetic() {
+                word.push(c.to_ascii_lowercase());
+            } else if !word.is_empty() {
+                if !banned.contains(&word) {
+                    let count = word_count.entry(word.clone()).or_insert(0);
+                    *count += 1;
+                    if *count > max_count {
+                        max_count = *count;
+                        max_word = word.clone();
+                    }
+                }
+                word.clear();
+            }
+        }
+        if !word.is_empty() {
+            if !banned.contains(&word) {
+                let count = word_count.entry(word.clone()).or_insert(0);
+                *count += 1;
+                if *count > max_count {
+                    max_count = *count;
+                    max_word = word.clone();
+                }
+            }
+        }
+        max_word
+
+=======
+
+        let mut map: std::collections::HashMap<String, i32> = std::collections::HashMap::new();
+        let mut max = 0;
+        let mut result = "".to_string();
+        let mut word = "".to_string();
+        for c in paragraph.chars() {
+            if c.is_alphabetic() {
+                word.push(c.to_ascii_lowercase());
+            } else {
+                if !word.is_empty() {
+                    if !banned.contains(&word) {
+                        let count = map.entry(word.clone()).or_insert(0);
+                        *count += 1;
+                        if *count > max {
+                            max = *count;
+                            result = word.clone();
+                        }
+                    }
+                    word = "".to_string();
+                }
+            }
+        }
+        if !word.is_empty() {
+            if !banned.contains(&word) {
+                let count = map.entry(word.clone()).or_insert(0);
+                *count += 1;
+                if *count > max {
+                    max = *count;
+                    result = word.clone();
+                }
+            }
+        }
+        result
+
+=======
+
+        let mut map: HashMap<String, i32> = HashMap::new();
+        let mut max = 0;
+        let mut ans = String::new();
+        for c in paragraph.chars() {
+            if !c.is_alphabetic() {
+                map.insert(c.to_string(), -1);
+            }
+        }
+        for word in paragraph.split(|c: char| !c.is_alphabetic()) {
+            if word.len() == 0 {
+                continue;
+            }
+            let word = word.to_lowercase();
+            if !banned.contains(&word) {
+                let count = map.entry(word).or_insert(0);
+                *count += 1;
+                if *count > max {
+                    max = *count;
+                    ans = count.to_string();
+                }
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut word_map = std::collections::HashMap::<String, i32>::new();
+        let mut max_word = String::new();
+        let mut max_count = 0;
+        let mut word = String::new();
+        for c in paragraph.chars() {
+            if c.is_ascii_alphabetic() {
+                word.push(c.to_ascii_lowercase());
+            } else if word.len() > 0 {
+                if !banned.contains(&word) {
+                    let count = word_map.entry(word.clone()).or_insert(0);
+                    *count += 1;
+                    if *count > max_count {
+                        max_count = *count;
+                        max_word = word.clone();
+                    }
+                }
+                word = String::new();
+            }
+        }
+        if word.len() > 0 {
+            if !banned.contains(&word) {
+                let count = word_map.entry(word.clone()).or_insert(0);
+                *count += 1;
+                if *count > max_count {
+                    max_count = *count;
+                    max_word = word.clone();
+                }
+            }
+        }
+        max_word
+
+=======
+
+        let mut map: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+        let mut max = 0;
+        let mut res = String::new();
+        let mut s = String::new();
+        for c in paragraph.chars() {
+            if c.is_alphabetic() {
+                s.push(c.to_ascii_lowercase());
+            } else {
+                if !s.is_empty() && !banned.contains(&s) {
+                    *map.entry(s.clone()).or_insert(0) += 1;
+                    if map[&s] > max {
+                        max = map[&s];
+                        res = s.clone();
+                    }
+                }
+                s = String::new();
+            }
+        }
+        if !s.is_empty() && !banned.contains(&s) {
+            *map.entry(s.clone()).or_insert(0) += 1;
+            if map[&s] > max {
+                max = map[&s];
+                res = s.clone();
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut map = HashMap::new();
+        let mut word = String::new();
+        let mut max = 0;
+        let mut answer = String::new();
+        for c in paragraph.chars() {
+            if c.is_ascii_alphabetic() {
+                word.push(c.to_ascii_lowercase());
+            } else if !word.is_empty() {
+                if !banned.contains(&word) {
+                    let count = map.entry(word.clone()).or_insert(0);
+                    *count += 1;
+                    if *count > max {
+                        max = *count;
+                        answer = word.clone();
+                    }
+                }
+                word.clear();
+            }
+        }
+        if !word.is_empty() {
+            if !banned.contains(&word) {
+                let count = map.entry(word.clone()).or_insert(0);
+                *count += 1;
+                if *count > max {
+                    max = *count;
+                    answer = word.clone();
+                }
+            }
+        }
+        answer

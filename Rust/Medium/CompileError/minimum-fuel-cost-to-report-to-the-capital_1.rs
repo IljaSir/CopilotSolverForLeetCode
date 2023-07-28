@@ -1,0 +1,36 @@
+impl Solution {
+    pub fn minimum_fuel_cost(roads: Vec<Vec<i32>>, seats: i32) -> i64 {
+        
+        let n = roads.len() + 1;
+        let mut children = vec![vec![]; n];
+        for road in roads {
+            children[road[0] as usize].push(road[1] as usize);
+            children[road[1] as usize].push(road[0] as usize);
+        }
+        let mut dp = vec![0; n];
+        let mut ans = 0;
+        let mut dfs = |u: usize, p: usize| {
+            let mut children_cost = 0;
+            for &v in &children[u] {
+                if v != p {
+                    dfs(v, u);
+                    children_cost += dp[v];
+                }
+            }
+            dp[u] = children_cost + 1;
+            if children_cost > 0 {
+                let mut cost = children_cost;
+                let mut k = (children_cost - 1) / (seats - 1);
+                let mut rem = children_cost - k * (seats - 1);
+                cost += k * 2;
+                if rem == 0 {
+                    cost -= 1;
+                }
+                ans += cost;
+                dp[u] = rem;
+            }
+        };
+        dfs(0, 0);
+        ans
+    }
+}

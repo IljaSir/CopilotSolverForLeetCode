@@ -1,0 +1,179 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut dp = vec![vec![0; 3]; colors.len()];
+        dp[0][colors.as_bytes()[0] as usize - 'a' as usize] = needed_time[0];
+        for i in 1..colors.len() {
+            let c = colors.as_bytes()[i] as usize - 'a' as usize;
+            for j in 0..3 {
+                if j == c {
+                    dp[i][j] = dp[i-1][j] + needed_time[i];
+                } else {
+                    dp[i][j] = dp[i-1][j].min(dp[i-1][c]) + needed_time[i];
+                }
+            }
+        }
+        dp[colors.len()-1].iter().min().unwrap().to_owned()
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; 3]; colors.len() + 1];
+        for i in 1..=colors.len() {
+            let c = colors.as_bytes()[i - 1] - b'a';
+            for j in 0..3 {
+                dp[i][j] = dp[i - 1][j] + needed_time[i - 1];
+                if c == j as u8 {
+                    dp[i][j] = dp[i][j].min(dp[i - 1][(j + 1) % 3].min(dp[i - 1][(j + 2) % 3]));
+                }
+            }
+        }
+        dp[colors.len()].iter().min().unwrap().clone()
+
+=======
+
+        let mut dp = vec![vec![0; 3]; colors.len()];
+        for i in 0..colors.len() {
+            for j in 0..3 {
+                let c = colors.as_bytes()[i] - b'a';
+                dp[i][j] = if c == j as u8 {
+                    0
+                } else {
+                    needed_time[i]
+                };
+                if i > 0 {
+                    dp[i][j] += dp[i - 1].iter().filter(|&x| x != &dp[i][j]).min().unwrap();
+                }
+            }
+        }
+        *dp.last().unwrap().iter().min().unwrap()
+
+=======
+
+        let mut res = 0;
+        let mut last = ' ';
+        for (i, c) in colors.chars().enumerate() {
+            if c == last {
+                res += needed_time[i].min(needed_time[i - 1]);
+            }
+            last = c;
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut last_c = ' ';
+        let mut last_t = 0;
+        for (c, t) in colors.chars().zip(needed_time) {
+            if c == last_c {
+                res += last_t.min(t);
+            }
+            last_c = c;
+            last_t = t;
+        }
+        res
+
+=======
+
+        let mut dp = vec![vec![std::i32::MAX; 3]; colors.len()];
+        let mut pre = vec![vec![0; 3]; colors.len()];
+        for i in 0..colors.len() {
+            for j in 0..3 {
+                if colors.chars().nth(i).unwrap() as i32 - 'a' as i32 == j {
+                    pre[i][j] = 1;
+                }
+            }
+        }
+        for i in 1..colors.len() {
+            for j in 0..3 {
+                for k in 0..3 {
+                    if k != j {
+                        dp[i][j] = std::cmp::min(dp[i][j], dp[i-1][k] + needed_time[i] * pre[i][j]);
+                    }
+                }
+            }
+        }
+        std::cmp::min(dp[colors.len()-1][0], std::cmp::min(dp[colors.len()-1][1], dp[colors.len()-1][2]))
+    }
+}
+
+=======
+
+        let mut ans = 0;
+        let mut c = ' ';
+        for (i, ch) in colors.chars().enumerate() {
+            if ch != c {
+                ans += needed_time[i];
+            } else {
+                ans += needed_time[i].min(ans);
+            }
+            c = ch;
+        }
+        ans
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let n = colors.len();
+        let mut dp = vec![vec![0; 26]; n];
+        let mut last = vec![vec![0; 26]; n];
+        let mut last_color = vec![vec![0; 26]; n];
+        let mut colors = colors.chars().collect::<Vec<_>>();
+        for i in 0..26 {
+            dp[0][i] = needed_time[0];
+            last[0][i] = 0;
+            last_color[0][i] = 0;
+        }
+        for i in 1..n {
+            for j in 0..26 {
+                dp[i][j] = dp[i - 1][j] + needed_time[i];
+                last[i][j] = i;
+                last_color[i][j] = j;
+            }
+            for j in 0..26 {
+                if colors[i] as usize - 'a' as usize == j {
+                    continue;
+                }
+                let mut min = std::i32::MAX;
+                let mut min_index = 0;
+                for k in 0..26 {
+                    if k == j {
+                        continue;
+                    }
+                    if dp[i - 1][k] < min {
+                        min = dp[i - 1][k];
+                        min_index = k;
+                    }
+                }
+                dp[i][j] = min + needed_time[i];
+                last[i][j] = last[i - 1][min_index];
+                last_color[i][j] = min_index;
+            }
+        }
+        let mut min = std::i32::MAX;
+        let mut min_index = 0;
+        for i in 0..26 {
+            if dp[n - 1][i] < min {
+                min = dp[n - 1][i];
+                min_index = i;
+            }
+        }
+        let mut res = vec![0; n];
+        let mut res_index = n - 1;
+        let mut i = n - 1;
+        while i >= 0 {
+            res[res_index] = last[i][min_index];
+            res_index = last[i][min_index] - 1;
+            let t = last_color[i][min_index];
+            min_index = t;
+            i = last[i][min_index] - 1;
+        }
+        min

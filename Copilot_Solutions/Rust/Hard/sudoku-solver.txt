@@ -1,0 +1,164 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut row = vec![vec![false; 9]; 9];
+        let mut col = vec![vec![false; 9]; 9];
+        let mut block = vec![vec![false; 9]; 9];
+        let mut spaces = Vec::new();
+        for i in 0..9 {
+            for j in 0..9 {
+                if board[i][j] == '.' {
+                    spaces.push((i, j));
+                } else {
+                    let k = (i / 3) * 3 + j / 3;
+                    let num = board[i][j] as usize - '0' as usize - 1;
+                    row[i][num] = true;
+                    col[j][num] = true;
+                    block[k][num] = true;
+                }
+            }
+        }
+        Self::dfs(0, &spaces, &mut row, &mut col, &mut block, board);
+    }
+
+    fn dfs(
+        idx: usize,
+        spaces: &Vec<(usize, usize)>,
+        row: &mut Vec<Vec<bool>>,
+        col: &mut Vec<Vec<bool>>,
+        block: &mut Vec<Vec<bool>>,
+        board: &mut Vec<Vec<char>>,
+    ) -> bool {
+        if idx == spaces.len() {
+            return true;
+        }
+        let (i, j) = spaces[idx];
+        let k = (i / 3) * 3 + j / 3;
+        for num in 0..9 {
+            if !row[i][num] && !col[j][num] && !block[k][num] {
+                row[i][num] = true;
+                col[j][num] = true;
+                block[k][num] = true;
+                board[i][j] = (num + 1) as u8 as char;
+                if Self::dfs(idx + 1, spaces, row, col, block, board) {
+                    return true;
+                }
+                row[i][num] = false;
+                col[j][num] = false;
+                block[k][num] = false;
+            }
+        }
+        false
+
+=======
+
+        let mut row: Vec<Vec<bool>> = vec![vec![false; 9]; 9];
+        let mut col: Vec<Vec<bool>> = vec![vec![false; 9]; 9];
+        let mut boxs: Vec<Vec<bool>> = vec![vec![false; 9]; 9];
+        for i in 0..9 {
+            for j in 0..9 {
+                if board[i][j] == '.' {
+                    continue;
+                }
+                let num = (board[i][j] as u8 - '0' as u8) as usize - 1;
+                row[i][num] = true;
+                col[j][num] = true;
+                boxs[(i / 3) * 3 + j / 3][num] = true;
+            }
+        }
+        Self::dfs(0, 0, &mut row, &mut col, &mut boxs, board);
+    }
+    fn dfs(
+        mut i: usize,
+        mut j: usize,
+        row: &mut Vec<Vec<bool>>,
+        col: &mut Vec<Vec<bool>>,
+        boxs: &mut Vec<Vec<bool>>,
+        board: &mut Vec<Vec<char>>,
+    ) -> bool {
+        while board[i][j] != '.' {
+            j += 1;
+            if j == 9 {
+                i += 1;
+                j = 0;
+            }
+            if i == 9 {
+                return true;
+            }
+        }
+        for num in 0..9 {
+            if row[i][num] || col[j][num] || boxs[(i / 3) * 3 + j / 3][num] {
+                continue;
+            }
+            row[i][num] = true;
+            col[j][num] = true;
+            boxs[(i / 3) * 3 + j / 3][num] = true;
+            board[i][j] = (num + 1) as u8 as char;
+            if Self::dfs(i, j, row, col, boxs, board) {
+                return true;
+            }
+            row[i][num] = false;
+            col[j][num] = false;
+            boxs[(i / 3) * 3 + j / 3][num] = false;
+        }
+        board[i][j] = '.';
+        false
+
+=======
+
+        let mut rows = vec![vec![false; 9]; 9];
+        let mut cols = vec![vec![false; 9]; 9];
+        let mut sub = vec![vec![vec![false; 9]; 3]; 3];
+        for i in 0..9 {
+            for j in 0..9 {
+                if board[i][j] != '.' {
+                    let idx = board[i][j] as usize - '1' as usize;
+                    rows[i][idx] = true;
+                    cols[j][idx] = true;
+                    sub[i / 3][j / 3][idx] = true;
+                }
+            }
+        }
+        Self::dfs(board, &mut rows, &mut cols, &mut sub, 0, 0);
+    }
+    fn dfs(
+        board: &mut Vec<Vec<char>>,
+        rows: &mut Vec<Vec<bool>>,
+        cols: &mut Vec<Vec<bool>>,
+        sub: &mut Vec<Vec<Vec<bool>>>,
+        i: usize,
+        j: usize,
+    ) -> bool {
+        if j == 9 {
+            return Self::dfs(board, rows, cols, sub, i + 1, 0);
+        }
+        if i == 9 {
+            return true;
+        }
+        if board[i][j] != '.' {
+            return Self::dfs(board, rows, cols, sub, i, j + 1);
+        }
+        for idx in 0..9 {
+            if rows[i][idx] || cols[j][idx] || sub[i / 3][j / 3][idx] {
+                continue;
+            }
+            rows[i][idx] = true;
+            cols[j][idx] = true;
+            sub[i / 3][j / 3][idx] = true;
+            board[i][j] = (idx as u8 + '1' as u8) as char;
+            if Self::dfs(board, rows, cols, sub, i, j + 1) {
+                return true;
+            }
+            rows[i][idx] = false;
+            cols[j][idx] = false;
+            sub[i / 3][j / 3][idx] = false;
+            board[i][j] = '.';
+        }
+        false

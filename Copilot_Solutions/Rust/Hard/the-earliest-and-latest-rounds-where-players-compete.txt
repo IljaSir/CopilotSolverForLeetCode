@@ -1,0 +1,220 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut first_player = first_player;
+        let mut second_player = second_player;
+        if first_player > second_player {
+            std::mem::swap(&mut first_player, &mut second_player);
+        }
+        let mut round = 0;
+        let mut min = 0;
+        let mut max = 0;
+        while n > (1 << round) {
+            round += 1;
+            let mid = 1 << (round - 1);
+            if first_player <= mid && second_player > mid {
+                min = round;
+                max = round;
+            } else {
+                if first_player > mid {
+                    first_player -= mid;
+                }
+                if second_player > mid {
+                    second_player -= mid;
+                }
+            }
+        }
+        if max == 0 {
+            max = round;
+        }
+        vec![min, max]
+
+=======
+
+        let mut first = first_player;
+        let mut second = second_player;
+        if first > second {
+            std::mem::swap(&mut first, &mut second);
+        }
+        let mut round = 0;
+        let mut left = 1;
+        let mut right = n;
+        let mut earliest = 0;
+        let mut latest = 0;
+        while left < right {
+            round += 1;
+            let mid = (left + right) >> 1;
+            if first <= mid && second > mid {
+                earliest = round;
+                latest = round;
+            } else if first > mid {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        if earliest == 0 {
+            earliest = round;
+        }
+        if latest == 0 {
+            latest = round;
+        }
+        vec![earliest, latest]
+
+=======
+
+        let mut min = 0;
+        let mut max = 0;
+        let mut p1 = first_player;
+        let mut p2 = second_player;
+        if p1 > p2 {
+            p1 = second_player;
+            p2 = first_player;
+        }
+        let mut i = 0;
+        while i < 32 {
+            if p1 % 2 == 1 && p2 - p1 == 1 {
+                break;
+            }
+            p1 = (p1 + 1) / 2;
+            p2 = (p2 + 1) / 2;
+            i += 1;
+        }
+        min = i;
+        while n > 1 << i {
+            i += 1;
+        }
+        max = i;
+        vec![min + 1, max + 1]
+
+=======
+
+        let mut lo = 1;
+        let mut hi = n;
+        let mut round = 0;
+        while lo < hi {
+            round += 1;
+            let mid = (lo + hi) / 2;
+            if (first_player <= mid && second_player > mid) || (first_player > mid && second_player <= mid) {
+                return vec![round, round];
+            } else if first_player <= mid && second_player <= mid {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        vec![round, round]
+
+=======
+
+        let mut round = 0;
+        let mut first = first_player;
+        let mut second = second_player;
+        let mut earliest = 0;
+        let mut latest = 0;
+        loop {
+            round += 1;
+            if first > second {
+                let tmp = first;
+                first = second;
+                second = tmp;
+            }
+            if first % 2 == 1 && first + 1 == second {
+                earliest = round;
+                break;
+            }
+            first = (first + 1) / 2;
+            second = (second + 1) / 2;
+        }
+        while n / 2i32.pow(latest) > 1 {
+            latest += 1;
+        }
+        return vec![earliest, latest];
+    }
+}
+
+=======
+
+        let mut round = 0;
+        let mut fp = first_player;
+        let mut sp = second_player;
+        let mut res = vec![0, 0];
+        while n > 1 {
+            round += 1;
+            fp = (fp + 1) / 2;
+            sp = (sp + 1) / 2;
+            if fp == sp {
+                res[0] = round;
+                res[1] = round;
+                break;
+            }
+            if (fp - sp).abs() == 1 {
+                res[0] = round;
+            }
+        }
+        res[1] = round;
+        res
+
+=======
+
+        let mut round = 1;
+        let mut first = first_player;
+        let mut second = second_player;
+        let mut min = n;
+        let mut max = 1;
+        while n > 1 {
+            if (first + 1) / 2 == (second + 1) / 2 {
+                min = min.min(round);
+                max = max.max(round);
+            }
+            first = (first + 1) / 2;
+            second = (second + 1) / 2;
+            round += 1;
+            n = (n + 1) / 2;
+        }
+        vec![min, max]
+
+=======
+
+        let mut l = 0;
+        let mut r = n;
+        let mut ans = vec![0, 0];
+        let mut round = 0;
+        while l < r {
+            let mid = (l + r) / 2;
+            round += 1;
+            if (mid < first_player && mid < second_player) || (mid >= first_player && mid >= second_player) {
+                l = mid + 1;
+            } else {
+                r = mid;
+                ans[0] = round;
+            }
+        }
+        ans[1] = round;
+        ans
+
+=======
+
+        let mut min = 1;
+        let mut max = 1;
+        let mut n = n;
+        while n > 2 {
+            let half = n / 2;
+            let mid = half + 1;
+            let (f, s) = if first_player <= half && second_player <= half {
+                (first_player, second_player)
+            } else if first_player > half && second_player > half {
+                (first_player - half, second_player - half)
+            } else {
+                (first_player, second_player)
+            };
+            if f < s && s - f != 1 {
+                min += 1;
+            }
+            if f > mid || s <= mid {
+                max += 1;
+            }
+            n = half;
+        }
+        vec![min, max]

@@ -1,0 +1,175 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = slices.size();
+        int m = n / 3;
+        return max(solve(slices, 0, n - 2, m), solve(slices, 1, n - 1, m));
+
+=======
+
+        int n = slices.size();
+        int m = n / 3;
+        vector<int> v1(slices.begin(), slices.end() - 1);
+        vector<int> v2(slices.begin() + 1, slices.end());
+        return max(maxSum(v1, m), maxSum(v2, m));
+    }
+    int maxSum(vector<int> &slices, int m) {
+        int n = slices.size();
+        vector<vector<int>> dp(m + 1, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            dp[1][i] = slices[i];
+        }
+        for (int i = 2; i <= m; i++) {
+            for (int j = i - 1; j < n; j++) {
+                for (int k = j - 2; k >= i - 2; k--) {
+                    dp[i][j] = max(dp[i][j], dp[i - 1][k] + slices[j]);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = m - 1; i < n; i++) {
+            res = max(res, dp[m][i]);
+        }
+        return res;
+
+=======
+
+        int n = slices.size();
+        int m = n / 3;
+        return max(maxSizeSlices(slices, 0, n - 2, m), maxSizeSlices(slices, 1, n - 1, m));
+    }
+    int maxSizeSlices(vector<int>& slices, int l, int r, int m) {
+        int n = r - l + 1;
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1));
+        for (int i = l; i <= r; i++) {
+            dp[1][i - l + 1] = slices[i];
+        }
+        for (int i = 2; i <= m; i++) {
+            for (int j = i; j <= n; j++) {
+                dp[i][j] = max(dp[i][j - 1], dp[i - 1][j - 2] + slices[l + j - 1]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.size();
+        int m = n / 3;
+        return max(maxSizeSlices(slices, 0, n - 2, m), maxSizeSlices(slices, 1, n - 1, m));
+    }
+    int maxSizeSlices(vector<int>& slices, int start, int end, int m) {
+        int n = end - start + 1;
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        for (int i = 1; i <= m; i++) {
+            for (int j = i; j <= n; j++) {
+                dp[i][j] = max(dp[i][j - 1], dp[i - 1][j - 2] + slices[start + j - 1]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.size();
+        int m = n/3;
+        return max(solve(slices, 0, n-2, m), solve(slices, 1, n-1, m));
+    }
+    
+    int solve(vector<int>& slices, int l, int r, int m) {
+        int n = r-l+1;
+        vector<vector<int>> dp(m+1, vector<int>(n+1, 0));
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                dp[i][j] = max(dp[i][j-1], dp[i-1][j-2] + slices[l+j-1]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.size() / 3;
+        auto dp = vector<vector<int>>(n + 1, vector<int>(n + 1, 0));
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                dp[i][j] = max(dp[i][j], dp[i - 1][j]);
+                if (j > 0) dp[i][j] = max(dp[i][j], dp[i - 1][j - 1] + slices[i - 1]);
+            }
+        }
+        return dp[n][n - 1];
+
+=======
+
+        int n = slices.size();
+        int m = n/3;
+        vector<int> v1(slices.begin(), slices.end()-1);
+        vector<int> v2(slices.begin()+1, slices.end());
+        return max(maxSum(v1, m), maxSum(v2, m));
+    }
+    int maxSum(vector<int>& slices, int m){
+        int n = slices.size();
+        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+        for(int i = 1; i <= n; ++i){
+            for(int j = 1; j <= m; ++j){
+                dp[i][j] = max(dp[i-1][j], (i-2 >= 0 ? dp[i-2][j-1] : 0) + slices[i-1]);
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        int n = slices.size() / 3;
+        return max(maxSum(slices, n), maxSum(slices, n - 1));
+    }
+    int maxSum(vector<int>& slices, int n) {
+        int m = slices.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m, 0));
+        for (int i = 1; i <= n; ++i) {
+            for (int j = i; j < m; ++j) {
+                dp[i][j] = max(dp[i][j - 1], (j >= 2 ? dp[i - 1][j - 2] : 0) + slices[j]);
+            }
+        }
+        return dp[n][m - 1];
+
+=======
+
+        int n = slices.size() / 3;
+        int m = slices.size();
+        vector<int> a(slices.begin(), slices.end());
+        vector<int> b(slices.begin() + 1, slices.end());
+        return max(solve(a, n), solve(b, n));
+    }
+    int solve(vector<int>& slices, int n) {
+        int m = slices.size();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1));
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= min(i, n); j++) {
+                dp[i][j] = max(dp[i - 1][j], (i >= 2 ? dp[i - 2][j - 1] : 0) + slices[i - 1]);
+            }
+        }
+        return dp[m][n];
+
+=======
+
+        int n = slices.size();
+        slices.insert(slices.end(), slices.begin(), slices.end());
+        int max_sum = 0;
+        for (int i = 0; i < n; ++i) {
+            max_sum = max(max_sum, maxSum(slices, i, i + n - 1));
+        }
+        return max_sum;
+    }
+    int maxSum(vector<int>& slices, int start, int end) {
+        int n = end - start + 1;
+        vector<vector<int>> dp(n, vector<int>(n / 3 + 1, 0));
+        for (int i = 0; i < n; ++i) {
+            dp[i][1] = slices[start + i];
+        }
+        for (int i = 1; i < n; ++i) {
+            for (int j = 2; j <= min(i + 1, n / 3); ++j) {
+                dp[i][j] = dp[i - 1][j];
+                if (i - 2 >= 0) {
+                    dp[i][j] = max(dp[i][j], dp[i - 2][j - 1] + slices[start + i]);
+                }
+            }
+        }
+        return dp[n - 1][n / 3];

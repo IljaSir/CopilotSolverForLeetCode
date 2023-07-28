@@ -1,0 +1,285 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for road in roads {
+            graph[road[0] as usize].push((road[1] as usize, road[2]));
+            graph[road[1] as usize].push((road[0] as usize, road[2]));
+        }
+        let mut dist = vec![std::i64::MAX; n];
+        let mut cnt = vec![0; n];
+        dist[0] = 0;
+        cnt[0] = 1;
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push(std::cmp::Reverse((0, 0)));
+        while let Some(std::cmp::Reverse((d, u))) = pq.pop() {
+            if d > dist[u] {
+                continue;
+            }
+            for &(v, w) in &graph[u] {
+                let d = d + w as i64;
+                if d < dist[v] {
+                    dist[v] = d;
+                    cnt[v] = cnt[u];
+                    pq.push(std::cmp::Reverse((d, v)));
+                } else if d == dist[v] {
+                    cnt[v] = (cnt[v] + cnt[u]) % 1_000_000_007;
+                }
+            }
+        }
+        cnt[n - 1] as i32
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n];
+        for road in roads {
+            g[road[0] as usize].push((road[1] as usize, road[2]));
+            g[road[1] as usize].push((road[0] as usize, road[2]));
+        }
+        let mut dist = vec![std::i64::MAX; n];
+        let mut ways = vec![0; n];
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push((0, n - 1));
+        dist[n - 1] = 0;
+        ways[n - 1] = 1;
+        while let Some((d, u)) = pq.pop() {
+            let d = -d;
+            if d > dist[u] {
+                continue;
+            }
+            for &(v, w) in &g[u] {
+                let d = d + w as i64;
+                if d < dist[v] {
+                    dist[v] = d;
+                    ways[v] = ways[u];
+                    pq.push((-d, v));
+                } else if d == dist[v] {
+                    ways[v] = (ways[v] + ways[u]) % 1_000_000_007;
+                }
+            }
+        }
+        ways[0]
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n];
+        for road in roads {
+            let u = road[0] as usize;
+            let v = road[1] as usize;
+            let w = road[2];
+            g[u].push((v, w));
+            g[v].push((u, w));
+        }
+        let mut dist = vec![std::i64::MAX; n];
+        let mut ways = vec![0; n];
+        dist[0] = 0;
+        ways[0] = 1;
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push((0, 0));
+        while let Some((d, u)) = pq.pop() {
+            let d = -d;
+            if d > dist[u] {
+                continue;
+            }
+            for &(v, w) in &g[u] {
+                let d = d + w as i64;
+                if d < dist[v] {
+                    dist[v] = d;
+                    ways[v] = ways[u];
+                    pq.push((-d, v));
+                } else if d == dist[v] {
+                    ways[v] = (ways[v] + ways[u]) % 1_000_000_007;
+                }
+            }
+        }
+        ways[n - 1] as i32
+
+=======
+
+        let n = n as usize;
+        let mut graph: Vec<Vec<(usize, i32)>> = vec![vec![]; n];
+        for road in roads {
+            graph[road[0] as usize].push((road[1] as usize, road[2]));
+            graph[road[1] as usize].push((road[0] as usize, road[2]));
+        }
+        let mut dist: Vec<i32> = vec![std::i32::MAX; n];
+        let mut paths: Vec<i32> = vec![0; n];
+        let mut pq: std::collections::BinaryHeap<(i32, usize)> = std::collections::BinaryHeap::new();
+        pq.push((0, 0));
+        dist[0] = 0;
+        paths[0] = 1;
+        while let Some((d, u)) = pq.pop() {
+            if dist[u] < d {
+                continue;
+            }
+            for (v, w) in &graph[u] {
+                if dist[*v] > d + w {
+                    dist[*v] = d + w;
+                    paths[*v] = paths[u];
+                    pq.push((dist[*v], *v));
+                } else if dist[*v] == d + w {
+                    paths[*v] = (paths[*v] + paths[u]) % 1_000_000_007;
+                }
+            }
+        }
+        paths[n - 1]
+
+=======
+
+        let n = n as usize;
+        let mut g: Vec<Vec<(usize, i32)>> = vec![vec![]; n];
+        for r in roads {
+            g[r[0] as usize].push((r[1] as usize, r[2]));
+            g[r[1] as usize].push((r[0] as usize, r[2]));
+        }
+        let mut dist = vec![std::i32::MAX; n];
+        let mut cnt = vec![0; n];
+        cnt[0] = 1;
+        dist[0] = 0;
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(std::cmp::Reverse((0, 0)));
+        while let Some(std::cmp::Reverse((d, u))) = heap.pop() {
+            if d > dist[u] {
+                continue;
+            }
+            for &(v, w) in &g[u] {
+                if d + w < dist[v] {
+                    dist[v] = d + w;
+                    cnt[v] = cnt[u];
+                    heap.push(std::cmp::Reverse((dist[v], v)));
+                } else if d + w == dist[v] {
+                    cnt[v] = (cnt[v] + cnt[u]) % 1_000_000_007;
+                }
+            }
+        }
+        cnt[n - 1]
+
+=======
+
+        let n = n as usize;
+        let mut edges = vec![vec![]; n];
+        for road in roads {
+            let (u, v, t) = (road[0] as usize, road[1] as usize, road[2]);
+            edges[u].push((v, t));
+            edges[v].push((u, t));
+        }
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push((0, 0, 0));
+        let mut dist = vec![std::i64::MAX; n];
+        let mut cnt = vec![0; n];
+        dist[0] = 0;
+        cnt[0] = 1;
+        while let Some((d, u, c)) = pq.pop() {
+            if d > dist[u] {
+                continue;
+            }
+            if d == dist[u] {
+                cnt[u] = (cnt[u] + c) % 1000000007;
+            }
+            for (v, t) in &edges[u] {
+                let d = d + *t as i64;
+                if d > dist[*v] {
+                    continue;
+                }
+                if d < dist[*v] {
+                    dist[*v] = d;
+                    cnt[*v] = 0;
+                }
+                pq.push((d, *v, cnt[*v]));
+            }
+        }
+        cnt[n - 1] as i32
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        let mut dist = vec![std::i64::MAX; n];
+        let mut count = vec![0; n];
+        let mut heap = std::collections::BinaryHeap::new();
+        count[0] = 1;
+        dist[0] = 0;
+        for road in roads {
+            graph[road[0] as usize].push((road[1] as usize, road[2] as i64));
+            graph[road[1] as usize].push((road[0] as usize, road[2] as i64));
+        }
+        heap.push((0, 0));
+        while let Some((w, u)) = heap.pop() {
+            let w = -w;
+            if w > dist[u] {
+                continue;
+            }
+            for &(v, w) in &graph[u] {
+                if w + dist[u] < dist[v] {
+                    dist[v] = w + dist[u];
+                    count[v] = count[u];
+                    heap.push((-dist[v], v));
+                } else if w + dist[u] == dist[v] {
+                    count[v] = (count[v] + count[u]) % 1_000_000_007;
+                }
+            }
+        }
+        count[n - 1] as i32
+
+=======
+
+        let n = n as usize;
+        let mut adj = vec![vec![]; n];
+        for r in roads {
+            let (a, b, c) = (r[0] as usize, r[1] as usize, r[2]);
+            adj[a].push((b, c));
+            adj[b].push((a, c));
+        }
+        let mut dist = vec![std::i64::MAX; n];
+        let mut num = vec![0; n];
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push(std::cmp::Reverse((0, 0)));
+        while let Some(std::cmp::Reverse((d, u))) = pq.pop() {
+            if d > dist[u] {
+                continue;
+            }
+            if d == dist[u] {
+                num[u] += 1;
+                continue;
+            }
+            dist[u] = d;
+            num[u] = 1;
+            for &(v, w) in &adj[u] {
+                pq.push(std::cmp::Reverse((d + w as i64, v)));
+            }
+        }
+        num[n - 1] as i32
+
+=======
+
+        let n = n as usize;
+        let mut dist = vec![std::i64::MAX; n];
+        let mut ways = vec![0; n];
+        let mut graph = vec![Vec::new(); n];
+        for road in roads {
+            let (u, v, w) = (road[0] as usize, road[1] as usize, road[2]);
+            graph[u].push((v, w));
+            graph[v].push((u, w));
+        }
+        dist[0] = 0;
+        ways[0] = 1;
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push(std::cmp::Reverse((0, 0)));
+        while let Some(std::cmp::Reverse((d, u))) = pq.pop() {
+            if d > dist[u] { continue; }
+            for &(v, w) in &graph[u] {
+                let d = d + w as i64;
+                if d < dist[v] {
+                    dist[v] = d;
+                    ways[v] = ways[u];
+                    pq.push(std::cmp::Reverse((d, v)));
+                } else if d == dist[v] {
+                    ways[v] = (ways[v] + ways[u]) % 1000000007;
+                }
+            }
+        }
+        ways[n - 1] as i32

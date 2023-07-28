@@ -1,0 +1,13 @@
+class Solution {
+    public boolean haveConflict(String[] event1, String[] event2) {
+        
+        int s1 = Integer.parseInt(event1[0].replace(":", ""));
+        int e1 = Integer.parseInt(event1[1].replace(":", ""));
+        int s2 = Integer.parseInt(event2[0].replace(":", ""));
+        int e2 = Integer.parseInt(event2[1].replace(":", ""));
+        if (s1 > s2) {
+            return haveConflict(event2, event1);
+        }
+        return s2 < e1 && e2 > s1;
+    }
+}

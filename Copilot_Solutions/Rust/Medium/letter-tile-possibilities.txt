@@ -1,0 +1,236 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = vec![0; 26];
+        for c in tiles.chars() {
+            count[c as usize - 'A' as usize] += 1;
+        }
+        Self::dfs(&mut count)
+    }
+    fn dfs(count: &mut Vec<i32>) -> i32 {
+        let mut res = 0;
+        for i in 0..26 {
+            if count[i] == 0 {
+                continue;
+            }
+            res += 1;
+            count[i] -= 1;
+            res += Self::dfs(count);
+            count[i] += 1;
+        }
+        res
+
+=======
+
+        let mut count = [0; 26];
+        for c in tiles.chars() {
+            count[c as usize - 'A' as usize] += 1;
+        }
+        Self::dfs(&mut count)
+    }
+    
+    fn dfs(count: &mut [i32]) -> i32 {
+        let mut ans = 0;
+        for i in 0..26 {
+            if count[i] == 0 { continue; }
+            ans += 1;
+            count[i] -= 1;
+            ans += Self::dfs(count);
+            count[i] += 1;
+        }
+        ans
+
+=======
+
+        let mut count = [0; 26];
+        for c in tiles.chars() {
+            count[c as usize - 'A' as usize] += 1;
+        }
+        dfs(&mut count) - 1
+    }
+}
+
+=======
+
+        let mut ans = 0;
+        let mut tiles = tiles.chars().collect::<Vec<char>>();
+        tiles.sort();
+        let mut used = vec![false; tiles.len()];
+        Self::dfs(&mut ans, &mut used, &tiles);
+        ans
+    }
+    fn dfs(ans: &mut i32, used: &mut Vec<bool>, tiles: &Vec<char>) {
+        for i in 0..tiles.len() {
+            if used[i] || (i > 0 && tiles[i] == tiles[i-1] && !used[i-1]) {
+                continue;
+            }
+            used[i] = true;
+            *ans += 1;
+            Self::dfs(ans, used, tiles);
+            used[i] = false;
+        }
+
+=======
+
+        let mut count = 0;
+        let mut tiles = tiles.chars().collect::<Vec<char>>();
+        tiles.sort();
+        let mut used = vec![false; tiles.len()];
+        Self::dfs(&mut count, &mut used, &tiles, 0);
+        count
+    }
+    fn dfs(count: &mut i32, used: &mut Vec<bool>, tiles: &Vec<char>, k: usize) {
+        if k == tiles.len() {
+            return;
+        }
+        for i in 0..tiles.len() {
+            if used[i] {
+                continue;
+            }
+            if i > 0 && tiles[i] == tiles[i - 1] && !used[i - 1] {
+                continue;
+            }
+            used[i] = true;
+            *count += 1;
+            Self::dfs(count, used, tiles, k + 1);
+            used[i] = false;
+        }
+
+=======
+
+        let mut ans = 0;
+        let mut used = vec![false; tiles.len()];
+        let mut chars = tiles.chars().collect::<Vec<char>>();
+        chars.sort();
+        for i in 1..=tiles.len() {
+            ans += Self::dfs(&mut used, &chars, 0, i);
+        }
+        ans as i32
+    }
+    
+    fn dfs(used: &mut Vec<bool>, chars: &Vec<char>, start: usize, n: usize) -> usize {
+        let mut ans = 0;
+        if n == 0 {
+            return 1;
+        }
+        for i in start..chars.len() {
+            if used[i] || (i > 0 && chars[i] == chars[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            used[i] = true;
+            ans += Self::dfs(used, chars, i + 1, n - 1);
+            used[i] = false;
+        }
+        ans
+
+=======
+
+        let mut counter = [0; 26];
+        for c in tiles.bytes() {
+            counter[(c - b'A') as usize] += 1;
+        }
+        let mut ret = 0;
+        for i in 0..26 {
+            if counter[i] > 0 {
+                ret += 1;
+                counter[i] -= 1;
+                ret += Self::dfs(&mut counter);
+                counter[i] += 1;
+            }
+        }
+        ret
+    }
+    
+    fn dfs(counter: &mut [i32; 26]) -> i32 {
+        let mut ret = 0;
+        for i in 0..26 {
+            if counter[i] > 0 {
+                ret += 1;
+                counter[i] -= 1;
+                ret += Self::dfs(counter);
+                counter[i] += 1;
+            }
+        }
+        ret
+
+=======
+
+        let mut chars: Vec<char> = tiles.chars().collect();
+        chars.sort();
+        let mut count = 0;
+        Self::dfs(&mut chars, &mut count);
+        count
+    }
+    
+    fn dfs(chars: &mut Vec<char>, count: &mut i32) {
+        if chars.is_empty() {
+            return;
+        }
+        for i in 0..chars.len() {
+            if i > 0 && chars[i] == chars[i-1] {
+                continue;
+            }
+            let c = chars.remove(i);
+            *count += 1;
+            Self::dfs(chars, count);
+            chars.insert(i, c);
+        }
+
+=======
+
+        let mut result = 0;
+        for i in 1..=tiles.len() {
+            result += Self::num_tile_possibilities_rec(&tiles, i);
+        }
+        result
+    }
+    
+    fn num_tile_possibilities_rec(tiles: &str, length: usize) -> i32 {
+        if length == 1 {
+            return tiles.len() as i32;
+        }
+        let mut result = 0;
+        let mut visited = vec![false; tiles.len()];
+        for i in 0..tiles.len() {
+            if visited[i] {
+                continue;
+            }
+            visited[i] = true;
+            let mut new_tiles = String::new();
+            for j in 0..tiles.len() {
+                if j != i {
+                    new_tiles.push(tiles.chars().nth(j).unwrap());
+                }
+            }
+            result += Self::num_tile_possibilities_rec(&new_tiles, length - 1);
+        }
+        result
+
+=======
+
+        let mut count = 0;
+        let mut chars = tiles.chars().collect::<Vec<_>>();
+        chars.sort();
+        let mut visited = vec![false; chars.len()];
+        let mut path = vec![];
+        Self::dfs(&mut count, &mut path, &chars, &mut visited);
+        count
+    }
+    fn dfs(count: &mut i32, path: &mut Vec<char>, chars: &[char], visited: &mut Vec<bool>) {
+        if !path.is_empty() {
+            *count += 1;
+        }
+        for i in 0..chars.len() {
+            if visited[i] {
+                continue;
+            }
+            if i > 0 && chars[i] == chars[i - 1] && !visited[i - 1] {
+                continue;
+            }
+            visited[i] = true;
+            path.push(chars[i]);
+            Self::dfs(count, path, chars, visited);
+            path.pop();
+            visited[i] = false;
+        }

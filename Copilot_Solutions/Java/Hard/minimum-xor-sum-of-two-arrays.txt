@@ -1,0 +1,219 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int k = Integer.bitCount(i);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] = Math.min(dp[i | (1 << j)], dp[i] + (nums1[k] ^ nums2[j]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            int count = Integer.bitCount(i);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    dp[i | (1 << j)] = Math.min(dp[i | (1 << j)], dp[i] + (nums1[count] ^ nums2[j]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        return dfs(nums1, nums2, 0, 0, dp);
+    }
+    
+    private int dfs(int[] nums1, int[] nums2, int i, int mask, int[][] dp) {
+        if (i == nums1.length) {
+            return 0;
+        }
+        if (dp[i][mask] != Integer.MAX_VALUE) {
+            return dp[i][mask];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int j = 0; j < nums2.length; j++) {
+            if ((mask & (1 << j)) == 0) {
+                ans = Math.min(ans, dfs(nums1, nums2, i + 1, mask | (1 << j), dp) + (nums1[i] ^ nums2[j]));
+            }
+        }
+        dp[i][mask] = ans;
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int sum = dp[mask];
+            int i = Integer.bitCount(mask);
+            for (int j = 0; j < n; j++) {
+                if ((mask & (1 << j)) == 0) {
+                    dp[mask | (1 << j)] = Math.min(dp[mask | (1 << j)], sum + (nums1[i] ^ nums2[j]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int xor = 0;
+            int cnt = Integer.bitCount(mask);
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) {
+                    xor ^= nums1[cnt] ^ nums2[i];
+                }
+            }
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) == 0) {
+                    dp[mask | (1 << i)] = Math.min(dp[mask | (1 << i)], dp[mask] + xor);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < n; ++i) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        return minimumXORSum(nums1, nums2, 0, 0, dp);
+    }
+
+    private int minimumXORSum(int[] nums1, int[] nums2, int i, int mask, int[][] dp) {
+        if (i == nums1.length) {
+            return 0;
+        }
+        if (dp[i][mask] != Integer.MAX_VALUE) {
+            return dp[i][mask];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < nums2.length; ++j) {
+            if ((mask & (1 << j)) == 0) {
+                res = Math.min(res, (nums1[i] ^ nums2[j]) + minimumXORSum(nums1, nums2, i + 1, mask | (1 << j), dp));
+            }
+        }
+        dp[i][mask] = res;
+        return res;
+
+=======
+
+        int n = nums1.length;
+        int[] dp = new int[1 << n];
+        for (int i = 1; i < 1 << n; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 0; i < 1 << n; i++) {
+            int x = Integer.bitCount(i);
+            for (int j = 0; j < n; j++) {
+                if (((i >> j) & 1) == 0) {
+                    dp[i | 1 << j] = Math.min(dp[i | 1 << j], dp[i] + (nums1[x] ^ nums2[j]));
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        return dfs(nums1, nums2, 0, 0, dp);
+    }
+
+    public int dfs(int[] nums1, int[] nums2, int i, int mask, int[][] dp) {
+        if (i == nums1.length) {
+            return 0;
+        }
+        if (dp[i][mask] != Integer.MAX_VALUE) {
+            return dp[i][mask];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < nums2.length; j++) {
+            if (((mask >> j) & 1) == 0) {
+                res = Math.min(res, (nums1[i] ^ nums2[j]) + dfs(nums1, nums2, i + 1, mask | (1 << j), dp));
+            }
+        }
+        dp[i][mask] = res;
+        return res;
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][1 << n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+        return minimumXORSum(nums1, nums2, 0, 0, dp);
+    }
+    
+    private int minimumXORSum(int[] nums1, int[] nums2, int i, int mask, int[][] dp) {
+        if (i == nums1.length) {
+            return 0;
+        }
+        if (dp[i][mask] != Integer.MAX_VALUE) {
+            return dp[i][mask];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int j = 0; j < nums2.length; j++) {
+            if ((mask & (1 << j)) == 0) {
+                ans = Math.min(ans, (nums1[i] ^ nums2[j]) + minimumXORSum(nums1, nums2, i + 1, mask | (1 << j), dp));
+            }
+        }
+        dp[i][mask] = ans;
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int[][] dp = new int[n][1 << n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE);
+        }
+        return minimumXORSum(0, 0, nums1, nums2, dp);
+    }
+    
+    private int minimumXORSum(int i, int mask, int[] nums1, int[] nums2, int[][] dp) {
+        if (i == nums1.length) {
+            return 0;
+        }
+        if (dp[i][mask] != Integer.MAX_VALUE) {
+            return dp[i][mask];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int j = 0; j < nums2.length; j++) {
+            if ((mask & (1 << j)) != 0) {
+                continue;
+            }
+            res = Math.min(res, minimumXORSum(i + 1, mask | (1 << j), nums1, nums2, dp) + (nums1[i] ^ nums2[j]));
+        }
+        return dp[i][mask] = res;

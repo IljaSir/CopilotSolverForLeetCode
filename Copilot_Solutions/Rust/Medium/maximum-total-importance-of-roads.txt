@@ -1,0 +1,117 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for road in roads {
+            graph[road[0] as usize].push(road[1] as usize);
+            graph[road[1] as usize].push(road[0] as usize);
+        }
+        let mut visited = vec![false; n as usize];
+        let mut max = 0;
+        for i in 0..n {
+            let mut sum = 0;
+            let mut stack = vec![i as usize];
+            while !stack.is_empty() {
+                let u = stack.pop().unwrap();
+                if !visited[u] {
+                    visited[u] = true;
+                    sum += 1;
+                    for v in graph[u].iter() {
+                        stack.push(*v);
+                    }
+                }
+            }
+            max = max.max(sum);
+        }
+        max as i64
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for road in roads {
+            graph[road[0] as usize].push(road[1] as usize);
+            graph[road[1] as usize].push(road[0] as usize);
+        }
+        let mut visited = vec![false; n];
+        let mut max_importance = 0;
+        for i in 0..n {
+            if visited[i] {
+                continue;
+            }
+            let mut importance = 0;
+            let mut stack = vec![i];
+            visited[i] = true;
+            while let Some(node) = stack.pop() {
+                importance += 1;
+                for &next in &graph[node] {
+                    if visited[next] {
+                        continue;
+                    }
+                    stack.push(next);
+                    visited[next] = true;
+                }
+            }
+            max_importance = max_importance.max(importance * (importance - 1) as usize);
+        }
+        max_importance as i64
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for road in roads {
+            graph[road[0] as usize].push(road[1]);
+            graph[road[1] as usize].push(road[0]);
+        }
+        let mut visited = vec![false; n as usize];
+        let mut max = 0;
+        for i in 0..n as usize {
+            let mut total = 0;
+            let mut stack = vec![i];
+            while let Some(node) = stack.pop() {
+                if visited[node] {
+                    continue;
+                }
+                visited[node] = true;
+                total += 1;
+                for &next in &graph[node] {
+                    stack.push(next as usize);
+                }
+            }
+            max = max.max(total);
+        }
+        max as i64
+
+=======
+
+        let mut ans = 0;
+        let mut edges = vec![vec![]; n as usize];
+        for r in roads {
+            edges[r[0] as usize].push(r[1] as usize);
+            edges[r[1] as usize].push(r[0] as usize);
+        }
+        for i in 0..n {
+            let mut visited = vec![false; n as usize];
+            let mut stack = vec![i as usize];
+            let mut sum = 0;
+            while let Some(u) = stack.pop() {
+                visited[u] = true;
+                sum += 1;
+                for &v in &edges[u] {
+                    if !visited[v] {
+                        stack.push(v);
+                    }
+                }
+            }
+            ans = ans.max(sum);
+        }
+        ans as i64

@@ -1,0 +1,127 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        sort(batteries.begin(), batteries.end());
+        long long res = 0;
+        for (int i = 0; i < n; i++) {
+            res = max(res, (long long)batteries[i] * (n - i));
+        }
+        return res;
+
+=======
+
+        sort(batteries.begin(), batteries.end(), greater<int>());
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, (long long)batteries[i] * (n - i));
+        }
+        return ans;
+
+=======
+
+        long long l = 0, r = 1e18;
+        while (l < r) {
+            long long m = (l + r + 1) >> 1;
+            int cnt = 0;
+            for (int i = 0; i < n; ++i) {
+                cnt += m / batteries[i];
+            }
+            if (cnt >= n) l = m;
+            else r = m - 1;
+        }
+        return l;
+
+=======
+
+        long long l = 0, r = 1e18;
+        while (l < r) {
+            long long m = l + (r - l + 1) / 2;
+            int cnt = 0;
+            for (int i = 0; i < batteries.size(); i++) {
+                cnt += m / batteries[i];
+            }
+            if (cnt >= n) l = m;
+            else r = m - 1;
+        }
+        return l;
+
+=======
+
+        long long sum = 0;
+        sort(batteries.begin(), batteries.end());
+        for (int i = 0; i < n; i++) {
+            sum += batteries[i];
+        }
+        long long result = 0;
+        for (int i = 0; i < n; i++) {
+            result = max(result, sum - batteries[i] * (n - i - 1));
+        }
+        return result;
+
+=======
+
+        sort(batteries.begin(), batteries.end());
+        int l = 0, r = batteries.size() - n;
+        while (l < r) {
+            int m = (l + r) / 2;
+            if (check(n, batteries, m)) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return batteries[l];
+    }
+    bool check(int n, vector<int>& batteries, int m) {
+        long long sum = 0;
+        for (int i = m; i < m + n; i++) {
+            sum += batteries[i];
+        }
+        for (int i = m + n; i < batteries.size(); i++) {
+            sum += batteries[i];
+            sum -= batteries[i - n];
+            if (sum < batteries[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        long long l = 0, r = 1e18, m;
+        while (l < r) {
+            m = (l + r + 1) >> 1;
+            int cnt = 0;
+            for (int i = 0; i < batteries.size(); i++) {
+                cnt += m / batteries[i];
+                if (cnt >= n) break;
+            }
+            if (cnt >= n) l = m;
+            else r = m - 1;
+        }
+        return l;
+
+=======
+
+        int len = batteries.size();
+        sort(batteries.begin(), batteries.end());
+        long long res = 0;
+        for (int i = 0; i < n; ++i) {
+            res = max(res, (long long)batteries[i] * (len - i) / n);
+        }
+        return res;
+
+=======
+
+        int m = batteries.size();
+        sort(batteries.begin(), batteries.end());
+        long long result = 0;
+        for (int i = 0; i < n; i++) {
+            result += batteries[i];
+        }
+        for (int i = n; i < m; i++) {
+            long long t = result - batteries[i - n] + batteries[i];
+            result = min(result, t);
+        }
+        return result;

@@ -1,0 +1,225 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = forest.size(), n = forest[0].size();
+        vector<vector<int>> trees;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (forest[i][j] > 1) {
+                    trees.push_back({forest[i][j], i, j});
+                }
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int ans = 0;
+        int x = 0, y = 0;
+        for (auto& tree : trees) {
+            int d = dist(forest, x, y, tree[1], tree[2]);
+            if (d < 0) return -1;
+            ans += d;
+            x = tree[1];
+            y = tree[2];
+        }
+        return ans;
+
+=======
+
+        int m = forest.size(), n = forest[0].size();
+        vector<pair<int, int>> trees;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (forest[i][j] > 1) {
+                    trees.emplace_back(forest[i][j], i * n + j);
+                }
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int ans = 0, sr = 0, sc = 0;
+        for (const auto& tree : trees) {
+            int tr = tree.second / n, tc = tree.second % n;
+            int d = dist(forest, sr, sc, tr, tc);
+            if (d < 0) {
+                return -1;
+            }
+            ans += d;
+            sr = tr;
+            sc = tc;
+        }
+        return ans;
+
+=======
+
+        int m = forest.size(), n = forest[0].size();
+        vector<vector<int>> trees;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                if (forest[i][j] > 1) trees.push_back({forest[i][j], i, j});
+        sort(trees.begin(), trees.end());
+        int ans = 0, x = 0, y = 0;
+        for (auto tree: trees) {
+            int d = dist(forest, x, y, tree[1], tree[2]);
+            if (d < 0) return -1;
+            ans += d;
+            x = tree[1], y = tree[2];
+        }
+        return ans;
+
+=======
+
+        int m = forest.size(), n = forest[0].size();
+        vector<vector<int>> trees;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                if (forest[i][j] > 1)
+                    trees.push_back({forest[i][j], i, j});
+        sort(trees.begin(), trees.end());
+        int x = 0, y = 0, res = 0;
+        for (auto tree : trees) {
+            int d = dist(forest, x, y, tree[1], tree[2]);
+            if (d < 0) return -1;
+            res += d;
+            x = tree[1], y = tree[2];
+        }
+        return res;
+    }
+    int dist(vector<vector<int>>& forest, int sx, int sy, int tx, int ty) {
+        int m = forest.size(), n = forest[0].size();
+        queue<pair<int, int>> q;
+        q.push({sx, sy});
+        vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        vector<vector<int>> dist(m, vector<int>(n, -1));
+        dist[sx][sy] = 0;
+        while (!q.empty()) {
+            auto t = q.front(); q.pop();
+            if (t.first == tx && t.second == ty) return dist[t.first][t.second];
+            for (auto dir : dirs) {
+                int x = t.first + dir[0], y = t.second + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || forest[x][y] == 0 || dist[x][y] >= 0) continue;
+                dist[x][y] = dist[t.first][t.second] + 1;
+                q.push({x, y});
+            }
+        }
+        return -1;
+
+=======
+
+        int m = forest.size();
+        int n = forest[0].size();
+        vector<pair<int, int>> trees;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (forest[i][j] > 1) {
+                    trees.push_back({forest[i][j], i * n + j});
+                }
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int steps = 0;
+        int x = 0;
+        int y = 0;
+        for (auto& tree : trees) {
+            int dist = bfs(forest, x, y, tree.second / n, tree.second % n);
+            if (dist < 0) {
+                return -1;
+            }
+            steps += dist;
+            x = tree.second / n;
+            y = tree.second % n;
+        }
+        return steps;
+
+=======
+
+        int n = forest.size();
+        if (n == 0) return 0;
+        int m = forest[0].size();
+        if (m == 0) return 0;
+        vector<pair<int, pair<int, int>>> trees;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (forest[i][j] > 1) {
+                    trees.push_back({forest[i][j], {i, j}});
+                }
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int steps = 0;
+        int x = 0, y = 0;
+        for (auto t : trees) {
+            int dist = bfs(forest, x, y, t.second.first, t.second.second);
+            if (dist < 0) return -1;
+            steps += dist;
+            x = t.second.first;
+            y = t.second.second;
+        }
+        return steps;
+    }
+    
+    int bfs(vector<vector<int>>& forest, int x, int y, int tx, int ty) {
+        int n = forest.size();
+        int m = forest[0].size();
+        vector<vector<int>> visited(n, vector<int>(m, 0));
+        queue<pair<int, int>> q;
+        q.push({x, y});
+        visited[x][y] = 1;
+        int steps = 0;
+        while (q.empty() == false) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto p = q.front();
+                q.pop();
+                if (p.first == tx && p.second == ty) return steps;
+                if (p.first > 0 && forest[p.first - 1][p.second] > 0 && visited[p.first - 1][p.second] == 0) {
+                    q.push({p.first - 1, p.second});
+                    visited[p.first - 1][p.second] = 1;
+                }
+                if (p.first < n - 1 && forest[p.first + 1][p.second] > 0 && visited[p.first + 1][p.second] == 0) {
+                    q.push({p.first + 1, p.second});
+                    visited[p.first + 1][p.second
+
+=======
+
+        int m = forest.size();
+        int n = m ? forest[0].size() : 0;
+        vector<vector<int>> trees;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (forest[i][j] > 1) {
+                    trees.push_back({forest[i][j], i, j});
+                }
+            }
+        }
+        sort(trees.begin(), trees.end());
+        int sx = 0, sy = 0, ans = 0;
+        for (auto& t : trees) {
+            int d = bfs(forest, sx, sy, t[1], t[2]);
+            if (d < 0) return -1;
+            ans += d;
+            sx = t[1], sy = t[2];
+        }
+        return ans;
+    }
+
+    int bfs(vector<vector<int>>& forest, int sx, int sy, int tx, int ty) {
+        int m = forest.size();
+        int n = m ? forest[0].size() : 0;
+        vector<vector<int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        queue<vector<int>> q;
+        vector<vector<bool>> visited(m, vector<bool>(n));
+        q.push({sx, sy, 0});
+        visited[sx][sy] = true;
+        while (!q.empty()) {
+            auto t = q.front();
+            q.pop();
+            if (t[0] == tx && t[1] == ty) return t[2];
+            for (auto& dir : dirs) {
+                int x = t[0] + dir[0];
+                int y = t[1] + dir[1];
+                if (x >= 0 && x < m && y >= 0 && y < n && !visited[x][y] && forest[x][y]) {
+                    visited[x][y] = true;
+                    q.push({x, y, t[2] + 1});
+                }
+            }
+        }
+        return -1;

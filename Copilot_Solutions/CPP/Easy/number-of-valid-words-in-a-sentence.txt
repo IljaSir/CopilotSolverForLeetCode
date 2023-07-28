@@ -1,0 +1,284 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int count = 0;
+        bool valid = true;
+        for (int i = 0; i < sentence.length(); i++) {
+            if (sentence[i] == ' ') {
+                if (valid) count++;
+                valid = true;
+            } else if (sentence[i] >= '0' && sentence[i] <= '9') {
+                valid = false;
+            } else if (sentence[i] == '-') {
+                if (i == 0 || i == sentence.length() - 1 || sentence[i - 1] < 'a' || sentence[i - 1] > 'z' || sentence[i + 1] < 'a' || sentence[i + 1] > 'z') {
+                    valid = false;
+                }
+            } else if (sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                if (i != sentence.length() - 1) {
+                    valid = false;
+                }
+            }
+        }
+        if (valid) count++;
+        return count;
+
+=======
+
+        int count = 0;
+        bool valid = false;
+        for (int i = 0; i < sentence.size(); i++) {
+            if (sentence[i] >= 'a' && sentence[i] <= 'z') {
+                valid = true;
+                continue;
+            }
+            if (sentence[i] == '-' && valid) {
+                valid = false;
+                continue;
+            }
+            if (sentence[i] == '!' || sentence[i] == ',' || sentence[i] == '.') {
+                if (valid) {
+                    count++;
+                    valid = false;
+                }
+                continue;
+            }
+            if (sentence[i] == ' ' && valid) {
+                count++;
+                valid = false;
+            }
+        }
+        if (valid) {
+            count++;
+        }
+        return count;
+
+=======
+
+        int n = sentence.size();
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (sentence[i] == ' ') continue;
+            if (sentence[i] == '-' || sentence[i] == '.' || sentence[i] == ',') {
+                if (i == n - 1 || sentence[i + 1] == ' ') return 0;
+                continue;
+            }
+            if (isdigit(sentence[i])) return 0;
+            ++cnt;
+            while (i + 1 < n && sentence[i + 1] != ' ' && sentence[i + 1] != '-' && sentence[i + 1] != '.' && sentence[i + 1] != ',' && !isdigit(sentence[i + 1])) ++i;
+        }
+        return cnt;
+
+=======
+
+        int count = 0;
+        bool isWord = false;
+        bool isHyphen = false;
+        bool isPunctuation = false;
+        for (int i = 0; i < sentence.size(); i++) {
+            if (sentence[i] == ' ') {
+                if (isWord) {
+                    count++;
+                }
+                isWord = false;
+                isHyphen = false;
+                isPunctuation = false;
+            } else if (sentence[i] == '-') {
+                if (isHyphen) {
+                    isWord = false;
+                } else {
+                    isHyphen = true;
+                }
+            } else if (sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                if (isPunctuation) {
+                    isWord = false;
+                } else {
+                    isPunctuation = true;
+                }
+            } else {
+                if (isPunctuation) {
+                    isWord = false;
+                } else {
+                    isWord = true;
+                }
+            }
+        }
+        if (isWord) {
+            count++;
+        }
+        return count;
+
+=======
+
+        int n = sentence.size();
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            if (sentence[i] == ' ') continue;
+            if (sentence[i] == '-' || sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                if (i == 0 || i == n - 1 || sentence[i - 1] == ' ') return 0;
+                continue;
+            }
+            if (!islower(sentence[i])) return 0;
+            while (i < n && sentence[i] != ' ') {
+                if (sentence[i] == '-' || sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                    if (i == 0 || i == n - 1 || sentence[i - 1] == ' ') return 0;
+                    if (sentence[i] == '-' && islower(sentence[i - 1]) && islower(sentence[i + 1])) continue;
+                    if (sentence[i] != '-' && i == n - 1) continue;
+                    return 0;
+                }
+                if (!islower(sentence[i])) return 0;
+                ++i;
+            }
+            ++count;
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        int state = 0;
+        for (char c : sentence) {
+            if (c == ' ') {
+                if (state == 1) ++count;
+                state = 0;
+            } else if (c == '-') {
+                if (state == 1) state = 3;
+                else if (state == 0) state = 2;
+                else return 0;
+            } else if (c == '!' || c == '.' || c == ',') {
+                if (state == 1) state = 4;
+                else return 0;
+            } else {
+                if (state == 0) state = 1;
+                else if (state == 3 || state == 4) return 0;
+            }
+        }
+        if (state == 1) ++count;
+        return count;
+
+=======
+
+        int count = 0;
+        bool isWord = false;
+        bool isHyphen = false;
+        bool isPunctuation = false;
+        bool isDigit = false;
+        for (int i = 0; i < sentence.size(); i++) {
+            if (sentence[i] == ' ') {
+                if (isWord && !isHyphen && !isPunctuation && !isDigit) {
+                    count++;
+                }
+                isWord = false;
+                isHyphen = false;
+                isPunctuation = false;
+                isDigit = false;
+            } else {
+                isWord = true;
+                if (sentence[i] == '-' && !isHyphen) {
+                    isHyphen = true;
+                } else if (sentence[i] == '-' && isHyphen) {
+                    isWord = false;
+                    isHyphen = false;
+                    isPunctuation = false;
+                    isDigit = false;
+                }
+                if (sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                    if (!isPunctuation && !isHyphen) {
+                        isPunctuation = true;
+                    } else {
+                        isWord = false;
+                        isHyphen = false;
+                        isPunctuation = false;
+                        isDigit = false;
+                    }
+                }
+                if (isdigit(sentence[i])) {
+                    isWord = false;
+                    isHyphen = false;
+                    isPunctuation = false;
+                    isDigit = false;
+                }
+            }
+        }
+        if (isWord && !isHyphen && !isPunctuation && !isDigit) {
+            count++;
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        bool isWord = false;
+        bool isHyphen = false;
+        bool isPunct = false;
+        for(int i = 0; i < sentence.length(); i++) {
+            if(sentence[i] == ' ') {
+                if(isWord && !isHyphen && !isPunct) {
+                    count++;
+                }
+                isWord = false;
+                isHyphen = false;
+                isPunct = false;
+            } else {
+                if(sentence[i] >= 'a' && sentence[i] <= 'z') {
+                    isWord = true;
+                } else if(sentence[i] == '-') {
+                    if(isHyphen) {
+                        isWord = false;
+                    }
+                    isHyphen = true;
+                } else if(sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') {
+                    if(isPunct) {
+                        isWord = false;
+                    }
+                    isPunct = true;
+                } else {
+                    isWord = false;
+                }
+            }
+        }
+        if(isWord && !isHyphen && !isPunct) {
+            count++;
+        }
+        return count;
+
+=======
+
+        int n = sentence.size();
+        int res = 0;
+        int i = 0;
+        while (i < n) {
+            bool flag = false;
+            while (i < n && sentence[i] == ' ') ++i;
+            while (i < n && sentence[i] != ' ') {
+                if (sentence[i] == '-' && flag) return 0;
+                if (sentence[i] == '-' && !flag) flag = true;
+                if (sentence[i] == '.' || sentence[i] == ',' || sentence[i] == '!') {
+                    if (i + 1 != n) return 0;
+                }
+                if (sentence[i] >= '0' && sentence[i] <= '9') return 0;
+                ++i;
+            }
+            if (i < n) ++res;
+        }
+        return res;
+
+=======
+
+        int n = sentence.length();
+        int count = 0;
+        bool isValid = true;
+        for(int i = 0; i < n; i++){
+            if(sentence[i] == ' '){
+                count += (isValid) ? 1 : 0;
+                isValid = true;
+            } else if(sentence[i] == '-' && (i == 0 || i == n - 1 || !isalpha(sentence[i - 1]) || !isalpha(sentence[i + 1]))){
+                isValid = false;
+            } else if((sentence[i] == '!' || sentence[i] == '.' || sentence[i] == ',') && i != n - 1){
+                isValid = false;
+            } else if(isdigit(sentence[i])){
+                isValid = false;
+            }
+        }
+        count += (isValid) ? 1 : 0;
+        return count;

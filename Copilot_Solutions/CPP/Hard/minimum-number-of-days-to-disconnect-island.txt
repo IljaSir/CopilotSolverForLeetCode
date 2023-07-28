@@ -1,0 +1,301 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    if (count > 1) return 0;
+                    count++;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        if (count == 0) return 0;
+        if (count == 1) return 1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    count = 0;
+                    for (int i = 0; i < m; i++) {
+                        for (int j = 0; j < n; j++) {
+                            if (grid[i][j] == 1) {
+                                if (count > 1) return 2;
+                                count++;
+                                dfs(grid, i, j);
+                            }
+                        }
+                    }
+                    return 2;
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        int count = 0;
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                if (grid[i][j] == 1) {
+                    count++;
+                    if (count > 1) return 0;
+                    dfs(grid, i, j);
+                }
+        if (count == 0) return 0;
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    count = 0;
+                    for (int p = 0; p < m; p++)
+                        for (int q = 0; q < n; q++)
+                            if (grid[p][q] == 1) {
+                                count++;
+                                if (count > 1) return 1;
+                                dfs(grid, p, q);
+                            }
+                    return 2;
+                }
+        return 0;
+
+=======
+
+        int n = grid.size();
+        int m = grid[0].size();
+        int islands = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j] == 1) {
+                    ++islands;
+                    dfs(grid, i, j);
+                }
+            }
+        }
+        if (islands == 0) return 0;
+        if (islands > 1) return 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    int newIslands = 0;
+                    for (int k = 0; k < n; ++k) {
+                        for (int l = 0; l < m; ++l) {
+                            if (grid[k][l] == 1) {
+                                ++newIslands;
+                                dfs(grid, k, l);
+                            }
+                        }
+                    }
+                    if (newIslands > 1) return 1;
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return 2;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int islands = 0;
+        vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    islands++;
+                    dfs(grid, i, j, m, n, dirs);
+                }
+            }
+        }
+        if (islands != 1) {
+            return 0;
+        }
+        
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    islands = 0;
+                    for (int ii = 0; ii < m; ++ii) {
+                        for (int jj = 0; jj < n; ++jj) {
+                            if (grid[ii][jj] == 1) {
+                                islands++;
+                                dfs(grid, ii, jj, m, n, dirs);
+                            }
+                        }
+                    }
+                    if (islands != 1) {
+                        return 1;
+                    }
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return 2;
+    }
+    
+    void dfs(vector<vector<int>>& grid, int i, int j, int m, int n, vector<vector<int>>& dirs) {
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0) return;
+        grid[i][j] = 0;
+        for (auto dir : dirs) {
+            dfs(grid, i + dir[0], j + dir[1], m, n, dirs);
+        }
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int count = 0;
+        vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    count++;
+                    dfs(grid, i, j, dirs);
+                    if (count > 1) {
+                        return 0;
+                    }
+                }
+            }
+        }
+        if (count == 0) {
+            return 0;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    int count = 0;
+                    for (int k = 0; k < m; k++) {
+                        for (int l = 0; l < n; l++) {
+                            if (grid[k][l] == 1) {
+                                count++;
+                                dfs(grid, k, l, dirs);
+                                if (count > 1) {
+                                    return 1;
+                                }
+                            }
+                        }
+                    }
+                    return 2;
+                }
+            }
+        }
+        return 0;
+    }
+    void dfs(vector<vector<int>>& grid, int i, int j, vector<vector<int>>& dirs) {
+        int m = grid.size();
+        int n = grid[0].size();
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != 1) {
+            return;
+        }
+        grid[i][j] = 2;
+        for (auto& dir : dirs) {
+            dfs(grid, i + dir[0], j + dir[1], dirs);
+        }
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        auto dfs = [&](int x, int y) {
+            int cnt = 1;
+            grid[x][y] = 0;
+            for (auto& d : dirs) {
+                int nx = x + d[0], ny = y + d[1];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n || grid[nx][ny] == 0) continue;
+                cnt += dfs(nx, ny);
+            }
+            return cnt;
+        };
+        int cnt = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0) continue;
+                ++cnt;
+                if (cnt > 1) return 0;
+                int area = dfs(i, j);
+                if (area != m * n) return 1;
+            }
+        }
+        return 0;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int islands = 0;
+        int waters = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    islands++;
+                    waters += dfs(grid, i, j);
+                }
+            }
+        }
+        if (islands == 0) {
+            return 0;
+        }
+        if (waters == 0) {
+            return 1;
+        }
+        return 2;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int island = 0;
+        int island2 = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    island++;
+                    dfs(grid, i, j, m, n);
+                }
+            }
+        }
+        if (island > 1) return 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    island2++;
+                    grid[i][j] = 0;
+                    for (int k = 0; k < m; k++) {
+                        for (int l = 0; l < n; l++) {
+                            if (grid[k][l] == 1) {
+                                dfs(grid, k, l, m, n);
+                            }
+                        }
+                    }
+                    for (int k = 0; k < m; k++) {
+                        for (int l = 0; l < n; l++) {
+                            if (grid[k][l] == 1) {
+                                return 1;
+                            }
+                        }
+                    }
+                    if (island2 > 1) return 2;
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return 2;
+    }
+    void dfs(vector<vector<int>>& grid, int i, int j, int m, int n) {
+        int dirs[5] = {0, 1, 0, -1, 0};
+        grid[i][j] = 0;
+        for (int k = 0; k < 4; k++) {
+            int x = i + dirs[k];
+            int y = j + dirs[k + 1];
+            if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] == 1) {
+                dfs(grid, x, y, m, n);
+            }
+        }

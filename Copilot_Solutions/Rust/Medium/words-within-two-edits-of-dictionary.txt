@@ -1,0 +1,434 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut d = std::collections::HashSet::new();
+        for word in dictionary {
+            d.insert(word);
+        }
+        let mut result = Vec::new();
+        for word in queries {
+            if d.contains(&word) {
+                result.push(word);
+            } else {
+                let mut found = false;
+                for i in 0..word.len() {
+                    let mut new_word = word.clone();
+                    new_word.remove(i);
+                    if d.contains(&new_word) {
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    for i in 0..word.len() {
+                        for j in 0..26 {
+                            let mut new_word = word.clone();
+                            new_word.insert(i, (b'a' + j) as char);
+                            if d.contains(&new_word) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if found {
+                            break;
+                        }
+                    }
+                }
+                if found {
+                    result.push(word);
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        for q in queries {
+            for d in &dictionary {
+                let mut diff = 0;
+                for (i, c) in q.chars().enumerate() {
+                    if c != d.chars().nth(i).unwrap() {
+                        diff += 1;
+                        if diff > 2 {
+                            break;
+                        }
+                    }
+                }
+                if diff <= 2 {
+                    res.push(q);
+                    break;
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        for q in queries {
+            for d in &dictionary {
+                if Solution::is_two_edits(&q, d) {
+                    result.push(q.clone());
+                    break;
+                }
+            }
+        }
+        result
+    }
+    fn is_two_edits(s: &str, t: &str) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        let mut diff = 0;
+        while i < s.len() && j < t.len() {
+            if s.as_bytes()[i] != t.as_bytes()[j] {
+                diff += 1;
+                if diff > 2 {
+                    return false;
+                }
+                if s.len() > t.len() {
+                    i += 1;
+                } else if s.len() < t.len() {
+                    j += 1;
+                } else {
+                    i += 1;
+                    j += 1;
+                }
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        for q in queries {
+            for d in &dictionary {
+                if Solution::is_two_edit_words(&q, d) {
+                    res.push(q.clone());
+                    break;
+                }
+            }
+        }
+        res
+    }
+    
+    fn is_two_edit_words(q: &str, d: &str) -> bool {
+        if q == d {
+            return true;
+        }
+        let mut i = 0;
+        let mut j = 0;
+        let mut diff = 0;
+        while i < q.len() && j < d.len() {
+            if q.as_bytes()[i] != d.as_bytes()[j] {
+                if diff == 1 {
+                    return false;
+                }
+                if q.len() > d.len() {
+                    i += 1;
+                } else if q.len() < d.len() {
+                    j += 1;
+                } else {
+                    i += 1;
+                    j += 1;
+                }
+                diff += 1;
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        diff <= 1
+
+=======
+
+        let mut res = Vec::new();
+        for q in &queries {
+            let mut is_found = false;
+            for d in &dictionary {
+                if q == d {
+                    res.push(q.clone());
+                    is_found = true;
+                    break;
+                }
+                if q.len() == d.len() {
+                    if Self::check_one_edit(q, d) {
+                        res.push(q.clone());
+                        is_found = true;
+                        break;
+                    }
+                } else if q.len() == d.len() + 1 {
+                    if Self::check_one_delete(q, d) {
+                        res.push(q.clone());
+                        is_found = true;
+                        break;
+                    }
+                } else if q.len() + 1 == d.len() {
+                    if Self::check_one_delete(d, q) {
+                        res.push(q.clone());
+                        is_found = true;
+                        break;
+                    }
+                }
+            }
+            if !is_found {
+                res.push(q.clone());
+            }
+        }
+        res
+    }
+    fn check_one_edit(word1: &str, word2: &str) -> bool {
+        let mut is_found = false;
+        for i in 0..word1.len() {
+            let mut s = word1.to_string();
+            s.remove(i);
+            if s == word2 {
+                if is_found {
+                    return false;
+                }
+                is_found = true;
+            }
+        }
+        is_found
+    }
+    fn check_one_delete(word1: &str, word2: &str) -> bool {
+        let mut is_found = false;
+        for i in 0..word1.len() {
+            let mut s = word1.to_string();
+            s.remove(i);
+            if s == word2 {
+                if is_found {
+                    return false;
+                }
+                is_found = true;
+            }
+        }
+        is_found
+
+=======
+
+        let mut res = vec![];
+        let mut dic = vec![];
+        for s in dictionary {
+            dic.push(s);
+        }
+        for s in queries {
+            if dic.contains(&s) {
+                res.push(s);
+            } else {
+                let mut flag = false;
+                for i in 0..s.len() {
+                    let mut s1 = s.clone();
+                    s1.remove(i);
+                    if dic.contains(&s1) {
+                        res.push(s);
+                        flag = true;
+                        break;
+                    }
+                }
+                if !flag {
+                    for i in 0..s.len() {
+                        for j in i+1..s.len() {
+                            let mut s1 = s.clone();
+                            s1.remove(i);
+                            s1.remove(j-1);
+                            if dic.contains(&s1) {
+                                res.push(s);
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if flag { break; }
+                    }
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = vec![];
+        for query in queries {
+            for dict in dictionary.clone() {
+                if Self::is_two_edits(&query, &dict) {
+                    result.push(query.clone());
+                    break;
+                }
+            }
+        }
+        result
+    }
+    fn is_two_edits(a: &str, b: &str) -> bool {
+        let mut diffs = 0;
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a.as_bytes()[i] != b.as_bytes()[j] {
+                diffs += 1;
+                if diffs > 2 {
+                    return false;
+                }
+                if a.len() > b.len() {
+                    i += 1;
+                } else if a.len() < b.len() {
+                    j += 1;
+                } else {
+                    i += 1;
+                    j += 1;
+                }
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        diffs <= 2
+    }
+}
+
+=======
+
+        let mut result: Vec<String> = Vec::new();
+        for query in queries {
+            let mut found = false;
+            for word in &dictionary {
+                if Self::within_two_edits(query.as_bytes(), word.as_bytes()) {
+                    found = true;
+                    break;
+                }
+            }
+            if found {
+                result.push(query);
+            }
+        }
+        result
+    }
+    
+    fn within_two_edits(a: &[u8], b: &[u8]) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        let mut edits = 0;
+        while i < a.len() && j < b.len() {
+            if a[i] != b[j] {
+                edits += 1;
+                if edits > 2 {
+                    return false;
+                }
+                if a.len() > b.len() {
+                    i += 1;
+                } else if a.len() < b.len() {
+                    j += 1;
+                } else {
+                    i += 1;
+                    j += 1;
+                }
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        edits + (a.len() - i) + (b.len() - j) <= 2
+
+=======
+
+        let mut res: Vec<String> = Vec::new();
+        for q in queries {
+            for d in &dictionary {
+                if q.len() == d.len() && q != *d {
+                    if Solution::one_edit_word(q.clone(), d.clone()) {
+                        res.push(q.clone());
+                        break;
+                    }
+                } else if q.len() + 1 == d.len() {
+                    if Solution::one_edit_word(q.clone(), d.clone()) {
+                        res.push(q.clone());
+                        break;
+                    }
+                } else if q.len() == d.len() + 1 {
+                    if Solution::one_edit_word(q.clone(), d.clone()) {
+                        res.push(q.clone());
+                        break;
+                    }
+                }
+            }
+        }
+        res
+    }
+    fn one_edit_word(query: String, dict: String) -> bool {
+        let (mut i, mut j) = (0, 0);
+        let (mut diff, mut count) = (0, 0);
+        while i < query.len() && j < dict.len() {
+            if query.chars().nth(i).unwrap() != dict.chars().nth(j).unwrap() {
+                diff = i - j;
+                count += 1;
+                if count > 2 {
+                    return false;
+                }
+            }
+            i += 1;
+            j += 1;
+            if diff == 1 {
+                j += 1;
+            } else if diff == -1 {
+                i += 1;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        for q in queries {
+            for d in &dictionary {
+                if q == *d || Self::is_one_edit(q.chars().zip(d.chars())) || Self::is_two_edit(q.chars().zip(d.chars())) {
+                    ans.push(q);
+                    break;
+                }
+            }
+        }
+        ans
+    }
+    fn is_one_edit<'a, I>(mut iter: I) -> bool
+    where
+        I: Iterator<Item = (char, char)> + 'a,
+    {
+        let mut count = 0;
+        while let Some((q, d)) = iter.next() {
+            if q != d {
+                count += 1;
+                if count > 1 {
+                    return false;
+                }
+            }
+        }
+        count == 1
+    }
+    fn is_two_edit<'a, I>(mut iter: I) -> bool
+    where
+        I: Iterator<Item = (char, char)> + 'a,
+    {
+        let mut count = 0;
+        while let Some((q, d)) = iter.next() {
+            if q != d {
+                count += 1;
+                if count > 2 {
+                    return false;
+                }
+            }
+        }
+        count == 2
+    }
+}

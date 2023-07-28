@@ -1,0 +1,174 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        use std::collections::HashMap;
+        let mut map: HashMap<char, i32> = HashMap::new();
+        for c in s.chars() {
+            *map.entry(c).or_insert(0) += 1;
+        }
+        let mut v = map.into_iter().collect::<Vec<_>>();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+        let mut res = String::new();
+        for (c, n) in v {
+            for _ in 0..n {
+                res.push(c);
+            }
+        }
+        res
+
+=======
+Suggestion 2
+
+        use std::collections::HashMap;
+        let mut map = HashMap::new();
+        for c in s.chars() {
+            let count = map.entry(c).or_insert(0);
+            *count += 1;
+        }
+        let mut chars: Vec<char> = map.keys().cloned().collect();
+        chars.sort_by(|a, b| map[b].cmp(&map[a]));
+        let mut result = String::new();
+        for c in chars {
+            result.push_str(&c.to_string().repeat(map[&c]));
+        }
+        result
+
+=======
+Suggestion 3
+
+        use std::collections::HashMap;
+        let mut map = HashMap::new();
+        for c in s.chars() {
+            let counter = map.entry(c).or_insert(0);
+            *counter += 1;
+        }
+        let mut vec = map.into_iter().collect::<Vec<_>>();
+        vec.sort_by(|a, b| b.1.cmp(&a.1));
+        let mut result = String::new();
+        for (c, n) in vec {
+            for _ in 0..n {
+                result.push(c);
+            }
+        }
+        result
+
+=======
+Suggestion 4
+
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            *map.entry(c).or_insert(0) += 1;
+        }
+        let mut vec = map.into_iter().collect::<Vec<_>>();
+        vec.sort_by(|a, b| b.1.cmp(&a.1));
+        vec.into_iter().map(|(c, n)| c.to_string().repeat(n)).collect()
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            *map.entry(c).or_insert(0) += 1;
+        }
+        let mut v: Vec<_> = map.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+        let mut res = String::new();
+        for (c, n) in v {
+            res.extend(std::iter::repeat(c).take(n));
+        }
+        res
+    }
+}
+
+=======
+Suggestion 6
+
+        let mut freq = vec![0; 128];
+        for c in s.chars() {
+            freq[c as usize] += 1;
+        }
+        let mut chars: Vec<char> = s.chars().collect();
+        chars.sort_by_key(|&c| std::cmp::Reverse((freq[c as usize], c)));
+        chars.iter().collect()
+
+=======
+Suggestion 7
+
+        let mut v = s.into_bytes();
+        let mut m = std::collections::HashMap::new();
+        for c in v.iter() {
+            *m.entry(c).or_insert(0) += 1;
+        }
+        v.sort_by_key(|c| (m.get(c).unwrap(), c));
+        v.reverse();
+        String::from_utf8(v).unwrap()
+
+=======
+Suggestion 8
+
+        let mut v = s.chars().collect::<Vec<char>>();
+        v.sort_unstable_by(|a, b| b.cmp(a));
+        let mut m = std::collections::HashMap::new();
+        for c in v {
+            *m.entry(c).or_insert(0) += 1;
+        }
+        let mut v = m.into_iter().collect::<Vec<(char, i32)>>();
+        v.sort_unstable_by(|(_, a), (_, b)| b.cmp(a));
+        let mut res = String::new();
+        for (c, n) in v {
+            for _ in 0..n {
+                res.push(c);
+            }
+        }
+        res
+
+=======
+Suggestion 9
+
+        let mut s = s.into_bytes();
+        s.sort_unstable();
+        let mut res = Vec::new();
+        let mut idx = 0;
+        while idx < s.len() {
+            let mut cnt = 1;
+            while idx + 1 < s.len() && s[idx] == s[idx+1] {
+                cnt += 1;
+                idx += 1;
+            }
+            res.push((cnt, s[idx]));
+            idx += 1;
+        }
+        res.sort_unstable_by(|a, b| b.0.cmp(&a.0));
+        let mut res_s = String::new();
+        for (cnt, ch) in res {
+            res_s.push_str(&ch.to_string().repeat(cnt));
+        }
+        res_s
+
+=======
+Suggestion 10
+
+        let mut v = s.chars().collect::<Vec<char>>();
+        v.sort_by(|a, b| b.cmp(a));
+        let mut v1 = Vec::new();
+        let mut i = 0;
+        while i < v.len() {
+            let mut j = i + 1;
+            while j < v.len() && v[j] == v[i] {
+                j += 1;
+            }
+            v1.push((v[i], j - i));
+            i = j;
+        }
+        v1.sort_by(|a, b| b.1.cmp(&a.1));
+        let mut v2 = Vec::new();
+        for (c, n) in v1 {
+            for _ in 0..n {
+                v2.push(c);
+            }
+        }
+        v2.iter().collect::<String>()

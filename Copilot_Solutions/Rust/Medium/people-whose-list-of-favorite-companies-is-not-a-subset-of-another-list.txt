@@ -1,0 +1,164 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        let mut res = Vec::new();
+        for i in 0..favorite_companies.len() {
+            let mut is_subset = false;
+            for j in 0..favorite_companies.len() {
+                if i == j {
+                    continue;
+                }
+                if favorite_companies[i].iter().all(|x| favorite_companies[j].contains(x)) {
+                    is_subset = true;
+                    break;
+                }
+            }
+            if !is_subset {
+                res.push(i as i32);
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        for i in 0..favorite_companies.len() {
+            let mut is_subset = false;
+            for j in 0..favorite_companies.len() {
+                if i != j && favorite_companies[i].iter().all(|x| favorite_companies[j].contains(x)) {
+                    is_subset = true;
+                    break;
+                }
+            }
+            if !is_subset {
+                res.push(i as i32);
+            }
+        }
+        res
+
+=======
+
+        let mut res = Vec::new();
+        let mut favorite_companies: Vec<Vec<&str>> = favorite_companies.into_iter().map(|x| x.iter().map(|y| y.as_str()).collect()).collect();
+        favorite_companies.sort_by(|a, b| a.len().cmp(&b.len()));
+        for (i, c) in favorite_companies.iter().enumerate() {
+            let mut is_subset = false;
+            for j in (i + 1)..favorite_companies.len() {
+                if c.iter().all(|x| favorite_companies[j].contains(x)) {
+                    is_subset = true;
+                    break;
+                }
+            }
+            if !is_subset {
+                res.push(i as i32);
+            }
+        }
+        res
+
+=======
+
+        let mut res = Vec::new();
+        let mut comp = Vec::new();
+        for i in 0..favorite_companies.len() {
+            let mut temp = Vec::new();
+            for j in 0..favorite_companies[i].len() {
+                temp.push(favorite_companies[i][j].clone());
+            }
+            temp.sort();
+            comp.push(temp);
+        }
+        for i in 0..comp.len() {
+            let mut flag = true;
+            for j in 0..comp.len() {
+                if i == j {
+                    continue;
+                }
+                if comp[i].len() > comp[j].len() {
+                    continue;
+                }
+                let mut k = 0;
+                let mut l = 0;
+                while k < comp[i].len() && l < comp[j].len() {
+                    if comp[i][k] == comp[j][l] {
+                        k += 1;
+                        l += 1;
+                    } else {
+                        l += 1;
+                    }
+                }
+                if k == comp[i].len() {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag {
+                res.push(i as i32);
+            }
+        }
+        res
+
+=======
+
+        let mut ret: Vec<i32> = Vec::new();
+        let mut len = favorite_companies.len();
+        let mut i = 0;
+        while i < len {
+            let mut j = 0;
+            while j < len {
+                if i != j && favorite_companies[i].iter().all(|x| favorite_companies[j].contains(x)) {
+                    break;
+                }
+                j += 1;
+            }
+            if j == len {
+                ret.push(i as i32);
+            }
+            i += 1;
+        }
+        ret
+
+=======
+
+        let mut idxs = Vec::new();
+        let mut fcs = favorite_companies;
+        fcs.sort_by(|a, b| a.len().cmp(&b.len()));
+        for i in 0..fcs.len() {
+            let mut j = 0;
+            for j in 0..fcs.len() {
+                if i == j { continue; }
+                if fcs[i].iter().all(|f| fcs[j].contains(f)) {
+                    break;
+                }
+            }
+            if j == fcs.len() - 1 { idxs.push(i as i32); }
+        }
+        idxs
+
+=======
+
+        let mut res = vec![];
+        let mut fcs = favorite_companies.iter().map(|fc| {
+            let mut set = std::collections::HashSet::new();
+            for s in fc {
+                set.insert(s.as_str());
+            }
+            set
+        }).collect::<Vec<_>>();
+        fcs.sort_by_key(|fc| fc.len());
+        for i in 0..fcs.len() {
+            let mut flag = true;
+            for j in 0..fcs.len() {
+                if i == j {
+                    continue;
+                }
+                if fcs[i].is_subset(&fcs[j]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag {
+                res.push(i as i32);
+            }
+        }
+        res

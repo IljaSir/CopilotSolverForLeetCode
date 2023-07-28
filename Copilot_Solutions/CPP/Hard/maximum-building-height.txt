@@ -1,0 +1,68 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        sort(restrictions.begin(), restrictions.end());
+        if(restrictions.empty() || restrictions[0][0] != 1)
+            restrictions.insert(restrictions.begin(), {1, 0});
+        if(restrictions.back()[0] != n)
+            restrictions.push_back({n, n-1});
+        for(int i = 1; i < restrictions.size(); ++i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + restrictions[i][0] - restrictions[i - 1][0]);
+        }
+        for(int i = restrictions.size() - 2; i >= 0; --i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + restrictions[i + 1][0] - restrictions[i][0]);
+        }
+        int ans = 0;
+        for(int i = 1; i < restrictions.size(); ++i) {
+            int d = restrictions[i][0] - restrictions[i - 1][0];
+            int h = abs(restrictions[i][1] - restrictions[i - 1][1]);
+            ans = max(ans, max(restrictions[i][1], restrictions[i - 1][1]) + (d - h) / 2);
+        }
+        return ans;
+
+=======
+
+        restrictions.push_back({1, 0});
+        sort(restrictions.begin(), restrictions.end());
+        for (int i = 1; i < restrictions.size(); ++i) {
+            int delta = restrictions[i][0] - restrictions[i - 1][0];
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i - 1][1] + delta);
+        }
+        for (int i = restrictions.size() - 2; i >= 0; --i) {
+            int delta = restrictions[i + 1][0] - restrictions[i][0];
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i + 1][1] + delta);
+        }
+        int ans = 0;
+        for (int i = 1; i < restrictions.size(); ++i) {
+            int x1 = restrictions[i - 1][0], y1 = restrictions[i - 1][1];
+            int x2 = restrictions[i][0], y2 = restrictions[i][1];
+            int delta = x2 - x1;
+            int y = (y1 + y2 + delta) / 2;
+            ans = max(ans, y);
+        }
+        return ans;
+
+=======
+
+        restrictions.push_back({1, 0});
+        sort(restrictions.begin(), restrictions.end());
+        for (int i = 1; i < restrictions.size(); ++i) {
+            auto& cur = restrictions[i];
+            auto& prev = restrictions[i - 1];
+            cur[1] = min(cur[1], prev[1] + cur[0] - prev[0]);
+        }
+        for (int i = restrictions.size() - 2; i >= 0; --i) {
+            auto& cur = restrictions[i];
+            auto& next = restrictions[i + 1];
+            cur[1] = min(cur[1], next[1] + next[0] - cur[0]);
+        }
+        int res = 0;
+        for (int i = 1; i < restrictions.size(); ++i) {
+            auto& cur = restrictions[i];
+            auto& prev = restrictions[i - 1];
+            int d = cur[0] - prev[0];
+            int h = abs(cur[1] - prev[1]);
+            res = max(res, (d + h) / 2 + max(cur[1], prev[1]));
+        }
+        return min(res, n - 1);

@@ -1,0 +1,200 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (changed.size() % 2 != 0) return {};
+        sort(changed.begin(), changed.end());
+        vector<int> ans;
+        for (int i = 0; i < changed.size(); i += 2) {
+            if (changed[i] != changed[i + 1]) return {};
+            ans.push_back(changed[i]);
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        unordered_map<int, int> m;
+        for (auto x : changed) {
+            ++m[x];
+        }
+        sort(changed.begin(), changed.end());
+        for (auto x : changed) {
+            if (m[x] == 0) continue;
+            if (m[x * 2] == 0) return {};
+            --m[x];
+            --m[x * 2];
+            res.push_back(x);
+        }
+        return res;
+
+=======
+
+        if (changed.size() % 2) return {};
+        sort(changed.begin(), changed.end());
+        vector<int> res;
+        int i = 0, j = 1;
+        while (j < changed.size()) {
+            if (changed[i] == changed[j]) {
+                res.push_back(changed[i]);
+                i += 2;
+                j += 2;
+            } else if (changed[i] < changed[j]) {
+                return {};
+            } else {
+                j++;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        sort(changed.begin(), changed.end());
+        map<int, int> m;
+        for (auto i: changed) {
+            m[i]++;
+        }
+        for (auto i: changed) {
+            if (m[i] == 0) continue;
+            if (m.count(i*2) == 0 || m[i*2] == 0) return {};
+            res.push_back(i);
+            m[i]--;
+            m[i*2]--;
+        }
+        return res;
+
+=======
+
+        vector<int> original;
+        if (changed.size() % 2 != 0) return original;
+        map<int, int> m;
+        for (int i = 0; i < changed.size(); i++) {
+            if (m.find(changed[i]) == m.end()) {
+                m[changed[i]] = 1;
+            } else {
+                m[changed[i]]++;
+            }
+        }
+        for (auto it = m.begin(); it != m.end(); it++) {
+            if (it->second == 0) continue;
+            if (it->first == 0 && it->second % 2 != 0) return original;
+            if (it->first == 0 && it->second % 2 == 0) {
+                it->second = 0;
+                for (int i = 0; i < it->second / 2; i++) {
+                    original.push_back(0);
+                }
+                continue;
+            }
+            if (m.find(it->first * 2) == m.end()) return original;
+            if (m[it->first * 2] < it->second) return original;
+            m[it->first * 2] -= it->second;
+            it->second = 0;
+            for (int i = 0; i < it->second; i++) {
+                original.push_back(it->first);
+            }
+        }
+        return original;
+
+=======
+
+        vector<int> res;
+        if (changed.size() % 2 == 1) {
+            return res;
+        }
+        sort(changed.begin(), changed.end());
+        int prev = -1;
+        for (int i = 0; i < changed.size(); i += 2) {
+            if (changed[i] != changed[i + 1] || changed[i] == prev) {
+                return res;
+            }
+            res.push_back(changed[i]);
+            prev = changed[i];
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        map<int, int> mp;
+        for (auto i: changed) {
+            mp[i]++;
+        }
+        for (auto i: changed) {
+            if (mp[i] == 0) continue;
+            if (mp.find(i*2) == mp.end() || mp[i*2] == 0) {
+                return {};
+            }
+            res.push_back(i);
+            mp[i]--;
+            mp[i*2]--;
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        if (changed.size() % 2 == 1) return result;
+        map<int, int> count;
+        for (auto c : changed) {
+            count[c]++;
+        }
+        for (auto c : changed) {
+            if (count[c] == 0) continue;
+            if (count[c * 2] == 0) return vector<int>();
+            count[c]--;
+            count[c * 2]--;
+            result.push_back(c);
+        }
+        return result;
+
+=======
+
+        vector<int> output;
+        if (changed.size() % 2 != 0) return output;
+        sort(changed.begin(), changed.end());
+        int i = 0;
+        while (i < changed.size()) {
+            if (changed[i] == 0) {
+                for (int j = i; j < changed.size() - 1; j++) {
+                    changed[j] = changed[j + 1];
+                }
+                changed.pop_back();
+                continue;
+            }
+            int j = i + 1;
+            while (j < changed.size()) {
+                if (changed[j] == 2 * changed[i]) {
+                    for (int k = j; k < changed.size() - 1; k++) {
+                        changed[k] = changed[k + 1];
+                    }
+                    changed.pop_back();
+                    break;
+                }
+                j++;
+            }
+            if (j == changed.size()) return output;
+            i++;
+        }
+        return changed;
+
+=======
+
+        vector<int> res;
+        sort(changed.begin(), changed.end());
+        while (changed.size() > 0) {
+            int num = changed[0];
+            if (num == 0) {
+                changed.erase(changed.begin());
+                continue;
+            }
+            int num2 = num * 2;
+            auto it = find(changed.begin(), changed.end(), num2);
+            if (it == changed.end()) {
+                return vector<int>();
+            }
+            res.push_back(num);
+            changed.erase(changed.begin());
+            changed.erase(it);
+        }
+        return res;

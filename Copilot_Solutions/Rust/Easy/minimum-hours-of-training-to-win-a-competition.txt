@@ -1,0 +1,70 @@
+Synthesizing 5/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut energy = energy;
+        let mut experience = experience;
+        let mut energy = energy.iter().zip(experience.iter()).map(|(e, x)| e - x).collect::<Vec<_>>();
+        let mut experience = energy.iter().map(|x| x.abs()).collect::<Vec<_>>();
+        let mut energy = energy.iter().map(|x| x.max(&0)).collect::<Vec<_>>();
+        energy.sort();
+        experience.sort();
+        let mut energy = energy.iter().fold(initial_energy, |acc, x| acc + x);
+        let mut experience = experience.iter().fold(initial_experience, |acc, x| acc + x);
+        let mut i = 0;
+        while i < energy.len() && energy[i] <= 0 {
+            i += 1;
+        }
+        if i == energy.len() {
+            return 0;
+        }
+        let mut j = i;
+        while j < energy.len() && experience >= 0 {
+            experience -= energy[j];
+            j += 1;
+        }
+        j as i32 - i as i32
+    }
+}
+
+=======
+
+        let mut min = std::i32::MAX;
+        let mut max = 0;
+        for i in 0..energy.len() {
+            if experience[i] > max {
+                max = experience[i];
+            }
+            if energy[i] > min {
+                min = energy[i];
+            }
+        }
+        let mut left = 0;
+        let mut right = max - initial_experience + min - initial_energy;
+        while left <= right {
+            let mid = (left + right) / 2;
+            let mut current_energy = initial_energy + mid;
+            let mut current_experience = initial_experience + mid;
+            let mut flag = true;
+            for i in 0..energy.len() {
+                if energy[i] > current_energy || experience[i] > current_experience {
+                    flag = false;
+                    break;
+                } else {
+                    current_energy -= energy[i];
+                    current_experience += experience[i];
+                }
+            }
+            if flag {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        left

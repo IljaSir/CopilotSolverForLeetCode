@@ -1,0 +1,434 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        int n = nums.size();
+        vector<int> nums1(nums.begin(), nums.begin() + n / 2);
+        vector<int> nums2(nums.begin() + n / 2, nums.end());
+        vector<int> target1(target.begin(), target.begin() + n / 2);
+        vector<int> target2(target.begin() + n / 2, target.end());
+        // make nums1 similar to target1
+        // make nums2 similar to target2
+        long long sum1 = makeSimilar(nums1, target1);
+        long long sum2 = makeSimilar(nums2, target2);
+        if (sum1 + sum2 == 0) return 0;
+        if (sum1 + sum2 < 0) return -1;
+        // sum1 + sum2 > 0
+        unordered_map<long long, int> m;
+        for (int i = 0; i < (1 << nums1.size()); i++) {
+            long long sum = 0;
+            for (int j = 0; j < nums1.size(); j++) {
+                if (i & (1 << j)) {
+                    sum += nums1[j] - target1[j];
+                }
+            }
+            m[sum]++;
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i < (1 << nums2.size()); i++) {
+            long long sum = 0;
+            for (int j = 0; j < nums2.size(); j++) {
+                if (i & (1 << j)) {
+                    sum += nums2[j] - target2[j];
+                }
+            }
+            if (m.count(sum1 + sum2 - sum)) {
+                ans = min(ans, m[sum1 + sum2 - sum] + __builtin_popcount(i));
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        int n = nums.size();
+        int m = target.size();
+        long long sum = makeSimilar(nums, target);
+        if (sum == 0) {
+            return 0;
+        }
+        if (sum < 0) {
+            sum = -sum;
+            swap(nums, target);
+        }
+        vector<int> a1, a2;
+        for (int i = 0; i < n; i++) {
+            a1.push_back(nums[i] - target[i]);
+        }
+        for (int i = 0; i < m; i++) {
+            a2.push_back(target[i] - nums[i]);
+        }
+        sort(a1.begin(), a1.end());
+        sort(a2.begin(), a2.end());
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = upper_bound(a2.begin(), a2.end(), a1[i]) - a2.begin();
+            sum -= a1[i];
+            ans++;
+            if (sum <= 0) {
+                return ans;
+            }
+            if (j > 0) {
+                sum -= a2[j - 1];
+                ans++;
+                if (sum <= 0) {
+                    return ans;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        int n = nums.size();
+        int m = target.size();
+        int mid = (n + m) / 2;
+        vector<int> nums1, nums2, target1, target2;
+        for (int i = 0; i < mid; i++) {
+            nums1.push_back(nums[i]);
+            target1.push_back(target[i]);
+        }
+        for (int i = mid; i < n; i++) {
+            nums2.push_back(nums[i]);
+            target2.push_back(target[i]);
+        }
+        unordered_map<long long, int> m1, m2;
+        int len1 = nums1.size();
+        int len2 = nums2.size();
+        for (int i = 0; i < (1 << len1); i++) {
+            vector<int> tmp;
+            for (int j = 0; j < len1; j++) {
+                if ((i >> j) & 1) {
+                    tmp.push_back(nums1[j]);
+                }
+            }
+            m1[makeSimilar(tmp, target1)]++;
+        }
+        for (int i = 0; i < (1 << len2); i++) {
+            vector<int> tmp;
+            for (int j = 0; j < len2; j++) {
+                if ((i >> j) & 1) {
+                    tmp.push_back(nums2[j]);
+                }
+            }
+            m2[makeSimilar(tmp, target2)]++;
+        }
+        int ans = INT_MAX;
+        for (auto& [key, value] : m1) {
+            if (m2.count(-key)) {
+                ans = min(ans, value + m2[-key]);
+            }
+        }
+        if (ans == INT_MAX) {
+            ans = -1;
+        }
+        return ans;
+
+=======
+
+        long long sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i] - target[i];
+        }
+        return sum;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        long long sum = makeSimilar(nums, target);
+        if (sum == 0) return 0;
+        int n = nums.size();
+        vector<int> nums1, target1;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > target[i]) {
+                nums1.push_back(nums[i]);
+                target1.push_back(target[i]);
+            }
+        }
+        int m = nums1.size();
+        vector<int> dp(1 << m, 0);
+        for (int i = 0; i < (1 << m); i++) {
+            long long sum1 = 0;
+            for (int j = 0; j < m; j++) {
+                if (i & (1 << j)) {
+                    sum1 += nums1[j] - target1[j];
+                }
+            }
+            if (sum1 == sum) return __builtin_popcount(i);
+            for (int j = 0; j < m; j++) {
+                if (i & (1 << j)) continue;
+                dp[i | (1 << j)] = max(dp[i | (1 << j)], dp[i] + 1);
+            }
+        }
+        return -1;
+
+=======
+
+        long long res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            res += nums[i] - target[i];
+        }
+        return res;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        int n = nums.size();
+        vector<int> nums1, nums2;
+        for (int i = 0; i < n; i++) {
+            if (i < n / 2) {
+                nums1.push_back(nums[i] - target[i]);
+            } else {
+                nums2.push_back(nums[i] - target[i]);
+            }
+        }
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        int ans = n;
+        for (int i = 0; i < nums1.size(); i++) {
+            int j = upper_bound(nums2.begin(), nums2.end(), -nums1[i]) - nums2.begin();
+            int k = lower_bound(nums2.begin(), nums2.end(), -nums1[i]) - nums2.begin();
+            if (j >= 0 && j < nums2.size()) {
+                ans = min(ans, i + 1 + (int)nums2.size() - j);
+            }
+            if (k >= 0 && k < nums2.size()) {
+                ans = min(ans, i + 1 + (int)nums2.size() - k);
+            }
+        }
+        for (int i = 0; i < nums2.size(); i++) {
+            int j = upper_bound(nums1.begin(), nums1.end(), -nums2[i]) - nums1.begin();
+            int k = lower_bound(nums1.begin(), nums1.end(), -nums2[i]) - nums1.begin();
+            if (j >= 0 && j < nums1.size()) {
+                ans = min(ans, i + 1 + (int)nums1.size() - j);
+            }
+            if (k >= 0 && k < nums1.size()) {
+                ans = min(ans, i + 1 + (int)nums1.size() - k);
+            }
+        }
+        if (ans == n) {
+            return -1;
+        }
+        return ans;
+
+=======
+
+        long long res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            res += abs(nums[i] - target[i]);
+        }
+        return res;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        int n = nums.size();
+        int m = target.size();
+        if (n == 1 && m == 1) {
+            return nums[0] == target[0] ? 0 : 1;
+        }
+        long long diff = makeSimilar(nums, target);
+        if (diff % 2 == 1) {
+            return -1;
+        }
+        vector<int> nums1, nums2, target1, target2;
+        for (int i = 0; i < n; i++) {
+            if (i < n / 2) {
+                nums1.push_back(nums[i]);
+            } else {
+                nums2.push_back(nums[i]);
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            if (i < m / 2) {
+                target1.push_back(target[i]);
+            } else {
+                target2.push_back(target[i]);
+            }
+        }
+        long long diff1 = makeSimilar(nums1, target1);
+        long long diff2 = makeSimilar(nums2, target2);
+        if (diff1 > diff2) {
+            swap(diff1, diff2);
+            swap(nums1, nums2);
+            swap(target1, target2);
+        }
+        if (diff1 == diff2) {
+            return 2;
+        }
+        long long diff3 = makeSimilar(nums1, target2);
+        long long diff4 = makeSimilar(nums2, target1);
+        if (diff3 > diff4) {
+            swap(diff3, diff4);
+            swap(nums1, nums2);
+            swap(target1, target2);
+        }
+        if (diff3 == diff4) {
+            return 2;
+        }
+        if (diff1 + diff4 == diff) {
+            return 1;
+        }
+        if (diff2 + diff3 == diff) {
+            return 1;
+        }
+        if (diff1 + diff3 == diff) {
+            return 2;
+        }
+        if (diff2 + diff4 == diff) {
+            return 2;
+        }
+        return -1;
+
+=======
+
+        long long sum1 = 0, sum2 = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum1 += nums[i];
+            sum2 += target[i];
+        }
+        if (sum1 != sum2) return -1;
+        long long res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            int diff = nums[i] - target[i];
+            if (diff > 0) res += diff / 2;
+        }
+        return res;
+
+=======
+
+        long long ans = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            ans += abs(nums[i] - target[i]);
+        }
+        return ans;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        long long sum1 = accumulate(nums.begin(), nums.end(), 0LL);
+        long long sum2 = accumulate(target.begin(), target.end(), 0LL);
+        long long diff = (sum1 - sum2) / 2;
+        if (diff < 0) {
+            swap(nums, target);
+            diff = -diff;
+        }
+        sort(nums.begin(), nums.end());
+        sort(target.begin(), target.end());
+        long long ans = 0;
+        for (int i = nums.size() - 1, j = target.size() - 1; i >= 0; i--) {
+            while (j >= 0 && nums[i] - target[j] > diff) {
+                j--;
+            }
+            if (j >= 0 && nums[i] - target[j] == diff) {
+                ans++;
+                j--;
+            }
+        }
+        return nums.size() - ans;
+
+=======
+
+        long long res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            res += abs(nums[i] - target[i]);
+        }
+        return res;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        long long sum1 = accumulate(nums.begin(), nums.end(), 0);
+        long long sum2 = accumulate(target.begin(), target.end(), 0);
+        long long diff = sum2 - sum1;
+        if (diff % 2 != 0) {
+            return -1;
+        }
+        diff /= 2;
+        vector<int> nums1;
+        vector<int> nums2;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] > target[i]) {
+                nums1.push_back(nums[i] - target[i]);
+            } else {
+                nums2.push_back(target[i] - nums[i]);
+            }
+        }
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        long long res1 = makeSimilar(nums1, nums2);
+        if (res1 <= diff) {
+            return nums1.size() + nums2.size();
+        }
+        int res = INT_MAX;
+        int i = 0;
+        int j = nums2.size() - 1;
+        long long sum = 0;
+        while (i < nums1.size()) {
+            sum += nums1[i];
+            while (j >= 0 && sum + nums2[j] > diff) {
+                sum -= nums2[j];
+                j--;
+            }
+            if (sum == diff) {
+                res = min(res, i + 1 + (int)nums2.size() - j - 1);
+            }
+            i++;
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        long long res = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            res += abs(nums[i] - target[i]);
+        }
+        return res;
+    }
+    int minOperations(vector<int>& nums, vector<int>& target) {
+        long long sum1 = 0, sum2 = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            sum1 += nums[i];
+            sum2 += target[i];
+        }
+        if (sum1 == sum2) return 0;
+        if (sum1 > sum2) {
+            return minOperations(nums, target);
+        }
+        long long diff = sum2 - sum1;
+        if (diff % 2 != 0) return -1;
+        diff /= 2;
+        vector<int> d1, d2;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] > target[i]) {
+                d1.push_back(nums[i] - target[i]);
+            } else if (nums[i] < target[i]) {
+                d2.push_back(target[i] - nums[i]);
+            }
+        }
+        sort(d1.begin(), d1.end());
+        sort(d2.begin(), d2.end());
+        int res = 0;
+        for (int i = d1.size() - 1; i >= 0; --i) {
+            diff -= d1[i];
+            ++res;
+            if (diff <= 0) break;
+        }
+        if (diff > 0) {
+            for (int i = d2.size() - 1; i >= 0; --i) {
+                diff -= d2[i];
+                ++res;
+                if (diff <= 0) break;
+            }
+        }
+        if (diff > 0) return -1;
+        return res;

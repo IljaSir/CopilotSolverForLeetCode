@@ -1,0 +1,123 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut ans = i32::MAX;
+        for i in 0..nums.len() / 2 {
+            ans = ans.min(nums[i + nums.len() / 2] - nums[i]);
+        }
+        ans
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let n = nums.len();
+        let mut dp = vec![vec![0; 1 << n]; n];
+        for i in 0..n {
+            dp[i][1 << i] = nums[i];
+        }
+        for mask in 1..(1 << n) {
+            let mut count = 0;
+            for i in 0..n {
+                if mask & (1 << i) > 0 {
+                    count += 1;
+                }
+            }
+            if count % 2 != 0 {
+                continue;
+            }
+            for i in 0..n {
+                if mask & (1 << i) > 0 {
+                    dp[i][mask] = dp[i][mask ^ (1 << i)] + nums[i];
+                }
+            }
+        }
+        let mut ans = i32::max_value();
+        for i in 0..n {
+            for j in 0..n {
+                if i != j {
+                    let mask = (1 << n) - 1;
+                    ans = ans.min((dp[i][mask] - dp[j][mask]).abs());
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let n = nums.len() / 2;
+        let mut res = i32::max_value();
+        for i in 0..(1 << n) {
+            let mut s1 = 0;
+            let mut s2 = 0;
+            for j in 0..n {
+                if (i & (1 << j)) > 0 {
+                    s1 += nums[j];
+                } else {
+                    s2 += nums[j];
+                }
+            }
+            for j in n..(n * 2) {
+                if (i & (1 << (j - n))) > 0 {
+                    s2 += nums[j];
+                } else {
+                    s1 += nums[j];
+                }
+            }
+            res = res.min((s1 - s2).abs());
+        }
+        res
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut sum = 0;
+        let n = nums.len();
+        for i in 0..n/2 {
+            sum += nums[i+n/2] - nums[i];
+        }
+        sum
+
+=======
+
+        let mut nums = nums;
+        nums.sort();
+        let mut res = i32::max_value();
+        for i in 0..nums.len() / 2 {
+            res = res.min((nums[i] - nums[i + nums.len() / 2]).abs());
+        }
+        res
+
+=======
+
+        let n = nums.len() / 2;
+        let mut dp = vec![0; 1 << n];
+        let mut ans = i32::MAX;
+        for i in 0..(1 << n) {
+            let mut sum = 0;
+            for j in 0..n {
+                if i & (1 << j) > 0 {
+                    sum += nums[j];
+                } else {
+                    sum -= nums[j];
+                }
+            }
+            dp[i] = sum;
+        }
+        dp.sort();
+        for i in 0..(1 << n) {
+            ans = ans.min((dp[i] - dp[i ^ ((1 << n) - 1)]).abs());
+        }
+        ans
+
+=======
+
+        
+    }
+}

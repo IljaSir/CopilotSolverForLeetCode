@@ -1,0 +1,287 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut result: Vec<String> = Vec::new();
+        let mut digit_logs: Vec<String> = Vec::new();
+        let mut letter_logs: Vec<String> = Vec::new();
+        for log in logs {
+            let mut log_parts: Vec<&str> = log.split(' ').collect();
+            if log_parts[1].chars().next().unwrap().is_digit(10) {
+                digit_logs.push(log_parts.join(" "));
+            } else {
+                let mut letter_log = log_parts[1..].join(" ");
+                letter_log.push_str(" ");
+                letter_log.push_str(log_parts[0]);
+                letter_logs.push(letter_log);
+            }
+        }
+        letter_logs.sort_unstable();
+        for log in letter_logs {
+            let mut log_parts: Vec<&str> = log.split(' ').collect();
+            result.push(log_parts[1..].join(" "));
+        }
+        result.append(&mut digit_logs);
+        result
+    }
+}
+
+=======
+
+        let mut letter_logs: Vec<String> = Vec::new();
+        let mut digit_logs: Vec<String> = Vec::new();
+        for log in logs {
+            let mut iter = log.split_whitespace();
+            let identifier = iter.next().unwrap();
+            let mut words: Vec<String> = Vec::new();
+            for word in iter {
+                words.push(word.to_string());
+            }
+            if words[0].parse::<u32>().is_ok() {
+                digit_logs.push(log.to_string());
+            } else {
+                letter_logs.push(log.to_string());
+            }
+        }
+        letter_logs.sort_by(|a, b| {
+            let mut iter_a = a.split_whitespace();
+            let mut iter_b = b.split_whitespace();
+            let identifier_a = iter_a.next().unwrap();
+            let identifier_b = iter_b.next().unwrap();
+            let mut words_a: Vec<String> = Vec::new();
+            let mut words_b: Vec<String> = Vec::new();
+            for word in iter_a {
+                words_a.push(word.to_string());
+            }
+            for word in iter_b {
+                words_b.push(word.to_string());
+            }
+            if words_a == words_b {
+                identifier_a.cmp(identifier_b)
+            } else {
+                words_a.cmp(&words_b)
+            }
+        });
+        let mut result: Vec<String> = Vec::new();
+        result.append(&mut letter_logs);
+        result.append(&mut digit_logs);
+        result
+    }
+}
+
+=======
+
+        let mut logs = logs;
+        logs.sort_by(|a, b| {
+            let mut a_iter = a.split_whitespace();
+            let mut b_iter = b.split_whitespace();
+            let a_id = a_iter.next().unwrap();
+            let b_id = b_iter.next().unwrap();
+            let a_rest = a_iter.collect::<Vec<&str>>().join(" ");
+            let b_rest = b_iter.collect::<Vec<&str>>().join(" ");
+            if a_rest.chars().next().unwrap().is_digit(10) {
+                if b_rest.chars().next().unwrap().is_digit(10) {
+                    Ordering::Equal
+                } else {
+                    Ordering::Greater
+                }
+            } else {
+                if b_rest.chars().next().unwrap().is_digit(10) {
+                    Ordering::Less
+                } else {
+                    if a_rest == b_rest {
+                        a_id.cmp(b_id)
+                    } else {
+                        a_rest.cmp(&b_rest)
+                    }
+                }
+            }
+        });
+        logs
+    }
+}
+
+=======
+
+        let mut letter_logs = Vec::new();
+        let mut digit_logs = Vec::new();
+        for log in logs {
+            let mut iter = log.split(' ');
+            let id = iter.next().unwrap().to_string();
+            let content = iter.collect::<Vec<&str>>().join(" ");
+            if content.chars().next().unwrap().is_digit(10) {
+                digit_logs.push(log);
+            } else {
+                letter_logs.push((id, content));
+            }
+        }
+        letter_logs.sort_by(|a, b| {
+            let cmp = a.1.cmp(&b.1);
+            if cmp == std::cmp::Ordering::Equal {
+                a.0.cmp(&b.0)
+            } else {
+                cmp
+            }
+        });
+        letter_logs
+            .into_iter()
+            .map(|(id, content)| format!("{} {}", id, content))
+            .chain(digit_logs.into_iter())
+            .collect()
+
+=======
+
+        let mut letter_logs = Vec::new();
+        let mut digit_logs = Vec::new();
+        for log in logs {
+            let mut iter = log.split(' ');
+            let id = iter.next().unwrap();
+            let content = iter.collect::<Vec<&str>>().join(" ");
+            if content.chars().next().unwrap().is_alphabetic() {
+                letter_logs.push((id, content));
+            } else {
+                digit_logs.push(log);
+            }
+        }
+        let mut letter_logs = letter_logs.into_iter().collect::<Vec<(String, String)>>();
+        letter_logs.sort_by(|a, b| a.1.cmp(&b.1).then(a.0.cmp(&b.0)));
+        let letter_logs = letter_logs.into_iter().map(|(id, content)| format!("{} {}", id, content)).collect::<Vec<String>>();
+        let mut res = Vec::new();
+        res.extend(letter_logs);
+        res.extend(digit_logs);
+        res
+    }
+}
+
+=======
+
+        let mut letter_logs = Vec::new();
+        let mut digit_logs = Vec::new();
+        for log in logs {
+            let mut iter = log.split(' ');
+            let id = iter.next().unwrap();
+            let content = iter.next().unwrap();
+            if content.chars().nth(0).unwrap().is_ascii_digit() {
+                digit_logs.push(log);
+            } else {
+                letter_logs.push((id, content));
+            }
+        }
+        letter_logs.sort_by(|a, b| {
+            if a.1 == b.1 {
+                a.0.cmp(b.0)
+            } else {
+                a.1.cmp(b.1)
+            }
+        });
+        let mut result = Vec::new();
+        for log in letter_logs {
+            result.push(format!("{} {}", log.0, log.1));
+        }
+        for log in digit_logs {
+            result.push(log);
+        }
+        result
+
+=======
+
+        let mut letter_logs = Vec::with_capacity(logs.len());
+        let mut digit_logs = Vec::with_capacity(logs.len());
+        for log in logs {
+            let mut iter = log.split_ascii_whitespace();
+            let identifier = iter.next().unwrap();
+            let first_word = iter.next().unwrap();
+            if first_word.chars().all(|c| c.is_ascii_digit()) {
+                digit_logs.push(format!("{} {}", identifier, first_word));
+            } else {
+                letter_logs.push(format!("{} {}", identifier, first_word));
+            }
+        }
+        letter_logs.sort_unstable();
+        let mut result = Vec::with_capacity(logs.len());
+        for log in letter_logs {
+            let mut iter = log.split_ascii_whitespace();
+            let identifier = iter.next().unwrap();
+            let first_word = iter.next().unwrap();
+            result.push(format!("{} {} {}", identifier, first_word, iter.collect::<Vec<_>>().join(" ")));
+        }
+        result.extend(digit_logs);
+        result
+    }
+}
+
+=======
+
+        let mut ans = logs.clone();
+        ans.sort_by(|a, b| {
+            let a: Vec<&str> = a.split_whitespace().collect();
+            let b: Vec<&str> = b.split_whitespace().collect();
+            if a[1].chars().all(|c| c.is_digit(10)) && b[1].chars().all(|c| c.is_digit(10)) {
+                return std::cmp::Ordering::Equal;
+            } else if a[1].chars().all(|c| c.is_digit(10)) {
+                return std::cmp::Ordering::Greater;
+            } else if b[1].chars().all(|c| c.is_digit(10)) {
+                return std::cmp::Ordering::Less;
+            } else {
+                let a = a[1..].join(" ");
+                let b = b[1..].join(" ");
+                if a == b {
+                    a[0].cmp(&b[0])
+                } else {
+                    a.cmp(&b)
+                }
+            }
+        });
+        ans
+    }
+}
+
+=======
+
+        let mut letter_logs = Vec::new();
+        let mut digit_logs = Vec::new();
+        for log in logs {
+            let mut iter = log.split_whitespace();
+            let id = iter.next().unwrap().to_owned();
+            let content = iter.next().unwrap().to_owned();
+            if content.chars().next().unwrap().is_ascii_digit() {
+                digit_logs.push((id, content));
+            } else {
+                letter_logs.push((id, content));
+            }
+        }
+        letter_logs.sort_by_key(|x| (x.1.clone(), x.0.clone()));
+        let mut res = Vec::new();
+        for (id, content) in letter_logs {
+            res.push(format!("{} {}", id, content));
+        }
+        for (id, content) in digit_logs {
+            res.push(format!("{} {}", id, content));
+        }
+        res
+
+=======
+
+        let mut logs = logs;
+        logs.sort_by(|a, b| {
+            let a = a.split(' ').collect::<Vec<_>>();
+            let b = b.split(' ').collect::<Vec<_>>();
+            let a_is_digit = a[1].chars().next().unwrap().is_digit(10);
+            let b_is_digit = b[1].chars().next().unwrap().is_digit(10);
+            if a_is_digit && b_is_digit {
+                Ordering::Equal
+            } else if a_is_digit {
+                Ordering::Greater
+            } else if b_is_digit {
+                Ordering::Less
+            } else {
+                let a = &a[1..];
+                let b = &b[1..];
+                if a == b {
+                    a[0].cmp(b[0])
+                } else {
+                    a.cmp(b)
+                }
+            }
+        });
+        logs

@@ -1,0 +1,273 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let m = points.len();
+        let n = points[0].len();
+        let mut dp = vec![vec![0; n]; m];
+        for i in 0..n {
+            dp[0][i] = points[0][i] as i64;
+        }
+        for i in 1..m {
+            let mut max = 0;
+            let mut max_idx = 0;
+            for j in 0..n {
+                if dp[i - 1][j] > max {
+                    max = dp[i - 1][j];
+                    max_idx = j;
+                }
+            }
+            for j in 0..n {
+                dp[i][j] = max - (max_idx as i64 - j as i64).abs() + points[i][j] as i64;
+            }
+        }
+        let mut max = 0;
+        for i in 0..n {
+            if dp[m - 1][i] > max {
+                max = dp[m - 1][i];
+            }
+        }
+        max
+
+=======
+
+        let mut dp = vec![vec![0i64; points[0].len()]; points.len()];
+        dp[0] = points[0].iter().map(|x| *x as i64).collect();
+        for i in 1..points.len() {
+            let mut max = 0;
+            for j in 0..points[i].len() {
+                max = max.max(dp[i - 1][j]);
+                dp[i][j] = max - j as i64 + points[i][j] as i64;
+            }
+            let mut max = 0;
+            for j in (0..points[i].len()).rev() {
+                max = max.max(dp[i - 1][j]);
+                dp[i][j] = dp[i][j].max(max + j as i64 + points[i][j] as i64);
+            }
+        }
+        *dp.last().unwrap().iter().max().unwrap()
+
+=======
+
+        let m = points.len();
+        let n = points[0].len();
+        let mut dp = vec![vec![0; n]; 2];
+        for i in 0..m {
+            let mut max = 0;
+            for j in 0..n {
+                max = max.max(dp[(i - 1) % 2][j]);
+                dp[i % 2][j] = max - j as i32 + points[i][j];
+            }
+            max = 0;
+            for j in (0..n).rev() {
+                max = max.max(dp[(i - 1) % 2][j]);
+                dp[i % 2][j] = max + j as i32 + points[i][j];
+            }
+        }
+        dp[(m - 1) % 2].iter().max().unwrap().clone() as i64
+
+=======
+
+        let m = points.len();
+        let n = points[0].len();
+        let mut dp = vec![0; n];
+        for i in 0..m {
+            let mut max = 0;
+            let mut max_j = 0;
+            for j in 0..n {
+                if dp[j] > max {
+                    max = dp[j];
+                    max_j = j;
+                }
+            }
+            let mut max2 = 0;
+            for j in 0..n {
+                if j == max_j {
+                    dp[j] = max;
+                } else {
+                    if dp[j] > max2 {
+                        max2 = dp[j];
+                    }
+                }
+            }
+            for j in 0..n {
+                dp[j] = max2 + (max_j as i32 - j as i32).abs() + points[i][j];
+            }
+        }
+        let mut max = 0;
+        for j in 0..n {
+            if dp[j] > max {
+                max = dp[j];
+            }
+        }
+        max
+
+=======
+
+        let mut dp = vec![vec![0; points[0].len()]; 2];
+        let mut ans = 0;
+        for i in 0..points.len() {
+            let mut max = 0;
+            for j in 0..points[0].len() {
+                max = max.max(dp[(i + 1) % 2][j]);
+            }
+            for j in 0..points[0].len() {
+                dp[i % 2][j] = max - (points[i][j] as i64).abs();
+            }
+            max = 0;
+            for j in (0..points[0].len()).rev() {
+                max = max.max(dp[(i + 1) % 2][j]);
+                dp[i % 2][j] = max - (points[i][j] as i64).abs();
+            }
+            for j in 0..points[0].len() {
+                dp[i % 2][j] += points[i][j] as i64;
+                ans = ans.max(dp[i % 2][j]);
+            }
+        }
+        ans
+
+=======
+
+        let mut dp = vec![0; points[0].len()];
+        for row in points.iter() {
+            let mut max = 0;
+            for i in 0..row.len() {
+                max = max.max(dp[i]);
+            }
+            let mut min = i64::MAX;
+            for i in 0..row.len() {
+                min = min.min(max - i as i64);
+                dp[i] = min + i as i64 + row[i] as i64;
+            }
+            let mut max = 0;
+            for i in (0..row.len()).rev() {
+                max = max.max(dp[i]);
+            }
+            let mut min = i64::MAX;
+            for i in (0..row.len()).rev() {
+                min = min.min(max - (row.len() - i - 1) as i64);
+                dp[i] = min + (row.len() - i - 1) as i64 + row[i] as i64;
+            }
+        }
+        let mut max = 0;
+        for i in 0..dp.len() {
+            max = max.max(dp[i]);
+        }
+        max
+
+=======
+
+        let mut dp = vec![0; points[0].len()];
+        for row in points {
+            let mut max = 0;
+            for j in 0..row.len() {
+                max = std::cmp::max(max, dp[j]);
+                dp[j] = max - j as i32 + row[j];
+            }
+            let mut max = 0;
+            for j in (0..row.len()).rev() {
+                max = std::cmp::max(max, dp[j]);
+                dp[j] = std::cmp::max(dp[j], max + j as i32 + row[j]);
+            }
+        }
+        dp.into_iter().max().unwrap() as i64
+
+=======
+
+        let mut dp = vec![0; points[0].len()];
+        for r in 0..points.len() {
+            let mut max = 0;
+            let mut max_index = 0;
+            for c in 0..points[r].len() {
+                dp[c] = max + points[r][c] as i64;
+                if dp[c] > max {
+                    max = dp[c];
+                    max_index = c;
+                }
+            }
+            let mut min = 0;
+            let mut min_index = 0;
+            for c in (0..points[r].len()).rev() {
+                dp[c] = min + points[r][c] as i64;
+                if dp[c] > max {
+                    max = dp[c];
+                    max_index = c;
+                }
+                if dp[c] < min {
+                    min = dp[c];
+                    min_index = c;
+                }
+            }
+            for c in 0..points[r].len() {
+                if c != max_index {
+                    dp[c] = max - (max_index as i64 - c as i64).abs() - points[r][c] as i64;
+                }
+                if c != min_index {
+                    dp[c] = min + (min_index as i64 - c as i64).abs() - points[r][c] as i64;
+                }
+            }
+        }
+        *dp.iter().max().unwrap()
+
+=======
+
+        let mut dp: Vec<i64> = vec![0; points[0].len()];
+        let mut max: i64 = 0;
+        for i in 0..points.len() {
+            let mut max_val: i64 = 0;
+            let mut max_idx: usize = 0;
+            for j in 0..points[i].len() {
+                if max_val < dp[j] + j as i64 {
+                    max_val = dp[j] + j as i64;
+                    max_idx = j;
+                }
+            }
+            let mut min_val: i64 = 0;
+            let mut min_idx: usize = 0;
+            for j in 0..points[i].len() {
+                if min_val > dp[j] - j as i64 {
+                    min_val = dp[j] - j as i64;
+                    min_idx = j;
+                }
+            }
+            for j in 0..points[i].len() {
+                dp[j] = points[i][j] as i64 + max_val - max_idx as i64;
+                if j != max_idx {
+                    dp[j] = dp[j].max(points[i][j] as i64 + min_val - min_idx as i64);
+                }
+                max = max.max(dp[j]);
+            }
+        }
+        max
+
+=======
+
+        let mut dp = points[0].clone();
+        let mut dp2 = vec![0; dp.len()];
+        for row in points.iter().skip(1) {
+            let mut prev = 0;
+            for i in 0..dp.len() {
+                dp2[i] = dp[i] + prev;
+                if i > 0 {
+                    let v = dp[i - 1] - (i - 1) as i32;
+                    if v > prev {
+                        prev = v;
+                    }
+                }
+            }
+            prev = 0;
+            for i in (0..dp.len()).rev() {
+                let v = dp[i] + (i as i32) + prev;
+                if v > dp2[i] {
+                    dp2[i] = v;
+                }
+                if i < dp.len() - 1 {
+                    let v = dp[i + 1] + (i + 1) as i32;
+                    if v > prev {
+                        prev = v;
+                    }
+                }
+            }
+            dp = dp2.clone();
+        }
+        *dp.iter().max().unwrap() as i64

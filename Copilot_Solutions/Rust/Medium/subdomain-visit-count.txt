@@ -1,0 +1,169 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        use std::collections::HashMap;
+        let mut map = HashMap::new();
+        for cpdomain in cpdomains {
+            let mut iter = cpdomain.split_whitespace();
+            let count = iter.next().unwrap().parse::<i32>().unwrap();
+            let domain = iter.next().unwrap();
+            let mut subdomains = domain.split('.').collect::<Vec<_>>();
+            while let Some(subdomain) = subdomains.pop() {
+                let key = subdomains.join(".");
+                let key = if key.is_empty() {
+                    subdomain.to_string()
+                } else {
+                    format!("{}.{}", subdomain, key)
+                };
+                *map.entry(key).or_insert(0) += count;
+            }
+        }
+        map.into_iter()
+            .map(|(key, value)| format!("{} {}", value, key))
+            .collect()
+
+=======
+
+        let mut map: std::collections::HashMap<String, i32> = std::collections::HashMap::new();
+        for cpdomain in cpdomains {
+            let mut iter = cpdomain.split_ascii_whitespace();
+            let count = iter.next().unwrap().parse::<i32>().unwrap();
+            let mut domain = iter.next().unwrap().to_string();
+            while let Some(index) = domain.find('.') {
+                *map.entry(domain.clone()).or_insert(0) += count;
+                domain = domain[index+1..].to_string();
+            }
+            *map.entry(domain).or_insert(0) += count;
+        }
+        let mut result: Vec<String> = Vec::new();
+        for (domain, count) in map {
+            result.push(format!("{} {}", count, domain));
+        }
+        result
+    }
+}
+
+=======
+
+        let mut map: std::collections::HashMap<String, i32> = std::collections::HashMap::new();
+        for cpdomain in cpdomains {
+            let mut iter = cpdomain.split_whitespace();
+            let count: i32 = iter.next().unwrap().parse().unwrap();
+            let domain: Vec<&str> = iter.next().unwrap().split('.').collect();
+            for i in 0..domain.len() {
+                let key: String = domain[i..].join(".");
+                *map.entry(key).or_insert(0) += count;
+            }
+        }
+        map.into_iter().map(|(k, v)| format!("{} {}", v, k)).collect()
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for cpdomain in cpdomains {
+            let vec: Vec<&str> = cpdomain.split(' ').collect();
+            let count = vec[0].parse::<i32>().unwrap();
+            let mut domain = vec[1].to_string();
+            let mut vec: Vec<&str> = domain.split('.').collect();
+            while let Some(d) = vec.pop() {
+                domain = d.to_string() + "." + &domain;
+                let c = map.entry(domain.clone()).or_insert(0);
+                *c += count;
+            }
+        }
+        let mut res = Vec::new();
+        for (k, v) in map {
+            res.push(v.to_string() + " " + &k[..k.len() - 1]);
+        }
+        res
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for domain in cpdomains {
+            let mut iter = domain.split_whitespace();
+            let count = iter.next().unwrap().parse::<i32>().unwrap();
+            let domain = iter.next().unwrap();
+            let mut iter = domain.split('.');
+            let mut subdomain = String::new();
+            while let Some(part) = iter.next() {
+                if subdomain.is_empty() {
+                    subdomain = part.to_string();
+                } else {
+                    subdomain = format!("{}.{}", part, subdomain);
+                }
+                *map.entry(subdomain.clone()).or_insert(0) += count;
+            }
+        }
+        map.into_iter().map(|(k, v)| format!("{} {}", v, k)).collect()
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for domain in cpdomains {
+            let mut iter = domain.split_ascii_whitespace();
+            let count = iter.next().unwrap().parse::<i32>().unwrap();
+            let domain = iter.next().unwrap();
+            let mut iter = domain.split('.');
+            let d3 = iter.next().unwrap();
+            let d2 = iter.next().unwrap();
+            let d1 = iter.next().unwrap();
+            *map.entry(d1.to_string()).or_insert(0) += count;
+            *map.entry(format!("{}.{}", d2, d1)).or_insert(0) += count;
+            *map.entry(domain.to_string()).or_insert(0) += count;
+        }
+        map.iter().map(|(k, v)| format!("{} {}", v, k)).collect()
+
+=======
+
+        let mut counts = std::collections::HashMap::new();
+        for cpdomain in cpdomains {
+            let mut iter = cpdomain.split_whitespace();
+            let count = iter.next().unwrap().parse::<usize>().unwrap();
+            let mut domain = iter.next().unwrap();
+            loop {
+                *counts.entry(domain.to_string()).or_insert(0) += count;
+                if let Some(i) = domain.find('.') {
+                    domain = &domain[(i+1)..];
+                } else {
+                    break;
+                }
+            }
+        }
+        counts.into_iter().map(|(k, v)| format!("{} {}", v, k)).collect()
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for domain in cpdomains {
+            let mut iter = domain.split(' ');
+            let count = iter.next().unwrap().parse::<u32>().unwrap();
+            let domain = iter.next().unwrap();
+            let mut subdomain = domain.split('.');
+            while let Some(subdomain) = subdomain.next() {
+                let subdomain = format!("{}.{}", subdomain, domain);
+                *map.entry(subdomain).or_insert(0) += count;
+            }
+        }
+        map.into_iter().map(|(k, v)| format!("{} {}", v, k)).collect()
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for domain in cpdomains {
+            let mut iter = domain.split(' ');
+            let count: i32 = iter.next().unwrap().parse().unwrap();
+            let domain = iter.next().unwrap();
+            let mut iter = domain.split('.');
+            while let Some(subdomain) = iter.next() {
+                let subdomain = iter.as_str();
+                let count = map.entry(subdomain.to_string()).or_insert(0);
+                *count += count;
+            }
+        }
+        let mut res = Vec::new();
+        for (subdomain, count) in map {
+            res.push(format!("{} {}", count, subdomain));
+        }
+        res

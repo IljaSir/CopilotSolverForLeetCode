@@ -1,0 +1,193 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![false; n];
+        dp[0] = true;
+        let mut sum = 1;
+        for i in 1..n {
+            if i >= min_jump as usize {
+                sum -= dp[i - min_jump as usize] as i32;
+            }
+            if i > max_jump as usize {
+                sum += dp[i - max_jump as usize - 1] as i32;
+            }
+            dp[i] = sum > 0 && s[i] == b'0';
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![false; n];
+        dp[0] = true;
+        let mut l = 0;
+        let mut r = 0;
+        for i in 1..n {
+            if i as i32 >= min_jump {
+                l += dp[i - min_jump as usize] as i32;
+            }
+            if i as i32 > max_jump {
+                r += dp[i - max_jump as usize - 1] as i32;
+            }
+            dp[i] = l > r && s[i] == b'0';
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len();
+        let mut dp = vec![false; n];
+        dp[0] = true;
+        let mut sum = 0;
+        for i in 1..n {
+            if i >= min_jump as usize {
+                sum += dp[i - min_jump as usize] as i32;
+            }
+            if i > max_jump as usize {
+                sum -= dp[i - max_jump as usize - 1] as i32;
+            }
+            dp[i] = sum > 0 && s[i] == b'0';
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let mut dp = vec![false; s.len()];
+        dp[0] = true;
+        let mut sum = 0;
+        for i in 1..s.len() {
+            if s[i] == b'0' {
+                let min = (i as i32 - max_jump).max(0) as usize;
+                let max = (i as i32 - min_jump).max(0) as usize;
+                if min > 0 {
+                    sum -= dp[min - 1] as i32;
+                }
+                sum += dp[max] as i32;
+                dp[i] = sum > 0;
+            }
+        }
+        dp[s.len() - 1]
+
+=======
+
+        let mut dp = vec![false; s.len()];
+        dp[0] = true;
+        let mut sum = 1;
+        let min_jump = min_jump as usize;
+        let max_jump = max_jump as usize;
+        for i in 1..s.len() {
+            if i >= min_jump {
+                sum -= dp[i - min_jump] as usize;
+            }
+            if i > max_jump {
+                sum += dp[i - max_jump - 1] as usize;
+            }
+            dp[i] = sum > 0 && s.as_bytes()[i] == b'0';
+        }
+        dp[s.len() - 1]
+
+=======
+
+        let n = s.len();
+        let mut dp = vec![false; n];
+        dp[0] = true;
+        let mut pre = 0;
+        for i in 1..n {
+            if i as i32 >= min_jump {
+                pre += dp[i - min_jump as usize] as i32;
+            }
+            if i as i32 > max_jump {
+                pre -= dp[i - max_jump as usize - 1] as i32;
+            }
+            if pre > 0 && s.as_bytes()[i] == b'0' {
+                dp[i] = true;
+            }
+        }
+        dp[n - 1]
+
+=======
+
+        let s = s.as_bytes();
+        let n = s.len() as i32;
+        let mut dp = vec![false; n as usize];
+        dp[0] = true;
+        let mut sum = 1;
+        for i in 1..n {
+            if i >= min_jump {
+                sum -= dp[(i - min_jump) as usize] as i32;
+            }
+            if i > max_jump {
+                sum += dp[(i - max_jump - 1) as usize] as i32;
+            }
+            dp[i as usize] = sum > 0 && s[i as usize] == b'0';
+        }
+        dp[n as usize - 1]
+    }
+}
+
+=======
+
+        let s: Vec<char> = s.chars().collect();
+        let mut dp = vec![false; s.len()];
+        dp[0] = true;
+        let (mut left, mut right) = (0, 0);
+        for i in 1..s.len() {
+            if i as i32 >= min_jump {
+                left += dp[i - min_jump as usize] as i32;
+            }
+            if i as i32 > max_jump {
+                right += dp[i - max_jump as usize - 1] as i32;
+            }
+            dp[i] = left > right && s[i] == '0';
+        }
+        dp[s.len() - 1]
+
+=======
+
+        let s = s.into_bytes();
+        let n = s.len();
+        let mut can = vec![false; n];
+        let mut reach = 0;
+        can[0] = true;
+        for i in 1..n {
+            if i >= min_jump as usize {
+                reach += can[i - min_jump as usize] as i32;
+            }
+            if i > max_jump as usize {
+                reach -= can[i - max_jump as usize - 1] as i32;
+            }
+            can[i] = reach > 0 && s[i] == b'0';
+        }
+        can[n - 1]
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = vec![false; s.len()];
+        q.push_back(0);
+        visited[0] = true;
+        let mut i = 0;
+        let mut j = 0;
+        while let Some(idx) = q.pop_front() {
+            i = (idx + min_jump) as usize;
+            j = (idx + max_jump) as usize;
+            if j >= s.len() - 1 {
+                return true;
+            }
+            while i <= j && i < s.len() {
+                if !visited[i] && s.as_bytes()[i] == b'0' {
+                    q.push_back(i as i32);
+                    visited[i] = true;
+                }
+                i += 1;
+            }
+        }
+        false
+    }
+}

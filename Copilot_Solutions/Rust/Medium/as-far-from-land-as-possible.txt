@@ -1,0 +1,300 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = grid.len();
+        let mut q = Vec::new();
+        for i in 0..n {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    q.push((i, j));
+                }
+            }
+        }
+        if q.len() == 0 || q.len() == n * n {
+            return -1;
+        }
+        let mut res = 0;
+        while !q.is_empty() {
+            let mut t = Vec::new();
+            for (i, j) in q {
+                if i > 0 && grid[i - 1][j] == 0 {
+                    grid[i - 1][j] = 1;
+                    t.push((i - 1, j));
+                }
+                if i < n - 1 && grid[i + 1][j] == 0 {
+                    grid[i + 1][j] = 1;
+                    t.push((i + 1, j));
+                }
+                if j > 0 && grid[i][j - 1] == 0 {
+                    grid[i][j - 1] = 1;
+                    t.push((i, j - 1));
+                }
+                if j < n - 1 && grid[i][j + 1] == 0 {
+                    grid[i][j + 1] = 1;
+                    t.push((i, j + 1));
+                }
+            }
+            q = t;
+            res += 1;
+        }
+        res - 1
+
+=======
+
+        let mut q = Vec::new();
+        let n = grid.len();
+        for i in 0..n {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    q.push((i, j, 0));
+                }
+            }
+        }
+        if q.len() == 0 || q.len() == n * n {
+            return -1;
+        }
+        let mut max = 0;
+        let dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)];
+        while !q.is_empty() {
+            let (i, j, d) = q.remove(0);
+            for &(di, dj) in &dirs {
+                let ni = i as i32 + di;
+                let nj = j as i32 + dj;
+                if ni < 0 || nj < 0 || ni >= n as i32 || nj >= n as i32 || grid[ni as usize][nj as usize] == 1 {
+                    continue;
+                }
+                grid[ni as usize][nj as usize] = 1;
+                max = d + 1;
+                q.push((ni as usize, nj as usize, d + 1));
+            }
+        }
+        max
+
+=======
+
+        let n = grid.len();
+        let mut dist = vec![vec![n as i32 + 1; n]; n];
+        for i in 0..n {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    dist[i][j] = 0;
+                } else {
+                    if i > 0 {
+                        dist[i][j] = dist[i][j].min(dist[i - 1][j] + 1);
+                    }
+                    if j > 0 {
+                        dist[i][j] = dist[i][j].min(dist[i][j - 1] + 1);
+                    }
+                }
+            }
+        }
+        for i in (0..n).rev() {
+            for j in (0..n).rev() {
+                if grid[i][j] == 0 {
+                    if i + 1 < n {
+                        dist[i][j] = dist[i][j].min(dist[i + 1][j] + 1);
+                    }
+                    if j + 1 < n {
+                        dist[i][j] = dist[i][j].min(dist[i][j + 1] + 1);
+                    }
+                }
+            }
+        }
+        let mut ans = -1;
+        for i in 0..n {
+            for j in 0..n {
+                if grid[i][j] == 0 {
+                    ans = ans.max(dist[i][j]);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut queue = Vec::new();
+        let mut visited = vec![vec![false; grid.len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid.len() {
+                if grid[i][j] == 1 {
+                    queue.push((i, j, 0));
+                    visited[i][j] = true;
+                }
+            }
+        }
+        if queue.len() == 0 || queue.len() == grid.len() * grid.len() {
+            return -1;
+        }
+        let mut max = 0;
+        while queue.len() > 0 {
+            let (i, j, dist) = queue.remove(0);
+            max = dist;
+            if i > 0 && !visited[i - 1][j] {
+                queue.push((i - 1, j, dist + 1));
+                visited[i - 1][j] = true;
+            }
+            if i < grid.len() - 1 && !visited[i + 1][j] {
+                queue.push((i + 1, j, dist + 1));
+                visited[i + 1][j] = true;
+            }
+            if j > 0 && !visited[i][j - 1] {
+                queue.push((i, j - 1, dist + 1));
+                visited[i][j - 1] = true;
+            }
+            if j < grid.len() - 1 && !visited[i][j + 1] {
+                queue.push((i, j + 1, dist + 1));
+                visited[i][j + 1] = true;
+            }
+        }
+        max
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = vec![vec![false; grid.len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid.len() {
+                if grid[i][j] == 1 {
+                    q.push_back((i, j));
+                    visited[i][j] = true;
+                }
+            }
+        }
+        let mut ans = -1;
+        while !q.is_empty() {
+            let (i, j) = q.pop_front().unwrap();
+            ans = ans.max(i as i32).max(j as i32).max((grid.len() - i - 1) as i32).max((grid.len() - j - 1) as i32);
+            if i > 0 && !visited[i - 1][j] {
+                q.push_back((i - 1, j));
+                visited[i - 1][j] = true;
+            }
+            if j > 0 && !visited[i][j - 1] {
+                q.push_back((i, j - 1));
+                visited[i][j - 1] = true;
+            }
+            if i < grid.len() - 1 && !visited[i + 1][j] {
+                q.push_back((i + 1, j));
+                visited[i + 1][j] = true;
+            }
+            if j < grid.len() - 1 && !visited[i][j + 1] {
+                q.push_back((i, j + 1));
+                visited[i][j + 1] = true;
+            }
+        }
+        ans
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut n = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 {
+                    q.push_back((i, j));
+                    n += 1;
+                }
+            }
+        }
+        if n == 0 || n == grid.len() * grid[0].len() {
+            return -1;
+        }
+        let mut ans = -1;
+        while let Some((i, j)) = q.pop_front() {
+            ans += 1;
+            if i > 0 && grid[i - 1][j] == 0 {
+                grid[i - 1][j] = 1;
+                q.push_back((i - 1, j));
+            }
+            if i + 1 < grid.len() && grid[i + 1][j] == 0 {
+                grid[i + 1][j] = 1;
+                q.push_back((i + 1, j));
+            }
+            if j > 0 && grid[i][j - 1] == 0 {
+                grid[i][j - 1] = 1;
+                q.push_back((i, j - 1));
+            }
+            if j + 1 < grid[i].len() && grid[i][j + 1] == 0 {
+                grid[i][j + 1] = 1;
+                q.push_back((i, j + 1));
+            }
+        }
+        ans
+
+=======
+
+        let mut q: Vec<(i32, i32)> = Vec::new();
+        let mut visited = vec![vec![false; grid.len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid.len() {
+                if grid[i][j] == 1 {
+                    q.push((i as i32, j as i32));
+                    visited[i][j] = true;
+                }
+            }
+        }
+        if q.len() == 0 || q.len() == grid.len() * grid.len() {
+            return -1;
+        }
+        let mut distance = -1;
+        let mut dirs = vec![(0, 1), (0, -1), (1, 0), (-1, 0)];
+        while q.len() > 0 {
+            let mut next: Vec<(i32, i32)> = Vec::new();
+            for (x, y) in q {
+                for (dx, dy) in &dirs {
+                    let new_x = x + dx;
+                    let new_y = y + dy;
+                    if new_x >= 0 && new_x < grid.len() as i32 && new_y >= 0 && new_y < grid.len() as i32 && !visited[new_x as usize][new_y as usize] {
+                        next.push((new_x, new_y));
+                        visited[new_x as usize][new_y as usize] = true;
+                    }
+                }
+            }
+            distance += 1;
+            q = next;
+        }
+        distance
+
+=======
+
+        let mut grid = grid;
+        let n = grid.len();
+        let mut queue = std::collections::VecDeque::new();
+        let mut ans = -1;
+        for i in 0..n {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    queue.push_back((i, j));
+                }
+            }
+        }
+        if queue.len() == 0 || queue.len() == n * n {
+            return ans;
+        }
+        while !queue.is_empty() {
+            let (i, j) = queue.pop_front().unwrap();
+            if i > 0 && grid[i - 1][j] == 0 {
+                grid[i - 1][j] = grid[i][j] + 1;
+                queue.push_back((i - 1, j));
+            }
+            if i < n - 1 && grid[i + 1][j] == 0 {
+                grid[i + 1][j] = grid[i][j] + 1;
+                queue.push_back((i + 1, j));
+            }
+            if j > 0 && grid[i][j - 1] == 0 {
+                grid[i][j - 1] = grid[i][j] + 1;
+                queue.push_back((i, j - 1));
+            }
+            if j < n - 1 && grid[i][j + 1] == 0 {
+                grid[i][j + 1] = grid[i][j] + 1;
+                queue.push_back((i, j + 1));
+            }
+            ans = ans.max(grid[i][j] - 1);
+        }
+        ans
+
+=======
+
+        
+    }
+}

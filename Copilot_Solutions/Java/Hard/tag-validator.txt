@@ -1,0 +1,395 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Stack<String> stack = new Stack<>();
+        for (int i = 0; i < code.length(); i++) {
+            if (i > 0 && stack.isEmpty()) {
+                return false;
+            }
+            if (code.startsWith("<![CDATA[", i)) {
+                int j = i + 9;
+                i = code.indexOf("]]>", j);
+                if (i < 0) {
+                    return false;
+                }
+                i += 2;
+            } else if (code.startsWith("</", i)) {
+                int j = i + 2;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; k++) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                String tag = code.substring(j, i);
+                if (stack.isEmpty() || !stack.pop().equals(tag)) {
+                    return false;
+                }
+            } else if (code.startsWith("<", i)) {
+                int j = i + 1;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; k++) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                stack.push(code.substring(j, i));
+            }
+        }
+        return stack.isEmpty();
+
+=======
+
+        Stack<String> stack = new Stack<>();
+        for (int i = 0; i < code.length(); ) {
+            if (i > 0 && stack.isEmpty()) return false;
+            else if (code.startsWith("<![CDATA[", i)) {
+                int j = i + 9;
+                i = code.indexOf("]]>", j);
+                if (i < 0) return false;
+                i += 3;
+            } else if (code.startsWith("</", i)) {
+                int j = i + 2;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) return false;
+                String tag = code.substring(j, i++);
+                if (stack.isEmpty() || !stack.pop().equals(tag)) return false;
+            } else if (code.startsWith("<", i)) {
+                int j = i + 1;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) return false;
+                for (int k = j; k < i; ++k)
+                    if (!Character.isUpperCase(code.charAt(k))) return false;
+                stack.push(code.substring(j, i++));
+            } else i++;
+        }
+        return stack.isEmpty();
+
+=======
+
+        int i = 0;
+        Stack<String> stack = new Stack<>();
+        while (i < code.length()) {
+            if (i > 0 && stack.isEmpty()) return false;
+            else if (code.startsWith("<![CDATA[", i)) {
+                int j = i + 9;
+                i = code.indexOf("]]>", j);
+                if (i < 0) return false;
+                i += 3;
+            }
+            else if (code.startsWith("</", i)) {
+                int j = i + 2;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) return false;
+                for (int k = j; k < i; k++)
+                    if (!Character.isUpperCase(code.charAt(k))) return false;
+                String startTag = stack.pop();
+                if (!startTag.equals(code.substring(j, i))) return false;
+                i++;
+            }
+            else if (code.startsWith("<", i)) {
+                int j = i + 1;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) return false;
+                for (int k = j; k < i; k++)
+                    if (!Character.isUpperCase(code.charAt(k))) return false;
+                stack.push(code.substring(j, i));
+                i++;
+            }
+            else i++;
+        }
+        return stack.isEmpty();
+
+=======
+
+        if (code == null || code.length() == 0) {
+            return false;
+        }
+        Stack<String> stack = new Stack<>();
+        int i = 0;
+        while (i < code.length()) {
+            if (i > 0 && stack.isEmpty()) {
+                return false;
+            }
+            if (code.startsWith("<![CDATA[", i)) {
+                int j = i + 9;
+                i = code.indexOf("]]>", j);
+                if (i < 0) {
+                    return false;
+                }
+                i += 3;
+            } else if (code.startsWith("</", i)) {
+                int j = i + 2;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; k++) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                String startTag = stack.pop();
+                if (!startTag.equals(code.substring(j, i))) {
+                    return false;
+                }
+                i++;
+            } else if (code.startsWith("<", i)) {
+                int j = i + 1;
+                i = code.indexOf(">", j);
+                if (i < 0 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; k++) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                stack.push(code.substring(j, i));
+                i++;
+            } else {
+                i++;
+            }
+        }
+        return stack.isEmpty();
+
+=======
+
+        if (code.length() < 7) {
+            return false;
+        }
+        if (code.charAt(0) != '<' || code.charAt(1) != '!' || code.charAt(2) != '[' || code.charAt(3) != 'C' || code.charAt(4) != 'D' || code.charAt(5) != 'A' || code.charAt(6) != 'T' || code.charAt(7) != 'A' || code.charAt(8) != '[') {
+            return false;
+        }
+        int i = 9;
+        int n = code.length();
+        Stack<String> stack = new Stack<>();
+        while (i < n) {
+            if (code.charAt(i) == '<') {
+                if (code.charAt(i + 1) == '/') {
+                    int j = i + 2;
+                    while (j < n && code.charAt(j) != '>') {
+                        j++;
+                    }
+                    if (j == n) {
+                        return false;
+                    }
+                    String name = code.substring(i + 2, j);
+                    if (name.length() == 0 || name.length() > 9) {
+                        return false;
+                    }
+                    for (int k = 0; k < name.length(); k++) {
+                        if (name.charAt(k) < 'A' || name.charAt(k) > 'Z') {
+                            return false;
+                        }
+                    }
+                    if (stack.isEmpty() || !stack.peek().equals(name)) {
+                        return false;
+                    }
+                    stack.pop();
+                    i = j + 1;
+                } else {
+                    int j = i + 1;
+                    while (j < n && code.charAt(j) != '>') {
+                        j++;
+                    }
+                    if (j == n) {
+                        return false;
+                    }
+                    String name = code.substring(i + 1, j);
+                    if (name.length() == 0 || name.length() > 9) {
+                        return false;
+                    }
+                    for (int k = 0; k < name.length(); k++) {
+                        if (name.charAt(k) < 'A' || name.charAt(k) > 'Z') {
+                            return false;
+                        }
+                    }
+                    stack.push(name);
+                    i = j + 1;
+                }
+            } else if (code.charAt(i) == '!' && code.charAt(i + 1) == '[' && code.charAt(i + 2
+
+=======
+
+        if (code.length() < 7) return false;
+        if (code.charAt(0) != '<' || code.charAt(1) == '/' || code.charAt(1) == '!' || code.charAt(code.length() - 1) != '>') return false;
+        Stack<String> stack = new Stack<>();
+        int i = 0;
+        while (i < code.length()) {
+            if (i > 0 && stack.isEmpty()) return false;
+            if (code.charAt(i) == '<') {
+                if (code.charAt(i + 1) == '/') {
+                    int j = i + 2;
+                    while (j < code.length() && code.charAt(j) != '>') j++;
+                    if (j == code.length()) return false;
+                    String tag = code.substring(i + 2, j);
+                    if (tag.length() < 1 || tag.length() > 9) return false;
+                    for (int k = 0; k < tag.length(); k++) {
+                        if (tag.charAt(k) < 'A' || tag.charAt(k) > 'Z') return false;
+                    }
+                    if (stack.isEmpty() || !tag.equals(stack.pop())) return false;
+                    i = j + 1;
+                } else if (code.charAt(i + 1) == '!') {
+                    if (code.charAt(i + 2) != '[' || code.charAt(i + 3) != 'C' || code.charAt(i + 4) != 'D' || code.charAt(i + 5) != 'A' || code.charAt(i + 6) != 'T' || code.charAt(i + 7) != 'A' || code.charAt(i + 8) != '[') return false;
+                    int j = i + 9;
+                    while (j < code.length() - 2) {
+                        if (code.charAt(j) == ']' && code.charAt(j + 1) == ']' && code.charAt(j + 2) == '>') break;
+                        j++;
+                    }
+                    if (j == code.length() - 2) return false;
+                    i = j + 3;
+                } else {
+                    int j = i + 1;
+                    while (j < code.length() && code.charAt(j) != '>') j++;
+                    if (j == code.length()) return false;
+                    String tag = code.substring(i + 1, j);
+
+=======
+
+        if (code.charAt(0) != '<') return false;
+        if (code.charAt(code.length() - 1) != '>') return false;
+        if (!Character.isUpperCase(code.charAt(1))) return false;
+        Stack<String> stack = new Stack<>();
+        int i = 0;
+        while (i < code.length()) {
+            if (code.charAt(i) == '<') {
+                if (i + 1 < code.length() && code.charAt(i + 1) == '!') {
+                    if (i + 9 < code.length() && code.substring(i, i + 9).equals("<![CDATA[")) {
+                        int j = i + 9;
+                        while (j + 3 < code.length() && !code.substring(j, j + 3).equals("]]>")) {
+                            j++;
+                        }
+                        if (j + 3 > code.length()) return false;
+                        i = j + 2;
+                    } else {
+                        return false;
+                    }
+                } else if (i + 1 < code.length() && code.charAt(i + 1) == '/') {
+                    int j = i + 2;
+                    while (j < code.length() && code.charAt(j) != '>') {
+                        j++;
+                    }
+                    if (j >= code.length()) return false;
+                    String tag = code.substring(i + 2, j);
+                    if (tag.length() < 1 || tag.length() > 9) return false;
+                    if (stack.isEmpty() || !stack.pop().equals(tag)) return false;
+                    i = j;
+                } else {
+                    int j = i + 1;
+                    while (j < code.length() && code.charAt(j) != '>') {
+                        j++;
+                    }
+                    if (j >= code.length()) return false;
+                    String tag = code.substring(i + 1, j);
+                    if (tag.length() < 1 || tag.length() > 9) return false;
+                    for (int k = 0; k < tag.length(); k++) {
+                        if (!Character.isUpperCase(tag.charAt(k))) return false;
+                    }
+                    stack.push(tag);
+                    i = j;
+                }
+            }
+            i++;
+        }
+        return stack.isEmpty();
+
+=======
+
+        int n = code.length();
+        if (n == 0) {
+            return true;
+        }
+        if (code.charAt(0) != '<') {
+            return false;
+        }
+        int i = 0;
+        Deque<String> stack = new LinkedList<>();
+        while (i < n) {
+            if (i > 0 && stack.isEmpty()) {
+                return false;
+            }
+            if (code.startsWith("<![CDATA[", i)) {
+                int j = i + 9;
+                i = code.indexOf("]]>", j);
+                if (i == -1) {
+                    return false;
+                }
+                i += 3;
+            } else if (code.startsWith("</", i)) {
+                int j = i + 2;
+                i = code.indexOf(">", j);
+                if (i == -1 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; ++k) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                String startTag = stack.pop();
+                if (!startTag.equals(code.substring(j, i))) {
+                    return false;
+                }
+                i++;
+            } else if (code.startsWith("<", i)) {
+                int j = i + 1;
+                i = code.indexOf(">", j);
+                if (i == -1 || i == j || i - j > 9) {
+                    return false;
+                }
+                for (int k = j; k < i; ++k) {
+                    if (!Character.isUpperCase(code.charAt(k))) {
+                        return false;
+                    }
+                }
+                stack.push(code.substring(j, i));
+                i++;
+            } else {
+                i++;
+            }
+        }
+        return stack.isEmpty();
+
+=======
+
+        return parse(code) == code.length();
+    }
+    private int parse(String code) {
+        int i = 0;
+        int n = code.length();
+        while (i < n) {
+            if (i > 0 && code.charAt(i) != '<') return i;
+            if (code.startsWith("</", i)) {
+                int j = code.indexOf(">", i + 2);
+                if (j < 0) return i;
+                String tag = code.substring(i + 2, j);
+                if (tag.length() < 1 || tag.length() > 9) return i;
+                for (char c : tag.toCharArray()) {
+                    if (!Character.isUpperCase(c)) return i;
+                }
+                return j + 1;
+            } else if (code.startsWith("<![CDATA[", i)) {
+                int j = code.indexOf("]]>", i + 9);
+                if (j < 0) return i;
+                return j + 3;
+            } else {
+                int j = code.indexOf("<", i + 1);
+                if (j < 0) return n;
+                int k = parse(code.substring(i + 1, j));
+                if (k == j - i - 1) return n;
+                i = j + k;
+            }
+        }
+        return i;
+
+=======
+
+        return code.matches("<([A-Z]{1,9})>[^<]*</\\1>");

@@ -1,0 +1,417 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = grid.size();
+        int dx[] = {2, 2, -2, -2, 1, 1, -1, -1};
+        int dy[] = {1, -1, 1, -1, 2, -2, 2, -2};
+        int x = 0, y = 0;
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        visited[x][y] = true;
+        for (int i = 0; i < n * n; ++i) {
+            int nx = x + dx[grid[x][y] % 8];
+            int ny = y + dy[grid[x][y] % 8];
+            if (nx < 0 || nx >= n || ny < 0 || ny >= n || visited[nx][ny])
+                return false;
+            visited[nx][ny] = true;
+            x = nx, y = ny;
+        }
+        return true;
+    }
+    bool checkValidGrid2(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int dx[] = {2, 2, -2, -2, 1, 1, -1, -1};
+        int dy[] = {1, -1, 1, -1, 2, -2, 2, -2};
+        int x = 0, y = 0;
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        visited[x][y] = true;
+        for (int i = 0; i < n * n; ++i) {
+            int nx = x + dx[i % 8];
+            int ny = y + dy[i % 8];
+            if (nx < 0 || nx >= n || ny < 0 || ny >= n || visited[nx][ny])
+                return false;
+            visited[nx][ny] = true;
+            x = nx, y = ny;
+        }
+        return true;
+
+=======
+
+        int n = grid.size();
+        int dx[] = {1, 2, 2, 1, -1, -2, -2, -1};
+        int dy[] = {2, 1, -1, -2, -2, -1, 1, 2};
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int x, y;
+                for (int k = 0; k < 8; k++) {
+                    x = i + dx[k];
+                    y = j + dy[k];
+                    if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == grid[i][j] + 1) {
+                        break;
+                    }
+                }
+                if (x < 0 || x >= n || y < 0 || y >= n) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    bool checkKnightTourConfiguration(vector<vector<int>>& grid) {
+        int n = grid.size();
+        if (n < 3 || n > 7) {
+            return false;
+        }
+        int dx[] = {1, 2, 2, 1, -1, -2, -2, -1};
+        int dy[] = {2, 1, -1, -2, -2, -1, 1, 2};
+        int cnt = 0;
+        int x = 0, y = 0;
+        int k = 0;
+        while (cnt < n * n) {
+            if (grid[x][y] != cnt) {
+                return false;
+            }
+            cnt++;
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            if (nx < 0 || nx >= n || ny < 0 || ny >= n || grid[nx][ny] != -1) {
+                k = (k + 1) % 8;
+            } else {
+                x = nx;
+                y = ny;
+            }
+        }
+        return checkValidGrid(grid);
+
+=======
+
+        int n = grid.size();
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int value = grid[i][j];
+                if (value == n * n - 1) {
+                    continue;
+                }
+                int x = value / n;
+                int y = value % n;
+                if (i > 0 && j > 1 && grid[i - 1][j - 2] == value + 1) {
+                    continue;
+                }
+                if (i > 1 && j > 0 && grid[i - 2][j - 1] == value + 1) {
+                    continue;
+                }
+                if (i > 1 && j < n - 1 && grid[i - 2][j + 1] == value + 1) {
+                    continue;
+                }
+                if (i > 0 && j < n - 2 && grid[i - 1][j + 2] == value + 1) {
+                    continue;
+                }
+                if (i < n - 1 && j < n - 2 && grid[i + 1][j + 2] == value + 1) {
+                    continue;
+                }
+                if (i < n - 2 && j < n - 1 && grid[i + 2][j + 1] == value + 1) {
+                    continue;
+                }
+                if (i < n - 2 && j > 0 && grid[i + 2][j - 1] == value + 1) {
+                    continue;
+                }
+                if (i < n - 1 && j > 1 && grid[i + 1][j - 2] == value + 1) {
+                    continue;
+                }
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = grid.size();
+        vector<vector<int>> dir = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        visited[0][0] = true;
+        int r = 0, c = 0;
+        for (int i = 0; i < n * n - 1; i++) {
+            bool found = false;
+            for (int k = 0; k < 8; k++) {
+                int nr = r + dir[k][0];
+                int nc = c + dir[k][1];
+                if (nr < 0 || nr >= n || nc < 0 || nc >= n || visited[nr][nc]) continue;
+                if (grid[nr][nc] == i + 1) {
+                    r = nr;
+                    c = nc;
+                    visited[r][c] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+
+=======
+
+        int n = grid.size();
+        int moves[8][2] = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+        bool visited[7][7] = {false};
+        int row = 0, col = 0;
+        for (int i = 0; i < n * n; i++) {
+            visited[row][col] = true;
+            int nextRow = row, nextCol = col;
+            for (int j = 0; j < 8; j++) {
+                int r = row + moves[j][0];
+                int c = col + moves[j][1];
+                if (r >= 0 && r < n && c >= 0 && c < n && grid[r][c] == i + 1) {
+                    nextRow = r;
+                    nextCol = c;
+                    break;
+                }
+            }
+            row = nextRow;
+            col = nextCol;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!visited[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    bool checkValidKnightTour(vector<vector<int>>& grid) {
+        if (!checkValidGrid(grid)) {
+            return false;
+        }
+        int n = grid.size();
+        int moves[8][2] = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
+        int row = 0, col = 0;
+        for (int i = 0; i < n * n; i++) {
+            int nextRow = row, nextCol = col;
+            for (int j = 0; j < 8; j++) {
+                int r = row + moves[j][0];
+                int c = col + moves[j][1];
+                if (r >= 0 && r < n && c >= 0 && c < n && grid[r][c] == i + 1) {
+                    next
+
+=======
+
+        vector<vector<int>> dir = {{-2,-1}, {-2,1}, {-1,-2}, {-1,2}, {1,-2}, {1,2}, {2,-1}, {2,1}};
+        int n = grid.size();
+        int m = grid[0].size();
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < n * m; i++) {
+            bool found = false;
+            for (int j = 0; j < 8; j++) {
+                int x1 = x + dir[j][0];
+                int y1 = y + dir[j][1];
+                if (x1 >= 0 && x1 < n && y1 >= 0 && y1 < m && grid[x1][y1] == i + 1) {
+                    found = true;
+                    x = x1;
+                    y = y1;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+    bool checkValidKnightTour(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        if (grid[0][0] != 0) {
+            return false;
+        }
+        vector<int> cnt(n * m, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] >= n * m || grid[i][j] < 0) {
+                    return false;
+                }
+                cnt[grid[i][j]]++;
+            }
+        }
+        for (int i = 0; i < n * m; i++) {
+            if (cnt[i] != 1) {
+                return false;
+            }
+        }
+        return checkValidGrid(grid);
+
+=======
+
+        int n = grid.size();
+        int x = 0, y = 0;
+        vector<vector<int>> visited(n, vector<int>(n, 0));
+        visited[0][0] = 1;
+        for (int k = 1; k < n * n; k++) {
+            bool found = false;
+            for (int i = 0; i < 8; i++) {
+                int nx = x + dx[i], ny = y + dy[i];
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n && !visited[nx][ny] && grid[nx][ny] == k) {
+                    x = nx, y = ny;
+                    visited[x][y] = 1;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+
+=======
+
+        int n = grid.size();
+        vector<int> visited(n*n, 0);
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(grid[i][j] < 0 || grid[i][j] >= n*n || visited[grid[i][j]]){
+                    return false;
+                }
+                visited[grid[i][j]] = 1;
+            }
+        }
+        return true;
+    }
+    bool checkValidKnightMove(int x1, int y1, int x2, int y2, int n){
+        if(x1<0 || x1>=n || x2<0 || x2>=n || y1<0 || y1>=n || y2<0 || y2>=n){
+            return false;
+        }
+        if(abs(x1-x2)==2 && abs(y1-y2)==1){
+            return true;
+        }
+        if(abs(x1-x2)==1 && abs(y1-y2)==2){
+            return true;
+        }
+        return false;
+    }
+    bool checkKnightTour(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int x = 0, y = 0;
+        for(int i=0; i<n*n-1; i++){
+            int x1 = x, y1 = y;
+            int x2 = grid[x][y] / n, y2 = grid[x][y] % n;
+            if(!checkValidKnightMove(x1, y1, x2, y2, n)){
+                return false;
+            }
+            x = x2, y = y2;
+        }
+        return true;
+    }
+    bool checkKnightTourConfiguration(vector<vector<int>>& grid) {
+        if(!checkValidGrid(grid)){
+            return false;
+        }
+        return checkKnightTour(grid);
+
+=======
+
+        int n = grid.size();
+        int m = grid[0].size();
+        int startRow = 0;
+        int startCol = 0;
+        int endRow = n - 1;
+        int endCol = m - 1;
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (count < n * m) {
+            if (i < startRow || i > endRow || j < startCol || j > endCol) {
+                return false;
+            }
+            if (grid[i][j] == count) {
+                count++;
+            } else {
+                return false;
+            }
+            if (i == startRow && j == startCol) {
+                startRow++;
+                startCol++;
+            } else if (i == startRow && j == endCol) {
+                startRow++;
+                endCol--;
+            } else if (i == endRow && j == startCol) {
+                endRow--;
+                startCol++;
+            } else if (i == endRow && j == endCol) {
+                endRow--;
+                endCol--;
+            }
+            if (i == startRow) {
+                j++;
+            } else if (i == endRow) {
+                j--;
+            } else if (j == startCol) {
+                i++;
+            } else if (j == endCol) {
+                i--;
+            }
+        }
+        return true;
+    }
+    bool checkValidKnightTour(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<int> dx = {1, 1, -1, -1, 2, 2, -2, -2};
+        vector<int> dy = {2, -2, 2, -2, 1, -1, 1, -1};
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (count < n * m) {
+            if (i < 0 || i >= n || j < 0 || j >= m) {
+                return false;
+            }
+            if (grid[i][j] == count) {
+                count++;
+            } else {
+                return false;
+            }
+            for (int k = 0; k < 8; k++) {
+                int x = i + dx[k];
+
+=======
+
+        int N = grid.size();
+        int M = grid[0].size();
+        int move[8][2] = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+        int row = 0, col = 0, count = 0;
+        while (count < N*M) {
+            int next_row = row + move[grid[row][col]][0];
+            int next_col = col + move[grid[row][col]][1];
+            if (next_row < 0 || next_row >= N || next_col < 0 || next_col >= M) {
+                return false;
+            }
+            row = next_row;
+            col = next_col;
+            count++;
+        }
+        return true;
+    }
+    bool isValid(int row, int col, vector<vector<int>>& grid) {
+        int N = grid.size();
+        int M = grid[0].size();
+        return row >= 0 && row < N && col >= 0 && col < M;
+    }
+    bool checkValidGrid2(vector<vector<int>>& grid) {
+        int N = grid.size();
+        int M = grid[0].size();
+        int move[8][2] = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+        vector<vector<bool>> visited(N, vector<bool>(M, false));
+        int row = 0, col = 0, count = 0;
+        while (count < N*M) {
+            if (visited[row][col]) {
+                return false;
+            }
+            visited[row][col] = true;
+            int next_row = row + move[grid[row][col]][0];
+            int next_col = col + move[grid[row][col]][1];
+            if (!isValid(next_row, next_col, grid)) {
+                return false;
+            }
+            row = next_row;
+            col = next_col;
+            count++;
+        }
+        return true;

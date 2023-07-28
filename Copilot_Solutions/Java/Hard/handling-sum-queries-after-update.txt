@@ -1,0 +1,313 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long[] result = new long[queries.length];
+        int index = 0;
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                for (int i = query[1]; i <= query[2]; i++) {
+                    nums1[i] = nums1[i] == 1 ? 0 : 1;
+                }
+            } else if (query[0] == 2) {
+                for (int i = 0; i < nums2.length; i++) {
+                    nums2[i] += nums1[i] * query[1];
+                }
+            } else if (query[0] == 3) {
+                long sum = 0;
+                for (int i = 0; i < nums2.length; i++) {
+                    sum += nums2[i];
+                }
+                result[index++] = sum;
+            }
+        }
+        return result;
+
+=======
+
+        long[] ans = new long[queries.length];
+        int idx = 0;
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                for (int i = query[1]; i <= query[2]; i++) {
+                    nums1[i] ^= 1;
+                }
+            } else if (query[0] == 2) {
+                for (int i = 0; i < nums2.length; i++) {
+                    nums2[i] += nums1[i] * query[1];
+                }
+            } else {
+                long sum = 0;
+                for (int num : nums2) {
+                    sum += num;
+                }
+                ans[idx++] = sum;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        long[] ans = new long[queries.length];
+        int index = 0;
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                for (int i = query[1]; i <= query[2]; i++) {
+                    nums1[i] ^= 1;
+                }
+            } else if (query[0] == 2) {
+                for (int i = 0; i < n; i++) {
+                    nums2[i] += nums1[i] * query[1];
+                }
+            } else {
+                long sum = 0;
+                for (int i = 0; i < n; i++) {
+                    sum += nums2[i];
+                }
+                ans[index++] = sum;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        long[] res = new long[queries.length];
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums2[i];
+        }
+        int[] count = new int[n + 1];
+        int idx = 0;
+        for (int[] query : queries) {
+            int type = query[0];
+            if (type == 1) {
+                int l = query[1], r = query[2];
+                count[l]++;
+                count[r + 1]--;
+            } else if (type == 2) {
+                int p = query[1];
+                for (int i = 1; i <= n; i++) {
+                    count[i] += count[i - 1];
+                    sum[i] += count[i] * p;
+                }
+                Arrays.fill(count, 0);
+            } else {
+                int l = query[1], r = query[2];
+                res[idx++] = sum[r + 1] - sum[l];
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        long[] res = new long[queries.length];
+        int[] count = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            count[i + 1] = count[i] + nums1[i];
+        }
+        long sum = 0;
+        int index = 0;
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                int l = query[1], r = query[2];
+                sum += (r - l + 1) % 2 * (count[r + 1] - count[l]);
+            } else if (query[0] == 2) {
+                sum += query[1] * n;
+            } else {
+                res[index++] = sum;
+            }
+        }
+        return Arrays.copyOf(res, index);
+
+=======
+
+        int n = nums1.length;
+        long[] preSum = new long[n];
+        long[] res = new long[queries.length];
+        for (int i = 0; i < n; ++i) {
+            preSum[i] = nums2[i];
+            if (i > 0) {
+                preSum[i] += preSum[i - 1];
+            }
+        }
+        for (int i = 0; i < queries.length; ++i) {
+            if (queries[i][0] == 1) {
+                for (int j = queries[i][1]; j <= queries[i][2]; ++j) {
+                    nums1[j] ^= 1;
+                }
+            } else if (queries[i][0] == 2) {
+                for (int j = 0; j < n; ++j) {
+                    nums2[j] += nums1[j] * queries[i][1];
+                }
+                for (int j = 0; j < n; ++j) {
+                    preSum[j] = nums2[j];
+                    if (j > 0) {
+                        preSum[j] += preSum[j - 1];
+                    }
+                }
+            } else {
+                res[i] = preSum[queries[i][2]];
+                if (queries[i][1] > 0) {
+                    res[i] -= preSum[queries[i][1] - 1];
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        int q = queries.length;
+        long[] res = new long[q];
+        int[] s = new int[n];
+        for (int i = 0; i < n; i++) {
+            s[i] = nums1[i] * nums2[i];
+        }
+        for (int i = 0; i < q; i++) {
+            if (queries[i][0] == 1) {
+                int l = queries[i][1];
+                int r = queries[i][2];
+                for (int j = l; j <= r; j++) {
+                    s[j] = 1 - nums1[j] * nums2[j];
+                }
+            } else if (queries[i][0] == 2) {
+                int p = queries[i][1];
+                for (int j = 0; j < n; j++) {
+                    nums2[j] += p * nums1[j];
+                    s[j] = nums1[j] * nums2[j];
+                }
+            } else {
+                long sum = 0;
+                for (int j = 0; j < n; j++) {
+                    sum += s[j];
+                }
+                res[i] = sum;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        int q = queries.length;
+        long[] res = new long[q];
+        long[] sum = new long[n];
+        long[] flip = new long[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums2[i];
+            flip[i] = nums1[i] * nums2[i];
+        }
+        for (int i = 1; i < n; i++) {
+            sum[i] += sum[i - 1];
+            flip[i] += flip[i - 1];
+        }
+        int idx = 0;
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                int l = query[1];
+                int r = query[2];
+                if (l > 0) {
+                    sum[l - 1] -= nums1[l - 1] * nums2[l - 1];
+                    flip[l - 1] -= nums1[l - 1] * nums2[l - 1];
+                }
+                sum[r] += nums1[r] * nums2[r];
+                flip[r] += nums1[r] * nums2[r];
+                for (int i = l; i <= r; i++) {
+                    nums1[i] = 1 - nums1[i];
+                }
+            } else if (query[0] == 2) {
+                int p = query[1];
+                for (int i = 0; i < n; i++) {
+                    sum[i] += nums1[i] * p;
+                    flip[i] += nums1[i] * p;
+                }
+            } else {
+                int l = query[1];
+                int r = query[2];
+                if (l > 0) {
+                    res[idx++] = flip[r] - flip[l - 1];
+                } else {
+                    res[idx++] = flip[r];
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int N = nums1.length;
+        int Q = queries.length;
+        int[] a = new int[N];
+        for (int i = 0; i < N; i++) {
+            a[i] = nums1[i] * nums2[i];
+        }
+        int[] b = new int[N];
+        long[] ans = new long[Q];
+        int ansIdx = 0;
+        for (int[] query : queries) {
+            int type = query[0];
+            int x = query[1];
+            int y = query[2];
+            if (type == 1) {
+                for (int i = x; i <= y; i++) {
+                    a[i] = nums1[i] * (1 - nums2[i]);
+                    b[i] = (1 - nums1[i]) * nums2[i];
+                    nums1[i] = 1 - nums1[i];
+                    nums2[i] = 1 - nums2[i];
+                }
+            } else if (type == 2) {
+                for (int i = 0; i < N; i++) {
+                    b[i] += x * a[i];
+                }
+            } else {
+                long sum = 0;
+                for (int i = 0; i < N; i++) {
+                    sum += b[i];
+                }
+                ans[ansIdx++] = sum;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int q = queries.length;
+        long[] res = new long[q];
+        long[] sum = new long[n];
+        long[] flip = new long[n];
+        long[] add = new long[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums2[i];
+            if (i > 0) {
+                sum[i] += sum[i - 1];
+            }
+        }
+        for (int i = 0; i < q; i++) {
+            if (queries[i][0] == 1) {
+                int l = queries[i][1], r = queries[i][2];
+                flip[l] ^= 1;
+                flip[r + 1] ^= 1;
+            } else if (queries[i][0] == 2) {
+                int p = queries[i][1];
+                add[0] += p;
+            } else {
+                long cur = 0;
+                for (int j = 0; j < n; j++) {
+                    cur += flip[j];
+                    flip[j] = 0;
+                    if ((cur & 1) == 1) {
+                        res[i] += 1 - nums1[j];
+                        nums1[j] = 1 - nums1[j];
+                    }
+                    res[i] += add[j] * nums1[j];
+                    sum[j] += add[j];
+                    add[j] = 0;
+                }
+                res[i] += sum[n - 1];
+            }
+        }
+        return res;

@@ -1,0 +1,252 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back({e[1], e[2]});
+            g[e[1]].push_back({e[0], e[2]});
+        }
+        vector<vector<int>> dp(n, vector<int>(maxTime + 1, INT_MAX));
+        dp[0][0] = passingFees[0];
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto top = pq.top();
+            pq.pop();
+            int cost = top[0], u = top[1], time = top[2];
+            if (dp[u][time] < cost) continue;
+            for (auto& e : g[u]) {
+                int v = e.first, t = e.second;
+                if (time + t <= maxTime) {
+                    int c = cost + passingFees[v];
+                    if (c < dp[v][time + t]) {
+                        dp[v][time + t] = c;
+                        pq.push({c, v, time + t});
+                    }
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 0; i <= maxTime; ++i) {
+            res = min(res, dp[n - 1][i]);
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back({e[1], e[2]});
+            g[e[1]].push_back({e[0], e[2]});
+        }
+        vector<vector<int>> dist(n, vector<int>(maxTime + 1, INT_MAX));
+        dist[0][0] = passingFees[0];
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto t = pq.top(); pq.pop();
+            int d = t[0], u = t[1], time = t[2];
+            if (d > dist[u][time]) continue;
+            for (auto& e : g[u]) {
+                int v = e.first, w = e.second;
+                if (time + w <= maxTime) {
+                    if (dist[v][time + w] > d + passingFees[v]) {
+                        dist[v][time + w] = d + passingFees[v];
+                        pq.push({dist[v][time + w], v, time + w});
+                    }
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 0; i <= maxTime; ++i) {
+            res = min(res, dist[n - 1][i]);
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back({e[1], e[2]});
+            g[e[1]].push_back({e[0], e[2]});
+        }
+        vector<vector<int>> f(n, vector<int>(maxTime + 1, INT_MAX / 2));
+        f[0][0] = passingFees[0];
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> q;
+        q.push({f[0][0], 0, 0});
+        while (!q.empty()) {
+            auto t = q.top();
+            q.pop();
+            int cost = t[0], x = t[1], time = t[2];
+            if (cost > f[x][time]) continue;
+            for (auto& e : g[x]) {
+                int y = e.first, w = e.second;
+                if (time + w <= maxTime) {
+                    if (f[y][time + w] > f[x][time] + passingFees[y]) {
+                        f[y][time + w] = f[x][time] + passingFees[y];
+                        q.push({f[y][time + w], y, time + w});
+                    }
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 0; i <= maxTime; i++) {
+            res = min(res, f[n - 1][i]);
+        }
+        return res == INT_MAX / 2 ? -1 : res;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back({e[1], e[2]});
+            adj[e[1]].push_back({e[0], e[2]});
+        }
+        vector<vector<int>> dp(n, vector<int>(maxTime + 1, INT_MAX));
+        dp[0][0] = passingFees[0];
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto v = pq.top();
+            pq.pop();
+            int c = v[0], u = v[1], t = v[2];
+            if (u == n - 1) {
+                return c;
+            }
+            if (t + 1 > maxTime) {
+                continue;
+            }
+            for (auto& e : adj[u]) {
+                int v = e.first, w = e.second;
+                if (t + w <= maxTime && dp[v][t + w] > c + passingFees[v]) {
+                    dp[v][t + w] = c + passingFees[v];
+                    pq.push({dp[v][t + w], v, t + w});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back({edge[1], edge[2]});
+            graph[edge[1]].push_back({edge[0], edge[2]});
+        }
+        vector<vector<int>> dp(n, vector<int>(maxTime + 1, INT_MAX));
+        dp[0][0] = passingFees[0];
+        priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto [cost, city, time] = pq.top();
+            pq.pop();
+            if (dp[city][time] < cost) {
+                continue;
+            }
+            for (auto& [next, nextTime] : graph[city]) {
+                if (time + nextTime <= maxTime) {
+                    if (dp[next][time + nextTime] > cost + passingFees[next]) {
+                        dp[next][time + nextTime] = cost + passingFees[next];
+                        pq.push({dp[next][time + nextTime], next, time + nextTime});
+                    }
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for (int time = 1; time <= maxTime; ++time) {
+            ans = min(ans, dp[n - 1][time]);
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> g(n);
+        for (auto &e : edges) {
+            g[e[0]].push_back(make_pair(e[1], e[2]));
+            g[e[1]].push_back(make_pair(e[0], e[2]));
+        }
+        vector<vector<int>> dp(n, vector<int>(maxTime + 1, INT_MAX));
+        dp[0][0] = passingFees[0];
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push(make_pair(passingFees[0], make_pair(0, 0)));
+        while (!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            int cost = p.first, city = p.second.first, time = p.second.second;
+            if (cost > dp[city][time]) continue;
+            for (auto &e : g[city]) {
+                int city2 = e.first, time2 = e.second;
+                if (time + time2 > maxTime) continue;
+                if (dp[city][time] + passingFees[city2] < dp[city2][time + time2]) {
+                    dp[city2][time + time2] = dp[city][time] + passingFees[city2];
+                    pq.push(make_pair(dp[city2][time + time2], make_pair(city2, time + time2)));
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i <= maxTime; ++i) {
+            ans = min(ans, dp[n - 1][i]);
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            graph[u].push_back({v, w});
+            graph[v].push_back({u, w});
+        }
+        vector<vector<int>> dist(n, vector<int>(maxTime + 1, INT_MAX));
+        dist[0][0] = passingFees[0];
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto top = pq.top();
+            pq.pop();
+            int cost = top[0], u = top[1], time = top[2];
+            if (u == n - 1) return cost;
+            for (auto nei : graph[u]) {
+                int v = nei.first, w = nei.second;
+                if (time + w <= maxTime && dist[v][time + w] > cost + passingFees[v]) {
+                    dist[v][time + w] = cost + passingFees[v];
+                    pq.push({dist[v][time + w], v, time + w});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = passingFees.size();
+        vector<vector<int>> cost(n, vector<int>(maxTime+1, INT_MAX));
+        cost[0][0] = passingFees[0];
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back({e[1], e[2]});
+            graph[e[1]].push_back({e[0], e[2]});
+        }
+        
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({passingFees[0], 0, 0});
+        while (!pq.empty()) {
+            auto [c, u, t] = pq.top();
+            pq.pop();
+            if (u == n-1) return c;
+            for (auto& [v, w] : graph[u]) {
+                if (t+w > maxTime) continue;
+                if (c + passingFees[v] < cost[v][t+w]) {
+                    cost[v][t+w] = c + passingFees[v];
+                    pq.push({cost[v][t+w], v, t+w});
+                }
+            }
+        }
+        return -1;

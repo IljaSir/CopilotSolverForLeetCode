@@ -1,0 +1,310 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = word.length();
+        int[][][] dp = new int[n][27][27];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return dfs(word, 0, 26, 26, dp);
+    }
+    
+    int dfs(String word, int i, int l1, int l2, int[][][] dp) {
+        if (i == word.length()) {
+            return 0;
+        }
+        if (dp[i][l1][l2] != Integer.MAX_VALUE) {
+            return dp[i][l1][l2];
+        }
+        int c1 = word.charAt(i) - 'A';
+        int cost = dfs(word, i + 1, c1, l2, dp) + dist(l1, c1);
+        cost = Math.min(cost, dfs(word, i + 1, l1, c1, dp) + dist(l2, c1));
+        return dp[i][l1][l2] = cost;
+    }
+    
+    int dist(int l1, int l2) {
+        if (l1 == 26) {
+            return 0;
+        }
+        int x1 = l1 / 6, y1 = l1 % 6;
+        int x2 = l2 / 6, y2 = l2 % 6;
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+
+=======
+
+        int n = word.length();
+        int[][][] dp = new int[n][27][27];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return dfs(word, 0, 26, 26, dp);
+    }
+    private int dfs(String word, int i, int f1, int f2, int[][][] dp) {
+        if (i == word.length()) {
+            return 0;
+        }
+        if (dp[i][f1][f2] != Integer.MAX_VALUE) {
+            return dp[i][f1][f2];
+        }
+        int c = word.charAt(i) - 'A';
+        int res = dfs(word, i + 1, c, f2, dp) + dist(f1, c);
+        res = Math.min(res, dfs(word, i + 1, f1, c, dp) + dist(f2, c));
+        return dp[i][f1][f2] = res;
+    }
+    private int dist(int i, int j) {
+        if (i == 26) {
+            return 0;
+        }
+        return Math.abs(i / 6 - j / 6) + Math.abs(i % 6 - j % 6);
+
+=======
+
+        int n = word.length();
+        int[][][] dp = new int[n][27][27];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE / 2);
+            }
+        }
+        dp[0][0][0] = 0;
+        for (int i = 0; i < n - 1; i++) {
+            int c1 = word.charAt(i) - 'A';
+            int c2 = word.charAt(i + 1) - 'A';
+            for (int j = 0; j < 27; j++) {
+                for (int k = 0; k < 27; k++) {
+                    dp[i + 1][j][c2] = Math.min(dp[i + 1][j][c2], dp[i][j][k] + dist(k, c2));
+                    dp[i + 1][c1][k] = Math.min(dp[i + 1][c1][k], dp[i][j][k] + dist(j, c1));
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < 27; i++) {
+            for (int j = 0; j < 27; j++) {
+                ans = Math.min(ans, dp[n - 1][i][j]);
+            }
+        }
+        return ans;
+    }
+
+    private int dist(int c1, int c2) {
+        if (c1 == 26 || c2 == 26) {
+            return 0;
+        }
+        return Math.abs(c1 / 6 - c2 / 6) + Math.abs(c1 % 6 - c2 % 6);
+
+=======
+
+        int n = word.length();
+        int[][][] dp = new int[n][27][27];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        dp[0][0][0] = 0;
+        for (int i = 0; i < n - 1; i++) {
+            int c1 = word.charAt(i) - 'A' + 1;
+            int c2 = word.charAt(i + 1) - 'A' + 1;
+            for (int f1 = 0; f1 < 27; f1++) {
+                for (int f2 = 0; f2 < 27; f2++) {
+                    if (dp[i][f1][f2] == Integer.MAX_VALUE) {
+                        continue;
+                    }
+                    dp[i + 1][f1][c2] = Math.min(dp[i + 1][f1][c2], dp[i][f1][f2] + dist(f2, c2));
+                    dp[i + 1][c1][f2] = Math.min(dp[i + 1][c1][f2], dp[i][f1][f2] + dist(f1, c1));
+                    dp[i + 1][c1][c2] = Math.min(dp[i + 1][c1][c2], dp[i][f1][f2] + dist(f1, c1) + dist(f2, c2));
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int f1 = 0; f1 < 27; f1++) {
+            for (int f2 = 0; f2 < 27; f2++) {
+                res = Math.min(res, dp[n - 1][f1][f2]);
+            }
+        }
+        return res;
+    }
+    
+    int dist(int c1, int c2) {
+        if (c1 == 0 || c2 == 0) {
+            return 0;
+        }
+        return Math.abs((c1 - 1) / 6 - (c2 - 1) / 6) + Math.abs((c1 - 1
+
+=======
+
+        int n = word.length();
+        int[][][] dp = new int[n][26][26];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 26; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return minimumDistance(word, 0, -1, -1, dp);
+    }
+
+    private int minimumDistance(String word, int i, int f1, int f2, int[][][] dp) {
+        if (i == word.length()) {
+            return 0;
+        }
+        if (dp[i][f1 + 1][f2 + 1] != Integer.MAX_VALUE) {
+            return dp[i][f1 + 1][f2 + 1];
+        }
+        int c = word.charAt(i) - 'A';
+        int d1 = f1 == -1 ? 0 : dist(c, f1);
+        int d2 = f2 == -1 ? 0 : dist(c, f2);
+        int res = Math.min(minimumDistance(word, i + 1, c, f2, dp) + d1,
+                minimumDistance(word, i + 1, f1, c, dp) + d2);
+        dp[i][f1 + 1][f2 + 1] = res;
+        return res;
+    }
+
+    private int dist(int c1, int c2) {
+        int r1 = c1 / 6, c11 = c1 % 6;
+        int r2 = c2 / 6, c22 = c2 % 6;
+        return Math.abs(r1 - r2) + Math.abs(c11 - c22);
+
+=======
+
+        int[][][] dp = new int[word.length()][27][27];
+        for (int i = 0; i < word.length(); i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return minDistance(word, 0, 26, 26, dp);
+    }
+    
+    private int minDistance(String word, int index, int left, int right, int[][][] dp) {
+        if (index == word.length()) {
+            return 0;
+        }
+        if (dp[index][left][right] != Integer.MAX_VALUE) {
+            return dp[index][left][right];
+        }
+        int l = getDistance(left, word.charAt(index) - 'A');
+        int r = getDistance(right, word.charAt(index) - 'A');
+        int res = Integer.MAX_VALUE;
+        res = Math.min(res, minDistance(word, index + 1, word.charAt(index) - 'A', right, dp) + l);
+        res = Math.min(res, minDistance(word, index + 1, left, word.charAt(index) - 'A', dp) + r);
+        dp[index][left][right] = res;
+        return res;
+    }
+    
+    private int getDistance(int a, int b) {
+        if (a == 26) {
+            return 0;
+        }
+        return Math.abs(a / 6 - b / 6) + Math.abs(a % 6 - b % 6);
+
+=======
+
+        int[][][] dp = new int[27][27][word.length()];
+        for (int i = 0; i < 27; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return dfs(word, 0, 26, 26, dp);
+
+=======
+
+        int[][][] dp = new int[27][27][word.length()];
+        for (int i = 0; i < 27; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], Integer.MAX_VALUE);
+            }
+        }
+        return dfs(word, 0, 26, 26, dp);
+    }
+
+    private int dfs(String word, int index, int left, int right, int[][][] dp) {
+        if (index == word.length()) {
+            return 0;
+        }
+        if (dp[left][right][index] != Integer.MAX_VALUE) {
+            return dp[left][right][index];
+        }
+        int l = getDistance(left, word.charAt(index) - 'A');
+        int r = getDistance(right, word.charAt(index) - 'A');
+        int ans = Math.min(dfs(word, index + 1, word.charAt(index) - 'A', right, dp) + l,
+                dfs(word, index + 1, left, word.charAt(index) - 'A', dp) + r);
+        dp[left][right][index] = ans;
+        return ans;
+    }
+
+    private int getDistance(int a, int b) {
+        if (a == 26) {
+            return 0;
+        }
+        int x1 = a / 6;
+        int y1 = a % 6;
+        int x2 = b / 6;
+        int y2 = b % 6;
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+
+=======
+
+        int[][][] dp = new int[27][27][word.length()];
+        for (int i = 0; i < 27; i++) {
+            for (int j = 0; j < 27; j++) {
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+        return dfs(dp, word, 0, 0, 0);
+    }
+    
+    private int dfs(int[][][] dp, String word, int i, int l, int r) {
+        if (i == word.length()) {
+            return 0;
+        }
+        if (dp[l][r][i] != -1) {
+            return dp[l][r][i];
+        }
+        int p = word.charAt(i) - 'A';
+        int cost = Math.abs(p / 6 - l / 6) + Math.abs(p % 6 - l % 6);
+        int cost1 = dfs(dp, word, i + 1, p, r) + cost;
+        cost = Math.abs(p / 6 - r / 6) + Math.abs(p % 6 - r % 6);
+        int cost2 = dfs(dp, word, i + 1, l, p) + cost;
+        dp[l][r][i] = Math.min(cost1, cost2);
+        return dp[l][r][i];
+
+=======
+
+        int[][][] dp = new int[word.length() + 1][27][27];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[i].length; j++) {
+                for (int k = 0; k < dp[i][j].length; k++) {
+                    dp[i][j][k] = Integer.MAX_VALUE;
+                }
+            }
+        }
+        return helper(word, 0, 26, 26, dp);
+    }
+    private int helper(String word, int index, int last1, int last2, int[][][] dp) {
+        if (index == word.length()) {
+            return 0;
+        }
+        if (dp[index][last1][last2] != Integer.MAX_VALUE) {
+            return dp[index][last1][last2];
+        }
+        int c = (int) word.charAt(index) - 'A';
+        int cost1 = helper(word, index + 1, c, last2, dp) + dist(c, last1);
+        int cost2 = helper(word, index + 1, last1, c, dp) + dist(c, last2);
+        return dp[index][last1][last2] = Math.min(cost1, cost2);
+    }
+    private int dist(int c1, int c2) {
+        if (c1 == 26) {
+            return 0;
+        }
+        if (c2 == 26) {
+            return 0;
+        }
+        int dx = Math.abs(c1 / 6 - c2 / 6);
+        int dy = Math.abs(c1 % 6 - c2 % 6);
+        return dx + dy;

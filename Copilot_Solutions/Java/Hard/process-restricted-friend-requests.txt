@@ -1,0 +1,393 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] restriction : restrictions) {
+            int x = restriction[0];
+            int y = restriction[1];
+            union(parent, x, y);
+        }
+        for (int i = 0; i < requests.length; i++) {
+            int x = requests[i][0];
+            int y = requests[i][1];
+            if (find(parent, x) == find(parent, y)) {
+                result[i] = false;
+            } else {
+                union(parent, x, y);
+                result[i] = true;
+            }
+        }
+        return result;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+
+    private void union(int[] parent, int x, int y) {
+        int xRoot = find(parent, x);
+        int yRoot = find(parent, y);
+        if (xRoot != yRoot) {
+            parent[xRoot] = yRoot;
+        }
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new HashSet<>());
+        }
+        for (int[] restriction : restrictions) {
+            map.get(restriction[0]).add(restriction[1]);
+            map.get(restriction[1]).add(restriction[0]);
+        }
+
+        for (int i = 0; i < requests.length; i++) {
+            int u = requests[i][0];
+            int v = requests[i][1];
+            if (map.get(u).contains(v)) {
+                result[i] = false;
+                continue;
+            }
+            boolean flag = true;
+            for (int j = 0; j < n; j++) {
+                if (j == u || j == v) {
+                    continue;
+                }
+                if (map.get(u).contains(j) && map.get(v).contains(j)) {
+                    flag = false;
+                    break;
+                }
+            }
+            result[i] = flag;
+        }
+        return result;
+
+=======
+
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new HashSet<>());
+        }
+        for (int[] restriction : restrictions) {
+            int a = restriction[0];
+            int b = restriction[1];
+            map.get(a).add(b);
+            map.get(b).add(a);
+        }
+        boolean[] result = new boolean[requests.length];
+        for (int i = 0; i < requests.length; i++) {
+            int a = requests[i][0];
+            int b = requests[i][1];
+            if (a == b) {
+                result[i] = false;
+                continue;
+            }
+            if (map.get(a).contains(b)) {
+                result[i] = false;
+                continue;
+            }
+            if (map.get(b).contains(a)) {
+                result[i] = false;
+                continue;
+            }
+            Set<Integer> set = new HashSet<>();
+            set.add(a);
+            set.add(b);
+            Queue<Integer> queue = new LinkedList<>();
+            queue.offer(a);
+            queue.offer(b);
+            boolean flag = false;
+            while (!queue.isEmpty()) {
+                int size = queue.size();
+                for (int j = 0; j < size; j++) {
+                    int cur = queue.poll();
+                    for (int next : map.get(cur)) {
+                        if (set.contains(next)) {
+                            continue;
+                        }
+                        if (next == a || next == b) {
+                            flag = true;
+                            break;
+                        }
+                        set.add(next);
+                        queue.offer(next);
+                    }
+                    if (flag) {
+                        break;
+                    }
+                }
+                if (flag) {
+                    break;
+                }
+            }
+            result[i] = !flag;
+        }
+        return result;
+
+=======
+
+        boolean[] res = new boolean[requests.length];
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int[] r : restrictions) {
+            int x = r[0], y = r[1];
+            int px = find(parent, x), py = find(parent, y);
+            if (px != py) {
+                parent[px] = py;
+            }
+        }
+        for (int i = 0; i < requests.length; i++) {
+            int x = requests[i][0], y = requests[i][1];
+            int px = find(parent, x), py = find(parent, y);
+            if (px != py) {
+                res[i] = true;
+                parent[px] = py;
+            }
+        }
+        return res;
+    }
+    
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        boolean[][] friends = new boolean[n][n];
+        for (int i = 0; i < restrictions.length; i++) {
+            friends[restrictions[i][0]][restrictions[i][1]] = true;
+            friends[restrictions[i][1]][restrictions[i][0]] = true;
+        }
+        for (int i = 0; i < requests.length; i++) {
+            int u = requests[i][0];
+            int v = requests[i][1];
+            if (friends[u][v]) {
+                result[i] = false;
+                continue;
+            }
+            boolean flag = true;
+            for (int j = 0; j < n; j++) {
+                if (friends[u][j] && friends[v][j]) {
+                    flag = false;
+                    break;
+                }
+            }
+            result[i] = flag;
+        }
+        return result;
+
+=======
+
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        boolean[] res = new boolean[requests.length];
+        for (int[] r : restrictions) {
+            int x = find(parent, r[0]);
+            int y = find(parent, r[1]);
+            if (x != y) {
+                parent[x] = y;
+            }
+        }
+        for (int i = 0; i < requests.length; i++) {
+            int x = find(parent, requests[i][0]);
+            int y = find(parent, requests[i][1]);
+            if (x != y) {
+                res[i] = true;
+                parent[x] = y;
+            }
+        }
+        return res;
+    }
+    
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        // build graph
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] r : restrictions) {
+            int a = r[0];
+            int b = r[1];
+            graph.get(a).add(b);
+            graph.get(b).add(a);
+        }
+        // build friend
+        Set<Integer> friends = new HashSet<>();
+        for (int i = 0; i < requests.length; i++) {
+            int a = requests[i][0];
+            int b = requests[i][1];
+            result[i] = isFriend(a, b, graph, friends);
+            friends.add(a);
+        }
+        return result;
+    }
+
+    private boolean isFriend(int a, int b, Map<Integer, Set<Integer>> graph, Set<Integer> friends) {
+        if (friends.contains(a)) {
+            return true;
+        }
+        if (graph.get(a).contains(b)) {
+            return false;
+        }
+        for (int c : graph.get(a)) {
+            if (isFriend(c, b, graph, friends)) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        boolean[] visited = new boolean[n];
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new HashSet<>());
+        }
+        for (int[] res : restrictions) {
+            map.get(res[0]).add(res[1]);
+            map.get(res[1]).add(res[0]);
+        }
+        for (int i = 0; i < requests.length; i++) {
+            result[i] = check(requests[i][0], requests[i][1], map, visited);
+        }
+        return result;
+    }
+
+    private boolean check(int u, int v, Map<Integer, Set<Integer>> map, boolean[] visited) {
+        if (map.get(u).contains(v)) {
+            return false;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(u);
+        visited[u] = true;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            if (cur == v) {
+                return false;
+            }
+            for (int next : map.get(cur)) {
+                if (!visited[next]) {
+                    queue.offer(next);
+                    visited[next] = true;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        int[][] friends = new int[n][n];
+        int[] degree = new int[n];
+        for (int[] r : restrictions) {
+            friends[r[0]][r[1]] = 1;
+            friends[r[1]][r[0]] = 1;
+            degree[r[0]] += 1;
+            degree[r[1]] += 1;
+        }
+        for (int i = 0; i < requests.length; i++) {
+            int[] request = requests[i];
+            int u = request[0];
+            int v = request[1];
+            if (friends[u][v] == 1) {
+                result[i] = false;
+                continue;
+            }
+            if (degree[u] == 0 && degree[v] == 0) {
+                result[i] = true;
+                friends[u][v] = 1;
+                friends[v][u] = 1;
+                degree[u] += 1;
+                degree[v] += 1;
+                continue;
+            }
+            boolean uHasFriend = false;
+            boolean vHasFriend = false;
+            for (int j = 0; j < n; j++) {
+                if (friends[u][j] == 1) {
+                    uHasFriend = true;
+                    if (friends[v][j] == 1) {
+                        vHasFriend = true;
+                        break;
+                    }
+                }
+            }
+            if (uHasFriend && vHasFriend) {
+                result[i] = false;
+            } else {
+                result[i] = true;
+                friends[u][v] = 1;
+                friends[v][u] = 1;
+                degree[u] += 1;
+                degree[v] += 1;
+            }
+        }
+        return result;
+
+=======
+
+        boolean[] result = new boolean[requests.length];
+        // build a graph
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        // add restrictions
+        for (int[] restriction : restrictions) {
+            graph.get(restriction[0]).add(restriction[1]);
+            graph.get(restriction[1]).add(restriction[0]);
+        }
+        // process requests
+        for (int i = 0; i < requests.length; i++) {
+            int[] request = requests[i];
+            if (graph.get(request[0]).contains(request[1])) {
+                result[i] = false;
+                continue;
+            }
+            Set<Integer> visited = new HashSet<>();
+            visited.add(request[0]);
+            result[i] = dfs(request[0], request[1], graph, visited);
+        }
+        return result;
+    }
+    
+    private boolean dfs(int start, int end, Map<Integer, Set<Integer>> graph, Set<Integer> visited) {
+        if (graph.get(start).contains(end)) {
+            return false;
+        }
+        for (int next : graph.get(start)) {
+            if (visited.contains(next)) {
+                continue;
+            }
+            visited.add(next);
+            if (!dfs(next, end, graph, visited)) {
+                return false;
+            }
+        }
+        return true;

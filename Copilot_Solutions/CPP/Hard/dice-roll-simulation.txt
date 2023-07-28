@@ -1,0 +1,214 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<vector<long>> dp(n, vector<long>(7, 0));
+        for (int i = 0; i < 6; ++i) dp[0][i] = 1;
+        dp[0][6] = 6;
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < 6; ++j) {
+                for (int k = 1; k <= rollMax[j]; ++k) {
+                    if (i - k >= 0) {
+                        dp[i][j] += (dp[i - k][6] - dp[i - k][j] + 1000000007) % 1000000007;
+                    }
+                }
+                dp[i][6] = (dp[i][6] + dp[i][j]) % 1000000007;
+            }
+        }
+        return dp[n - 1][6];
+
+=======
+
+        int MOD = 1e9 + 7;
+        vector<vector<int>> dp(n + 1, vector<int>(6, 0));
+        vector<int> sum(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 0; j < 6; ++j) {
+                if (i == 1) {
+                    dp[i][j] = 1;
+                } else {
+                    for (int k = 0; k < 6; ++k) {
+                        if (j == k) {
+                            if (rollMax[j] > 1) {
+                                dp[i][j] += sum[i - 2];
+                                if (i - rollMax[j] - 1 >= 0) {
+                                    dp[i][j] -= sum[i - rollMax[j] - 1];
+                                }
+                            }
+                        } else {
+                            dp[i][j] += sum[i - 1];
+                        }
+                        dp[i][j] = (dp[i][j] + MOD) % MOD;
+                    }
+                }
+                sum[i] = (sum[i] + dp[i][j]) % MOD;
+            }
+        }
+        return sum[n];
+
+=======
+
+        int dp[5001][6][16] = {0};
+        int mod = 1e9 + 7;
+        for (int i = 0; i < 6; i++) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < 6; j++) {
+                for (int k = 1; k <= rollMax[j]; k++) {
+                    for (int l = 0; l < 6; l++) {
+                        if (j == l) {
+                            if (k + 1 <= rollMax[j]) {
+                                dp[i][j][k + 1] = (dp[i][j][k + 1] + dp[i - 1][l][k]) % mod;
+                            }
+                        } else {
+                            dp[i][j][1] = (dp[i][j][1] + dp[i - 1][l][k]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 1; j <= rollMax[i]; j++) {
+                res = (res + dp[n][i][j]) % mod;
+            }
+        }
+        return res;
+
+=======
+
+        int dp[5001][6][16] = {0};
+        int mod = 1e9 + 7;
+        for (int i = 0; i < 6; ++i) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; ++i) {
+            for (int j = 0; j < 6; ++j) {
+                for (int k = 1; k <= rollMax[j]; ++k) {
+                    for (int l = 0; l < 6; ++l) {
+                        if (j != l) {
+                            dp[i][j][1] = (dp[i][j][1] + dp[i - 1][l][k]) % mod;
+                        } else if (k < rollMax[j]) {
+                            dp[i][j][k + 1] = (dp[i][j][k + 1] + dp[i - 1][l][k]) % mod;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 6; ++i) {
+            for (int j = 1; j <= rollMax[i]; ++j) {
+                ans = (ans + dp[n][i][j]) % mod;
+            }
+        }
+        return ans;
+
+=======
+
+        if (n == 0) return 0;
+        if (n == 1) return 6;
+        if (n == 2) return 6 * 5 + 1;
+        if (n == 3) return 6 * 5 * 4 + 6 * 5 + 1;
+        int dp[5001][6][16] = {0};
+        int mod = 1000000007;
+        for (int i = 1; i <= 6; i++) {
+            dp[1][i - 1][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < 6; j++) {
+                for (int k = 1; k <= 15; k++) {
+                    for (int l = 0; l < 6; l++) {
+                        if (j == l) {
+                            if (k < rollMax[j]) {
+                                dp[i][j][k + 1] += dp[i - 1][j][k];
+                                dp[i][j][k + 1] %= mod;
+                            }
+                        } else {
+                            dp[i][j][1] += dp[i - 1][l][k];
+                            dp[i][j][1] %= mod;
+                        }
+                    }
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 1; j <= 15; j++) {
+                result += dp[n][i][j];
+                result %= mod;
+            }
+        }
+        return result;
+
+=======
+
+        int MOD = 1000000007;
+        vector<int> dp(6, 1);
+        vector<int> dp2(6, 0);
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < 6; ++j) {
+                dp2[j] = 0;
+                for (int k = 0; k < 6; ++k) {
+                    if (j == k) {
+                        if (rollMax[j] > dp[k]) {
+                            dp2[j] = (dp2[j] + dp[k]) % MOD;
+                        }
+                    } else {
+                        dp2[j] = (dp2[j] + dp[k]) % MOD;
+                    }
+                }
+            }
+            swap(dp, dp2);
+        }
+        return accumulate(dp.begin(), dp.end(), 0) % MOD;
+
+=======
+
+        // dp[i][j][k] = number of sequences of length i, ending with j, with k consecutive j's
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(6, vector<int>(16, 0)));
+        int MOD = 1e9 + 7;
+        for (int j = 0; j < 6; j++) {
+            dp[1][j][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 0; j < 6; j++) {
+                for (int k = 1; k <= rollMax[j]; k++) {
+                    for (int j2 = 0; j2 < 6; j2++) {
+                        if (j == j2) {
+                            if (k < rollMax[j]) {
+                                dp[i][j][k + 1] = (dp[i][j][k + 1] + dp[i - 1][j2][k]) % MOD;
+                            }
+                        } else {
+                            dp[i][j][1] = (dp[i][j][1] + dp[i - 1][j2][k]) % MOD;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int j = 0; j < 6; j++) {
+            for (int k = 1; k <= rollMax[j]; k++) {
+                ans = (ans + dp[n][j][k]) % MOD;
+            }
+        }
+        return ans;
+
+=======
+
+        // dp[i][j] = number of sequences of length i ending with j
+        // dp[i][j] = sum(dp[i-1][k]) - sum(dp[i-rollMax[j]][k])
+        // dp[0][j] = 0
+        // dp[i][j] = 0 if i < rollMax[j]
+        // dp[i][j] = 6^(i-1) if i == 1
+        // dp[i][j] = sum(dp[i-1][k]) if i < rollMax[j]
+        // dp[i][j] = sum(dp[i-1][k]) - sum(dp[i-rollMax[j]][k]) if i >= rollMax[j]
+        // dp[i][j] = sum(dp[i-1][k]) - (sum(dp[i-1][k]) - dp[i-rollMax[j]][j]) if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i-rollMax[j]][j] if i >= rollMax[j]
+        // dp[i][j] = dp[i-1][j] + sum(dp[i-1][k]) - dp[i

@@ -1,0 +1,243 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n, 0);
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; i++) {
+            cnt[sum[i]]++;
+        }
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, cnt[sum[i]]);
+        }
+        for (int i = 0; i < n; i++) {
+            int t = sum[i] - nums[i] + k;
+            if (cnt.count(t)) {
+                ans = max(ans, cnt[t] + (t == sum[i] ? -1 : 0));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> preSum(n + 1);
+        for (int i = 0; i < n; i++) {
+            preSum[i + 1] = preSum[i] + nums[i];
+        }
+        int maxWays = 0;
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; i++) {
+            int leftSum = preSum[i];
+            int rightSum = preSum[n] - preSum[i];
+            if (leftSum == rightSum) {
+                maxWays++;
+            }
+            cnt[leftSum - rightSum]++;
+        }
+        int ans = maxWays;
+        for (int i = 0; i < n; i++) {
+            int leftSum = preSum[i];
+            int rightSum = preSum[n] - preSum[i];
+            cnt[leftSum - rightSum]--;
+            if (cnt[leftSum - rightSum] == 0) {
+                cnt.erase(leftSum - rightSum);
+            }
+            leftSum += k;
+            rightSum -= k;
+            if (leftSum == rightSum) {
+                maxWays++;
+            }
+            cnt[leftSum - rightSum]++;
+            ans = max(ans, maxWays);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> preSum(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            preSum[i] = preSum[i - 1] + nums[i - 1];
+        }
+        int res = 0;
+        unordered_map<int, int> cnt;
+        for (int i = 2; i <= n; i++) {
+            int left = preSum[i - 1];
+            int right = preSum[n] - preSum[i - 1];
+            if (left == right) {
+                res++;
+            }
+            cnt[left - right]++;
+        }
+        int ans = res;
+        for (int i = 1; i <= n; i++) {
+            int left = preSum[i - 1] + k;
+            int right = preSum[n] - preSum[i - 1] - k;
+            if (left == right) {
+                ans = max(ans, res + 1);
+            }
+            if (cnt.count(left - right)) {
+                ans = max(ans, res + cnt[left - right]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> prefix(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + nums[i - 1];
+        }
+        unordered_map<int, int> cnt;
+        for (int i = 0; i <= n; i++) {
+            cnt[prefix[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans = max(ans, cnt[prefix[i]]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] != k) {
+                int diff = k - nums[i];
+                nums[i] = k;
+                for (int j = i + 1; j <= n; j++) {
+                    prefix[j] += diff;
+                }
+                cnt.clear();
+                for (int j = 0; j <= n; j++) {
+                    cnt[prefix[j]]++;
+                }
+                for (int j = 0; j <= n; j++) {
+                    ans = max(ans, cnt[prefix[j]]);
+                }
+                nums[i] = k - diff;
+                for (int j = i + 1; j <= n; j++) {
+                    prefix[j] -= diff;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sums(n+1, 0);
+        for (int i = 0; i < n; i++) {
+            sums[i+1] = sums[i] + nums[i];
+        }
+        int res = 0;
+        unordered_map<int, int> cnt;
+        for (int i = 0; i < n; i++) {
+            cnt[sums[i+1]]++;
+            if (sums[n] - sums[i+1] == sums[i+1]) {
+                res++;
+            }
+        }
+        int ans = res;
+        for (int i = 0; i < n; i++) {
+            if (sums[n] - sums[i+1] == sums[i+1]) {
+                res--;
+            }
+            cnt[sums[i+1]]--;
+            int sum = sums[i+1] + k;
+            if (cnt.count(sum)) {
+                res += cnt[sum];
+            }
+            ans = max(ans, res);
+            if (sums[n] - sums[i+1] == sum) {
+                res++;
+            }
+            cnt[sum]++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n+1,0);
+        for (int i = 0; i < n; i++) {
+            pre[i+1] = pre[i] + nums[i];
+        }
+        int res = 0;
+        int sum = pre[n];
+        for (int i = 0; i < n; i++) {
+            if (pre[i] == sum - pre[i]) res++;
+        }
+        int mx = res;
+        for (int i = 0; i < n; i++) {
+            int x = pre[i] + k;
+            int y = sum - pre[i] - k;
+            if (x == y) {
+                mx = max(mx, res + 1);
+            }
+        }
+        return mx;
+
+=======
+
+        int n = nums.size();
+        int sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += nums[i];
+        }
+        int ans = 0;
+        int lsum = 0;
+        for (int i = 0; i < n; ++i) {
+            if (lsum == sum - lsum - nums[i]) {
+                ans++;
+            }
+            lsum += nums[i];
+        }
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] == k) {
+                cnt++;
+            }
+        }
+        if (cnt == 0) {
+            for (int i = 0; i < n; ++i) {
+                int old = nums[i];
+                nums[i] = k;
+                int lsum = 0;
+                for (int j = 0; j < n; ++j) {
+                    if (lsum == sum - lsum - nums[j]) {
+                        ans = max(ans, 1);
+                    }
+                    lsum += nums[j];
+                }
+                nums[i] = old;
+            }
+        } else {
+            ans = max(ans, 1);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        int ans = 0;
+        int cur = 0;
+        int cnt = 0;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] == k) ++cnt;
+            cur += nums[i];
+            if (cur == sum - cur) ++ans;
+        }
+        if (cnt == 0) {
+            ans = 0;
+            cur = 0;
+            for (int i = 0; i < n; ++i) {
+                cur += nums[i];
+                if (cur == sum - cur + k) ++ans;
+            }
+        }
+        return ans;

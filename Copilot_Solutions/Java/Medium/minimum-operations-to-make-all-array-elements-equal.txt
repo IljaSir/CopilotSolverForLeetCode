@@ -1,0 +1,584 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        int[] sum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int query : queries) {
+            long res = 0;
+            for (int i = 1; i <= 100000; i++) {
+                if (i == query) {
+                    continue;
+                }
+                if (i < query) {
+                    res += 1L * (sum[query - 1] - sum[i]) * (query - i);
+                } else {
+                    res += 1L * (sum[i - 1] - sum[query]) * (i - query);
+                }
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        int[] sum = new int[100002];
+        for (int i = 1; i <= 100001; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int q : queries) {
+            int l = 1;
+            int r = 100001;
+            while (l < r) {
+                int mid = l + r >> 1;
+                if (sum[mid] < q) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            long res = 0;
+            for (int i = 1; i <= l; i++) {
+                res += (long) (l - i) * cnt[i];
+            }
+            for (int i = l + 1; i <= 100001; i++) {
+                res += (long) (i - l) * cnt[i];
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        int[] cnt = new int[100001];
+        for (int n : nums) cnt[n]++;
+        int[] sum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        List<Long> res = new ArrayList<>();
+        for (int q : queries) {
+            int l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] < q) l = mid + 1;
+                else r = mid;
+            }
+            long ans = 0;
+            int i = l;
+            while (q > 0) {
+                int c = Math.min(cnt[i], q);
+                ans += (long) c * Math.abs(i - l);
+                q -= c;
+                i++;
+            }
+            i = l - 1;
+            while (q < 0) {
+                int c = Math.min(cnt[i], -q);
+                ans += (long) c * Math.abs(i - l);
+                q += c;
+                i--;
+            }
+            res.add(ans);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        int[] preSum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            preSum[i] = preSum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int query : queries) {
+            int l = 0, r = 100000;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (preSum[mid] < query) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int t = l;
+            long res = 0;
+            for (int i = 1; i <= 100000; i++) {
+                if (i < t) {
+                    res += (long) (t - i) * cnt[i];
+                } else if (i > t) {
+                    res += (long) (i - t) * cnt[i];
+                }
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        List<Long> res = new ArrayList<>();
+        for (int q : queries) {
+            long sum = 0;
+            for (int n : nums) {
+                sum += Math.abs(n-q);
+            }
+            res.add(sum);
+        }
+        return res;
+
+=======
+
+        int[] count = new int[100001];
+        for (int x: nums) count[x]++;
+        int[] prefix = new int[100001];
+        for (int i = 1; i <= 100000; i++) prefix[i] = prefix[i-1] + count[i];
+        List<Long> res = new ArrayList<>();
+        for (int x: queries) {
+            int lo = 1, hi = 100000;
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (prefix[mid] < x) lo = mid + 1;
+                else hi = mid;
+            }
+            int l = lo;
+            lo = 1;
+            hi = 100000;
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (prefix[mid] <= x) lo = mid + 1;
+                else hi = mid;
+            }
+            int r = lo;
+            long ans = 0;
+            for (int i = l; i <= r; i++) {
+                ans += (long)count[i] * Math.abs(i - x);
+            }
+            res.add(ans);
+        }
+        return res;
+
+=======
+
+        List<Long> result = new ArrayList<>();
+        int[] frequency = new int[100001];
+        for (int num : nums) {
+            frequency[num]++;
+        }
+        int[] prefixSum = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            prefixSum[i] = prefixSum[i - 1] + frequency[i];
+        }
+        for (int query : queries) {
+            int left = 1, right = 100000, mid;
+            while (left < right) {
+                mid = left + (right - left) / 2;
+                if (prefixSum[mid] < query) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            long answer = 0;
+            int index = left;
+            while (query > 0) {
+                int count = Math.min(frequency[index], query);
+                answer += (long) count * Math.abs(index - left);
+                query -= count;
+                index++;
+            }
+            result.add(answer);
+        }
+        return result;
+
+=======
+
+        List<Long> ans = new ArrayList<>();
+        int[] cnt = new int[100001];
+        int[] sum = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] * mid < queries[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            long res = 0;
+            for (int j = 1; j <= l; j++) {
+                res += (long) cnt[j] * (l - j);
+            }
+            r = 100000;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[100000] - sum[mid] * mid < queries[i]) {
+                    r = mid - 1;
+                } else {
+                    l = mid;
+                }
+            }
+            for (int j = 100000; j >= l; j--) {
+                res += (long) cnt[j] * (j - l);
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        List<Long> ret = new ArrayList<>();
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        long[] sum = new long[100002];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        for (int q : queries) {
+            long t = 0;
+            for (int i = 1; i <= 100000; i++) {
+                if (i < q) {
+                    t += (q - i) * (sum[i] - sum[i - 1]);
+                } else {
+                    t += (i - q) * (sum[100000] - sum[i]);
+                }
+            }
+            ret.add(t);
+        }
+        return ret;
+
+=======
+
+        final int N = 100000;
+        int[] freq = new int[N + 1];
+        for (int n : nums) {
+            freq[n]++;
+        }
+        long[] prefixSum = new long[N + 1];
+        for (int i = 1; i <= N; i++) {
+            prefixSum[i] = prefixSum[i - 1] + freq[i];
+        }
+        List<Long> res = new ArrayList<>();
+        for (int q : queries) {
+            long sum = 0;
+            for (int i = 1; i <= N; i++) {
+                if (i > q) {
+                    sum += (long) (i - q) * freq[i];
+                } else {
+                    sum += (long) (q - i) * (prefixSum[q] - prefixSum[i - 1]);
+                }
+            }
+            res.add(sum);
+        }
+        return res;
+        for (int i = 1; i <= 100000; i++) {
+            preSum[i] = preSum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int query : queries) {
+            int l = 0, r = 100000;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (preSum[mid] < query) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int t = l;
+            long res = 0;
+            for (int i = 1; i <= 100000; i++) {
+                if (i < t) {
+                    res += (long) (t - i) * cnt[i];
+                } else if (i > t) {
+                    res += (long) (i - t) * cnt[i];
+                }
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        List<Long> res = new ArrayList<>();
+        for (int q : queries) {
+            long sum = 0;
+            for (int n : nums) {
+                sum += Math.abs(n-q);
+            }
+            res.add(sum);
+        }
+        return res;
+
+=======
+
+        int[] count = new int[100001];
+        for (int x: nums) count[x]++;
+        int[] prefix = new int[100001];
+        for (int i = 1; i <= 100000; i++) prefix[i] = prefix[i-1] + count[i];
+        List<Long> res = new ArrayList<>();
+        for (int x: queries) {
+            int lo = 1, hi = 100000;
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (prefix[mid] < x) lo = mid + 1;
+                else hi = mid;
+            }
+            int l = lo;
+            lo = 1;
+            hi = 100000;
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (prefix[mid] <= x) lo = mid + 1;
+                else hi = mid;
+            }
+            int r = lo;
+            long ans = 0;
+            for (int i = l; i <= r; i++) {
+                ans += (long)count[i] * Math.abs(i - x);
+            }
+            res.add(ans);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        int[] sum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int query : queries) {
+            long res = 2;
+            for (int i = 1; i <= 100000; i++) {
+                if (i == query) {
+                    continue;
+                }
+                if (i < query) {
+                    res += 1L * (sum[query - 1] - sum[i]) * (query - i);
+                } else {
+                    res += 1L * (sum[i - 1] - sum[query]) * (i - query);
+                }
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int m = queries.length;
+        int[] cnt = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        int[] preSum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            preSum[i] = preSum[i - 1] + cnt[i];
+        }
+        List<Long> ans = new ArrayList<>();
+        for (int query : queries) {
+            int l = 0, r = 100000;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (preSum[mid] < query) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int t = l;
+            long res = 0;
+            for (int i = 1; i <= 100000; i++) {
+                if (i < t) {
+                    res += (long) (t - i) * cnt[i];
+                } else if (i > t) {
+                    res += (long) (i - t) * cnt[i];
+                }
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        List<Long> result = new ArrayList<>();
+        int[] frequency = new int[100001];
+        for (int num : nums) {
+            frequency[num]++;
+        }
+        int[] prefixSum = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            prefixSum[i] = prefixSum[i - 1] + frequency[i];
+        }
+        for (int query : queries) {
+            int left = 1, right = 100000, mid;
+            while (left < right) {
+                mid = left + (right - left) / 2;
+                if (prefixSum[mid] < query) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            long answer = 0;
+            int index = left;
+            while (query > 0) {
+                int count = Math.min(frequency[index], query);
+                answer += (long) count * Math.abs(index - left);
+                query -= count;
+                index++;
+            }
+            result.add(answer);
+        }
+        return result;
+
+=======
+
+        List<Long> ans = new ArrayList<>();
+        int[] cnt = new int[100001];
+        int[] sum = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] * mid < queries[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            long res = 0;
+            for (int j = 1; j <= l; j++) {
+                res += (long) cnt[j] * (l - j);
+            }
+            r = 100000;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[100000] - sum[mid] * mid < queries[i]) {
+                    r = mid - 1;
+                } else {
+                    l = mid;
+                }
+            }
+            for (int j = 100000; j >= l; j--) {
+                res += (long) cnt[j] * (j - l);
+            }
+            ans.add(res);
+        }
+        return ans;
+
+=======
+
+        List<Long> result = new ArrayList<>();
+        int[] frequency = new int[100001];
+        for (int num : nums) {
+            frequency[num]++;
+        }
+        int[] prefixSum = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            prefixSum[i] = prefixSum[i - 1] + frequency[i];
+        }
+        for (int query : queries) {
+            int left = 1, right = 100000, mid;
+            while (left < right) {
+                mid = left + (right - left) / 2;
+                if (prefixSum[mid] < query) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            long answer = 0;
+            int index = left;
+            while (query > 0) {
+                int count = Math.min(frequency[index], query);
+                answer += (long) count * Math.abs(index - left);
+                query -= count;
+                index++;
+            }
+            result.add(answer);
+        }
+        return result;
+
+=======
+
+        List<Long> ans = new ArrayList<>();
+        int[] cnt = new int[100001];
+        int[] sum = new int[100001];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        for (int i = 0; i < queries.length; i++) {
+            int l = 1, r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] * mid < queries[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            long res = 0;
+            for (int j = 1; j <= l; j++) {
+                res += (long) cnt[j] * (l - j);
+            }
+            r = 100000;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[100000] - sum[mid] * mid < queries[i]) {
+                    r = mid - 1;
+                } else {
+                    l = mid;
+                }
+            }
+            for (int j = 100000; j >= l; j--) {
+                res += (long) cnt[j] * (j - l);
+            }
+            ans.add(res);
+        }
+        return ans;

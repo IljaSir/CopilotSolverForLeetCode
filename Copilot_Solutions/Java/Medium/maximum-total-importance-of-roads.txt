@@ -1,0 +1,272 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] road : roads) {
+            graph.computeIfAbsent(road[0], k -> new ArrayList<>()).add(road[1]);
+            graph.computeIfAbsent(road[1], k -> new ArrayList<>()).add(road[0]);
+        }
+        long[] values = new long[n];
+        boolean[] visited = new boolean[n];
+        dfs(graph, 0, visited, values);
+        return Arrays.stream(values).sum();
+    }
+
+    private void dfs(Map<Integer, List<Integer>> graph, int node, boolean[] visited, long[] values) {
+        visited[node] = true;
+        values[node] = node + 1;
+        List<Integer> adj = graph.get(node);
+        if (adj == null) {
+            return;
+        }
+        for (int next : adj) {
+            if (!visited[next]) {
+                dfs(graph, next, visited, values);
+                values[node] += values[next];
+            }
+        }
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] road : roads) {
+            map.computeIfAbsent(road[0], k -> new ArrayList<>()).add(road[1]);
+            map.computeIfAbsent(road[1], k -> new ArrayList<>()).add(road[0]);
+        }
+        int[] value = new int[n];
+        for (int i = 0; i < n; i++) {
+            value[i] = i + 1;
+        }
+        long[] sum = new long[n];
+        boolean[] visited = new boolean[n];
+        dfs(map, value, sum, visited, 0);
+        return Arrays.stream(sum).max().getAsLong();
+    }
+    
+    private void dfs(Map<Integer, List<Integer>> map, int[] value, long[] sum, boolean[] visited, int cur) {
+        visited[cur] = true;
+        for (int next : map.getOrDefault(cur, Collections.emptyList())) {
+            if (!visited[next]) {
+                sum[next] = sum[cur] + value[next];
+                dfs(map, value, sum, visited, next);
+            }
+        }
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] r : roads) {
+            graph.computeIfAbsent(r[0], k -> new ArrayList<>()).add(r[1]);
+            graph.computeIfAbsent(r[1], k -> new ArrayList<>()).add(r[0]);
+        }
+        int[] values = new int[n];
+        Arrays.fill(values, 1);
+        int[] max = new int[1];
+        dfs(graph, values, 0, 0, max);
+        return max[0];
+    }
+    
+    private void dfs(Map<Integer, List<Integer>> graph, int[] values, int node, int sum, int[] max) {
+        if (graph.get(node) == null) {
+            max[0] = Math.max(max[0], sum);
+            return;
+        }
+        for (int next : graph.get(node)) {
+            if (values[next] == 0) {
+                continue;
+            }
+            int tmp = values[next];
+            values[next] = 0;
+            dfs(graph, values, next, sum + tmp, max);
+            values[next] = tmp;
+        }
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] r : roads) {
+            graph.computeIfAbsent(r[0], x -> new ArrayList<>()).add(r[1]);
+            graph.computeIfAbsent(r[1], x -> new ArrayList<>()).add(r[0]);
+        }
+        long[] max = {0};
+        boolean[] visited = new boolean[n];
+        dfs(0, graph, visited, 0, max);
+        return max[0];
+    }
+    
+    private void dfs(int node, Map<Integer, List<Integer>> graph, boolean[] visited, long score, long[] max) {
+        if (visited[node]) {
+            return;
+        }
+        visited[node] = true;
+        max[0] = Math.max(max[0], score);
+        for (int next : graph.getOrDefault(node, new ArrayList<>())) {
+            dfs(next, graph, visited, score + next + 1, max);
+        }
+        visited[node] = false;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] r : roads) {
+            graph.computeIfAbsent(r[0], x -> new ArrayList<>()).add(r[1]);
+            graph.computeIfAbsent(r[1], x -> new ArrayList<>()).add(r[0]);
+        }
+        long[] dp = new long[n];
+        long res = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (dp[i] == 0) {
+                dp[i] = dfs(i, graph, dp);
+            }
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+    }
+    
+    private long dfs(int i, Map<Integer, List<Integer>> graph, long[] dp) {
+        long res = 0;
+        for (int j : graph.getOrDefault(i, new ArrayList<>())) {
+            if (dp[j] == 0) {
+                dp[j] = dfs(j, graph, dp);
+            }
+            res = Math.max(res, dp[j]);
+        }
+        return res + i + 1;
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < roads.length; i++) {
+            map.computeIfAbsent(roads[i][0], x -> new ArrayList<>()).add(roads[i][1]);
+            map.computeIfAbsent(roads[i][1], x -> new ArrayList<>()).add(roads[i][0]);
+        }
+        long[] max = new long[n];
+        Arrays.fill(max, 1);
+        for (int i = 0; i < n; i++) {
+            if (max[i] == 1) {
+                dfs(i, map, max);
+            }
+        }
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res += max[i];
+        }
+        return res;
+    }
+    private long dfs(int i, Map<Integer, List<Integer>> map, long[] max) {
+        if (max[i] != 1) {
+            return max[i];
+        }
+        long res = 1;
+        if (map.containsKey(i)) {
+            for (int j : map.get(i)) {
+                res += dfs(j, map, max);
+            }
+        }
+        max[i] = res;
+        return res;
+
+=======
+
+        int[] values = new int[n];
+        for (int i = 0; i < n; i++) {
+            values[i] = i + 1;
+        }
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (int[] road : roads) {
+            graph.get(road[0]).add(road[1]);
+            graph.get(road[1]).add(road[0]);
+        }
+        long[] max = new long[1];
+        dfs(graph, values, 0, new HashSet<>(), 0, max);
+        return max[0];
+    }
+    
+    private void dfs(Map<Integer, Set<Integer>> graph, int[] values, int node, Set<Integer> visited, long sum, long[] max) {
+        if (visited.contains(node)) {
+            return;
+        }
+        visited.add(node);
+        sum += values[node];
+        max[0] = Math.max(max[0], sum);
+        for (Integer neighbor : graph.get(node)) {
+            dfs(graph, values, neighbor, visited, sum, max);
+        }
+        visited.remove(node);
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        Map<Integer, Integer> values = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int i = 0; i < roads.length; i++) {
+            graph.get(roads[i][0]).add(roads[i][1]);
+            graph.get(roads[i][1]).add(roads[i][0]);
+        }
+        int[] used = new int[n];
+        int[] val = new int[n];
+        for (int i = 0; i < n; i++) {
+            val[i] = i + 1;
+        }
+        Arrays.sort(val);
+        int i = 0;
+        long res = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            if (used[cur] == 1) {
+                continue;
+            }
+            used[cur] = 1;
+            values.put(cur, val[i++]);
+            for (int next : graph.get(cur)) {
+                queue.add(next);
+            }
+        }
+        for (int j = 0; j < roads.length; j++) {
+            res += values.get(roads[j][0]) + values.get(roads[j][1]);
+        }
+        return res;
+
+=======
+
+        long[] importance = new long[n];
+        for (int[] road : roads) {
+            importance[road[0]]++;
+            importance[road[1]]++;
+        }
+        return Arrays.stream(importance).sum();
+
+=======
+
+        long[] dp = new long[n];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] road : roads) {
+            int u = road[0];
+            int v = road[1];
+            map.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
+            map.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
+        }
+        dfs(map, dp, 0, -1);
+        long max = 0;
+        for (long v : dp) {
+            max = Math.max(max, v);
+        }
+        return max;
+    }
+    
+    private void dfs(Map<Integer, List<Integer>> map, long[] dp, int u, int p) {
+        for (int v : map.getOrDefault(u, new ArrayList<>())) {
+            if (v == p) {
+                continue;
+            }
+            dfs(map, dp, v, u);
+            dp[u] += dp[v] + 1;
+        }

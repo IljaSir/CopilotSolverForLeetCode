@@ -1,0 +1,219 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = customers.length();
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + (customers.charAt(i) == 'Y' ? 1 : 0);
+        }
+        int ans = 0;
+        int min = prefix[n];
+        for (int i = 0; i < n; i++) {
+            int penalty = prefix[i + 1] + (prefix[n] - prefix[i + 1]) * 2;
+            if (penalty < min) {
+                min = penalty;
+                ans = i + 1;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = customers.length();
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + (customers.charAt(i) == 'Y' ? 1 : 0);
+        }
+        int ans = n;
+        int min = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = sum[i] + (n - i - (sum[n] - sum[i]));
+            if (cur < min) {
+                min = cur;
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = customers.length();
+        int[] prefix = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + (customers.charAt(i - 1) == 'Y' ? 1 : 0);
+        }
+        int min = Integer.MAX_VALUE;
+        int res = 0;
+        for (int i = 0; i <= n; i++) {
+            int cur = prefix[i] + prefix[n] - prefix[i];
+            if (min > cur) {
+                min = cur;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int n = customers.length();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = customers.charAt(i) == 'Y' ? 1 : 0;
+        }
+        int[] pre = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            pre[i] = pre[i - 1] + arr[i - 1];
+        }
+        int min = Integer.MAX_VALUE;
+        int res = 0;
+        for (int i = 0; i <= n; i++) {
+            int cur = pre[i] + (n - i - (pre[n] - pre[i]));
+            if (cur < min) {
+                min = cur;
+                res = i;
+            }
+        }
+        return res;
+
+=======
+
+        int n = customers.length();
+        int[] sum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + (customers.charAt(i) == 'Y' ? 1 : 0);
+        }
+        int min = Integer.MAX_VALUE;
+        int best = 0;
+        for (int i = 0; i <= n; i++) {
+            int penalty = sum[i] + (n - i - (sum[n] - sum[i]));
+            if (penalty < min) {
+                min = penalty;
+                best = i;
+            }
+        }
+        return best;
+
+=======
+
+        int n = customers.length();
+        int[] sum = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            sum[i+1] = sum[i] + (customers.charAt(i) == 'Y' ? 1 : 0);
+        }
+        int ans = 0;
+        int min = sum[n];
+        for (int i = 1; i <= n; i++) {
+            int cur = sum[i] + (n-i) - (sum[n]-sum[i]);
+            if (cur < min) {
+                min = cur;
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = customers.length();
+        int[] a = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            a[i + 1] = a[i] + (customers.charAt(i) == 'Y' ? 1 : -1);
+        }
+        int min = Integer.MAX_VALUE;
+        int minIndex = -1;
+        for (int i = 0; i <= n; i++) {
+            if (a[i] < min) {
+                min = a[i];
+                minIndex = i;
+            }
+        }
+        return minIndex;
+
+=======
+
+        int n = customers.length();
+        int[] dp = new int[n+1];
+        dp[n] = 0;
+        for (int i = n-1; i >= 0; i--) {
+            dp[i] = dp[i+1] + (customers.charAt(i) == 'Y' ? 1 : 0);
+        }
+        int penalty = dp[0];
+        int best = 0;
+        for (int i = 1; i <= n; i++) {
+            int p = dp[i] + i;
+            if (p < penalty) {
+                penalty = p;
+                best = i;
+            }
+        }
+        return best;
+
+=======
+
+        int n = customers.length();
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                sum[i] = customers.charAt(i) == 'Y' ? 1 : 0;
+            } else {
+                sum[i] = sum[i - 1] + (customers.charAt(i) == 'Y' ? 1 : 0);
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                left[i] = customers.charAt(i) == 'Y' ? 1 : 0;
+            } else {
+                left[i] = left[i - 1] + (customers.charAt(i) == 'Y' ? 1 : 0);
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (i == n - 1) {
+                right[i] = customers.charAt(i) == 'Y' ? 1 : 0;
+            } else {
+                right[i] = right[i + 1] + (customers.charAt(i) == 'Y' ? 1 : 0);
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int penalty = 0;
+            if (i == 0) {
+                penalty = sum[n - 1];
+            } else if (i == n - 1) {
+                penalty = sum[n - 2];
+            } else {
+                penalty = left[i - 1] + right[i + 1];
+            }
+            if (penalty < min) {
+                min = penalty;
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int penalty = 0;
+        int n = customers.length();
+        int[] penaltyArray = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (customers.charAt(i) == 'N') {
+                penalty++;
+            }
+            penaltyArray[i] = penalty;
+        }
+        int min = Integer.MAX_VALUE;
+        int minIndex = -1;
+        for (int i = 0; i < n; i++) {
+            if (customers.charAt(i) == 'Y') {
+                penalty++;
+            }
+            penalty += penaltyArray[n - 1] - penaltyArray[i];
+            if (penalty < min) {
+                min = penalty;
+                minIndex = i + 1;
+            }
+        }
+        return minIndex;

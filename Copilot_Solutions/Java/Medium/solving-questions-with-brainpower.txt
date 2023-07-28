@@ -1,0 +1,183 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = questions.length;
+        int[] points = new int[n];
+        int[] brainpower = new int[n];
+        for (int i = 0; i < n; i++) {
+            points[i] = questions[i][0];
+            brainpower[i] = questions[i][1];
+        }
+        long[] dp = new long[n];
+        dp[0] = points[0];
+        for (int i = 1; i < n; i++) {
+            long max = dp[i - 1];
+            for (int j = i - 1; j >= 0 && i - j <= brainpower[j]; j--) {
+                max = Math.max(max, dp[j] + points[i]);
+            }
+            dp[i] = max;
+        }
+        long max = 0;
+        for (long x : dp) {
+            max = Math.max(max, x);
+        }
+        return max;
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+        long res = 0, sum = 0;
+        for (int i = 0; i < questions.length; i++) {
+            pq.offer(questions[i]);
+            sum += questions[i][0];
+            while (pq.size() > questions[i][1]) {
+                sum -= pq.poll()[0];
+            }
+            res = Math.max(res, sum);
+        }
+        return res;
+
+=======
+
+        Arrays.sort(questions, (a, b) -> (a[0] + a[1]) - (b[0] + b[1]));
+        int n = questions.length;
+        long[] dp = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            int[] q = questions[i];
+            dp[i + 1] = Math.max(dp[i + 1], dp[i]);
+            if (i + q[1] + 1 <= n) {
+                dp[i + q[1] + 1] = Math.max(dp[i + q[1] + 1], dp[i] + q[0]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        long res = 0, sum = 0;
+        for (int[] q : questions) {
+            pq.add(q[0]);
+            sum += q[0];
+            if (pq.size() > q[1]) {
+                sum -= pq.poll();
+            }
+            res = Math.max(res, sum);
+        }
+        return res;
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        long ans = 0, sum = 0;
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        for (int[] q : questions) {
+            pq.offer(q[0]);
+            sum += q[0];
+            if (pq.size() > q[1]) {
+                sum -= pq.poll();
+            }
+            ans = Math.max(ans, sum);
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        long[] dp = new long[questions.length];
+        dp[0] = questions[0][0];
+        long max = dp[0];
+        for (int i = 1; i < questions.length; i++) {
+            dp[i] = questions[i][0];
+            int j = i - 1;
+            while (j >= 0 && questions[i][1] - questions[j][1] <= j + 1) {
+                dp[i] = Math.max(dp[i], dp[j] + questions[i][0]);
+                j--;
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        int n = questions.length;
+        int[] points = new int[n];
+        int[] bp = new int[n];
+        for (int i = 0; i < n; i++) {
+            points[i] = questions[i][0];
+            bp[i] = questions[i][1];
+        }
+        long[] dp = new long[n];
+        dp[0] = points[0];
+        for (int i = 1; i < n; i++) {
+            int j = i - 1;
+            while (j >= 0 && bp[i] - bp[j] <= i - j) {
+                j--;
+            }
+            if (j == -1) {
+                dp[i] = points[i];
+            } else {
+                dp[i] = dp[j] + points[i];
+            }
+            if (i > 1) {
+                dp[i] = Math.max(dp[i], dp[i - 1]);
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        Arrays.sort(questions, (a, b) -> b[0] - a[0]);
+        int n = questions.length;
+        long[] dp = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            int p = questions[i][0], bp = questions[i][1];
+            for (int j = n; j > 0; j--) {
+                dp[j] = Math.max(dp[j], dp[Math.max(0, j - bp - 1)] + p);
+            }
+        }
+        long res = 0;
+        for (int i = 0; i <= n; i++) {
+            res = Math.max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        long sum = 0;
+        for(int[] question : questions) {
+            sum += question[0];
+        }
+        Arrays.sort(questions, (a, b) -> b[1] - a[1]);
+        int n = questions.length;
+        int[] dp = new int[n];
+        dp[0] = questions[0][0];
+        for(int i = 1; i < n; i++) {
+            int points = questions[i][0];
+            int brain = questions[i][1];
+            int next = Math.max(0, i - brain - 1);
+            dp[i] = Math.max(dp[i - 1], points + dp[next]);
+        }
+        return sum - dp[n - 1];
+
+=======
+
+        Arrays.sort(questions, (a, b) -> a[1] - b[1]);
+        long total = 0;
+        long result = 0;
+        int N = questions.length;
+        PriorityQueue<Integer> pq = new PriorityQueue<Integer>();
+        for (int i = 0; i < N; i++) {
+            int points = questions[i][0];
+            int brainpower = questions[i][1];
+            while (pq.size() > brainpower) {
+                total -= pq.poll();
+            }
+            pq.add(points);
+            total += points;
+            result = Math.max(result, total);
+        }
+        return result;

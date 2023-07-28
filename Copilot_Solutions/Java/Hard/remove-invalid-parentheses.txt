@@ -1,0 +1,397 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int left = 0;
+        int right = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                left++;
+            } else if (s.charAt(i) == ')') {
+                if (left == 0) {
+                    right++;
+                } else {
+                    left--;
+                }
+            }
+        }
+        Set<String> res = new HashSet<>();
+        dfs(s, 0, left, right, 0, new StringBuilder(), res);
+        return new ArrayList<>(res);
+    }
+
+    private void dfs(String s, int index, int left, int right, int pair, StringBuilder sb, Set<String> res) {
+        if (index == s.length()) {
+            if (left == 0 && right == 0 && pair == 0) {
+                res.add(sb.toString());
+            }
+            return;
+        }
+        char c = s.charAt(index);
+        int len = sb.length();
+        if (c == '(') {
+            if (left > 0) {
+                dfs(s, index + 1, left - 1, right, pair, sb, res);
+            }
+            dfs(s, index + 1, left, right, pair + 1, sb.append(c), res);
+        } else if (c == ')') {
+            if (right > 0) {
+                dfs(s, index + 1, left, right - 1, pair, sb, res);
+            }
+            if (pair > 0) {
+                dfs(s, index + 1, left, right, pair - 1, sb.append(c), res);
+            }
+        } else {
+            dfs(s, index + 1, left, right, pair, sb.append(c), res);
+        }
+        sb.setLength(len);
+
+=======
+
+        int left = 0, right = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                left++;
+            } else if (c == ')') {
+                if (left > 0) {
+                    left--;
+                } else {
+                    right++;
+                }
+            }
+        }
+        Set<String> res = new HashSet<>();
+        dfs(s, 0, left, right, 0, new StringBuilder(), res);
+        return new ArrayList<>(res);
+    }
+    private void dfs(String s, int i, int left, int right, int open, StringBuilder sb, Set<String> res) {
+        if (i == s.length()) {
+            if (left == 0 && right == 0 && open == 0) {
+                res.add(sb.toString());
+            }
+            return;
+        }
+        char c = s.charAt(i);
+        int len = sb.length();
+        if (c == '(') {
+            dfs(s, i + 1, left - 1, right, open, sb, res);
+            dfs(s, i + 1, left, right, open + 1, sb.append(c), res);
+        } else if (c == ')') {
+            dfs(s, i + 1, left, right - 1, open, sb, res);
+            dfs(s, i + 1, left, right, open - 1, sb.append(c), res);
+        } else {
+            dfs(s, i + 1, left, right, open, sb.append(c), res);
+        }
+        sb.setLength(len);
+
+=======
+
+        int left = 0, right = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                left++;
+            } else if (c == ')') {
+                if (left > 0) {
+                    left--;
+                } else {
+                    right++;
+                }
+            }
+        }
+        Set<String> ans = new HashSet<>();
+        dfs(s, 0, left, right, ans, new StringBuilder());
+        return new ArrayList<>(ans);
+    }
+
+    private void dfs(String s, int index, int left, int right, Set<String> ans, StringBuilder sb) {
+        if (left < 0 || right < 0) {
+            return;
+        }
+        if (index == s.length()) {
+            if (left == 0 && right == 0) {
+                ans.add(sb.toString());
+            }
+            return;
+        }
+        if (s.charAt(index) == '(') {
+            dfs(s, index + 1, left - 1, right, ans, sb);
+            sb.append('(');
+            dfs(s, index + 1, left, right, ans, sb);
+            sb.deleteCharAt(sb.length() - 1);
+        } else if (s.charAt(index) == ')') {
+            dfs(s, index + 1, left, right - 1, ans, sb);
+            sb.append(')');
+            dfs(s, index + 1, left, right, ans, sb);
+            sb.deleteCharAt(sb.length() - 1);
+        } else {
+            sb.append(s.charAt(index));
+            dfs(s, index + 1, left, right, ans, sb);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null) {
+            return result;
+        }
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(s);
+        visited.add(s);
+        boolean found = false;
+        while (!queue.isEmpty()) {
+            String str = queue.poll();
+            if (isValid(str)) {
+                result.add(str);
+                found = true;
+            }
+            if (found) {
+                continue;
+            }
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) != '(' && str.charAt(i) != ')') {
+                    continue;
+                }
+                String t = str.substring(0, i) + str.substring(i + 1);
+                if (!visited.contains(t)) {
+                    queue.add(t);
+                    visited.add(t);
+                }
+            }
+        }
+        return result;
+    }
+    private boolean isValid(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                count++;
+            } else if (c == ')') {
+                count--;
+                if (count < 0) {
+                    return false;
+                }
+            }
+        }
+        return count == 0;
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null) {
+            return result;
+        }
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(s);
+        visited.add(s);
+        boolean found = false;
+        while (!queue.isEmpty()) {
+            String str = queue.poll();
+            if (isValid(str)) {
+                result.add(str);
+                found = true;
+            }
+            if (found) {
+                continue;
+            }
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) != '(' && str.charAt(i) != ')') {
+                    continue;
+                }
+                String t = str.substring(0, i) + str.substring(i + 1);
+                if (!visited.contains(t)) {
+                    queue.offer(t);
+                    visited.add(t);
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean isValid(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                count++;
+            } else if (c == ')') {
+                count--;
+                if (count < 0) {
+                    return false;
+                }
+            }
+        }
+        return count == 0;
+
+=======
+
+        List<String> result = new ArrayList<>();
+        removeInvalidParentheses(s, result, 0, 0, '(', ')');
+        return result;
+    }
+    
+    private void removeInvalidParentheses(String s, List<String> result, int last_i, int last_j, char open, char close) {
+        int count = 0;
+        for (int i = last_i; i < s.length(); ++i) {
+            if (s.charAt(i) == open) count++;
+            if (s.charAt(i) == close) count--;
+            if (count >= 0) continue;
+            for (int j = last_j; j <= i; ++j) {
+                if (s.charAt(j) == close && (j == last_j || s.charAt(j - 1) != close)) {
+                    removeInvalidParentheses(s.substring(0, j) + s.substring(j + 1), result, i, j, open, close);
+                }
+            }
+            return;
+        }
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (open == '(') {
+            removeInvalidParentheses(reversed, result, 0, 0, ')', '(');
+        } else {
+            result.add(reversed);
+        }
+
+=======
+
+        List<String> res = new ArrayList<>();
+        if (s == null) return res;
+        Queue<String> q = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        q.offer(s);
+        visited.add(s);
+        boolean found = false;
+        while (!q.isEmpty()) {
+            String str = q.poll();
+            if (isValid(str)) {
+                res.add(str);
+                found = true;
+            }
+            if (found) continue;
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) != '(' && str.charAt(i) != ')') continue;
+                String newStr = str.substring(0, i) + str.substring(i + 1);
+                if (!visited.contains(newStr)) {
+                    q.offer(newStr);
+                    visited.add(newStr);
+                }
+            }
+        }
+        return res;
+    }
+    
+    private boolean isValid(String s) {
+        int count = 0;
+        for (char c : s.toCharArray()) {
+            if (c == '(') count++;
+            else if (c == ')') count--;
+            if (count < 0) return false;
+        }
+        return count == 0;
+
+=======
+
+        List<String> ans = new ArrayList<>();
+        dfs(s, ans, 0, 0, new char[]{'(', ')'});
+        return ans;
+    }
+    private void dfs(String s, List<String> ans, int last_i, int last_j, char[] par) {
+        for (int stack = 0, i = last_i; i < s.length(); ++i) {
+            if (s.charAt(i) == par[0]) {
+                stack++;
+            }
+            if (s.charAt(i) == par[1]) {
+                stack--;
+            }
+            if (stack >= 0) {
+                continue;
+            }
+            for (int j = last_j; j <= i; ++j) {
+                if (s.charAt(j) == par[1] && (j == last_j || s.charAt(j - 1) != par[1])) {
+                    dfs(s.substring(0, j) + s.substring(j + 1), ans, i, j, par);
+                }
+            }
+            return;
+        }
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (par[0] == '(') {
+            dfs(reversed, ans, 0, 0, new char[]{')', '('});
+        } else {
+            ans.add(reversed);
+        }
+
+=======
+
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() == 0) {
+            result.add("");
+            return result;
+        }
+        remove(s, 0, 0, result, '(', ')');
+        return result;
+    }
+
+    private void remove(String s, int start, int lastRemove, List<String> result, char open, char close) {
+        int count = 0;
+        for (int i = start; i < s.length(); i++) {
+            if (s.charAt(i) == open) {
+                count++;
+            } else if (s.charAt(i) == close) {
+                count--;
+            }
+            if (count >= 0) {
+                continue;
+            }
+            for (int j = lastRemove; j <= i; j++) {
+                if (s.charAt(j) == close && (j == lastRemove || s.charAt(j - 1) != close)) {
+                    remove(s.substring(0, j) + s.substring(j + 1), i, j, result, open, close);
+                }
+            }
+            return;
+        }
+        String reversed = new StringBuilder(s).reverse().toString();
+        if (open == '(') {
+            remove(reversed, 0, 0, result, close, open);
+        } else {
+            result.add(reversed);
+        }
+
+=======
+
+        List<String> res = new ArrayList<>();
+        if (s == null) return res;
+        
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.add(s);
+        boolean found = false;
+        
+        while (!queue.isEmpty()) {
+            String str = queue.poll();
+            if (isValid(str)) {
+                res.add(str);
+                found = true;
+            }
+            if (found) continue;
+            
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) != '(' && str.charAt(i) != ')') continue;
+                String t = str.substring(0, i) + str.substring(i + 1);
+                if (!visited.contains(t)) {
+                    queue.add(t);
+                    visited.add(t);
+                }
+            }
+        }
+        return res;
+    }
+    
+    private boolean isValid(String s) {
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') count++;
+            if (c == ')' && count-- == 0) return false;
+        }
+        return count == 0;

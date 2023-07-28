@@ -1,0 +1,213 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = boxes.length;
+        int[] ports = new int[n];
+        int[] weights = new int[n];
+        for (int i = 0; i < n; i++) {
+            ports[i] = boxes[i][0];
+            weights[i] = boxes[i][1];
+        }
+
+        int[] next = new int[n];
+        int right = n;
+        int rightWeight = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            rightWeight += weights[i];
+            while (right > i && (right - i > maxBoxes || rightWeight > maxWeight)) {
+                rightWeight -= weights[--right];
+            }
+            next[i] = right;
+        }
+
+        int[] dp = new int[n + 1];
+        int[] minDp = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i] = Integer.MAX_VALUE / 2;
+            minDp[i] = Integer.MAX_VALUE / 2;
+            dp[i] = Math.min(dp[i], dp[next[i]] + 1);
+            minDp[i] = Math.min(minDp[i], dp[i]);
+            if (i + 1 < n && ports[i] != ports[i + 1]) {
+                dp[i] = Math.min(dp[i], minDp[next[i]] + 2);
+            }
+            minDp[i] = Math.min(minDp[i], dp[i]);
+        }
+
+        return dp[0];
+
+=======
+
+        int n = boxes.length;
+        int[] next = new int[n];
+        int right = 0, weight = 0;
+        for (int i = 0; i < n; ++i) {
+            while (right < n && (right == i || boxes[right][0] == boxes[right - 1][0])) {
+                weight += boxes[right][1];
+                ++right;
+            }
+            next[i] = right;
+        }
+        int[] dp = new int[n + 1];
+        int inf = 1000000000;
+        Arrays.fill(dp, inf);
+        dp[0] = 0;
+        for (int i = 0, rightSum = 0, rightWeight = 0; i < n; i = next[i]) {
+            rightSum = dp[i];
+            rightWeight = 0;
+            for (int j = i; j < next[i]; ++j) {
+                rightWeight += boxes[j][1];
+                rightSum += 1;
+                if (j + 1 < next[i] && boxes[j][0] != boxes[j + 1][0]) {
+                    dp[next[i]] = Math.min(dp[next[i]], rightSum);
+                }
+            }
+            if (i + maxBoxes <= n) {
+                dp[i + maxBoxes] = Math.min(dp[i + maxBoxes], rightSum + 1);
+            }
+            if (i + 1 < n && boxes[i][0] != boxes[i + 1][0]) {
+                dp[i + 1] = Math.min(dp[i + 1], rightSum + 1);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = boxes.length;
+        int[] next = new int[n];
+        int j = n;
+        long weight = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            weight += boxes[i][1];
+            while (j > i && (j == n || boxes[j][0] != boxes[i][0])) {
+                j--;
+                weight -= boxes[j][1];
+            }
+            next[i] = j;
+        }
+        int[] dp = new int[n + 1];
+        int[] best = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--) {
+            dp[i] = dp[next[i]] + 2;
+            best[i] = Math.min(n, next[i] + maxBoxes);
+            if (i + 1 < n && boxes[i][0] == boxes[i + 1][0]) {
+                dp[i] = Math.min(dp[i], dp[i + 1] + 1);
+                best[i] = Math.min(best[i], best[i + 1] + 1);
+            }
+            int lo = i + 1, hi = best[i];
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (next[i] < mid) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            if (lo < best[i]) {
+                int mid = (lo + hi) / 2;
+                long w = 0;
+                for (int k = i; k < mid; k++) {
+                    w += boxes[k][1];
+                }
+                if (w <= maxWeight) {
+                    dp[i] = Math.min(dp[i], dp[lo] + 1);
+                }
+            }
+        }
+        return dp[0];
+
+=======
+
+        int n = boxes.length;
+        int[] dp = new int[n + 1];
+        int[] next = new int[n];
+        int[] last = new int[portsCount + 1];
+        Arrays.fill(last, -1);
+        int i = 0;
+        for (int j = 0; j < n; ++j) {
+            next[i] = j + 1;
+            while (i < n && next[i] - i <= maxBoxes && boxes[i][1] + boxes[next[i]][1] <= maxWeight) {
+                next[i] += 1;
+            }
+            last[boxes[j][0]] = j;
+            dp[j + 1] = dp[i] + 2;
+            if (i > 0) {
+                dp[j + 1] = Math.min(dp[j + 1], dp[i - 1] + 1);
+            }
+            i = next[i] - 1;
+        }
+        return dp[n];
+
+=======
+
+        int n = boxes.length;
+        int[] next = new int[n];
+        int[] dp = new int[n + 1];
+        int right = 0, rightWeight = 0;
+        for (int left = 0; left < n; ++left) {
+            while (right < n && right - left < maxBoxes && rightWeight + boxes[right][1] <= maxWeight) {
+                rightWeight += boxes[right][1];
+                right++;
+            }
+            next[left] = right;
+            rightWeight -= boxes[left][1];
+        }
+        int[] cost = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            cost[i + 1] = cost[i] + (i == 0 || boxes[i][0] != boxes[i - 1][0] ? 2 : 1);
+        }
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            dp[next[i]] = Math.min(dp[next[i]], dp[i] + cost[next[i]] - cost[i]);
+            dp[i + 1] = Math.min(dp[i + 1], dp[i] + 2);
+        }
+        return dp[n];
+
+=======
+
+        int n = boxes.length;
+        int[] dp = new int[n + 1];
+        int[] next = new int[n];
+        int j = n;
+        int weight = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            weight += boxes[i][1];
+            while (j > i && (j - i > maxBoxes || weight > maxWeight)) {
+                weight -= boxes[--j][1];
+            }
+            next[i] = j;
+        }
+        int port = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            while (port < i && next[port] <= i) {
+                port++;
+            }
+            dp[i] = dp[next[i]] + 1 + (i == port ? 1 : 0);
+        }
+        return dp[0];
+
+=======
+
+        int n = boxes.length;
+        int[] dp = new int[n + 1];
+        int[] next = new int[n + 1];
+        int j = 0;
+        int sumw = 0;
+        int sumb = 0;
+        for (int i = 0; i < n; i++) {
+            sumw += boxes[i][1];
+            sumb++;
+            while (j < n && (sumw > maxWeight || sumb > maxBoxes || (i < n - 1 && boxes[i][0] != boxes[i + 1][0]))) {
+                sumw -= boxes[j][1];
+                sumb--;
+                j++;
+            }
+            if (i > 0 && boxes[i][0] != boxes[i - 1][0]) {
+                dp[i + 1] = dp[j] + 2;
+            } else {
+                dp[i + 1] = dp[j] + 1;
+            }
+            next[i + 1] = j;
+        }
+        return dp[n];

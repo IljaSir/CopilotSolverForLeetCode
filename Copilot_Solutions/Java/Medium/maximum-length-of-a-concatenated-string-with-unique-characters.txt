@@ -1,0 +1,285 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer> masks = new ArrayList<>();
+        masks.add(0);
+        int ans = 0;
+        for (String s : arr) {
+            int mask = 0;
+            for (char c : s.toCharArray()) {
+                int bit = c - 'a';
+                if (((mask >> bit) & 1) != 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask == 0) {
+                continue;
+            }
+            int n = masks.size();
+            for (int i = 0; i < n; i++) {
+                int m = masks.get(i);
+                if ((m & mask) == 0) {
+                    masks.add(m | mask);
+                    ans = Math.max(ans, Integer.bitCount(m | mask));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        List<Integer> masks = new ArrayList<>();
+        masks.add(0);
+        int ans = 0;
+        for (String s: arr) {
+            int mask = 0;
+            for (char c: s.toCharArray()) {
+                int bit = c - 'a';
+                if (((mask >> bit) & 1) != 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask == 0) continue;
+            int n = masks.size();
+            for (int i = 0; i < n; i++) {
+                int m = masks.get(i);
+                if ((m & mask) == 0) {
+                    masks.add(m | mask);
+                    ans = Math.max(ans, Integer.bitCount(m | mask));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        List<Integer> masks = new ArrayList();
+        masks.add(0);
+        int ans = 0;
+        for (String s : arr) {
+            int mask = 0;
+            for (char c : s.toCharArray()) {
+                int bit = c - 'a';
+                if (((mask >> bit) & 1) != 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask == 0) continue;
+            int n = masks.size();
+            for (int i = 0; i < n; i++) {
+                int m = masks.get(i);
+                if ((m & mask) == 0) {
+                    masks.add(m | mask);
+                    ans = Math.max(ans, Integer.bitCount(m | mask));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        List<Integer> masks = new ArrayList<Integer>();
+        masks.add(0);
+        int ret = 0;
+        for (String s : arr) {
+            int mask = 0;
+            for (char c : s.toCharArray()) {
+                int bit = c - 'a';
+                if (((mask >> bit) & 1) != 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask == 0) {
+                continue;
+            }
+            for (int i = masks.size() - 1; i >= 0; i--) {
+                int m = masks.get(i);
+                if ((m & mask) == 0) {
+                    masks.add(m | mask);
+                    ret = Math.max(ret, Integer.bitCount(m | mask));
+                }
+            }
+        }
+        return ret;
+
+=======
+
+        int[] dp = new int[1];
+        for (String s : arr) {
+            int mask = 0;
+            for (char c : s.toCharArray()) {
+                mask |= 1 << (c - 'a');
+            }
+            if (Integer.bitCount(mask) < s.length()) continue;
+            for (int i = dp.length - 1; i >= 0; i--) {
+                if ((dp[i] & mask) == 0) {
+                    dp = Arrays.copyOf(dp, dp.length + 1);
+                    dp[dp.length - 1] = dp[i] | mask;
+                }
+            }
+        }
+        int res = 0;
+        for (int mask : dp) {
+            res = Math.max(res, Integer.bitCount(mask));
+        }
+        return res;
+
+=======
+
+        int[] dp = new int[1];
+        for (String s : arr) {
+            int mask = 0;
+            for (int i = 0; i < s.length(); i++) {
+                int ch = s.charAt(i) - 'a';
+                if (((mask >> ch) & 1) > 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << ch;
+            }
+            if (mask == 0) {
+                continue;
+            }
+            for (int i = dp.length - 1; i >= 0; i--) {
+                if ((dp[i] & mask) > 0) {
+                    continue;
+                }
+                dp = Arrays.copyOf(dp, dp.length + 1);
+                dp[dp.length - 1] = dp[i] | mask;
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < dp.length; i++) {
+            res = Math.max(res, Integer.bitCount(dp[i]));
+        }
+        return res;
+
+=======
+
+        int[] dp = new int[1];
+        dfs(arr, 0, 0, dp);
+        return dp[0];
+    }
+
+    private void dfs(List<String> arr, int index, int mask, int[] dp) {
+        if (index == arr.size()) {
+            dp[0] = Math.max(dp[0], Integer.bitCount(mask));
+            return;
+        }
+        String s = arr.get(index);
+        int m = 0;
+        for (char c : s.toCharArray()) {
+            int bit = 1 << (c - 'a');
+            if ((m & bit) != 0) {
+                m = 0;
+                break;
+            }
+            m |= bit;
+        }
+        if (m != 0 && (mask & m) == 0) {
+            dfs(arr, index + 1, mask | m, dp);
+        }
+        dfs(arr, index + 1, mask, dp);
+
+=======
+
+        int[] dp = new int[]{0};
+        dfs(arr, 0, 0, dp);
+        return dp[0];
+    }
+    
+    private void dfs(List<String> arr, int i, int mask, int[] dp) {
+        if (i == arr.size()) {
+            dp[0] = Math.max(dp[0], Integer.bitCount(mask));
+            return;
+        }
+        
+        String s = arr.get(i);
+        int m = 0;
+        for (char c : s.toCharArray()) {
+            int bit = 1 << (c - 'a');
+            if ((m & bit) != 0) {
+                m = 0;
+                break;
+            }
+            m |= bit;
+        }
+        if (m != 0 && (mask & m) == 0) {
+            dfs(arr, i + 1, mask | m, dp);
+        }
+        dfs(arr, i + 1, mask, dp);
+
+=======
+
+        int[] dp = new int[]{};
+        for (String s : arr) {
+            int mask = 0;
+            for (char c : s.toCharArray()) {
+                int bit = c - 'a';
+                if ((mask & (1 << bit)) > 0) {
+                    mask = 0;
+                    break;
+                }
+                mask |= (1 << bit);
+            }
+
+            if (mask == 0) {
+                continue;
+            }
+
+            int[] dp2 = new int[dp.length + 1];
+            for (int i = 0; i < dp.length; i++) {
+                if ((dp[i] & mask) == 0) {
+                    dp2[i] = dp[i];
+                    dp2[dp.length] = dp[i] | mask;
+                }
+            }
+            dp2[dp.length] = mask;
+            dp = dp2;
+        }
+        int max = 0;
+        for (int x : dp) {
+            max = Math.max(max, Integer.bitCount(x));
+        }
+        return max;
+
+=======
+
+        List<String> list = new ArrayList<>();
+        for (String s : arr) {
+            if (isUnique(s)) {
+                list.add(s);
+            }
+        }
+        return dfs(list, 0, "");
+    }
+    
+    private int dfs(List<String> list, int index, String s) {
+        if (index == list.size()) {
+            return s.length();
+        }
+        int max = dfs(list, index + 1, s);
+        if (isUnique(s + list.get(index))) {
+            max = Math.max(max, dfs(list, index + 1, s + list.get(index)));
+        }
+        return max;
+    }
+    
+    private boolean isUnique(String s) {
+        Set<Character> set = new HashSet<>();
+        for (char c : s.toCharArray()) {
+            if (set.contains(c)) {
+                return false;
+            }
+            set.add(c);
+        }
+        return true;

@@ -1,0 +1,117 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        pass
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def dfs(needs):
+            res = sum(needs[i]*price[i] for i in range(len(needs)))
+            for s in special:
+                tmp = [needs[i]-s[i] for i in range(len(needs))]
+                if min(tmp) >= 0:
+                    res = min(res, s[-1]+dfs(tmp))
+            return res
+        return dfs(needs)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def dfs(needs):
+            res = sum([price[i]*needs[i] for i in range(len(needs))])
+            for offer in special:
+                new_needs = [needs[i]-offer[i] for i in range(len(needs))]
+                if min(new_needs) >= 0:
+                    res = min(res, offer[-1]+dfs(new_needs))
+            return res
+        
+        return dfs(needs)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def dfs(needs):
+            res = sum(needs[i] * price[i] for i in range(len(needs)))
+            for s in special:
+                tmp = needs[:]
+                for i in range(len(needs)):
+                    if tmp[i] < s[i]:
+                        break
+                    tmp[i] -= s[i]
+                else:
+                    res = min(res, dfs(tmp) + s[-1])
+            return res
+        
+        return dfs(needs)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def helper(needs):
+            res = sum([price[i] * needs[i] for i in range(len(needs))])
+            for offer in special:
+                tmp = [needs[i] - offer[i] for i in range(len(needs))]
+                if min(tmp) >= 0:
+                    res = min(res, offer[-1] + helper(tmp))
+            return res
+        return helper(needs)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def helper(needs):
+            min_price = sum([price[i] * needs[i] for i in range(len(price))])
+            for offer in special:
+                new_needs = [needs[i] - offer[i] for i in range(len(needs))]
+                if min(new_needs) >= 0:
+                    min_price = min(min_price, offer[-1] + helper(new_needs))
+            return min_price
+        
+        return helper(needs)
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def shoppingOffers(price, special, needs, memo):
+            if tuple(needs) in memo:
+                return memo[tuple(needs)]
+            res = sum(p * n for p, n in zip(price, needs))
+            for s in special:
+                new_needs = [n - s[i] for i, n in enumerate(needs)]
+                if min(new_needs) >= 0:
+                    res = min(res, s[-1] + shoppingOffers(price, special, new_needs, memo))
+            memo[tuple(needs)] = res
+            return res
+        return shoppingOffers(price, special, needs, {})
+
+=======
+
+def shoppingOffers(self, price: List[int], special: List[List[int]], needs: List[int]) -> int:
+        
+        def shopping(price, special, needs):
+            #print(price, special, needs)
+            if not special:
+                return sum([price[i] * needs[i] for i in range(len(needs))])
+            if not needs:
+                return 0
+            if sum(needs) == 0:
+                return 0
+            res = sum([price[i] * needs[i] for i in range(len(needs))])
+            for sp in special:
+                if sp[-1] >= res:
+                    continue
+                new_needs = [needs[i] - sp[i] for i in range(len(needs))]
+                if all([n >= 0 for n in new_needs]):
+                    res = min(res, sp[-1] + shopping(price, special, new_needs))
+            return res
+        return shopping(price, special, needs)

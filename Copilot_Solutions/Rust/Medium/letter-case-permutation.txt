@@ -1,0 +1,180 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        let mut res = vec![];
+        Self::dfs(s.as_bytes(), 0, &mut res);
+        res
+    }
+    
+    fn dfs(s: &[u8], i: usize, res: &mut Vec<String>) {
+        if i == s.len() {
+            res.push(String::from_utf8(s.to_vec()).unwrap());
+            return;
+        }
+        if s[i].is_ascii_alphabetic() {
+            let mut s = s.to_vec();
+            s[i] = s[i].to_ascii_lowercase();
+            Self::dfs(&s, i+1, res);
+            s[i] = s[i].to_ascii_uppercase();
+            Self::dfs(&s, i+1, res);
+        } else {
+            Self::dfs(s, i+1, res);
+        }
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        Self::dfs(s.as_bytes(), 0, &mut res);
+        res
+    }
+    
+    fn dfs(s: &[u8], i: usize, res: &mut Vec<String>) {
+        if i == s.len() {
+            res.push(String::from_utf8(s.to_vec()).unwrap());
+            return;
+        }
+        Self::dfs(s, i + 1, res);
+        if s[i].is_ascii_alphabetic() {
+            let mut s = s.to_vec();
+            s[i] ^= 32;
+            Self::dfs(&s, i + 1, res);
+        }
+
+=======
+
+        let mut res = vec![s];
+        for i in 0..s.len() {
+            if s[i..i+1].chars().next().unwrap().is_alphabetic() {
+                let n = res.len();
+                for j in 0..n {
+                    let mut s = res[j].clone();
+                    s.replace_range(i..i+1, &s[i..i+1].to_uppercase());
+                    res.push(s);
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut s = s.as_bytes().to_vec();
+        Self::dfs(&mut s, 0, &mut res);
+        res
+    }
+    
+    fn dfs(s: &mut Vec<u8>, i: usize, res: &mut Vec<String>) {
+        if i == s.len() {
+            res.push(String::from_utf8(s.clone()).unwrap());
+            return;
+        }
+        Self::dfs(s, i + 1, res);
+        if s[i].is_ascii_alphabetic() {
+            s[i] ^= 1 << 5;
+            Self::dfs(s, i + 1, res);
+        }
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        let mut buf = vec![];
+        Self::dfs(&mut ans, &mut buf, &s);
+        ans
+    }
+    fn dfs(ans: &mut Vec<String>, buf: &mut Vec<char>, s: &str) {
+        if buf.len() == s.len() {
+            ans.push(buf.iter().collect());
+            return;
+        }
+        let c = s.as_bytes()[buf.len()] as char;
+        if c.is_ascii_alphabetic() {
+            buf.push(c.to_ascii_lowercase());
+            Self::dfs(ans, buf, s);
+            buf.pop();
+            buf.push(c.to_ascii_uppercase());
+            Self::dfs(ans, buf, s);
+            buf.pop();
+        } else {
+            buf.push(c);
+            Self::dfs(ans, buf, s);
+            buf.pop();
+        }
+    }
+}
+
+=======
+
+        let mut res: Vec<String> = Vec::new();
+        let mut chars: Vec<char> = s.chars().collect();
+        let mut n = chars.len();
+        let mut i = 0;
+        while i < n {
+            let c = chars[i];
+            if c.is_alphabetic() {
+                let mut j = i + 1;
+                while j < n {
+                    let c = chars[j];
+                    if c.is_alphabetic() {
+                        break;
+                    }
+                    j += 1;
+                }
+                let mut c = chars[i];
+                let mut v = Vec::new();
+                while i < j {
+                    let mut s = String::new();
+                    s.extend(chars[0..i].iter());
+                    s.push(c);
+                    s.extend(chars[i+1..j].iter());
+                    s.extend(chars[j..].iter());
+                    v.push(s);
+                    if c.is_uppercase() {
+                        c = c.to_lowercase().next().unwrap();
+                    } else {
+                        c = c.to_uppercase().next().unwrap();
+                    }
+                    i += 1;
+                }
+                res.append(&mut v);
+            }
+            i += 1;
+        }
+        if res.is_empty() {
+            res.push(s);
+        }
+        res
+
+=======
+
+        let mut result = Vec::new();
+        result.push("".to_string());
+        for c in s.chars() {
+            let mut new_result = Vec::new();
+            if c.is_ascii_digit() {
+                for prev in result.iter() {
+                    let mut new_string = prev.clone();
+                    new_string.push(c);
+                    new_result.push(new_string);
+                }
+            } else {
+                for prev in result.iter() {
+                    let mut new_string = prev.clone();
+                    new_string.push(c.to_ascii_lowercase());
+                    new_result.push(new_string);
+                }
+                for prev in result.iter() {
+                    let mut new_string = prev.clone();
+                    new_string.push(c.to_ascii_uppercase());
+                    new_result.push(new_string);
+                }
+            }
+            result = new_result;
+        }
+        result
+    }
+}

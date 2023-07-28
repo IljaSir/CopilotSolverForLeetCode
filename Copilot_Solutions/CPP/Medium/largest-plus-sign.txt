@@ -1,0 +1,423 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        vector<vector<int>> left(n, vector<int>(n, 0));
+        vector<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> top(n, vector<int>(n, 0));
+        vector<vector<int>> bottom(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j == 0 ? 0 : left[i][j - 1]) + 1;
+                    top[i][j] = (i == 0 ? 0 : top[i - 1][j]) + 1;
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j == n - 1 ? 0 : right[i][j + 1]) + 1;
+                    bottom[i][j] = (i == n - 1 ? 0 : bottom[i + 1][j]) + 1;
+                }
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    result = max(result, min(min(left[i][j], right[i][j]), min(top[i][j], bottom[i][j])));
+                }
+            }
+        }
+        return result;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& m : mines) {
+            grid[m[0]][m[1]] = 0;
+        }
+        vector<vector<int>> left(n, vector<int>(n, 0));
+        vector<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> up(n, vector<int>(n, 0));
+        vector<vector<int>> down(n, vector<int>(n, 0));
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j > 0 ? left[i][j - 1] : 0) + 1;
+                    up[i][j] = (i > 0 ? up[i - 1][j] : 0) + 1;
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j < n - 1 ? right[i][j + 1] : 0) + 1;
+                    down[i][j] = (i < n - 1 ? down[i + 1][j] : 0) + 1;
+                    ans = max(ans, min(min(left[i][j], right[i][j]), min(up[i][j], down[i][j])));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> dp(n, vector<int>(n, n));
+        for (auto &m : mines) dp[m[0]][m[1]] = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0, l = 0, r = 0, u = 0, d = 0; j < n; ++j) {
+                dp[i][j] = min(dp[i][j], l = (dp[i][j] == 0 ? 0 : l + 1));
+                dp[i][n - 1 - j] = min(dp[i][n - 1 - j], r = (dp[i][n - 1 - j] == 0 ? 0 : r + 1));
+                dp[j][i] = min(dp[j][i], u = (dp[j][i] == 0 ? 0 : u + 1));
+                dp[n - 1 - j][i] = min(dp[n - 1 - j][i], d = (dp[n - 1 - j][i] == 0 ? 0 : d + 1));
+            }
+        }
+        int res = 0;
+        for (auto &row : dp) for (auto &val : row) res = max(res, val);
+        return res;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto m : mines) {
+            grid[m[0]][m[1]] = 0;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int k = 1;
+                    while (i - k >= 0 && i + k < n && j - k >= 0 && j + k < n && grid[i - k][j] == 1 && grid[i + k][j] == 1 && grid[i][j - k] == 1 && grid[i][j + k] == 1) {
+                        k++;
+                    }
+                    res = max(res, k);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+
+vector<vector<>>left(n, vecto<int>(n, 0));
+        vctor<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> up(n, vector<int>(n, 0));
+        vector<vector<int>> down(n, vector<int>(n, 0));
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j == 0 ? 0 : left[i][j - 1]) + 1;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j == n - 1 ? 0 : right[i][j + 1]) + 1;
+                }
+            }
+        }
+
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                if (grid[i][j] == 1) {
+                    up[i][j] = (i == 0 ? 0 : up[i - 1][j]) + 1;
+                }
+            }
+        }
+
+        for (int j = 0; j < n; j++) {
+            for (int i = n - 1; i >= 0; i--) {
+                if (grid[i][j] == 1) {
+                    down[i][j] = (i == n - 1 ? 0 : down[i + 1][j]) + 1;
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                ans = max(an, min(min(left[i][j], right[i][j]), min(up[i][j], down[i][
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (ato &mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0, cnt = 0; j < n; ++j) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = cnt;
+            }
+            for (int j = n - 1, cnt = 0; j >= 0; --j) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+        }
+        for (int j = 0; j < n; ++j) {
+            for (int i = 0, cnt = 0; i < n; ++i) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+            for (int i = n - 1, cnt = 0; i >= 0; --i) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        int resu
+        vector<vector<int>> left(n, vector<int>(n, 0));
+        vector<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> up(n, vector<int>(n, 0));
+        vector<vector<int>> down(n, vector<int>(n, 0));
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j == 0 ? 0 : left[i][j - 1]) + 1;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j == n - 1 ? 0 : right[i][j + 1]) + 1;
+                }
+            }
+        }
+
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < n; i++) {
+                if (grid[i][j] == 1) {
+                    up[i][j] = (i == 0 ? 0 : up[i - 1][j]) + 1;
+                }
+            }
+        }
+
+        for (int j = 0; j < n; j++) {
+            for (int i = n - 1; i >= 0; i--) {
+                if (grid[i][j] == 1) {
+                    down[i][j] = (i == n - 1 ? 0 : down[i + 1][j]) + 1;
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                ans = max(ans, min(min(left[i][j], right[i][j]), min(up[i][j], down[i][
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto &mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0, cnt = 0; j < n; ++j) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = cnt;
+            })));n[i][j])));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int i, j, k, l, m, n, r, c, t, ans = 0;
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& mine: mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (i = 0; i < n; i++) {
+            for (j = 0, k = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = ++k;
+                } else {
+                    k = 0;
+                }
+            }
+            for (j = n - 1, k = 0; j >= 0; j--) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = mi(dp, ++k);
+                } else {
+                    k = 0;
+                }
+            }
+        }
+        for (j = 0; j < n; j++ {
+            for (i = 0, k = 0; i < n; i++ {
+                if (grid[i][j] == 1 {
+                    dp[i][j] = min(dp[i][j], ++k);
+                } else {
+                    k = 0;
+                }
+            }
+            for (i = n - 1, k = 0; i >= 0; i--) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = min(dp[i][j], ++k);
+                    ans = max(ans, dp[i][j]);
+                } else {
+                    k = 0
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int i, j, k, l, m, n, r, c, t, ans = 0;
+        vector<vector<int>> grid(n, vector<int>(n, 1;
+        for (auto& mine: mines {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (i = 0; i < n; i++) {
+            for (j = 0, k = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = ++k;
+                } else {
+                    k = 0;
+                }
+            }
+            for (j = n - 1, k = 0; j >= 0; j--) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = min(dp[i][j], ++k);
+                } else {
+                    k = 0;
+                }
+            }
+        }
+        for (j = 0; j < n; j++) {
+            for (i = 0, k = 0; i < n; i++) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = min(dp[i][j], ++k);
+                } else {
+                    k = 0;
+                }
+            }
+            for (i = n - 1, k = 0; i >= 0; i--) {
+                if (grid[i][j] == 1) {
+                    dp[i][j] = min(dp[i][j], ++k);
+                    ans = max(ans, dp[i][j]);
+                } else {
+                    k = 0
+            for (int j = n - 1, cnt = 0; j >= 0; --j) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+        }
+        for (int j = 0; j < n; ++j) {
+            for (int i = 0, cnt = 0; i < n; ++i) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+            for (int i = n - 1, cnt = 0; i >= 0; --i) {
+                cnt = grid[i][j] == 0 ? 0 : cnt + 1;
+                dp[i][j] = min(dp[i][j], cnt);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto& mine : mines) {
+            grid[mine[0]][mine[1]] = 0;
+        }
+        int result = 0;
+        vector<vector<int>> left(n, vector<int>(n, 0));
+        vector<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> top(n, vector<int>(n, 0));
+        vector<vector<int>> bottom(n, vector<int>(n, 0));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j == 0) ? 1 : left[i][j - 1] + 1;
+                    top[i][j] = (i == 0) ? 1 : top[i - 1][j] + 1;
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j == n - 1) ? 1 : right[i][j + 1] + 1;
+                    bottom[i][j] = (i == n - 1) ? 1 : bottom[i + 1][j] + 1;
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    result = max(result, min({left[i][j], right[i][j], top[i][j], bottom[i][j]}));
+                }
+            }
+        }
+        return result;
+
+=======
+
+        vector<vector<int>> grid(n, vector<int>(n, 1));
+        for (auto &m : mines) {
+            grid[m[0]][m[1]] = 0;
+        }
+        int ans = 0;
+        vector<vector<int>> left(n, vector<int>(n, 0));
+        vector<vector<int>> right(n, vector<int>(n, 0));
+        vector<vector<int>> up(n, vector<int>(n, 0));
+        vector<vector<int>> down(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    left[i][j] = (j == 0 ? 0 : left[i][j - 1]) + 1;
+                    up[i][j] = (i == 0 ? 0 : up[i - 1][j]) + 1;
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (grid[i][j] == 1) {
+                    right[i][j] = (j == n - 1 ? 0 : right[i][j + 1]) + 1;
+                    down[i][j] = (i == n - 1 ? 0 : down[i + 1][j]) + 1;
+                    ans = max(ans, min(min(left[i][j], right[i][j]), min(up[i][j], down[i][j])));
+                }
+            }
+        }
+        return ans;

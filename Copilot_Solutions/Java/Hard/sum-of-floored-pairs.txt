@@ -1,0 +1,201 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int max = 0;
+        for (int n : nums) {
+            max = Math.max(max, n);
+        }
+        int[] count = new int[max + 1];
+        for (int n : nums) {
+            count[n]++;
+        }
+        int[] sum = new int[max + 1];
+        for (int i = 1; i <= max; i++) {
+            sum[i] = sum[i - 1] + count[i];
+        }
+        int mod = 1_000_000_007;
+        long res = 0;
+        for (int i = 1; i <= max; i++) {
+            if (count[i] == 0) {
+                continue;
+            }
+            for (int j = 1; j <= max / i; j++) {
+                int k = Math.min(max, j * i + i - 1);
+                res += (long) count[i] * (sum[k] - sum[j * i - 1]) * j;
+            }
+        }
+        return (int) (res % mod);
+
+=======
+
+        int max = 0;
+        for (int n : nums) {
+            max = Math.max(max, n);
+        }
+        int[] count = new int[max + 1];
+        for (int n : nums) {
+            count[n]++;
+        }
+        int[] sum = new int[max + 1];
+        for (int i = 1; i <= max; i++) {
+            for (int j = i; j <= max; j += i) {
+                sum[i] += count[j];
+            }
+        }
+        for (int i = 1; i <= max; i++) {
+            sum[i] += sum[i - 1];
+        }
+        long res = 0;
+        for (int n : nums) {
+            res += sum[n];
+        }
+        return (int) (res % 1_000_000_007);
+
+=======
+
+        int[] count = new int[100001];
+        for (int num : nums) {
+            count[num]++;
+        }
+        for (int i = 1; i < count.length; i++) {
+            count[i] += count[i - 1];
+        }
+        int res = 0, mod = 1000000007;
+        for (int i = 1; i < count.length; i++) {
+            int sum = 0;
+            for (int j = i; j < count.length; j += i) {
+                sum += count[Math.min(j + i - 1, count.length - 1)] - count[j - 1];
+                res = (res + sum * (j / i)) % mod;
+            }
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int max = 0;
+        for (int x : nums) {
+            max = Math.max(max, x);
+        }
+        int[] count = new int[max + 1];
+        for (int x : nums) {
+            count[x]++;
+        }
+        for (int i = 1; i <= max; i++) {
+            count[i] += count[i - 1];
+        }
+        long res = 0;
+        for (int i = 1; i <= max; i++) {
+            for (int j = i; j <= max; j += i) {
+                res += (long) (count[Math.min(max, j + i - 1)] - count[j - 1]) * (j / i);
+            }
+        }
+        return (int) (res % mod);
+
+=======
+
+        int max = 0;
+        for (int n : nums) max = Math.max(max, n);
+        int[] cnt = new int[max + 1];
+        for (int n : nums) cnt[n]++;
+        for (int i = 1; i <= max; i++) cnt[i] += cnt[i - 1];
+        long res = 0;
+        for (int i = 1; i <= max; i++) {
+            long sum = 0;
+            for (int j = 1; j * i <= max; j++) {
+                sum += (long) (cnt[Math.min(max, j * i + i - 1)] - cnt[j * i - 1]) * j;
+            }
+            res = (res + sum * cnt[i]) % 1000000007;
+        }
+        return (int) res;
+
+=======
+
+        int[] count = new int[100001];
+        for (int num : nums) {
+            count[num]++;
+        }
+        int[] sum = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            sum[i] = sum[i - 1] + count[i];
+        }
+        long ans = 0;
+        for (int i = 1; i <= 100000; i++) {
+            for (int j = i; j <= 100000; j += i) {
+                ans += (long) (sum[Math.min(100000, j + i - 1)] - sum[j - 1]) * count[i] * (j / i);
+            }
+        }
+        return (int) (ans % 1000000007);
+
+=======
+
+        int max = 0;
+        for (int n: nums) {
+            max = Math.max(n, max);
+        }
+        int[] count = new int[max+1];
+        for (int n: nums) {
+            count[n]++;
+        }
+        for (int i = 1; i <= max; i++) {
+            count[i] += count[i-1];
+        }
+        int mod = 1000000007;
+        int sum = 0;
+        for (int i = 1; i <= max; i++) {
+            int c = count[i];
+            for (int j = 1; j*i <= max; j++) {
+                int k = Math.min(j*i + i - 1, max);
+                int d = count[k] - c;
+                sum = (sum + (long)d * j) % mod;
+            }
+        }
+        return sum;
+
+=======
+
+        int mod = (int)1e9 + 7;
+        int max = 0;
+        for(int i = 0; i < nums.length; i++) {
+            max = Math.max(max, nums[i]);
+        }
+        int[] cnt = new int[max + 1];
+        for(int i = 0; i < nums.length; i++) {
+            cnt[nums[i]]++;
+        }
+        int[] sum = new int[max + 1];
+        sum[0] = cnt[0];
+        for(int i = 1; i <= max; i++) {
+            sum[i] = sum[i - 1] + cnt[i];
+        }
+        long ans = 0;
+        for(int i = 1; i <= max; i++) {
+            int j = 1;
+            while(i * j <= max) {
+                ans += (long)(sum[Math.min(max, i * j + i - 1)] - sum[i * j - 1]) * j;
+                j++;
+            }
+        }
+        return (int)(ans % mod);
+
+=======
+
+        int[] counts = new int[100001];
+        for (int num : nums) {
+            counts[num]++;
+        }
+        int[] prefix = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            prefix[i] = prefix[i - 1] + counts[i];
+        }
+        long ans = 0;
+        for (int i = 1; i < 100001; i++) {
+            if (counts[i] == 0) {
+                continue;
+            }
+            for (int j = 1; i * j < 100001; j++) {
+                ans += (long) counts[i] * (prefix[Math.min(i * (j + 1) - 1, 100000)] - prefix[i * j - 1]);
+            }
+        }
+        return (int) (ans % 1000000007);

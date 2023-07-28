@@ -1,0 +1,219 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] res = new int[2];
+        res[0] = findRound(n, firstPlayer, secondPlayer, true);
+        res[1] = findRound(n, firstPlayer, secondPlayer, false);
+        return res;
+    }
+    
+    private int findRound(int n, int firstPlayer, int secondPlayer, boolean earliest) {
+        int round = 1;
+        while (n > 1) {
+            if (firstPlayer <= n / 2 && secondPlayer > n / 2) {
+                return round;
+            }
+            if (firstPlayer > n / 2) {
+                firstPlayer -= n / 2;
+            }
+            if (secondPlayer > n / 2) {
+                secondPlayer -= n / 2;
+            }
+            if (earliest) {
+                n = n / 2;
+            } else {
+                n = (n + 1) / 2;
+            }
+            round++;
+        }
+        return round;
+
+=======
+
+        int[] res = new int[2];
+        res[0] = Math.min(earliest(n, firstPlayer, secondPlayer), earliest(n, secondPlayer, firstPlayer));
+        res[1] = Math.max(latest(n, firstPlayer, secondPlayer), latest(n, secondPlayer, firstPlayer));
+        return res;
+    }
+    
+    private int earliest(int n, int firstPlayer, int secondPlayer) {
+        if (firstPlayer == secondPlayer) return 1;
+        if (firstPlayer % 2 == 1 && secondPlayer == firstPlayer + 1) return 1;
+        if (firstPlayer % 2 == 0 && secondPlayer == firstPlayer - 1) return 1;
+        if (firstPlayer % 2 == 1 && secondPlayer == firstPlayer + 2) return 2;
+        if (firstPlayer % 2 == 0 && secondPlayer == firstPlayer - 2) return 2;
+        return 1 + earliest(n / 2, (firstPlayer + 1) / 2, (secondPlayer + 1) / 2);
+
+=======
+
+        int[] result = new int[2];
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = i + 1;
+        }
+        int round = 0;
+        while (n > 1) {
+            round++;
+            int[] tmp = new int[n / 2];
+            int index = 0;
+            for (int i = 0; i < n / 2; i++) {
+                if (arr[i] == firstPlayer && arr[n - 1 - i] == secondPlayer || arr[i] == secondPlayer && arr[n - 1 - i] == firstPlayer) {
+                    result[0] = round;
+                    result[1] = round;
+                } else if (arr[i] == firstPlayer || arr[i] == secondPlayer) {
+                    tmp[index++] = arr[i];
+                } else if (arr[n - 1 - i] == firstPlayer || arr[n - 1 - i] == secondPlayer) {
+                    tmp[index++] = arr[n - 1 - i];
+                }
+            }
+            if (n % 2 == 1) {
+                tmp[index++] = arr[n / 2];
+            }
+            arr = tmp;
+            n = n / 2;
+        }
+        if (result[0] == 0) {
+            result[0] = 1;
+        }
+        return result;
+
+=======
+
+        int[] res = new int[2];
+        res[0] = Math.min(firstPlayer, secondPlayer);
+        res[1] = Math.max(firstPlayer, secondPlayer);
+        while (res[0] % 2 == 0 && res[1] - res[0] == 1) {
+            res[0] /= 2;
+            res[1] = (res[1] + 1) / 2;
+        }
+        res[0] = (int)(Math.log(res[0]) / Math.log(2)) + 1;
+        res[1] = (int)(Math.log(res[1]) / Math.log(2)) + 1;
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int min = Math.min(firstPlayer, secondPlayer);
+        int max = Math.max(firstPlayer, secondPlayer);
+        int round = 0;
+        while (n > 1) {
+            n /= 2;
+            round++;
+            if (n >= min && n < max) {
+                res[0] = round;
+                res[1] = round;
+            } else if (n >= max) {
+                min = min * 2 - 1;
+            } else {
+                max = max * 2 - 1;
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int min = Math.min(firstPlayer, secondPlayer);
+        int max = Math.max(firstPlayer, secondPlayer);
+        res[0] = (int) (Math.ceil(Math.log(min) / Math.log(2)) + Math.ceil(Math.log(n - max + 1) / Math.log(2)));
+        res[1] = (int) (Math.ceil(Math.log(n) / Math.log(2)));
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int round = 0;
+        while (n > 1) {
+            round++;
+            if (firstPlayer % 2 == 1 && secondPlayer == firstPlayer + 1) {
+                res[0] = round;
+                res[1] = round;
+                break;
+            }
+            if (firstPlayer % 2 == 0 && firstPlayer == secondPlayer + 1) {
+                res[0] = round;
+                res[1] = round;
+                break;
+            }
+            if (firstPlayer % 2 == 1 && secondPlayer % 2 == 0) {
+                res[1] = round;
+            }
+            if (firstPlayer % 2 == 0 && secondPlayer % 2 == 1) {
+                res[1] = round;
+            }
+            firstPlayer = (firstPlayer + 1) / 2;
+            secondPlayer = (secondPlayer + 1) / 2;
+            n = (n + 1) / 2;
+        }
+        return res;
+
+=======
+
+        int[] res = new int[2];
+        int[] players = new int[n];
+        int round = 1;
+        for (int i = 0; i < n; i++) {
+            players[i] = i + 1;
+        }
+        while (players.length > 1) {
+            int[] newPlayers = new int[players.length / 2];
+            int idx = 0;
+            for (int i = 0; i < players.length; i += 2) {
+                if (players[i] == firstPlayer && players[i + 1] == secondPlayer) {
+                    res[0] = Math.max(res[0], round);
+                    res[1] = Math.max(res[1], round);
+                } else if ((players[i] == firstPlayer || players[i] == secondPlayer) && (players[i + 1] != firstPlayer && players[i + 1] != secondPlayer)) {
+                    res[0] = Math.max(res[0], round);
+                } else if ((players[i + 1] == firstPlayer || players[i + 1] == secondPlayer) && (players[i] != firstPlayer && players[i] != secondPlayer)) {
+                    res[0] = Math.max(res[0], round);
+                } else if ((players[i] == firstPlayer || players[i] == secondPlayer) && (players[i + 1] == firstPlayer || players[i + 1] == secondPlayer)) {
+                    res[1] = Math.max(res[1], round);
+                }
+                newPlayers[idx++] = players[i];
+            }
+            players = newPlayers;
+            round++;
+        }
+        return res;
+
+=======
+
+        int[] result = new int[2];
+        int start = 1;
+        int end = n;
+        int round = 1;
+        while (start != firstPlayer && end != firstPlayer && start != secondPlayer && end != secondPlayer) {
+            start = (start + 1) / 2;
+            end = (end + 1) / 2;
+            round++;
+        }
+        result[0] = round;
+        int maxRound = (int) (Math.log(n) / Math.log(2));
+        round = maxRound;
+        while (start != firstPlayer && end != firstPlayer && start != secondPlayer && end != secondPlayer) {
+            start = (start + 1) / 2;
+            end = (end + 1) / 2;
+            round--;
+        }
+        result[1] = round;
+        return result;
+
+=======
+
+        int[] res = new int[2];
+        int r = 1;
+        while (n > 2) {
+            if (firstPlayer > n / 2 && secondPlayer > n / 2) {
+                firstPlayer -= n / 2;
+                secondPlayer -= n / 2;
+            } else if (firstPlayer <= n / 2 && secondPlayer <= n / 2) {
+                // do nothing
+            } else {
+                res[0] = r;
+            }
+            n = (n + 1) / 2;
+            r++;
+        }
+        res[1] = r;
+        return res;

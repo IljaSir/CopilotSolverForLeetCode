@@ -1,0 +1,258 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n + 1);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            int time = 0;
+            for (int i = 0; i < n; ++i) {
+                if (((mask >> i) & 1) != 0) {
+                    time += tasks[i];
+                }
+            }
+            time %= sessionTime;
+            for (int i = 0; i < n; ++i) {
+                if (((mask >> i) & 1) == 0) {
+                    int next = mask | (1 << i);
+                    if (time + tasks[i] <= sessionTime) {
+                        dp[next] = Math.min(dp[next], dp[mask]);
+                    } else {
+                        dp[next] = Math.min(dp[next], dp[mask] + 1);
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n + 1);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int curTime = 0;
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) {
+                    curTime += tasks[i];
+                }
+            }
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 0) {
+                    int next = mask | (1 << i);
+                    int cur = dp[mask];
+                    if (curTime + tasks[i] <= sessionTime) {
+                        dp[next] = Math.min(dp[next], cur);
+                    } else {
+                        dp[next] = Math.min(dp[next], cur + 1);
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            if (dp[mask] == Integer.MAX_VALUE) {
+                continue;
+            }
+            int curTime = 0;
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 0) {
+                    curTime += tasks[i];
+                    if (curTime > sessionTime) {
+                        break;
+                    }
+                    dp[mask | (1 << i)] = Math.min(dp[mask | (1 << i)], dp[mask] + 1);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int sum = 0;
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) == 0) {
+                    sum += tasks[i];
+                }
+            }
+            int s = sum / sessionTime;
+            if (sum % sessionTime != 0) {
+                s++;
+            }
+            dp[mask] = s + dp[mask];
+            for (int i = mask; i > 0; i = (i - 1) & mask) {
+                dp[mask] = Math.min(dp[mask], dp[i] + dp[mask ^ i]);
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            if (dp[mask] == -1) {
+                continue;
+            }
+            int time = 0;
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 0) {
+                    time += tasks[i];
+                    if (time <= sessionTime) {
+                        dp[mask | (1 << i)] = dp[mask];
+                    } else {
+                        time = tasks[i];
+                        dp[mask | (1 << i)] = dp[mask] + 1;
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[][] dp = new int[1 << n][n + 1];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(tasks, sessionTime, 0, 0, dp);
+    }
+    
+    private int dfs(int[] tasks, int sessionTime, int mask, int cur, int[][] dp) {
+        if (mask == (1 << tasks.length) - 1) {
+            return 0;
+        }
+        if (dp[mask][cur] != -1) {
+            return dp[mask][cur];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < tasks.length; i++) {
+            if (((mask >> i) & 1) == 1) {
+                continue;
+            }
+            if (cur + tasks[i] <= sessionTime) {
+                res = Math.min(res, dfs(tasks, sessionTime, mask | (1 << i), cur + tasks[i], dp));
+            } else {
+                res = Math.min(res, dfs(tasks, sessionTime, mask | (1 << i), tasks[i], dp) + 1);
+            }
+        }
+        return dp[mask][cur] = res;
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1<<n];
+        Arrays.fill(dp, n);
+        dp[0] = 0;
+        for (int mask = 0; mask < (1<<n); mask++) {
+            int time = 0;
+            for (int i = 0; i < n; i++) {
+                if (((mask>>i)&1) == 1) {
+                    time += tasks[i];
+                }
+            }
+            time %= sessionTime;
+            for (int i = 0; i < n; i++) {
+                if (((mask>>i)&1) == 0) {
+                    dp[mask|(1<<i)] = Math.min(dp[mask|(1<<i)], dp[mask] + (time + tasks[i] - 1) / sessionTime);
+                }
+            }
+        }
+        return dp[(1<<n)-1];
+
+=======
+
+        int n = tasks.length;
+        int[] mask = new int[1 << n];
+        Arrays.fill(mask, -1);
+        mask[0] = 0;
+        for (int i = 0; i < (1 << n); ++i) {
+            if (mask[i] == -1) {
+                continue;
+            }
+            int timeLeft = sessionTime;
+            for (int j = 0; j < n; ++j) {
+                if (((i >> j) & 1) == 0) {
+                    if (timeLeft >= tasks[j]) {
+                        mask[i | (1 << j)] = mask[i];
+                        timeLeft -= tasks[j];
+                    } else {
+                        mask[i | (1 << j)] = mask[i] + 1;
+                        timeLeft = sessionTime - tasks[j];
+                    }
+                }
+            }
+        }
+        return mask[(1 << n) - 1];
+
+=======
+
+        int n = tasks.length;
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, n);
+        dp[0] = 0;
+        for(int state = 0; state < (1 << n); state++) {
+            int time = 0;
+            for(int i = 0; i < n; i++) {
+                if(((state >> i) & 1) == 0) {
+                    time += tasks[i];
+                }
+            }
+            int remain = sessionTime - time % sessionTime;
+            for(int i = 0; i < n; i++) {
+                if(((state >> i) & 1) == 0) {
+                    int next = state | (1 << i);
+                    if(tasks[i] <= remain) {
+                        dp[next] = Math.min(dp[next], dp[state]);
+                    } else {
+                        dp[next] = Math.min(dp[next], dp[state] + 1);
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int[] dp = new int[1 << tasks.length];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        return dfs(tasks, sessionTime, 0, dp);
+    }
+    private int dfs(int[] tasks, int sessionTime, int mask, int[] dp) {
+        if (dp[mask] != -1) {
+            return dp[mask];
+        }
+        int left = sessionTime;
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < tasks.length; i++) {
+            if (((mask >> i) & 1) == 1) {
+                continue;
+            }
+            if (tasks[i] <= left) {
+                left -= tasks[i];
+                res = Math.min(res, dfs(tasks, sessionTime, mask | (1 << i), dp));
+                left += tasks[i];
+            } else {
+                res = Math.min(res, dfs(tasks, sessionTime, mask | (1 << i), dp) + 1);
+            }
+        }
+        return dp[mask] = res;

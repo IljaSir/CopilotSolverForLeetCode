@@ -1,0 +1,257 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut points = Vec::new();
+        for b in buildings {
+            points.push((b[0], -b[2]));
+            points.push((b[1], b[2]));
+        }
+        points.sort();
+        let mut heights = std::collections::BinaryHeap::new();
+        let mut res = Vec::new();
+        let mut prev = 0;
+        heights.push(0);
+        for p in points {
+            if p.1 < 0 {
+                heights.push(-p.1);
+            } else {
+                heights.remove(&p.1);
+            }
+            let cur = *heights.peek().unwrap();
+            if cur != prev {
+                res.push(vec![p.0, cur]);
+                prev = cur;
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut points = vec![];
+        for b in buildings {
+            points.push((b[0], -b[2]));
+            points.push((b[1], b[2]));
+        }
+        points.sort();
+        let mut hq = std::collections::BinaryHeap::new();
+        hq.push(0);
+        let mut prev = 0;
+        for (x, h) in points {
+            if h < 0 {
+                hq.push(-h);
+            } else {
+                hq.remove(&h);
+            }
+            let cur = *hq.peek().unwrap();
+            if cur != prev {
+                res.push(vec![x, cur]);
+                prev = cur;
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        let mut points = vec![];
+        for b in buildings {
+            points.push((b[0], -b[2]));
+            points.push((b[1], b[2]));
+        }
+        points.sort();
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(0);
+        let mut height = 0;
+        for (x, y) in points {
+            if y < 0 {
+                heap.push(-y);
+            } else {
+                heap.retain(|&h| h != y);
+            }
+            let h = *heap.peek().unwrap();
+            if h != height {
+                ans.push(vec![x, h]);
+                height = h;
+            }
+        }
+        ans
+
+=======
+
+        let mut skyline = Vec::new();
+        let mut heights = Vec::new();
+        for b in buildings {
+            heights.push((b[0], -b[2]));
+            heights.push((b[1], b[2]));
+        }
+        heights.sort();
+        let mut pq = std::collections::BinaryHeap::new();
+        let mut prev = 0;
+        pq.push(0);
+        for h in heights {
+            if h.1 < 0 {
+                pq.push(-h.1);
+            } else {
+                pq.retain(|&x| x != h.1);
+            }
+            let cur = *pq.peek().unwrap();
+            if cur != prev {
+                skyline.push(vec![h.0, cur]);
+                prev = cur;
+            }
+        }
+        skyline
+
+=======
+
+        let mut res = vec![];
+        let mut height = vec![];
+        for b in buildings {
+            height.push((b[0], -b[2]));
+            height.push((b[1], b[2]));
+        }
+        height.sort();
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push(0);
+        let mut pre = 0;
+        for h in height {
+            if h.1 < 0 {
+                pq.push(-h.1);
+            } else {
+                pq.remove(&h.1);
+            }
+            let cur = *pq.peek().unwrap();
+            if cur != pre {
+                res.push(vec![h.0, cur]);
+                pre = cur;
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut h = std::collections::BinaryHeap::new();
+        let mut i = 0;
+        let mut n = buildings.len();
+        while i < n || !h.is_empty() {
+            let mut x = if h.is_empty() { buildings[i][0] } else { h.peek().unwrap().1 };
+            if i == n || buildings[i][0] > x {
+                while !h.is_empty() && h.peek().unwrap().1 <= x {
+                    h.pop();
+                }
+            } else {
+                x = buildings[i][0];
+                while i < n && buildings[i][0] == x {
+                    h.push((buildings[i][2], buildings[i][1]));
+                    i += 1;
+                }
+            }
+            let mut y = if h.is_empty() { 0 } else { h.peek().unwrap().0 };
+            if res.is_empty() || res.last().unwrap()[1] != y {
+                res.push(vec![x, y]);
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut hq = std::collections::BinaryHeap::new();
+        let mut i = 0;
+        let mut n = buildings.len();
+        while i < n || !hq.is_empty() {
+            let x = if hq.is_empty() { buildings[i][0] } else { hq.peek().unwrap().1 };
+            if i == n || x < buildings[i][0] {
+                while !hq.is_empty() && hq.peek().unwrap().1 <= x {
+                    hq.pop();
+                }
+            } else {
+                x = buildings[i][0];
+                while i < n && buildings[i][0] == x {
+                    hq.push((buildings[i][2], buildings[i][1]));
+                    i += 1;
+                }
+            }
+            let h = if hq.is_empty() { 0 } else { hq.peek().unwrap().0 };
+            if res.is_empty() || res.last().unwrap()[1] != h {
+                res.push(vec![x, h]);
+            }
+        }
+        res
+
+=======
+
+        let mut res = Vec::new();
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut i = 0;
+        let mut n = buildings.len();
+        let mut cur = 0;
+        let mut x = 0;
+        let mut y = 0;
+        let mut live = Vec::new();
+        while i < n || !heap.is_empty() {
+            if heap.is_empty() {
+                x = buildings[i][0];
+            } else {
+                x = heap.peek().unwrap().1;
+                while i < n && buildings[i][0] <= x {
+                    heap.push((-buildings[i][2], buildings[i][1]));
+                    i += 1;
+                }
+                while !heap.is_empty() && heap.peek().unwrap().1 <= x {
+                    heap.pop();
+                }
+            }
+            y = if heap.is_empty() { 0 } else { -heap.peek().unwrap().0 };
+            if res.is_empty() || res.last().unwrap()[1] != y {
+                res.push(vec![x, y]);
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut b = buildings;
+        let mut res = Vec::new();
+        b.sort_by(|a, b| a[0].cmp(&b[0]));
+        let mut pq = std::collections::BinaryHeap::new();
+        pq.push((0, std::i32::MAX));
+        let mut prev = 0;
+        for i in 0..b.len() {
+            let left = b[i][0];
+            let right = b[i][1];
+            let height = b[i][2];
+            while pq.peek().unwrap().1 <= left {
+                pq.pop();
+            }
+            if height > pq.peek().unwrap().0 {
+                if prev != height {
+                    res.push(vec![left, height]);
+                    prev = height;
+                }
+            }
+            pq.push((height, right));
+        }
+        while !pq.is_empty() {
+            let p = pq.pop().unwrap();
+            let h = p.0;
+            let r = p.1;
+            if prev != 0 {
+                res.push(vec![r, 0]);
+                prev = 0;
+            }
+        }
+        res
+
+=======
+
+        
+    }
+}

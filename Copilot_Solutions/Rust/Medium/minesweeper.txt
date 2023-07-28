@@ -1,0 +1,227 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let mut board = board;
+        let (r, c) = (click[0] as usize, click[1] as usize);
+        if board[r][c] == 'M' {
+            board[r][c] = 'X';
+            board
+        } else {
+            let m = board.len();
+            let n = board[0].len();
+            let mut stack = vec![(r, c)];
+            let mut visited = vec![vec![false; n]; m];
+            while let Some((r, c)) = stack.pop() {
+                if visited[r][c] {
+                    continue;
+                }
+                visited[r][c] = true;
+                let mut cnt = 0;
+                for (i, j) in &[(r as i32 - 1, c as i32 - 1), (r as i32 - 1, c as i32), (r as i32 - 1, c as i32 + 1), (r as i32, c as i32 - 1), (r as i32, c as i32 + 1), (r as i32 + 1, c as i32 - 1), (r as i32 + 1, c as i32), (r as i32 + 1, c as i32 + 1)] {
+                    if i < 0 || i >= m as i32 || j < 0 || j >= n as i32 {
+                        continue;
+                    }
+                    if board[i as usize][j as usize] == 'M' {
+                        cnt += 1;
+                    }
+                }
+                if cnt > 0 {
+                    board[r][c] = (cnt as u8 + b'0') as char;
+                } else {
+                    board[r][c] = 'B';
+                    for (i, j) in &[(r as i32 - 1, c as i32 - 1), (r as i32 - 1, c as i32), (r as i32 - 1, c as i32 + 1), (r as i32, c as i32 - 1), (r as i32, c as i32 + 1), (r as i32 + 1, c as i32 - 1), (r as i32 + 1, c as i32), (r as i
+
+=======
+Suggestion 2
+
+        let mut board = board;
+        let (clickr, clickc) = (click[0] as usize, click[1] as usize);
+        if board[clickr][clickc] == 'M' {
+            board[clickr][clickc] = 'X';
+        } else {
+            let mut stack = vec![(clickr, clickc)];
+            while let Some((r, c)) = stack.pop() {
+                let mut cnt = 0;
+                for dr in -1..=1 {
+                    for dc in -1..=1 {
+                        if dr == 0 && dc == 0 {
+                            continue;
+                        }
+                        let (nr, nc) = (r as i32 + dr, c as i32 + dc);
+                        if nr < 0 || nr >= board.len() as i32 || nc < 0 || nc >= board[0].len() as i32 {
+                            continue;
+                        }
+                        let (nr, nc) = (nr as usize, nc as usize);
+                        if board[nr][nc] == 'M' {
+                            cnt += 1;
+                        }
+                    }
+                }
+                if cnt == 0 {
+                    board[r][c] = 'B';
+                    for dr in -1..=1 {
+                        for dc in -1..=1 {
+                            if dr == 0 && dc == 0 {
+                                continue;
+                            }
+                            let (nr, nc) = (r as i32 + dr, c as i32 + dc);
+                            if nr < 0 || nr >= board.len() as i32 || nc < 0 || nc >= board[0].len() as i32 {
+                                continue;
+                            }
+                            let (nr, nc) = (nr as usize, nc as usize);
+                            if board[nr][nc] == 'E' {
+                                stack.push((nr, nc));
+                                board[nr][nc] = 'B';
+                            }
+                        }
+                    }
+                } else {
+                    board[r][c] = (cnt as u8 + b'0') as char;
+                }
+            }
+        }
+        board
+
+=======
+Suggestion 3
+
+        let mut board = board;
+        let (row, col) = (click[0] as usize, click[1] as usize);
+        if board[row][col] == 'M' {
+            board[row][col] = 'X';
+        } else {
+            let mut queue = Vec::new();
+            queue.push((row, col));
+            while !queue.is_empty() {
+                let (r, c) = queue.pop().unwrap();
+                let mut count = 0;
+                for x in -1..=1 {
+                    for y in -1..=1 {
+                        if x == 0 && y == 0 {
+                            continue;
+                        }
+                        let (r, c) = (r as i32 + x, c as i32 + y);
+                        if r >= 0 && c >= 0 && r < board.len() as i32 && c < board[0].len() as i32 {
+                            let (r, c) = (r as usize, c as usize);
+                            if board[r][c] == 'M' {
+                                count += 1;
+                            }
+                        }
+                    }
+                }
+                if count > 0 {
+                    board[r][c] = (count + b'0') as char;
+                } else {
+                    board[r][c] = 'B';
+                    for x in -1..=1 {
+                        for y in -1..=1 {
+                            if x == 0 && y == 0 {
+                                continue;
+                            }
+                            let (r, c) = (r as i32 + x, c as i32 + y);
+                            if r >= 0 && c >= 0 && r < board.len() as i32 && c < board[0].len() as i32 {
+                                let (r, c) = (r as usize, c as usize);
+                                if board[r][c] == 'E' {
+                                    queue.push((r, c));
+                                    board[r][c] = 'B';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        board
+
+=======
+Suggestion 4
+
+        let mut board = board;
+        let (row, col) = (click[0] as usize, click[1] as usize);
+        let (m, n) = (board.len(), board[0].len());
+        if board[row][col] == 'M' {
+            board[row][col] = 'X';
+        } else {
+            let mut stack = vec![(row, col)];
+            while let Some((row, col)) = stack.pop() {
+                let mut count = 0;
+                for i in (row as i32 - 1).max(0) as usize..=(row as i32 + 1).min(m as i32 - 1) as usize {
+                    for j in (col as i32 - 1).max(0) as usize..=(col as i32 + 1).min(n as i32 - 1) as usize {
+                        if board[i][j] == 'M' {
+                            count += 1;
+                        }
+                    }
+                }
+                if count > 0 {
+                    board[row][col] = (count as u8 + b'0') as char;
+                } else {
+                    board[row][col] = 'B';
+                    for i in (row as i32 - 1).max(0) as usize..=(row as i32 + 1).min(m as i32 - 1) as usize {
+                        for j in (col as i32 - 1).max(0) as usize..=(col as i32 + 1).min(n as i32 - 1) as usize {
+                            if board[i][j] == 'E' {
+                                stack.push((i, j));
+                                board[i][j] = 'B';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        board
+    }
+}
+
+=======
+Suggestion 5
+
+        
+    }
+}
+
+=======
+Suggestion 6
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut board = board;
+        let mut queue = std::collections::VecDeque::new();
+        let mut visited = std::collections::HashSet::new();
+        queue.push_back((click[0] as usize, click[1] as usize));
+        while !queue.is_empty() {
+            let (i, j) = queue.pop_front().unwrap();
+            if visited.contains(&(i, j)) {
+                continue;
+            }
+            visited.insert((i, j));
+            if board[i][j] == 'M' {
+                board[i][j] = 'X';
+            } else if board[i][j] == 'E' {
+                let mut adj_mine_count = 0;
+                for x in i.saturating_sub(1)..=(i + 1).min(m - 1) {
+                    for y in j.saturating_sub(1)..=(j + 1).min(n - 1) {
+                        if x == i && y == j {
+                            continue;
+                        }
+                        if board[x][y] == 'M' {
+                            adj_mine_count += 1;
+                        }
+                    }
+                }
+                if adj_mine_count == 0 {
+                    board[i][j] = 'B';
+                    for x in i.saturating_sub(1)..=(i + 1).min(m - 1) {
+                        for y in j.saturating_sub(1)..=(j + 1).min(n - 1) {
+                            if x == i && y == j {
+                                continue;
+                            }
+                            queue.push_back((x, y));
+                        }
+                    }
+                } else {
+                    board[i][j] = (adj_mine_count as u8 + b'0') as char;
+                }
+            }
+        }
+        board

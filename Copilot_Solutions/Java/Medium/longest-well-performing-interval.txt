@@ -1,0 +1,203 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = hours.length;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i <= n; i++) {
+            if (stack.isEmpty() || sum[i] < sum[stack.peek()]) {
+                stack.push(i);
+            }
+        }
+        for (int i = n; i >= res; i--) {
+            while (!stack.isEmpty() && sum[i] > sum[stack.peek()]) {
+                res = Math.max(res, i - stack.pop());
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.length;
+        int[] pre = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i <= n; i++) {
+            if (stack.isEmpty() || pre[stack.peek()] > pre[i]) {
+                stack.push(i);
+            }
+        }
+        for (int i = n; i >= 0; i--) {
+            while (!stack.isEmpty() && pre[stack.peek()] < pre[i]) {
+                res = Math.max(res, i - stack.pop());
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.length;
+        int[] dp = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            dp[i + 1] = dp[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] > 0) {
+                result = i + 1;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (dp[j + 1] - dp[i] > 0) {
+                    result = Math.max(result, j - i + 1);
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] score = new int[hours.length + 1];
+        for (int i = 1; i <= hours.length; i++) {
+            score[i] = score[i - 1] + (hours[i - 1] > 8 ? 1 : -1);
+        }
+        int ans = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        for (int i = 0; i < score.length; i++) {
+            if (stack.isEmpty() || score[i] < score[stack.peek()]) {
+                stack.push(i);
+            }
+        }
+        for (int i = score.length - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && score[i] > score[stack.peek()]) {
+                ans = Math.max(ans, i - stack.pop());
+            }
+        }
+        return ans;
+
+=======
+
+        int n = hours.length;
+        int[] dp = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            dp[i+1] = dp[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j <= n; j++) {
+                if (dp[j] - dp[i] > 0) {
+                    res = Math.max(res, j-i);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = hours.length;
+        int[] a = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            a[i+1] = a[i] + (hours[i] > 8 ? 1 : -1);
+        }
+        int res = 0;
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i <= n; i++) {
+            if (stack.isEmpty() || a[stack.peek()] > a[i]) {
+                stack.push(i);
+            }
+        }
+        for (int i = n; i >= res; i--) {
+            while (!stack.isEmpty() && a[stack.peek()] < a[i]) {
+                res = Math.max(res, i - stack.pop());
+            }
+        }
+        return res;
+
+=======
+
+        int max = 0;
+        int[] sum = new int[hours.length + 1];
+        for (int i = 0; i < hours.length; i++) {
+            sum[i + 1] = sum[i] + (hours[i] > 8 ? 1 : -1);
+            if (sum[i + 1] > 0) max = i + 1;
+        }
+        for (int i = hours.length - 1; i > max; i--) {
+            for (int j = 0; j + max < i; j++) {
+                if (sum[i + 1] - sum[j] > 0) max = i - j;
+            }
+        }
+        return max;
+
+=======
+
+        int[] dp = new int[hours.length];
+        int sum = 0;
+        int max = 0;
+        for (int i = 0; i < hours.length; i++) {
+            if (hours[i] > 8) {
+                sum++;
+            } else {
+                sum--;
+            }
+            dp[i] = sum;
+        }
+        for (int i = 0; i < hours.length; i++) {
+            for (int j = i + 1; j < hours.length; j++) {
+                if (dp[j] - dp[i] > 0) {
+                    max = Math.max(max, j - i + 1);
+                }
+            }
+        }
+        return max;
+
+=======
+
+        int[] hoursCopy = new int[hours.length];
+        for (int i = 0; i < hours.length; i++) {
+            hoursCopy[i] = hours[i] > 8 ? 1 : -1;
+        }
+        int[] prefixSum = new int[hours.length + 1];
+        for (int i = 0; i < hours.length; i++) {
+            prefixSum[i + 1] = prefixSum[i] + hoursCopy[i];
+        }
+        Deque<Integer> stack = new ArrayDeque<>();
+        for (int i = 0; i < prefixSum.length; i++) {
+            if (stack.isEmpty() || prefixSum[stack.peek()] > prefixSum[i]) {
+                stack.push(i);
+            }
+        }
+        int result = 0;
+        for (int i = prefixSum.length - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && prefixSum[stack.peek()] < prefixSum[i]) {
+                result = Math.max(result, i - stack.pop());
+            }
+        }
+        return result;
+
+=======
+
+        int res = 0;
+        int sum = 0;
+        int[] map = new int[hours.length];
+        for (int i = 0; i < hours.length; i++) {
+            sum += hours[i] > 8 ? 1 : -1;
+            if (sum > 0) {
+                res = i + 1;
+            } else {
+                if (map[-sum] != 0) {
+                    res = Math.max(res, i - map[-sum] + 1);
+                } else {
+                    map[-sum] = i + 1;
+                }
+            }
+        }
+        return res;

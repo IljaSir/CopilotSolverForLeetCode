@@ -1,0 +1,196 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut count = 0;
+        for i in 0..word.len() {
+            let mut set = std::collections::HashSet::new();
+            for j in i..word.len() {
+                set.insert(word.chars().nth(j).unwrap());
+                if set.len() == 5 {
+                    count += 1;
+                }
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut last = [0; 5];
+        for c in word.chars() {
+            let i = match c {
+                'a' => 0,
+                'e' => 1,
+                'i' => 2,
+                'o' => 3,
+                'u' => 4,
+                _ => unreachable!(),
+            };
+            last[i] = 1 + last.iter().sum::<i32>();
+            count += last[i];
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut prev = vec![0; 5];
+        for c in word.chars() {
+            let i = match c {
+                'a' => 0,
+                'e' => 1,
+                'i' => 2,
+                'o' => 3,
+                'u' => 4,
+                _ => unreachable!(),
+            };
+            prev[i] += 1;
+            count += prev[i];
+        }
+        count
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; word.len()]; word.len()];
+        for i in 0..word.len() {
+            dp[i][i] = 1;
+        }
+        let mut res = word.len();
+        for i in 0..word.len() {
+            for j in (i + 1)..word.len() {
+                if word.chars().nth(j).unwrap() == word.chars().nth(j - 1).unwrap() {
+                    dp[i][j] = dp[i][j - 1];
+                } else if word.chars().nth(j).unwrap() == 'a' && word.chars().nth(j - 1).unwrap() == 'u' {
+                    dp[i][j] = dp[i][j - 1];
+                } else if word.chars().nth(j).unwrap() == 'e' && word.chars().nth(j - 1).unwrap() == 'i' {
+                    dp[i][j] = dp[i][j - 1];
+                } else if word.chars().nth(j).unwrap() == 'i' && word.chars().nth(j - 1).unwrap() == 'e' {
+                    dp[i][j] = dp[i][j - 1];
+                } else if word.chars().nth(j).unwrap() == 'o' && word.chars().nth(j - 1).unwrap() == 'u' {
+                    dp[i][j] = dp[i][j - 1];
+                } else if word.chars().nth(j).unwrap() == 'u' && word.chars().nth(j - 1).unwrap() == 'a' {
+                    dp[i][j] = dp[i][j - 1];
+                } else {
+                    dp[i][j] = dp[i][j - 1] + 1;
+                }
+                res += dp[i][j];
+            }
+        }
+        res as i32
+
+=======
+
+        let mut ans = 0;
+        let word = word.as_bytes();
+        for i in 0..word.len() {
+            let mut vowel = [false; 5];
+            for j in i..word.len() {
+                match word[j] {
+                    b'a' => vowel[0] = true,
+                    b'e' => vowel[1] = true,
+                    b'i' => vowel[2] = true,
+                    b'o' => vowel[3] = true,
+                    b'u' => vowel[4] = true,
+                    _ => (),
+                }
+                if vowel.iter().all(|&x| x) {
+                    ans += 1;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut count = 0;
+        let mut vowel = vec![0; 5];
+        for c in word.chars() {
+            let idx = match c {
+                'a' => 0,
+                'e' => 1,
+                'i' => 2,
+                'o' => 3,
+                'u' => 4,
+                _ => unreachable!(),
+            };
+            vowel[idx] += 1;
+            if idx > 0 {
+                vowel[idx] += vowel[idx - 1];
+            }
+            count += vowel[idx];
+        }
+        count
+
+=======
+
+        let mut dp = vec![vec![0; word.len()]; 5];
+        let mut ans = 0;
+        for i in 0..word.len() {
+            let c = word.as_bytes()[i] - b'a';
+            dp[c as usize][i] = 1;
+            ans += 1;
+        }
+        for i in 1..word.len() {
+            for j in 0..5 {
+                if j > 0 {
+                    dp[j as usize][i] += dp[j as usize - 1][i - 1];
+                }
+                ans += dp[j as usize][i];
+            }
+        }
+        ans
+
+=======
+
+        let mut res = 0;
+        let mut last = vec![0; 5];
+        for c in word.as_bytes() {
+            let i = (c - b'a') as usize;
+            last[i] = 1 + last.iter().take(i).sum::<i32>();
+            res += last[i];
+        }
+        res
+
+=======
+
+        let mut count = 0;
+        let mut prev = 0;
+        let mut current = 0;
+        for c in word.chars() {
+            if "aeiou".contains(c) {
+                current += 1;
+            } else {
+                count += (current * (current + 1)) / 2;
+                if prev > 0 {
+                    count -= (prev * (prev + 1)) / 2;
+                }
+                prev = current;
+                current = 0;
+            }
+        }
+        count += (current * (current + 1)) / 2;
+        if prev > 0 {
+            count -= (prev * (prev + 1)) / 2;
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut last = 0;
+        let mut last_count = 0;
+        for c in word.chars() {
+            if c == last {
+                last_count += 1;
+            } else {
+                last = c;
+                last_count = 1;
+            }
+            count += last_count;
+        }
+        count
+    }
+}

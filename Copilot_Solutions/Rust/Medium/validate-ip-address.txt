@@ -1,0 +1,405 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        if query_ip.contains('.') {
+            if query_ip.split('.').count() != 4 {
+                return "Neither".to_string();
+            }
+            for s in query_ip.split('.') {
+                if s.len() == 0 || s.len() > 3 {
+                    return "Neither".to_string();
+                }
+                if s.chars().nth(0).unwrap() == '0' && s.len() > 1 {
+                    return "Neither".to_string();
+                }
+                let num = s.parse::<u32>();
+                if num.is_err() {
+                    return "Neither".to_string();
+                }
+                let num = num.unwrap();
+                if num > 255 {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv4".to_string();
+        }
+        if query_ip.contains(':') {
+            if query_ip.split(':').count() != 8 {
+                return "Neither".to_string();
+            }
+            for s in query_ip.split(':') {
+                if s.len() == 0 || s.len() > 4 {
+                    return "Neither".to_string();
+                }
+                let num = u32::from_str_radix(s, 16);
+                if num.is_err() {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv6".to_string();
+        }
+        "Neither".to_string()
+    }
+}
+
+=======
+Suggestion 2
+
+        if query_ip.contains('.') {
+            if query_ip.split('.').count() != 4 {
+                return "Neither".to_string();
+            }
+            for i in query_ip.split('.') {
+                if i.len() == 0 || i.len() > 3 {
+                    return "Neither".to_string();
+                }
+                if i.len() > 1 && i.chars().nth(0).unwrap() == '0' {
+                    return "Neither".to_string();
+                }
+                let mut num = 0;
+                for j in i.chars() {
+                    if !j.is_digit(10) {
+                        return "Neither".to_string();
+                    }
+                    num = num * 10 + j.to_digit(10).unwrap();
+                }
+                if num > 255 {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv4".to_string();
+        } else if query_ip.contains(':') {
+            if query_ip.split(':').count() != 8 {
+                return "Neither".to_string();
+            }
+            for i in query_ip.split(':') {
+                if i.len() == 0 || i.len() > 4 {
+                    return "Neither".to_string();
+                }
+                for j in i.chars() {
+                    if !j.is_digit(16) {
+                        return "Neither".to_string();
+                    }
+                }
+            }
+            return "IPv6".to_string();
+        } else {
+            return "Neither".to_string();
+        }
+
+=======
+Suggestion 3
+
+        if query_ip.contains(".") {
+            if query_ip.split(".").count() != 4 {
+                return "Neither".to_string();
+            }
+            for ip in query_ip.split(".") {
+                if ip.len() > 1 && ip.starts_with("0") {
+                    return "Neither".to_string();
+                }
+                if ip.chars().any(|c| !c.is_digit(10)) {
+                    return "Neither".to_string();
+                }
+                if let Ok(n) = ip.parse::<i32>() {
+                    if n < 0 || n > 255 {
+                        return "Neither".to_string();
+                    }
+                } else {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv4".to_string();
+        } else if query_ip.contains(":") {
+            if query_ip.split(":").count() != 8 {
+                return "Neither".to_string();
+            }
+            for ip in query_ip.split(":") {
+                if ip.len() > 4 || ip.len() == 0 {
+                    return "Neither".to_string();
+                }
+                if ip.chars().any(|c| !c.is_digit(16)) {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv6".to_string();
+        }
+        return "Neither".to_string();
+
+=======
+Suggestion 4
+
+        let ipv4 = query_ip.split('.').collect::<Vec<&str>>();
+        let ipv6 = query_ip.split(':').collect::<Vec<&str>>();
+        if ipv4.len() == 4 {
+            for i in &ipv4 {
+                if i.len() > 1 && i.starts_with('0') {
+                    return "Neither".to_string();
+                }
+                if let Ok(n) = i.parse::<u8>() {
+                    if n > 255 {
+                        return "Neither".to_string();
+                    }
+                } else {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv4".to_string();
+        } else if ipv6.len() == 8 {
+            for i in &ipv6 {
+                if i.len() > 4 {
+                    return "Neither".to_string();
+                }
+                if let Ok(_) = i.parse::<u16>() {
+                } else {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv6".to_string();
+        }
+        return "Neither".to_string();
+
+=======
+Suggestion 5
+
+        if query_ip.contains(".") {
+            let v: Vec<&str> = query_ip.split(".").collect();
+            if v.len() != 4 { return "Neither".to_string(); }
+            for x in v {
+                if x.len() == 0 || x.len() > 3 { return "Neither".to_string(); }
+                if x.len() > 1 && x.starts_with("0") { return "Neither".to_string(); }
+                if x.parse::<i32>().unwrap() > 255 { return "Neither".to_string(); }
+            }
+            return "IPv4".to_string();
+        }
+        if query_ip.contains(":") {
+            let v: Vec<&str> = query_ip.split(":").collect();
+            if v.len() != 8 { return "Neither".to_string(); }
+            for x in v {
+                if x.len() == 0 || x.len() > 4 { return "Neither".to_string(); }
+                if x.parse::<i32>().is_err() { return "Neither".to_string(); }
+            }
+            return "IPv6".to_string();
+        }
+        return "Neither".to_string();
+    }
+}
+
+=======
+Suggestion 6
+
+        if query_ip.contains('.') {
+            if query_ip.split('.').count() != 4 {
+                return "Neither".to_string();
+            }
+            for part in query_ip.split('.') {
+                if part.len() > 3 || part.len() == 0 {
+                    return "Neither".to_string();
+                }
+                for c in part.chars() {
+                    if !c.is_digit(10) {
+                        return "Neither".to_string();
+                    }
+                }
+                if part.len() > 1 && part.starts_with('0') {
+                    return "Neither".to_string();
+                }
+                if part.parse::<i32>().unwrap() > 255 {
+                    return "Neither".to_string();
+                }
+            }
+            return "IPv4".to_string();
+        } else if query_ip.contains(':') {
+            if query_ip.split(':').count() != 8 {
+                return "Neither".to_string();
+            }
+            for part in query_ip.split(':') {
+                if part.len() > 4 || part.len() == 0 {
+                    return "Neither".to_string();
+                }
+                for c in part.chars() {
+                    if !c.is_digit(16) {
+                        return "Neither".to_string();
+                    }
+                }
+            }
+            return "IPv6".to_string();
+        }
+        return "Neither".to_string();
+
+=======
+Suggestion 7
+
+        if query_ip.contains(".") {
+            if query_ip.split(".").count() != 4 {
+                return String::from("Neither");
+            }
+            for i in query_ip.split(".") {
+                if i.len() > 1 && i.chars().nth(0).unwrap() == '0' {
+                    return String::from("Neither");
+                }
+                if i.len() > 3 {
+                    return String::from("Neither");
+                }
+                match i.parse::<i32>() {
+                    Ok(n) => {
+                        if n < 0 || n > 255 {
+                            return String::from("Neither");
+                        }
+                    },
+                    Err(_) => return String::from("Neither"),
+                }
+            }
+            return String::from("IPv4");
+        } else if query_ip.contains(":") {
+            if query_ip.split(":").count() != 8 {
+                return String::from("Neither");
+            }
+            for i in query_ip.split(":") {
+                if i.len() > 4 {
+                    return String::from("Neither");
+                }
+                for j in i.chars() {
+                    if !j.is_digit(16) {
+                        return String::from("Neither");
+                    }
+                }
+            }
+            return String::from("IPv6");
+        } else {
+            return String::from("Neither");
+        }
+
+=======
+Suggestion 8
+
+        if query_ip.contains('.') {
+            let mut valid = true;
+            let mut octets = query_ip.split('.');
+            if octets.clone().count() != 4 {
+                valid = false;
+            }
+            for octet in octets {
+                if octet.len() == 0 || octet.len() > 3 {
+                    valid = false;
+                }
+                if octet.starts_with('0') && octet.len() > 1 {
+                    valid = false;
+                }
+                for c in octet.chars() {
+                    if !c.is_digit(10) {
+                        valid = false;
+                    }
+                }
+                if octet.parse::<i32>().unwrap() > 255 {
+                    valid = false;
+                }
+            }
+            if valid {
+                return "IPv4".to_string();
+            }
+        } else if query_ip.contains(':') {
+            let mut valid = true;
+            let mut octets = query_ip.split(':');
+            if octets.clone().count() != 8 {
+                valid = false;
+            }
+            for octet in octets {
+                if octet.len() == 0 || octet.len() > 4 {
+                    valid = false;
+                }
+                for c in octet.chars() {
+                    if !c.is_digit(16) {
+                        valid = false;
+                    }
+                }
+            }
+            if valid {
+                return "IPv6".to_string();
+            }
+        }
+        return "Neither".to_string();
+    }
+}
+
+=======
+Suggestion 9
+
+        if query_ip.chars().filter(|c| *c == '.').count() == 3 {
+            if query_ip.split(".").map(|s| s.parse::<u8>()).all(|x| x.is_ok() && x.unwrap() < 256 && (x.unwrap() > 0 || s.len() == 1)) {
+                return "IPv4".to_string();
+            }
+        }
+        if query_ip.chars().filter(|c| *c == ':').count() == 7 {
+            if query_ip.split(":").map(|s| u16::from_str_radix(s, 16)).all(|x| x.is_ok() && (x.unwrap() > 0 || s.len() == 1)) {
+                return "IPv6".to_string();
+            }
+        }
+        "Neither".to_string()
+
+=======
+Suggestion 10
+
+        let mut is_ipv4 = true;
+        let mut is_ipv6 = true;
+        let mut count = 0;
+        if query_ip.contains('.') {
+            let v:Vec<&str> = query_ip.split('.').collect();
+            if v.len() != 4 {
+                return "Neither".to_string();
+            }
+            for i in v {
+                count += 1;
+                if i.len() > 3 || i.len() == 0 || i.len() > 1 && i.starts_with('0') {
+                    is_ipv4 = false;
+                    break;
+                }
+                let mut num = 0;
+                for j in i.chars() {
+                    if !j.is_digit(10) {
+                        is_ipv4 = false;
+                        break;
+                    }
+                    num = num * 10 + j.to_digit(10).unwrap();
+                }
+                if num > 255 {
+                    is_ipv4 = false;
+                    break;
+                }
+            }
+            if count == 4 {
+                if is_ipv4 {
+                    return "IPv4".to_string();
+                } else {
+                    return "Neither".to_string();
+                }
+            }
+        } else if query_ip.contains(':') {
+            let v:Vec<&str> = query_ip.split(':').collect();
+            if v.len() != 8 {
+                return "Neither".to_string();
+            }
+            for i in v {
+                count += 1;
+                if i.len() > 4 || i.len() == 0 {
+                    is_ipv6 = false;
+                    break;
+                }
+                for j in i.chars() {
+                    if !j.is_digit(16) && !j.is_ascii_alphabetic() {
+                        is_ipv6 = false;
+                        break;
+                    }
+                }
+            }
+            if count == 8 {
+                if is_ipv6 {
+                    return "IPv6".to_string();
+                } else {
+                    return "Neither".to_string();
+                }
+            }
+        }
+        return "Neither".to_string();

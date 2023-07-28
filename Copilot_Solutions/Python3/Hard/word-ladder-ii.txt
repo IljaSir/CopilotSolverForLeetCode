@@ -1,0 +1,314 @@
+Synthesizing 9/10 solutions
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        if endWord not in wordList or not endWord or not beginWord or not wordList:
+            return []
+        
+        # Since all words are of same length.
+        L = len(beginWord)
+        
+        # Dictionary to hold combination of words that can be formed,
+        # from any given word. By changing one letter at a time.
+        all_combo_dict = defaultdict(list)
+        for word in wordList:
+            for i in range(L):
+                # Key is the generic word
+                # Value is a list of words which have the same intermediate generic word.
+                all_combo_dict[word[:i] + "*" + word[i+1:]].append(word)
+        
+        # Queue for BFS
+        queue = deque([(beginWord, 1, [beginWord])])
+        # Visited to make sure we don't repeat processing same word.
+        visited = {beginWord: 1}
+        ans = []
+        min_step = float("inf")
+        while queue:
+            current_word, level, path = queue.popleft()
+            if level > min_step:
+                break
+            for i in range(L):
+                # Intermediate words for current word
+                intermediate_word = current_word[:i] + "*" + current_word[i+1:]
+                
+                # Next states are all the words which share the same intermediate state.
+                for word in all_combo_dict[intermediate_word]:
+                    # If at any point if we find what we are looking for
+                    # i.e. the end word - we can return with the answer.
+                    if word == endWord:
+                        ans.append(path + [word])
+                        min_step = level
+                    # Otherwise, add it to the BFS Queue. Also mark it visited
+                    if word not in visited:
+                        visited[word] = level + 1
+                        queue.append((word, level + 1, path + [word]))
+        
+        return ans
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        if endWord not in wordList:
+            return []
+        wordList = set(wordList)
+        n = len(beginWord)
+        graph = collections.defaultdict(list)
+        for word in wordList:
+            for i in range(n):
+                graph[word[:i] + '*' + word[i+1:]].append(word)
+        queue = collections.deque([(beginWord, [beginWord])])
+        visited = set()
+        ans = []
+        while queue:
+            if ans:
+                return ans
+            for _ in range(len(queue)):
+                word, path = queue.popleft()
+                if word == endWord:
+                    ans.append(path)
+                for i in range(n):
+                    for neigh in graph[word[:i] + '*' + word[i+1:]]:
+                        if neigh not in visited:
+                            queue.append((neigh, path + [neigh]))
+            visited.update([word for word, _ in queue])
+        return ans
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        wordList = set(wordList)
+        if endWord not in wordList:
+            return []
+        queue = collections.deque()
+        queue.append([beginWord])
+        res = []
+        visited = set()
+        while queue:
+            size = len(queue)
+            visited.clear()
+            for _ in range(size):
+                path = queue.popleft()
+                if path[-1] == endWord:
+                    res.append(path)
+                else:
+                    for word in self.get_next_words(path[-1], wordList):
+                        if word not in visited:
+                            queue.append(path + [word])
+                            visited.add(word)
+            if res:
+                break
+            wordList -= visited
+        return res
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        if endWord not in wordList:
+            return []
+        wordList = set(wordList)
+        wordList.discard(beginWord)
+        wordList.discard(endWord)
+        res = []
+        queue = [(beginWord, [beginWord])]
+        while queue:
+            new_queue = []
+            visited = set()
+            for word, path in queue:
+                for i in range(len(word)):
+                    for c in 'abcdefghijklmnopqrstuvwxyz':
+                        new_word = word[:i] + c + word[i+1:]
+                        if new_word in wordList:
+                            new_path = path + [new_word]
+                            if new_word == endWord:
+                                res.append(new_path)
+                            else:
+                                new_queue.append((new_word, new_path))
+                                visited.add(new_word)
+            if res:
+                return res
+            queue = new_queue
+            wordList -= visited
+        return []
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        wordList = set(wordList)
+        if endWord not in wordList:
+            return []
+        wordList.add(beginWord)
+        wordList.add(endWord)
+        visited = set()
+        queue = deque()
+        queue.append([beginWord])
+        found = False
+        result = []
+        while queue:
+            path = queue.popleft()
+            word = path[-1]
+            if word == endWord:
+                result.append(path)
+                found = True
+            if found:
+                continue
+            for i in range(len(word)):
+                for c in string.ascii_lowercase:
+                    new_word = word[:i] + c + word[i+1:]
+                    if new_word in wordList and new_word not in visited:
+                        queue.append(path + [new_word])
+            visited.add(word)
+        return result
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        self.wordSet = set(wordList)
+        self.res = []
+        self.minLen = float('inf')
+        self.findLaddersHelper(beginWord, endWord, [beginWord])
+        return self.res
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        # BFS + DFS
+        # BFS to find the shortest path
+        # DFS to find all the shortest paths
+        wordList = set(wordList)
+        if endWord not in wordList:
+            return []
+        wordList.discard(beginWord)
+        wordList.discard(endWord)
+        head = {beginWord}
+        tail = {endWord}
+        dic = {beginWord: [[beginWord]]}
+        neighbors = collections.defaultdict(set)
+        while head and tail:
+            if len(head) > len(tail):
+                head, tail = tail, head
+            wordList -= head
+            newHead = set()
+            for word in head:
+                for i in range(len(word)):
+                    for c in string.ascii_lowercase:
+                        newWord = word[:i] + c + word[i+1:]
+                        if newWord in tail:
+                            if word not in dic:
+                                dic[word] = []
+                            dic[word].append(path + [newWord] for path in dic[newWord])
+                            neighbors[word].add(newWord)
+                            neighbors[newWord].add(word)
+                        if newWord in wordList:
+                            newHead.add(newWord)
+                            if word not in dic:
+                                dic[word] = []
+                            dic[word].append([word, newWord])
+                            neighbors[word].add(newWord)
+                            neighbors[newWord].add(word)
+            head = newHead
+        if not neighbors:
+            return []
+        res = []
+        def dfs(word, path):
+            if word == endWord:
+                res.append(path)
+                return
+            for neighbor in neighbors[word]:
+                for p in dic[word]:
+                    if neighbor == p[-1]:
+                        dfs(neighbor, path + p)
+        dfs(beginWord, [])
+        return res
+
+=======
+
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        wordList = set(wordList)
+        if endWord not in wordList:
+            return []
+        # 从后往前
+        front, back = {beginWord}, {endWord}
+        visited = set()
+        res = []
+        found = False
+        path = {}
+        def construct_path(beginWord, endWord):
+            if beginWord == endWord:
+                return [[endWord]]
+            return [[beginWord] + rest for word in path[beginWord] for rest in construct_path(word, endWord)]
+        while front and not found:
+            visited |= front
+            next_front = set()
+            for word in front:
+                for i in range(len(word)):
+                    for c in 'abcdefghijklmnopqrstuvwxyz':
+                        new_word = word[:i] + c + word[i+1:]
+                        if new_word in back:
+                            found = True
+                            if new_word not in path:
+                                path[new_word] = []
+                            path[new_word].append(word)
+                        if new_word not in visited and new_word in wordList:
+                            next_front.add(new_word)
+                            if new_word not in path:
+                                path[new_word] = []
+                            path[new_word].append(word)
+            front = next_front
+            if len(front) > len(back):
+                front, back = back, front
+        return construct_path(beginWord, endWord)
+
+=======
+
+        wordList = set(wordList)
+        if endWord not in wordList:
+            return []
+        # 从头到尾的BFS
+        # 从尾到头的BFS
+        # 从头到尾的BFS遍历到的节点，如果在从尾到头的BFS中遍历到了，那么这个节点就是一个分岔点
+        # 分别从头和尾开始BFS，当两者相遇时，就可以得到最短路径
+        res = []
+        def bfs(beginWord, endWord, wordList, forward, backward, path, res):
+            if len(forward) == 0:
+                return
+            if len(forward) > len(backward):
+                return bfs(endWord, beginWord, wordList, backward, forward, path, res)
+            for word in forward:
+                wordList.remove(word)
+            for word in backward:
+                wordList.remove(word)
+            next_forward = set()
+            while forward:
+                word = forward.pop()
+                if word in backward:
+                    path.append(word)
+                    if forward:
+                        generate_path(beginWord, endWord, forward, backward, path, res, False)
+                    else:
+                        generate_path(beginWord, endWord, backward, forward, path, res, True)
+                    path.pop()
+                    continue
+                for i in range(len(word)):
+                    for c in 'abcdefghijklmnopqrstuvwxyz':
+                        new_word = word[:i] + c + word[i+1:]
+                        if new_word in wordList:
+                            next_forward.add(new_word)
+                            path.append(word)
+                            bfs(new_word, endWord, wordList, next_forward, backward, path, res)
+                            path.pop()
+            return
+        def generate_path(beginWord, endWord, forward, backward, path, res, reverse):
+            if not forward:
+                res.append(path[:])
+                return
+            word = forward.pop()
+            path.append(word)
+            if word in backward:
+                generate_path(beginWord, endWord, forward, backward, path, res, reverse)
+            else:
+                for i in range(len(word)):
+                    for c in 'abcdefghijklmnopqrstuvwxyz':
+                        new_word = word[:i] + c + word[i+1:]
+                        if new_word in wordList:
+                            generate_path(beginWord, endWord, forward, backward, path,

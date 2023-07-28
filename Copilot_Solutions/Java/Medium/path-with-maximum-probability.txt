@@ -1,0 +1,321 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<int[]>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < edges.length; i++) {
+            graph[edges[i][0]].add(new int[]{edges[i][1], i});
+            graph[edges[i][1]].add(new int[]{edges[i][0], i});
+        }
+        double[] prob = new double[n];
+        prob[start] = 1;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(start);
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int[] edge : graph[node]) {
+                int next = edge[0], idx = edge[1];
+                if (prob[next] < prob[node] * succProb[idx]) {
+                    prob[next] = prob[node] * succProb[idx];
+                    queue.add(next);
+                }
+            }
+        }
+        return prob[end];
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.putIfAbsent(edge[0], new ArrayList<>());
+            graph.putIfAbsent(edge[1], new ArrayList<>());
+            graph.get(edge[0]).add(new int[]{edge[1], i});
+            graph.get(edge[1]).add(new int[]{edge[0], i});
+        }
+        double[] prob = new double[n];
+        prob[start] = 1;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        pq.offer(new int[]{start, 1});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0];
+            double p = cur[1];
+            if (prob[node] > p) {
+                continue;
+            }
+            if (node == end) {
+                return p;
+            }
+            if (!graph.containsKey(node)) {
+                continue;
+            }
+            for (int[] next : graph.get(node)) {
+                int nei = next[0];
+                int idx = next[1];
+                if (prob[nei] < p * succProb[idx]) {
+                    prob[nei] = p * succProb[idx];
+                    pq.offer(new int[]{nei, prob[nei]});
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], i});
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[]{edge[0], i});
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[0], a[0]));
+        pq.add(new int[]{100, start});
+        double[] probs = new double[n];
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (probs[cur[1]] == cur[0] / 100.0) continue;
+            probs[cur[1]] = cur[0] / 100.0;
+            if (cur[1] == end) return probs[end];
+            for (int[] nei : graph.getOrDefault(cur[1], new ArrayList<>())) {
+                pq.add(new int[]{(int) (cur[0] * succProb[nei[1]]), nei[0]});
+            }
+        }
+        return 0;
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], i});
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[]{edge[0], i});
+        }
+        double[] probs = new double[n];
+        probs[start] = 1;
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        queue.add(new int[]{start, 1});
+        while (!queue.isEmpty()) {
+            int[] node = queue.poll();
+            int u = node[0];
+            double prob = node[1];
+            if (u == end) {
+                return prob;
+            }
+            if (prob <= probs[u]) {
+                continue;
+            }
+            for (int[] v : graph.getOrDefault(u, Collections.emptyList())) {
+                int index = v[1];
+                double newProb = prob * succProb[index];
+                if (newProb > probs[v[0]]) {
+                    probs[v[0]] = newProb;
+                    queue.add(new int[]{v[0], newProb});
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], i});
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[]{edge[0], i});
+        }
+        double[] probs = new double[n];
+        probs[start] = 1;
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> -a[1]));
+        pq.offer(new int[]{start, 1});
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int currNode = curr[0];
+            double currProb = curr[1];
+            if (probs[currNode] > currProb) {
+                continue;
+            }
+            for (int[] next : graph.getOrDefault(currNode, Collections.emptyList())) {
+                double nextProb = currProb * succProb[next[1]];
+                if (probs[next[0]] < nextProb) {
+                    probs[next[0]] = nextProb;
+                    pq.offer(new int[]{next[0], nextProb});
+                }
+            }
+        }
+        return probs[end];
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[] {edge[1], i});
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[] {edge[0], i});
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        pq.offer(new int[] {start, 1});
+        double[] prob = new double[n];
+        prob[start] = 1;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (cur[0] == end) return cur[1];
+            if (prob[cur[0]] > cur[1]) continue;
+            for (int[] next : graph.getOrDefault(cur[0], new ArrayList<>())) {
+                double newProb = cur[1] * succProb[next[1]];
+                if (newProb > prob[next[0]]) {
+                    prob[next[0]] = newProb;
+                    pq.offer(new int[] {next[0], newProb});
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        Map<Integer, Map<Integer, Double>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            graph.computeIfAbsent(edge[0], k -> new HashMap<>()).put(edge[1], succProb[i]);
+            graph.computeIfAbsent(edge[1], k -> new HashMap<>()).put(edge[0], succProb[i]);
+        }
+        PriorityQueue<double[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        pq.offer(new double[]{start, 1.0});
+        boolean[] visited = new boolean[n];
+        while (!pq.isEmpty()) {
+            double[] cur = pq.poll();
+            int curNode = (int) cur[0];
+            double curProb = cur[1];
+            if (curNode == end) {
+                return curProb;
+            }
+            if (visited[curNode]) {
+                continue;
+            }
+            visited[curNode] = true;
+            for (int nextNode : graph.getOrDefault(curNode, new HashMap<>()).keySet()) {
+                if (visited[nextNode]) {
+                    continue;
+                }
+                double nextProb = curProb * graph.get(curNode).get(nextNode);
+                pq.offer(new double[]{nextNode, nextProb});
+            }
+        }
+        return 0.0;
+
+=======
+
+        // Build the graph
+        List<int[]>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<int[]>();
+        }
+        for (int i = 0; i < edges.length; i++) {
+            graph[edges[i][0]].add(new int[]{edges[i][1], i});
+            graph[edges[i][1]].add(new int[]{edges[i][0], i});
+        }
+        // Dijkstra
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a, b) -> Double.compare(b[1], a[1]));
+        pq.offer(new int[]{start, 1.0});
+        double[] prob = new double[n];
+        prob[start] = 1.0;
+        while (!pq.isEmpty()) {
+            int[] p = pq.poll();
+            int u = p[0];
+            double w = p[1];
+            if (u == end) {
+                return w;
+            }
+            for (int[] v : graph[u]) {
+                int next = v[0];
+                double nextProb = w * succProb[v[1]];
+                if (nextProb > prob[next]) {
+                    prob[next] = nextProb;
+                    pq.offer(new int[]{next, nextProb});
+                }
+            }
+        }
+        return 0.0;
+
+=======
+
+        // 1. Build graph
+        Map<Integer, Map<Integer, Double>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int a = edges[i][0];
+            int b = edges[i][1];
+            double p = succProb[i];
+            graph.putIfAbsent(a, new HashMap<>());
+            graph.putIfAbsent(b, new HashMap<>());
+            graph.get(a).put(b, p);
+            graph.get(b).put(a, p);
+        }
+        
+        // 2. Dijkstra
+        double[] prob = new double[n];
+        prob[start] = 1;
+        
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        pq.offer(new int[]{start, 1});
+        
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0];
+            double p = cur[1];
+            if (p < prob[node]) continue;
+            
+            Map<Integer, Double> neighbors = graph.get(node);
+            if (neighbors == null) continue;
+            for (int neighbor : neighbors.keySet()) {
+                double newP = p * neighbors.get(neighbor);
+                if (newP > prob[neighbor]) {
+                    prob[neighbor] = newP;
+                    pq.offer(new int[]{neighbor, newP});
+                }
+            }
+        }
+        
+        return prob[end];
+
+=======
+
+        // Create a graph with the given edges and probabilities
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int[] edge = edges[i];
+            double prob = succProb[i];
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(new int[]{edge[1], i});
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(new int[]{edge[0], i});
+        }
+
+        // Use Dijkstra's algorithm to find the shortest path
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Double.compare(b[1], a[1]));
+        pq.add(new int[]{start, 1});
+
+        double[] probs = new double[n];
+        probs[start] = 1;
+
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            int u = node[0];
+            double prob = node[1];
+
+            if (u == end) {
+                return prob;
+            }
+
+            if (graph.containsKey(u)) {
+                for (int[] v : graph.get(u)) {
+                    double newProb = prob * succProb[v[1]];
+                    if (probs[v[0]] < newProb) {
+                        probs[v[0]] = newProb;
+                        pq.add(new int[]{v[0], newProb});
+                    }
+                }
+            }
+        }
+
+        return 0;

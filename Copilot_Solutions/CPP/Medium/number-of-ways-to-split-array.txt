@@ -1,0 +1,363 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n, 0);
+        sum[0] = nums[0];
+        for (int i = 1; i < n; ++i) {
+            sum[i] = sum[i-1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; ++i) {
+            int left = sum[i];
+            int right = sum[n-1] - left;
+            int mid = sum[n-1] - left;
+            int low = i + 1;
+            int high = n - 2;
+            while (low <= high) {
+                int mid = low + (high - low) / 2;
+                int midLeft = sum[mid] - left;
+                int midRight = right - midLeft;
+                if (midLeft > midRight) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            int p = high;
+            low = i + 1;
+            high = n - 2;
+            while (low <= high) {
+                int mid = low + (high - low) / 2;
+                int midLeft = sum[mid] - left;
+                int midRight = right - midLeft;
+                if (midLeft < midRight) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            int q = low;
+            if (p >= q) {
+                ans += p - q + 1;
+                ans %= 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n);
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1, mid = 0;
+            while (l <= r) {
+                mid = l + (r - l) / 2;
+                if (sum[mid] - sum[i] >= sum[n - 1] - sum[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            ans += max(0, n - l);
+            ans %= 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n, 0);
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1, mid;
+            while (l < r) {
+                mid = (l + r) / 2;
+                if (sum[mid] - sum[i] >= sum[i]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if (sum[l] - sum[i] < sum[i]) {
+                break;
+            }
+            int left = l;
+            l = i + 1;
+            r = n - 1;
+            while (l < r) {
+                mid = (l + r + 1) / 2;
+                if (sum[n - 1] - sum[mid] >= sum[mid] - sum[i]) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            if (sum[n - 1] - sum[l] < sum[l] - sum[i]) {
+                continue;
+            }
+            int right = l;
+            if (right - left >= 0) {
+                ans += right - left + 1;
+                ans %= 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n, 0);
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int count = 0;
+        for (int i = 0; i < n - 2; i++) {
+            if (sum[n - 1] - sum[i] < sum[i]) break;
+            int l = i + 1, r = n - 1;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] - sum[i] >= sum[i]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int l2 = l;
+            l = i + 1, r = n - 1;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[n - 1] - sum[mid - 1] >= sum[mid - 1] - sum[i]) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            int r2 = l;
+            if (l2 <= r2) {
+                count = (count + (r2 - l2 + 1)) % 1000000007;
+            }
+        }
+        return count;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n + 1);
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int l = i + 1, r = n;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] - sum[i + 1] >= sum[i + 1]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int l1 = l;
+            l = i + 1, r = n;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[n] - sum[mid] >= sum[mid] - sum[i + 1]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            int r1 = l - 1;
+            if (l1 <= r1) {
+                ans = (ans + r1 - l1 + 1) % 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n + 1);
+        for (int i = 1; i <= n; ++i) {
+            sum[i] = sum[i - 1] + nums[i - 1];
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; ++i) {
+            int l = i + 1, r = n;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (sum[mid] - sum[i] >= sum[i]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            int j = l;
+            l = i + 1, r = n;
+            while (l < r) {
+                int mid = (l + r + 1) / 2;
+                if (sum[mid] - sum[i] <= sum[n] - sum[mid]) {
+                    l = mid;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            int k = l;
+            if (j <= k) {
+                ans = (ans + k - j + 1) % 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> pre(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 1; i < n - 1; ++i) {
+            int l = i + 1, r = n - 1;
+            while (l < r) {
+                int mid = l + r >> 1;
+                if (pre[mid] - pre[i] < pre[i]) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            if (pre[l] - pre[i] < pre[i]) {
+                continue;
+            }
+            int j = l;
+            l = i + 1, r = n - 1;
+            while (l < r) {
+                int mid = l + r + 1 >> 1;
+                if (pre[n] - pre[mid] < pre[mid] - pre[i]) {
+                    r = mid - 1;
+                } else {
+                    l = mid;
+                }
+            }
+            if (pre[n] - pre[l] < pre[l] - pre[i]) {
+                continue;
+            }
+            int k = l;
+            ans = (ans + k - j + 1) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n);
+        int mod = 1e9+7;
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i-1] + nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n-2; i++) {
+            int l = i+1, r = n-2;
+            int m = -1;
+            while (l <= r) {
+                int mid = (l+r)/2;
+                if (sum[mid] - sum[i] >= sum[n-1] - sum[mid]) {
+                    m = mid;
+                    r = mid-1;
+                } else {
+                    l = mid+1;
+                }
+            }
+            if (m != -1) {
+                ans += m-i;
+                ans %= mod;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> prefix_sum;
+        prefix_sum.push_back(nums[0]);
+        for (int i = 1; i < n; ++i) {
+            prefix_sum.push_back(nums[i] + prefix_sum[i - 1]);
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 2; ++i) {
+            int left = i + 1;
+            int right = n - 1;
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (prefix_sum[mid] - prefix_sum[i] < prefix_sum[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            if (prefix_sum[left] - prefix_sum[i] < prefix_sum[i]) {
+                continue;
+            }
+            int left_border = left;
+            left = i + 1;
+            right = n - 1;
+            while (left < right) {
+                int mid = (left + right + 1) / 2;
+                if (prefix_sum[n - 1] - prefix_sum[mid] < prefix_sum[mid] - prefix_sum[i]) {
+                    right = mid - 1;
+                } else {
+                    left = mid;
+                }
+            }
+            if (prefix_sum[n - 1] - prefix_sum[left] < prefix_sum[left] - prefix_sum[i]) {
+                continue;
+            }
+            int right_border = left;
+            if (left_border <= right_border) {
+                ans = (ans + right_border - left_border + 1) % 1000000007;
+            }
+        }
+        return ans;
+
+=======
+
+        long long int n = nums.size();
+        vector<long long int> preSum(n, 0);
+        preSum[0] = nums[0];
+        for(long long int i = 1; i < n; i++){
+            preSum[i] = preSum[i-1] + nums[i];
+        }
+        long long int ans = 0;
+        long long int mod = 1e9 + 7;
+        for(long long int i = 0; i < n-2; i++){
+            long long int l = i+1;
+            long long int r = n-1;
+            long long int mid = 0;
+            while(l <= r){
+                mid = (l+r)/2;
+                long long int sum1 = preSum[mid] - preSum[i];
+                long long int sum2 = preSum[n-1] - preSum[mid];
+                if(sum1 > sum2){
+                    r = mid - 1;
+                }
+                else{
+                    l = mid + 1;
+                }
+            }
+            ans = (ans + (mid - i)) % mod;
+        }
+        return ans;

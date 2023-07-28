@@ -1,0 +1,74 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut pref = vec![vec![-1; n]; n];
+        for i in 0..n {
+            for j in 0..n - 1 {
+                pref[i][preferences[i][j] as usize] = j as i32;
+            }
+        }
+        let mut pair = vec![vec![-1; 2]; n];
+        for i in 0..n / 2 {
+            pair[pairs[i][0] as usize][0] = pairs[i][1];
+            pair[pairs[i][1] as usize][0] = pairs[i][0];
+            pair[pairs[i][0] as usize][1] = pref[pairs[i][0] as usize][pairs[i][1] as usize];
+            pair[pairs[i][1] as usize][1] = pref[pairs[i][1] as usize][pairs[i][0] as usize];
+        }
+        let mut res = 0;
+        for i in 0..n {
+            for j in 0..2 {
+                let x = pair[i][0];
+                let y = pair[i][1];
+                if x == -1 || y == -1 {
+                    break;
+                }
+                let u = pair[x as usize][0];
+                let v = pair[x as usize][1];
+                if u != -1 && v != -1 && pref[x as usize][i] < v && pref[i][x as usize] < pref[i][y as usize] {
+                    res += 1;
+                    break;
+                }
+            }
+        }
+        res
+
+=======
+
+        let n = n as usize;
+        let mut friends = vec![vec![0; n]; n];
+        for (i, p) in preferences.iter().enumerate() {
+            for (j, v) in p.iter().enumerate() {
+                friends[i][*v as usize] = j;
+            }
+        }
+        let mut pairs = pairs;
+        pairs.sort_by_key(|x| x[0]);
+        let mut ans = 0;
+        for i in 0..n {
+            let mut j = 0;
+            while j < n && friends[i][pairs[j][0] as usize] < friends[i][pairs[j][1] as usize] {
+                j += 1;
+            }
+            if j < n {
+                ans += 1;
+                continue;
+            }
+            j = 0;
+            while j < n && friends[i][pairs[j][0] as usize] > friends[i][pairs[j][1] as usize] {
+                j += 1;
+            }
+            if j < n {
+                ans += 1;
+            }
+        }
+        ans
+    }
+}

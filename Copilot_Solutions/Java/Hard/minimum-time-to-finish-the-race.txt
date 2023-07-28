@@ -1,0 +1,197 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tires.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = tires[0][0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.min(dp[i], dp[i - 1] + tires[i][0]);
+        }
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.min(dp[i], dp[i - 1] + changeTime + tires[i][0]);
+        }
+        for (int i = 1; i < n; i++) {
+            dp[i] = Math.min(dp[i], dp[i - 1] + changeTime + tires[i][0]);
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            res = Math.min(res, dp[i] * numLaps + (i + 1) * changeTime);
+        }
+        return res;
+
+=======
+
+        int n = tires.length;
+        int[] t = new int[n];
+        for (int i = 0; i < n; i++) {
+            t[i] = tires[i][0];
+        }
+        Arrays.sort(t);
+        int l = 0, r = (int) 1e9;
+        while (l < r) {
+            int m = (l + r) >> 1;
+            if (check(m, t, changeTime, numLaps)) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+
+    private boolean check(int time, int[] t, int changeTime, int numLaps) {
+        int n = t.length;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int x = time / t[i];
+            if (x == 0) {
+                continue;
+            }
+            int res = (int) (1L * t[i] * (x - 1) * (x - 2) / 2 + 1L * t[i] * (x - 1) * (numLaps - x) + 1L * t[i] * (numLaps - x) * (numLaps - x - 1) / 2);
+            if (res <= time - changeTime * (x - 1)) {
+                max = Math.max(max, x);
+            }
+        }
+        return max >= numLaps;
+
+=======
+
+        int n = tires.length;
+        int[] times = new int[n];
+        for(int i = 0; i < n; i++) {
+            int f = tires[i][0];
+            int r = tires[i][1];
+            int time = 0;
+            for(int j = 1; j <= numLaps; j++) {
+                time += f * (int)Math.pow(r, j-1);
+            }
+            times[i] = time;
+        }
+        Arrays.sort(times);
+        return times[0] + (numLaps-1) * changeTime;
+
+=======
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(o -> o[0]));
+        for (int i = 0; i < tires.length; i++) {
+            pq.offer(new int[]{tires[i][0], tires[i][1], 1});
+        }
+        int time = 0;
+        while (numLaps > 0) {
+            int[] cur = pq.poll();
+            time += cur[0];
+            cur[2]++;
+            cur[0] = cur[1] * cur[2] * cur[0];
+            pq.offer(cur);
+            numLaps--;
+        }
+        return time;
+
+=======
+
+        int n = tires.length;
+        int[][] dp = new int[n][numLaps + 1];
+        Arrays.sort(tires, (a, b) -> a[0] * b[1] - b[0] * a[1]);
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            dp[i][1] = tires[i][0];
+            for (int j = 2; j <= numLaps; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = 0; k < n; k++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[k][j - 1] + tires[i][0] + (i != k ? changeTime : 0));
+                }
+            }
+            min = Math.min(min, dp[i][numLaps]);
+        }
+        return min;
+
+=======
+
+        int n = tires.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        for (int i = 0; i < n; ++i) {
+            int[] tire = tires[i];
+            dp[i] = tire[0] + tire[1] * (numLaps - 1);
+        }
+        Arrays.sort(dp);
+        int ans = dp[0];
+        for (int i = 1; i < n; ++i) {
+            int[] tire = tires[i];
+            ans = Math.min(ans, dp[i] + tire[0] + (tire[1] - 1) * changeTime);
+        }
+        return ans;
+
+=======
+
+        int res = Integer.MAX_VALUE;
+        for (int[] tire : tires) {
+            int fi = tire[0];
+            int ri = tire[1];
+            int time = 0;
+            for (int i = 1; i <= numLaps; i++) {
+                time += fi * ri;
+                ri *= ri;
+            }
+            res = Math.min(res, time);
+        }
+        return res;
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<Integer>(new Comparator<Integer>(){
+            public int compare(Integer a, Integer b){
+                return a - b;
+            }
+        });
+        for(int i = 0; i < tires.length; i++){
+            pq.add(tires[i][0]);
+        }
+        int ans = 0;
+        while(numLaps > 0){
+            int cur = pq.poll();
+            ans += cur;
+            numLaps--;
+            pq.add(cur + changeTime);
+        }
+        return ans;
+
+=======
+
+        int n = tires.length;
+        int[] dp = new int[n];
+        int[] dp2 = new int[n];
+        for(int i = 0; i < n; i++) {
+            dp[i] = tires[i][0];
+        }
+        for(int i = 1; i < numLaps; i++) {
+            int[] tmp = dp2;
+            dp2 = dp;
+            dp = tmp;
+            int min = Integer.MAX_VALUE;
+            for(int j = 0; j < n; j++) {
+                min = Math.min(min, dp[j]);
+            }
+            for(int j = 0; j < n; j++) {
+                dp2[j] = min + tires[j][0] + changeTime;
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++) {
+            min = Math.min(min, dp[i]);
+        }
+        return min;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        for(int[] tire : tires){
+            min = Math.min(min, tire[0] + tire[1] * (numLaps - 1));
+        }
+        int ans = Integer.MAX_VALUE;
+        for(int[] tire : tires){
+            ans = Math.min(ans, tire[0] * numLaps + tire[1] * (numLaps - 1) * (numLaps - 2) / 2 + (numLaps - 1) * changeTime);
+        }
+        return ans;

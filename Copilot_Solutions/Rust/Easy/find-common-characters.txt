@@ -1,0 +1,234 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut arr = vec![0; 26];
+        for c in words[0].as_bytes() {
+            arr[(c - b'a') as usize] += 1;
+        }
+        for word in &words[1..] {
+            let mut tmp = vec![0; 26];
+            for c in word.as_bytes() {
+                tmp[(c - b'a') as usize] += 1;
+            }
+            for i in 0..26 {
+                arr[i] = arr[i].min(tmp[i]);
+            }
+        }
+        let mut res = vec![];
+        for i in 0..26 {
+            for _ in 0..arr[i] {
+                res.push((b'a' + i as u8) as char);
+            }
+        }
+        res.into_iter().map(|x| x.to_string()).collect()
+
+=======
+
+        let mut res = Vec::new();
+        let mut map = words[0].chars().fold(std::collections::HashMap::new(), |mut map, c| {
+            *map.entry(c).or_insert(0) += 1;
+            map
+        });
+        for word in words.iter().skip(1) {
+            let mut map2 = std::collections::HashMap::new();
+            for c in word.chars() {
+                if let Some(count) = map.get(&c) {
+                    if *count > 0 {
+                        *map2.entry(c).or_insert(0) += 1;
+                    }
+                }
+            }
+            map = map2;
+        }
+        for (c, count) in map {
+            for _ in 0..count {
+                res.push(c.to_string());
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        let mut chars: Vec<Vec<char>> = words.iter().map(|s| s.chars().collect()).collect();
+        chars.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut chars = chars.iter();
+        let mut first = chars.next().unwrap();
+        for c in first {
+            let mut found = true;
+            for word in chars.clone() {
+                if let Some(pos) = word.iter().position(|&x| x == *c) {
+                    word.remove(pos);
+                } else {
+                    found = false;
+                    break;
+                }
+            }
+            if found {
+                result.push(c.to_string());
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        let mut min = vec![std::i32::MAX; 26];
+        for word in words {
+            let mut count = vec![0; 26];
+            for c in word.chars() {
+                count[(c as u8 - 'a' as u8) as usize] += 1;
+            }
+            for i in 0..26 {
+                min[i] = min[i].min(count[i]);
+            }
+        }
+        for i in 0..26 {
+            for _ in 0..min[i] {
+                res.push((i as u8 + 'a' as u8) as char);
+            }
+        }
+        res.iter().map(|x| x.to_string()).collect()
+    }
+}
+
+=======
+
+        let mut ans = Vec::new();
+        let mut cnt = [std::i32::MAX; 26];
+        for word in words {
+            let mut tmp = [0; 26];
+            for c in word.chars() {
+                tmp[(c as u8 - b'a') as usize] += 1;
+            }
+            for i in 0..26 {
+                cnt[i] = cnt[i].min(tmp[i]);
+            }
+        }
+        for i in 0..26 {
+            for _ in 0..cnt[i] {
+                ans.push((b'a' + i as u8) as char);
+            }
+        }
+        ans.iter().map(|c| c.to_string()).collect()
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        for i in 0..26 {
+            let mut min = 101;
+            for word in &words {
+                let mut count = 0;
+                for c in word.chars() {
+                    if c as u8 - 97 == i as u8 {
+                        count += 1;
+                    }
+                }
+                if min > count {
+                    min = count;
+                }
+            }
+            for _ in 0..min {
+                let mut s = String::new();
+                s.push((i as u8 + 97) as char);
+                res.push(s);
+            }
+        }
+        res
+
+=======
+
+        let mut res = Vec::new();
+        let mut min = [100; 26];
+        for word in words {
+            let mut count = [0; 26];
+            for c in word.chars() {
+                count[c as usize - 'a' as usize] += 1;
+            }
+            for i in 0..26 {
+                min[i] = min[i].min(count[i]);
+            }
+        }
+        for i in 0..26 {
+            for _ in 0..min[i] {
+                res.push((i + 'a' as usize) as u8 as char);
+            }
+        }
+        res.iter().map(|c| c.to_string()).collect()
+
+=======
+
+        let mut res = Vec::new();
+        let mut chars = words[0].chars().collect::<Vec<char>>();
+        for i in 1..words.len() {
+            let mut tmp = Vec::new();
+            for c in words[i].chars() {
+                if let Some(index) = chars.iter().position(|&x| x == c) {
+                    tmp.push(chars.remove(index));
+                }
+            }
+            chars = tmp;
+        }
+        for c in chars {
+            res.push(c.to_string());
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![];
+        let mut first_word = words[0].clone();
+        for ch in first_word.chars() {
+            let mut flag = true;
+            for i in 1..words.len() {
+                if !words[i].contains(ch) {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag {
+                ans.push(ch.to_string());
+                for i in 1..words.len() {
+                    let pos = words[i].find(ch).unwrap();
+                    words[i].remove(pos);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut chs = vec![0; 26];
+        let mut chs2 = vec![0; 26];
+        let mut res = Vec::new();
+        let mut first = true;
+        for word in words {
+            for ch in word.chars() {
+                chs2[ch as usize - 'a' as usize] += 1;
+            }
+            if first {
+                chs = chs2.clone();
+                first = false;
+            }
+            for i in 0..26 {
+                chs[i] = chs[i].min(chs2[i]);
+            }
+            chs2 = vec![0; 26];
+        }
+        for i in 0..26 {
+            for _ in 0..chs[i] {
+                res.push((i as u8 + 'a' as u8) as char);
+            }
+        }
+        res.iter().map(|ch| ch.to_string()).collect()
+    }
+}

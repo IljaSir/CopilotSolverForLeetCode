@@ -1,0 +1,162 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = nums[0];
+        right[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            left[i] = left[i - 1] & nums[i];
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            right[i] = right[i + 1] & nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 1; i++) {
+            ans = Math.max(ans, left[i] & right[i + 1]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            dp[i] = dp[i - 1] & nums[i];
+        }
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            if (dp[i - 1] == dp[n - 1]) {
+                ans = Math.max(ans, i - 1);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            prefix[i+1] = prefix[i] & nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int l = i, r = n;
+            while (l < r) {
+                int m = (l + r + 1) / 2;
+                if (prefix[m] == prefix[i]) {
+                    l = m;
+                } else {
+                    r = m - 1;
+                }
+            }
+            ans = Math.max(ans, l - i);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = nums[i];
+            for (int j = i + 1; j < n; j++) {
+                cur &= nums[j];
+                if (cur == 0) {
+                    max = Math.max(max, j - i);
+                }
+            }
+        }
+        return max;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = 0;
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == nums[i - 1]) {
+                left[i] = left[i - 1] + 1;
+            } else {
+                left[i] = 0;
+            }
+        }
+        right[n - 1] = 0;
+        for (int i = n - 2; i >= 0; i--) {
+            if (nums[i] == nums[i + 1]) {
+                right[i] = right[i + 1] + 1;
+            } else {
+                right[i] = 0;
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, left[i] + right[i]);
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i > 0 ? left[i - 1] & nums[i] : nums[i];
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = i < n - 1 ? right[i + 1] & nums[i] : nums[i];
+        }
+        int ans = 0;
+        for (int i = 0; i < n - 1; i++) {
+            ans = Math.max(ans, left[i] & right[i + 1]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                dp[i] = nums[i];
+                max = dp[i];
+            } else {
+                dp[i] = (dp[i - 1] & nums[i]);
+                max = Math.max(max, dp[i]);
+            }
+        }
+        int count = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (dp[i] == max) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+=======
+
+        int max = 0;
+        int n = nums.length;
+        int[] maxLeft = new int[n];
+        int[] maxRight = new int[n];
+        maxLeft[0] = nums[0];
+        maxRight[n-1] = nums[n-1];
+        for (int i = 1; i < n; i++) {
+            maxLeft[i] = maxLeft[i-1] & nums[i];
+        }
+        for (int i = n-2; i >= 0; i--) {
+            maxRight[i] = maxRight[i+1] & nums[i];
+        }
+        for (int i = 0; i < n-1; i++) {
+            max = Math.max(max, maxLeft[i] & maxRight[i+1]);
+        }
+        return max;

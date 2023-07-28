@@ -1,0 +1,257 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            *map.entry(c).or_insert(0) += 1;
+        }
+        let mut l = 0;
+        let mut r = 0;
+        let mut res = s.len() as i32;
+        let mut count = 0;
+        let n = s.len() as i32;
+        while r < n {
+            let cur = map.entry(s.chars().nth(r as usize).unwrap()).or_insert(0);
+            *cur -= 1;
+            if *cur >= 0 {
+                count += 1;
+            }
+            while count == n / 4 {
+                let c = s.chars().nth(l as usize).unwrap();
+                res = res.min(r - l + 1);
+                let cur = map.entry(c).or_insert(0);
+                *cur += 1;
+                if *cur > 0 {
+                    count -= 1;
+                }
+                l += 1;
+            }
+            r += 1;
+        }
+        res
+
+=======
+
+        let l = s.len() / 4;
+        let mut m = std::collections::HashMap::new();
+        for c in s.chars() {
+            *m.entry(c).or_insert(0) += 1;
+        }
+        let mut i = 0;
+        let mut j = 0;
+        let mut res = std::i32::MAX;
+        while j < s.len() {
+            if m.values().all(|&x| x <= l) {
+                res = res.min((j - i) as i32);
+                *m.entry(s.chars().nth(i).unwrap()).or_insert(0) += 1;
+                i += 1;
+            } else {
+                *m.entry(s.chars().nth(j).unwrap()).or_insert(0) -= 1;
+                j += 1;
+            }
+        }
+        res
+
+=======
+
+        let n = s.len();
+        let mut count = [0; 26];
+        for c in s.chars() {
+            count[c as usize - 'A' as usize] += 1;
+        }
+        let mut res = n;
+        let mut l = 0;
+        for r in 0..n {
+            count[s.chars().nth(r).unwrap() as usize - 'A' as usize] -= 1;
+            while l < n && count['Q' as usize - 'A' as usize] <= n / 4 && count['W' as usize - 'A' as usize] <= n / 4 && count['E' as usize - 'A' as usize] <= n / 4 && count['R' as usize - 'A' as usize] <= n / 4 {
+                res = res.min(r - l + 1);
+                count[s.chars().nth(l).unwrap() as usize - 'A' as usize] += 1;
+                l += 1;
+            }
+        }
+        res as i32
+
+=======
+
+        let mut count = [0; 4];
+        for c in s.chars() {
+            count[c as usize - 'Q' as usize] += 1;
+        }
+        let n = s.len();
+        let mut res = n;
+        let mut i = 0;
+        for j in 0..n {
+            count[s.as_bytes()[j] as usize - 'Q' as usize] -= 1;
+            while i < n && count[0] <= n / 4 && count[1] <= n / 4 && count[2] <= n / 4 && count[3] <= n / 4 {
+                res = res.min(j - i + 1);
+                count[s.as_bytes()[i] as usize - 'Q' as usize] += 1;
+                i += 1;
+            }
+        }
+        res as i32
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for c in s.chars() {
+            let count = map.entry(c).or_insert(0);
+            *count += 1;
+        }
+        let mut result = s.len();
+        let mut start = 0;
+        let mut end = 0;
+        let n = s.len();
+        while end < n {
+            let c = s.chars().nth(end).unwrap();
+            let count = map.entry(c).or_insert(0);
+            *count -= 1;
+            while map.values().all(|&x| x <= n as i32 / 4) {
+                let c = s.chars().nth(start).unwrap();
+                let count = map.entry(c).or_insert(0);
+                *count += 1;
+                result = result.min(end - start + 1);
+                start += 1;
+            }
+            end += 1;
+        }
+        result as i32
+
+=======
+
+        let mut map = [0; 4];
+        let mut res = s.len() as i32;
+        for c in s.chars() {
+            match c {
+                'Q' => map[0] += 1,
+                'W' => map[1] += 1,
+                'E' => map[2] += 1,
+                'R' => map[3] += 1,
+                _ => (),
+            }
+        }
+        let mut i = 0;
+        let mut j = 0;
+        let mut n = map[0] - s.len() / 4;
+        while j < s.len() {
+            if n > 0 {
+                match s.chars().nth(j).unwrap() {
+                    'Q' => n -= 1,
+                    'W' => map[1] -= 1,
+                    'E' => map[2] -= 1,
+                    'R' => map[3] -= 1,
+                    _ => (),
+                }
+                j += 1;
+            } else {
+                res = res.min(j as i32 - i as i32);
+                match s.chars().nth(i).unwrap() {
+                    'Q' => n += 1,
+                    'W' => map[1] += 1,
+                    'E' => map[2] += 1,
+                    'R' => map[3] += 1,
+                    _ => (),
+                }
+                i += 1;
+            }
+        }
+        res
+
+=======
+
+        let mut count = [0; 26];
+        let mut res = 0;
+        for c in s.chars() {
+            count[(c as u8 - b'A') as usize] += 1;
+        }
+        let n = s.len();
+        let mut i = 0;
+        for j in 0..n {
+            count[(s.chars().nth(j).unwrap() as u8 - b'A') as usize] -= 1;
+            while i < n && count[(s.chars().nth(i).unwrap() as u8 - b'A') as usize] <= n as i32 / 4 {
+                count[(s.chars().nth(i).unwrap() as u8 - b'A') as usize] += 1;
+                i += 1;
+            }
+            if i <= n && count[(s.chars().nth(i).unwrap() as u8 - b'A') as usize] <= n as i32 / 4 {
+                res = res.min(j - i + 1);
+            }
+        }
+        res as i32
+    }
+}
+
+=======
+
+        let mut map = [0; 26];
+        let mut ans = s.len();
+        for c in s.chars() {
+            map[c as usize - 'A' as usize] += 1;
+        }
+        let mut i = 0;
+        for (j, c) in s.chars().enumerate() {
+            map[c as usize - 'A' as usize] -= 1;
+            while i < s.len() && map['Q' as usize - 'A' as usize] <= s.len() / 4 && map['W' as usize - 'A' as usize] <= s.len() / 4 && map['E' as usize - 'A' as usize] <= s.len() / 4 && map['R' as usize - 'A' as usize] <= s.len() / 4 {
+                ans = ans.min(j - i + 1);
+                map[s.chars().nth(i).unwrap() as usize - 'A' as usize] += 1;
+                i += 1;
+            }
+        }
+        ans as i32
+
+=======
+
+        let mut cnt = [0; 4];
+        let mut res = s.len();
+        let s = s.into_bytes();
+        for &c in &s {
+            cnt[Self::index(c)] += 1;
+        }
+        let n = s.len();
+        let mut l = 0;
+        for r in 0..n {
+            cnt[Self::index(s[r])] -= 1;
+            while l < n && cnt[0] <= n / 4 && cnt[1] <= n / 4 && cnt[2] <= n / 4 && cnt[3] <= n / 4 {
+                res = res.min(r - l + 1);
+                cnt[Self::index(s[l])] += 1;
+                l += 1;
+            }
+        }
+        res as i32
+    }
+    fn index(c: u8) -> usize {
+        match c {
+            b'Q' => 0,
+            b'W' => 1,
+            b'E' => 2,
+            _ => 3,
+        }
+
+=======
+
+        let n = s.len();
+        let mut map = [0; 4];
+        for c in s.chars() {
+            map[Self::char_to_number(c)] += 1;
+        }
+        let mut i = 0;
+        let mut j = 0;
+        let mut res = n;
+        while j < n {
+            map[Self::char_to_number(s.chars().nth(j).unwrap())] -= 1;
+            while i < n && map[0] <= n / 4 && map[1] <= n / 4 && map[2] <= n / 4 && map[3] <= n / 4 {
+                res = res.min(j - i + 1);
+                map[Self::char_to_number(s.chars().nth(i).unwrap())] += 1;
+                i += 1;
+            }
+            j += 1;
+        }
+        res as i32
+    }
+
+    fn char_to_number(c: char) -> usize {
+        match c {
+            'Q' => 0,
+            'W' => 1,
+            'E' => 2,
+            _ => 3,
+        }

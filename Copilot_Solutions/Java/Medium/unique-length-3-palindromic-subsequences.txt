@@ -1,0 +1,279 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] first = new int[26];
+        int[] last = new int[26];
+        Arrays.fill(first, -1);
+        Arrays.fill(last, -1);
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i) - 'a';
+            if (first[c] == -1) {
+                first[c] = i;
+            }
+            last[c] = i;
+        }
+        int res = 0;
+        for (int i = 0; i < 26; i++) {
+            if (first[i] == -1) {
+                continue;
+            }
+            int[] count = new int[26];
+            for (int j = first[i] + 1; j < last[i]; j++) {
+                count[s.charAt(j) - 'a']++;
+            }
+            for (int j = 0; j < 26; j++) {
+                if (count[j] > 0) {
+                    res++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 1;
+        }
+        for (int i = 0; i < n - 1; i++) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                dp[i][i + 1] = 2;
+            } else {
+                dp[i][i + 1] = 1;
+            }
+        }
+        for (int l = 3; l <= n; l++) {
+            for (int i = 0; i <= n - l; i++) {
+                int j = i + l - 1;
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 1;
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < n - i; j++) {
+                int k = j + i;
+                if (s.charAt(j) != s.charAt(k)) {
+                    dp[j][k] = dp[j + 1][k] + dp[j][k - 1] - dp[j + 1][k - 1];
+                } else {
+                    int l = j + 1;
+                    int r = k - 1;
+                    while (l <= r && s.charAt(l) != s.charAt(j)) {
+                        l++;
+                    }
+                    while (l <= r && s.charAt(r) != s.charAt(j)) {
+                        r--;
+                    }
+                    if (l > r) {
+                        dp[j][k] = dp[j + 1][k - 1] * 2 + 2;
+                    } else if (l == r) {
+                        dp[j][k] = dp[j + 1][k - 1] * 2 + 1;
+                    } else {
+                        dp[j][k] = dp[j + 1][k - 1] * 2 - dp[l + 1][r - 1];
+                    }
+                }
+                dp[j][k] = Math.max(dp[j][k], 0);
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int[] first = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i) - 'a';
+            if (first[c] == 0) {
+                first[c] = i + 1;
+            }
+            last[c] = i + 1;
+        }
+        int res = 0;
+        for (int i = 0; i < 26; i++) {
+            if (first[i] == 0) {
+                continue;
+            }
+            int[] count = new int[26];
+            for (int j = first[i]; j < last[i]; j++) {
+                count[s.charAt(j) - 'a']++;
+            }
+            for (int j = 0; j < 26; j++) {
+                if (count[j] > 0) {
+                    res++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] first = new int[26];
+        int[] last = new int[26];
+        Arrays.fill(first, Integer.MAX_VALUE);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            first[c - 'a'] = Math.min(first[c - 'a'], i);
+            last[c - 'a'] = i;
+        }
+        int res = 0;
+        for (int i = 0; i < 26; i++) {
+            int f = first[i];
+            int l = last[i];
+            if (f == Integer.MAX_VALUE || l == Integer.MIN_VALUE || f == l) continue;
+            int[] count = new int[26];
+            for (int j = f + 1; j < l; j++) {
+                count[s.charAt(j) - 'a']++;
+            }
+            for (int j = 0; j < 26; j++) {
+                if (count[j] > 0) res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 2; j < n; j++) {
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = 2 + dp[i + 1][j - 1];
+                    int[] count = new int[26];
+                    for (int k = i + 1; k < j; k++) {
+                        count[s.charAt(k) - 'a']++;
+                    }
+                    for (int k = 0; k < 26; k++) {
+                        if (count[k] > 0) {
+                            dp[i][j]++;
+                        }
+                    }
+                } else {
+                    dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int[] left = new int[26];
+        int[] right = new int[26];
+        int n = s.length();
+        Arrays.fill(left, n);
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'a';
+            left[c] = Math.min(left[c], i);
+            right[c] = i;
+        }
+        int res = 0;
+        for (int c = 0; c < 26; c++) {
+            if (left[c] < right[c]) {
+                boolean[] seen = new boolean[26];
+                for (int i = left[c] + 1; i < right[c]; i++) {
+                    seen[s.charAt(i) - 'a'] = true;
+                }
+                for (int i = 0; i < 26; i++) {
+                    if (seen[i]) {
+                        res++;
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int res = 0;
+        int[] left = new int[26];
+        int[] right = new int[26];
+        Arrays.fill(left, s.length());
+        for (int i = 0; i < s.length(); i++) {
+            left[s.charAt(i) - 'a'] = Math.min(left[s.charAt(i) - 'a'], i);
+            right[s.charAt(i) - 'a'] = Math.max(right[s.charAt(i) - 'a'], i);
+        }
+        for (int i = 0; i < 26; i++) {
+            boolean[] seen = new boolean[26];
+            for (int j = left[i]; j <= right[i]; j++) {
+                if (s.charAt(j) != i + 'a' && !seen[s.charAt(j) - 'a']) {
+                    res++;
+                    seen[s.charAt(j) - 'a'] = true;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] prev = new int[26];
+        int[] next = new int[26];
+        Arrays.fill(prev, -1);
+        Arrays.fill(next, -1);
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            int ch = s.charAt(i) - 'a';
+            if (prev[ch] == -1) {
+                prev[ch] = i;
+            }
+            next[ch] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < 26; i++) {
+            if (prev[i] != -1) {
+                int[] cnt = new int[26];
+                for (int j = prev[i] + 1; j < next[i]; j++) {
+                    cnt[s.charAt(j) - 'a']++;
+                }
+                for (int j = 0; j < 26; j++) {
+                    if (cnt[j] > 0) {
+                        ans++;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n][n];
+        int[][] last = new int[n][26];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(last[i], -1);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 2; j < n; j++) {
+                dp[i][j] = dp[i + 1][j - 1];
+                if (s.charAt(i) == s.charAt(j)) {
+                    dp[i][j]++;
+                    if (i + 1 < j) {
+                        dp[i][j] -= dp[i + 1][j - 1];
+                    }
+                }
+                for (int k = 0; k < 26; k++) {
+                    if (last[i + 1][k] > last[i][k]) {
+                        last[i][k] = last[i + 1][k];
+                    }
+                }
+                last[i][s.charAt(i) - 'a'] = j;
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < 26; i++) {
+            if (last[0][i] > 0) {
+                res += dp[0][last[0][i]];
+            }
+        }
+        return res;

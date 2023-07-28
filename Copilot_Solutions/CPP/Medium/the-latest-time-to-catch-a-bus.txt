@@ -1,0 +1,239 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int i = 0, j = 0, res = 0;
+        while (i < buses.size() && j < passengers.size()) {
+            int cnt = 0;
+            while (j < passengers.size() && passengers[j] <= buses[i]) {
+                ++j;
+                ++cnt;
+                if (cnt == capacity) {
+                    break;
+                }
+            }
+            res = buses[i];
+            ++i;
+        }
+        return res;
+
+=======
+
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int n = buses.size(), m = passengers.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                if (passengers[j - 1] <= buses[i - 1] && j - capacity - 1 >= 0) {
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j - capacity - 1] + passengers[j - 1]);
+                }
+                dp[i][j] = max(dp[i][j], dp[i - 1][j]);
+                dp[i][j] = max(dp[i][j], dp[i][j - 1]);
+            }
+        }
+        return dp[n][m];
+
+=======
+
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int n = buses.size();
+        int m = passengers.size();
+        int i = 0;
+        int j = 0;
+        int ans = 0;
+        while (i < n && j < m) {
+            int count = 0;
+            while (j < m && passengers[j] <= buses[i] && count < capacity) {
+                j++;
+                count++;
+            }
+            ans = buses[i];
+            i++;
+        }
+        return ans;
+
+=======
+
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int n = buses.size(), m = passengers.size();
+        int i = 0, j = 0, cnt = 0;
+        int res = 0;
+        while (i < n && j < m) {
+            if (buses[i] >= passengers[j]) {
+                if (cnt < capacity) {
+                    res = max(res, passengers[j]);
+                    ++cnt;
+                    ++j;
+                } else {
+                    ++i;
+                }
+            } else {
+                --cnt;
+                ++i;
+            }
+        }
+        while (j < m) {
+            if (cnt < capacity) {
+                res = max(res, passengers[j]);
+                ++cnt;
+                ++j;
+            } else {
+                break;
+            }
+        }
+        return res;
+
+=======
+
+        int n = buses.size();
+        int m = passengers.size();
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int i = 0;
+        int j = 0;
+        int ans = 0;
+        while (i < n && j < m) {
+            int bus = buses[i];
+            int cnt = 0;
+            while (j < m && passengers[j] <= bus && cnt < capacity) {
+                ++j;
+                ++cnt;
+            }
+            if (cnt == 0) {
+                ++i;
+            } else {
+                ans = max(ans, passengers[j - 1]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = buses.size();
+        int m = passengers.size();
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int i = 0;
+        int j = 0;
+        int cnt = 0;
+        int ans = 0;
+        while (i < n && j < m) {
+            if (buses[i] >= passengers[j]) {
+                cnt++;
+                ans = max(ans, passengers[j]);
+                j++;
+            } else {
+                cnt--;
+                i++;
+            }
+            if (cnt == capacity) {
+                cnt = 0;
+                i++;
+            }
+        }
+        if (j < m) {
+            ans = max(ans, passengers[m - 1]);
+        }
+        return ans;
+
+=======
+
+        int n = buses.size();
+        int m = passengers.size();
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int i = 0, j = 0, ans = 0;
+        while (i < n && j < m) {
+            int cnt = 0;
+            while (j < m && passengers[j] <= buses[i]) {
+                ++j;
+                ++cnt;
+                if (cnt == capacity) {
+                    break;
+                }
+            }
+            ans = max(ans, buses[i]);
+            ++i;
+        }
+        return ans;
+
+=======
+
+        int n = buses.size();
+        int m = passengers.size();
+        int ans = 0;
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        int i = 0;
+        for (int j = 0; j < m; ++j) {
+            while (i < n && buses[i] < passengers[j]) {
+                ++i;
+            }
+            if (i == 0) {
+                continue;
+            }
+            int bus = buses[i - 1];
+            int cur = bus - passengers[j];
+            if (capacity >= j + 1) {
+                ans = max(ans, cur);
+            }
+        }
+        return ans;
+
+=======
+
+        int i = 0, j = 0, n = buses.size(), m = passengers.size();
+        int cnt = 0, ans = 0;
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        while (i < n && j < m) {
+            if (buses[i] >= passengers[j]) {
+                cnt++;
+                j++;
+            }
+            else {
+                cnt--;
+                i++;
+            }
+            if (cnt == capacity) {
+                ans = buses[i];
+                cnt--;
+                i++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = buses.size();
+        int m = passengers.size();
+        vector<pair<int, int>> bus(n);
+        for (int i = 0; i < n; ++i) {
+            bus[i] = { buses[i], i };
+        }
+        vector<pair<int, int>> pass(m);
+        for (int i = 0; i < m; ++i) {
+            pass[i] = { passengers[i], i };
+        }
+        sort(bus.begin(), bus.end());
+        sort(pass.begin(), pass.end());
+        int ans = 0;
+        vector<int> b(n, 0);
+        vector<int> p(m, 0);
+        for (int i = 0, j = 0; i < n; ++i) {
+            while (j < m && pass[j].first <= bus[i].first) {
+                ++b[bus[i].second];
+                ++j;
+            }
+            if (b[bus[i].second] > 0) {
+                --b[bus[i].second];
+                ++p[pass[j - 1].second];
+                ans = max(ans, pass[j - 1].first);
+            }
+        }
+        return ans;

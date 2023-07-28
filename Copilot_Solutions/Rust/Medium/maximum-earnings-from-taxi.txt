@@ -1,0 +1,189 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![0; n + 1];
+        let mut rides = rides;
+        rides.sort_by(|a, b| a[1].cmp(&b[1]));
+        let mut i = 0;
+        for j in 1..=n {
+            dp[j] = dp[j - 1];
+            while i < rides.len() && rides[i][1] == j as i32 {
+                let (start, end, tip) = (rides[i][0], rides[i][1], rides[i][2]);
+                let mut k = 0;
+                let mut l = i - 1;
+                while k <= l {
+                    let m = k + (l - k) / 2;
+                    if rides[m][1] < start {
+                        k = m + 1;
+                    } else {
+                        l = m - 1;
+                    }
+                }
+                dp[j] = dp[j].max(dp[start as usize] + (end - start + tip) as i64);
+                i += 1;
+            }
+        }
+        dp[n] as i64
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        let n = n as usize;
+        for i in (0..n).rev() {
+            dp[i] = dp[i + 1];
+            for ride in &rides {
+                if ride[0] == (i + 1) as i32 {
+                    dp[i] = std::cmp::max(dp[i], (ride[1] - ride[0] + ride[2]) as i64 + dp[ride[1] as usize]);
+                }
+            }
+        }
+        dp[0]
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![0; n + 1];
+        let mut rides = rides;
+        rides.sort_unstable_by_key(|x| x[1]);
+        for i in 0..n {
+            dp[i + 1] = dp[i];
+            let mut j = rides.binary_search_by_key(&(i as i32 + 1), |x| x[0]).unwrap_or_else(|x| x);
+            while j > 0 && rides[j - 1][0] as usize == i + 1 {
+                j -= 1;
+            }
+            while j < rides.len() && rides[j][0] as usize == i + 1 {
+                dp[i + 1] = dp[i + 1].max(dp[rides[j][1] as usize] + (rides[j][1] - rides[j][0] + rides[j][2]) as i64);
+                j += 1;
+            }
+        }
+        dp[n]
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![0; n + 1];
+        let mut rides = rides;
+        rides.sort_by_key(|x| x[1]);
+        let mut idx = 0;
+        for i in 1..=n {
+            dp[i] = std::cmp::max(dp[i], dp[i - 1]);
+            while idx < rides.len() && rides[idx][1] == i as i32 {
+                let (start, end, tip) = (rides[idx][0], rides[idx][1], rides[idx][2]);
+                let mut l = 0;
+                let mut r = idx;
+                while l < r {
+                    let mid = (l + r) / 2;
+                    if rides[mid][1] < start {
+                        l = mid + 1;
+                    } else {
+                        r = mid;
+                    }
+                }
+                dp[i] = std::cmp::max(dp[i], dp[start as usize] + (end - start + tip) as i64);
+                idx += 1;
+            }
+        }
+        dp[n] as i64
+
+=======
+
+        let mut dp = vec![0; n as usize];
+        let mut rides = rides;
+        rides.sort_by(|a, b| a[0].cmp(&b[0]));
+        for i in 0..n as usize {
+            dp[i] = if i == 0 { 0 } else { dp[i - 1] };
+            let mut j = rides.binary_search_by(|a| a[0].cmp(&(i as i32 + 1))).unwrap_or_else(|x| x);
+            while j > 0 && rides[j - 1][0] == i as i32 + 1 {
+                j -= 1;
+            }
+            while j < rides.len() && rides[j][0] == i as i32 + 1 {
+                let mut k = rides.binary_search_by(|a| a[0].cmp(&rides[j][1])).unwrap_or_else(|x| x);
+                while k > 0 && rides[k - 1][0] == rides[j][1] {
+                    k -= 1;
+                }
+                if k == rides.len() {
+                    dp[i] = dp[i].max((rides[j][1] - rides[j][0] + rides[j][2]) as i64);
+                } else {
+                    dp[i] = dp[i].max(dp[rides[k][0] as usize - 1] + (rides[j][1] - rides[j][0] + rides[j][2]) as i64);
+                }
+                j += 1;
+            }
+        }
+        dp[n as usize - 1]
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![0; n + 1];
+        let mut rides = rides;
+        rides.sort_by_key(|x| x[0]);
+        let mut idx = 0;
+        for i in 1..=n {
+            dp[i] = dp[i - 1];
+            while idx < rides.len() && rides[idx][0] == i as i32 {
+                let (start, end, tip) = (rides[idx][0], rides[idx][1], rides[idx][2]);
+                let j = idx + 1;
+                idx = j;
+                while idx < rides.len() && rides[idx][0] <= end {
+                    idx += 1;
+                }
+                dp[end as usize] = dp[end as usize].max(dp[start as usize] + (end - start + tip) as i64);
+            }
+        }
+        dp[n] as i64
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![0; n + 1];
+        let mut rides: Vec<(usize, usize, i32)> = rides.iter().map(|x| (x[0] as usize, x[1] as usize, x[2])).collect();
+        rides.sort_by(|a, b| a.1.cmp(&b.1));
+        let mut i = 0;
+        for j in 1..=n {
+            dp[j] = dp[j - 1];
+            while i < rides.len() && rides[i].1 == j {
+                dp[j] = dp[j].max(dp[rides[i].0] + (rides[i].1 - rides[i].0 + rides[i].2) as i64);
+                i += 1;
+            }
+        }
+        dp[n] as i64
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        let mut rides = rides;
+        rides.sort_by_key(|x| x[1]);
+        for i in 0..rides.len() {
+            let mut lo = 0;
+            let mut hi = i;
+            while lo < hi {
+                let mid = (lo + hi + 1) / 2;
+                if rides[mid][1] <= rides[i][0] {
+                    lo = mid;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            dp[rides[i][1] as usize] = dp[rides[i][1] as usize].max(dp[rides[i][0] as usize] + (rides[i][1] - rides[i][0] + rides[i][2]) as i64);
+            dp[rides[i][1] as usize] = dp[rides[i][1] as usize].max(dp[lo as usize] + (rides[i][1] - rides[lo][0] + rides[i][2]) as i64);
+        }
+        *dp.last().unwrap() as i64
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        let mut max = 0;
+        for i in (1..=n).rev() {
+            while !rides.is_empty() && rides[0][0] == i {
+                let ride = rides.remove(0);
+                max = std::cmp::max(max, ride[2] + dp[ride[1] as usize]);
+            }
+            dp[i as usize] = max;
+        }
+        max as i64
+    }
+}

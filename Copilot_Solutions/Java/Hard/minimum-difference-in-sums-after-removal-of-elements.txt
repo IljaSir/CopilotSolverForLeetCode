@@ -1,0 +1,228 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length / 3;
+        long sum1 = 0, sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            sum1 += nums[i];
+            sum2 += nums[2 * n + i];
+        }
+        long min = sum2 - sum1;
+        for (int i = n; i < 2 * n; i++) {
+            sum1 += nums[i];
+            sum2 -= nums[i];
+            min = Math.min(min, sum2 - sum1);
+        }
+        return min;
+
+=======
+
+        int n = nums.length / 3;
+        Arrays.sort(nums);
+        long sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        long min = sum;
+        for (int i = 0; i < n; i++) {
+            min = Math.min(min, sum - (long) 2 * nums[i] - (long) 2 * nums[i + n]);
+        }
+        return min;
+
+=======
+
+        int n = nums.length / 3;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; i++) {
+            ans = Math.min(ans, solve(sum, i, n));
+        }
+        return ans;
+    }
+
+    long solve(int[] sum, int i, int n) {
+        long ans = Long.MAX_VALUE;
+        for (int j = 0; j <= n; j++) {
+            int x = sum[i + j] - sum[i];
+            int y = sum[sum.length - 1] - sum[i + j] + sum[i];
+            ans = Math.min(ans, Math.abs(x - y));
+        }
+        return ans;
+
+=======
+
+        int n = nums.length / 3;
+        Arrays.sort(nums);
+        long sumfirst = 0;
+        long sumsecond = 0;
+        for (int i = 0; i < n; i++) {
+            sumfirst += nums[i];
+        }
+        for (int i = n; i < 2 * n; i++) {
+            sumsecond += nums[i];
+        }
+        long min = sumfirst - sumsecond;
+        for (int i = 0; i < n; i++) {
+            sumfirst -= nums[i];
+            sumfirst += nums[i + n];
+            sumsecond -= nums[i + n];
+            sumsecond += nums[i + 2 * n];
+            min = Math.min(min, Math.abs(sumfirst - sumsecond));
+        }
+        return min;
+
+=======
+
+        int n = nums.length / 3;
+        Arrays.sort(nums);
+        long[][] dp = new long[n + 1][n + 1];
+        for (int i = 0; i <= n; ++i) {
+            Arrays.fill(dp[i], Long.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            int x = nums[i];
+            for (int j = Math.min(i + 1, n); j >= 0; --j) {
+                for (int k = Math.min(i + 1, n) - j; k >= 0; --k) {
+                    if (dp[j][k] == Long.MAX_VALUE) {
+                        continue;
+                    }
+                    if (j < n) {
+                        dp[j + 1][k] = Math.min(dp[j + 1][k], dp[j][k] + x);
+                    }
+                    if (k < n) {
+                        dp[j][k + 1] = Math.min(dp[j][k + 1], dp[j][k] - x);
+                    }
+                }
+            }
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; ++i) {
+            ans = Math.min(ans, dp[i][n - i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length / 3;
+        Arrays.sort(nums);
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        long sum1 = 0;
+        for (int i = n; i < 2 * n; i++) {
+            sum1 += nums[i];
+        }
+        long sum2 = 0;
+        for (int i = 2 * n; i < 3 * n; i++) {
+            sum2 += nums[i];
+        }
+        long res = Math.abs(sum - sum1) + Math.abs(sum2 - sum1) + Math.abs(sum - sum2);
+        for (int i = 1; i < n; i++) {
+            long s1 = sum - nums[i - 1] + nums[i + n - 1];
+            long s2 = sum1 - nums[i + n - 1] + nums[i + 2 * n - 1];
+            long s3 = sum2 - nums[i + 2 * n - 1] + nums[i - 1];
+            res = Math.min(res, Math.abs(s1 - s2) + Math.abs(s2 - s3) + Math.abs(s1 - s3));
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] s = new int[n];
+        for (int i = 0; i < n; i++) {
+            s[i] = nums[i];
+            if (i > 0) {
+                s[i] += s[i - 1];
+            }
+        }
+        int m = n / 3;
+        long ans = Long.MAX_VALUE;
+        for (int i = m; i + m <= n; i++) {
+            int l = i - m, r = i + m - 1;
+            long a = s[i - 1] - (l == 0 ? 0 : s[l - 1]);
+            long b = s[r] - s[i];
+            ans = Math.min(ans, Math.abs(a - b));
+        }
+        return ans;
+
+=======
+
+        int n = nums.length / 3;
+        Arrays.sort(nums);
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int j = 2 * n + i;
+            min = Math.min(min, (long) nums[j] - nums[i + n]);
+        }
+        return min;
+
+=======
+
+        int n = nums.length / 3;
+        int[] first = new int[n];
+        int[] second = new int[n];
+        int[] third = new int[n];
+        int i = 0;
+        for (int num : nums) {
+            if (i < n) {
+                first[i] = num;
+            } else if (i < 2 * n) {
+                second[i - n] = num;
+            } else {
+                third[i - 2 * n] = num;
+            }
+            i++;
+        }
+        Arrays.sort(first);
+        Arrays.sort(second);
+        Arrays.sort(third);
+        int[] firstSum = new int[n + 1];
+        int[] secondSum = new int[n + 1];
+        int[] thirdSum = new int[n + 1];
+        for (i = 1; i <= n; i++) {
+            firstSum[i] = firstSum[i - 1] + first[i - 1];
+            secondSum[i] = secondSum[i - 1] + second[i - 1];
+            thirdSum[i] = thirdSum[i - 1] + third[i - 1];
+        }
+        long min = Long.MAX_VALUE;
+        for (i = 0; i <= n; i++) {
+            long current = (long) firstSum[n] - firstSum[i] + secondSum[n] - secondSum[n - i] - (thirdSum[n] - thirdSum[n - i]);
+            min = Math.min(min, Math.abs(current));
+        }
+        return min;
+
+=======
+
+        int n = nums.length;
+        int[] a = new int[n];
+        int[] b = new int[n];
+        int sum1 = 0;
+        int sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                sum1 += nums[i];
+                a[i] = sum1;
+            } else {
+                sum2 += nums[i];
+                b[i] = sum2;
+            }
+        }
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int j = n - 1 - i;
+            if (i % 2 == 0) {
+                long sum = a[i] - (j >= 0 ? b[j] : 0);
+                min = Math.min(min, sum);
+            } else {
+                long sum = (j >= 0 ? a[j] : 0) - b[i];
+                min = Math.min(min, sum);
+            }
+        }
+        return min;

@@ -1,0 +1,180 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        vector<vector<int>> dp(n + 1, vector<int>(minProfit + 1, 0));
+        dp[0][0] = 1;
+        int res = 0, mod = 1e9 + 7;
+        for (int k = 0; k < group.size(); ++k) {
+            int g = group[k], p = profit[k];
+            for (int i = n; i >= g; --i) {
+                for (int j = minProfit; j >= 0; --j) {
+                    dp[i][j] = (dp[i][j] + dp[i - g][max(0, j - p)]) % mod;
+                }
+            }
+        }
+        for (int i = 0; i <= n; ++i) {
+            res = (res + dp[i][minProfit]) % mod;
+        }
+        return res;
+
+=======
+
+        int m = group.size();
+        vector<vector<int>> dp(n + 1, vector<int>(minProfit + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < m; i++) {
+            int members = group[i];
+            int earn = profit[i];
+            for (int j = n; j >= members; j--) {
+                for (int k = minProfit; k >= 0; k--) {
+                    dp[j][k] = (dp[j][k] + dp[j - members][max(0, k - earn)]) % 1000000007;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i <= n; i++) {
+            res = (res + dp[i][minProfit]) % 1000000007;
+        }
+        return res;
+
+=======
+
+        int m = group.size();
+        vector<vector<int>> dp(n + 1, vector<int>(minProfit + 1, 0));
+        dp[0][0] = 1;
+        for (int k = 0; k < m; ++k) {
+            int members = group[k], earn = profit[k];
+            for (int i = n; i >= members; --i) {
+                for (int j = minProfit; j >= 0; --j) {
+                    dp[i][j] = (dp[i][j] + dp[i - members][max(0, j - earn)]) % 1000000007;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i <= n; ++i) {
+            res = (res + dp[i][minProfit]) % 1000000007;
+        }
+        return res;
+
+=======
+
+        int MOD = 1000000007;
+        int m = group.size();
+        vector<vector<int>> dp(n + 1, vector<int>(minProfit + 1));
+        dp[0][0] = 1;
+        for (int i = 0; i < m; ++i) {
+            int members = group[i], earn = profit[i];
+            for (int j = n - members; j >= 0; --j) {
+                for (int k = minProfit - earn; k >= 0; --k) {
+                    dp[j + members][k + earn] = (dp[j + members][k + earn] + dp[j][k]) % MOD;
+                }
+            }
+        }
+        int ans = 0;
+        for (int x: dp[n]) {
+            ans = (ans + x) % MOD;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int m = group.size();
+        vector<vector<int>> dp(n + 1, vector<int>(minProfit + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < m; i++) {
+            int g = group[i];
+            int p = profit[i];
+            for (int j = n; j >= g; j--) {
+                for (int k = minProfit; k >= 0; k--) {
+                    dp[j][k] = (dp[j][k] + dp[j - g][max(0, k - p)]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans = (ans + dp[i][minProfit]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1e9 + 7;
+        int m = group.size();
+        vector<vector<int>> dp(n+1, vector<int>(minProfit+1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < m; ++i) {
+            int g = group[i];
+            int p = profit[i];
+            for (int j = n; j >= g; --j) {
+                for (int k = minProfit; k >= 0; --k) {
+                    dp[j][k] = (dp[j][k] + dp[j-g][max(0, k-p)]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; ++i) {
+            ans = (ans + dp[i][minProfit]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1e9 + 7;
+        int m = group.size();
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(minProfit + 1, vector<int>(m + 1, 0)));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0][0] = 1;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= minProfit; j++) {
+                for (int k = 1; k <= m; k++) {
+                    dp[i][j][k] = dp[i][j][k - 1];
+                    if (i >= group[k - 1]) {
+                        dp[i][j][k] = (dp[i][j][k] + dp[i - group[k - 1]][max(0, j - profit[k - 1])][k - 1]) % mod;
+                    }
+                }
+            }
+        }
+        return dp[n][minProfit][m];
+
+=======
+
+        const int MOD = 1000000007;
+        vector<vector<int>> dp(n+1, vector<int>(minProfit + 1, 0));
+        dp[0][0] = 1;
+        for (int i = 0; i < group.size(); ++i) {
+            for (int j = n - group[i]; j >= 0; --j) {
+                for (int k = minProfit; k >= 0; --k) {
+                    int newProfit = min(minProfit, profit[i] + k);
+                    dp[j + group[i]][newProfit] = (dp[j + group[i]][newProfit] + dp[j][k]) % MOD;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; ++i) {
+            ans = (ans + dp[i][minProfit]) % MOD;
+        }
+        return ans;
+
+=======
+
+        int N = group.size();
+        vector<vector<int>> dp(n+1, vector<int>(minProfit+1, 0));
+        dp[0][0] = 1;
+        int res = 0;
+        for (int i = 0; i < N; ++i) {
+            int g = group[i], p = profit[i];
+            for (int j = n; j >= g; --j) {
+                for (int k = minProfit; k >= 0; --k) {
+                    dp[j][k] += dp[j-g][max(0, k-p)];
+                    dp[j][k] %= 1000000007;
+                }
+            }
+        }
+        for (int i = 0; i <= n; ++i) {
+            res += dp[i][minProfit];
+            res %= 1000000007;
+        }
+        return res;

@@ -1,0 +1,207 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = nums.len();
+        let mut res = 0;
+        let mut pre = vec![0; n + 1];
+        for i in 0..n {
+            pre[i + 1] = (pre[i] + nums[i]) % p;
+        }
+        let mut map = std::collections::HashMap::new();
+        for i in 0..=n {
+            if i as i32 > k {
+                *map.entry(pre[i - k as usize - 1]).or_insert(0) -= 1;
+            }
+            res += map.entry(pre[i]).or_insert(0);
+            *map.entry(pre[i]).or_insert(0) += 1;
+        }
+        res
+
+=======
+
+        let mut dp = vec![0; nums.len()];
+        let mut cnt = 0;
+        for i in 0..nums.len() {
+            if nums[i] % p == 0 {
+                cnt += 1;
+            }
+            dp[i] = cnt;
+        }
+        let mut ans = 0;
+        for i in 0..nums.len() {
+            let mut j = i + 1;
+            let mut c = dp[i];
+            while j < nums.len() && j - i < k as usize {
+                if nums[j] % p == 0 {
+                    c += 1;
+                }
+                ans += c - dp[i];
+                j += 1;
+            }
+            ans += c - dp[i];
+        }
+        ans
+
+=======
+
+        let n = nums.len();
+        let k = k as usize;
+        let p = p as usize;
+        let mut cnt = vec![0; p];
+        let mut s = 0;
+        let mut res = 0;
+        for i in 0..n {
+            s = (s + nums[i] as usize) % p;
+            if i >= k {
+                cnt[(s - nums[i - k] as usize + p) % p] -= 1;
+            }
+            res += cnt[s];
+            cnt[s] += 1;
+        }
+        res as i32
+
+=======
+
+        let mut res = 0;
+        let mut dp = vec![0; nums.len()];
+        let mut count = 0;
+        for i in 0..nums.len() {
+            if nums[i] % p == 0 {
+                count += 1;
+            }
+            dp[i] = count;
+            if i as i32 >= k {
+                if nums[i - k as usize] % p == 0 {
+                    count -= 1;
+                }
+            }
+            res += dp[i];
+            if i as i32 >= k {
+                res -= dp[i - k as usize];
+            }
+        }
+        res
+
+=======
+
+        let mut ans = 0;
+        let n = nums.len();
+        let mut cnt = vec![0; p as usize];
+        let mut sum = 0;
+        for i in 0..n {
+            sum = (sum + nums[i]) % p;
+            cnt[sum as usize] += 1;
+        }
+        for i in 0..p as usize {
+            ans += cnt[i] * (cnt[i] - 1) / 2;
+        }
+        for l in 0..n {
+            let mut sum = 0;
+            for r in l..n {
+                sum = (sum + nums[r]) % p;
+                if r - l + 1 > k as usize {
+                    sum = (sum + p - nums[l]) % p;
+                }
+                if r - l + 1 >= k as usize {
+                    ans -= cnt[sum as usize];
+                    cnt[sum as usize] -= 1;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut dp = vec![0; nums.len() + 1];
+        let mut sum = 0;
+        let mut ret = 0;
+        for i in 0..nums.len() {
+            sum = (sum + nums[i]) % p;
+            dp[i + 1] = dp[i] + (sum == 0) as i32;
+            if i as i32 >= k {
+                sum = (sum - nums[i - k as usize]) % p;
+                dp[i + 1] -= dp[i - k as usize + 1];
+            }
+            ret += dp[i + 1];
+        }
+        ret
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut counter = 0;
+        for i in 0..nums.len() {
+            let mut j = i;
+            let mut c = 0;
+            while j < nums.len() && c < k {
+                if nums[j] % p == 0 {
+                    c += 1;
+                }
+                j += 1;
+            }
+            counter += j - i;
+        }
+        counter
+    }
+}
+
+=======
+
+        let mut count = 0;
+        let mut v = vec![0;nums.len()+1];
+        for i in 0..nums.len() {
+            v[i+1] = (v[i] + nums[i]) % p;
+        }
+        for i in 0..nums.len() {
+            let mut map = std::collections::HashMap::new();
+            for j in i..nums.len() {
+                if j-i+1 > k as usize {
+                    break;
+                }
+                let val = (v[j+1] - v[i]) % p;
+                if val < 0 {
+                    map.entry(val + p).or_insert(0);
+                } else {
+                    map.entry(val).or_insert(0);
+                }
+            }
+            count += map.len() as i32;
+        }
+        count
+
+=======
+
+        let mut res = 0;
+        let mut dp = vec![0; nums.len() + 1];
+        for i in 0..nums.len() {
+            let mut v = vec![0; nums.len() + 1];
+            for j in 0..i {
+                v[j] = dp[j];
+            }
+            v[i] = 1;
+            for j in (i+1)..nums.len() {
+                if nums[j] % p == 0 {
+                    v[j] = v[j-1];
+                } else {
+                    v[j] = v[j-1] - dp[j-1];
+                }
+            }
+            let mut count = 0;
+            for j in 0..nums.len() {
+                if nums[j] % p == 0 {
+                    count += 1;
+                }
+                if count > k {
+                    break;
+                }
+                res += v[j];
+            }
+            dp = v;
+        }
+        res

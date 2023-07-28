@@ -1,0 +1,126 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int lo = 0, hi = 100000;
+        while (lo < hi) {
+            int mi = (lo + hi + 1) / 2;
+            if (check(n, paths, mi))
+                lo = mi;
+            else
+                hi = mi - 1;
+        }
+        return lo;
+
+=======
+
+        int l = 0, r = 100000;
+        while (l < r) {
+            int m = l + (r - l + 1) / 2;
+            if (check(n, paths, m)) {
+                l = m;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;
+
+=======
+
+        int low = 1, high = 100000;
+        while (low < high) {
+            int mid = (low + high + 1) / 2;
+            if (check(n, paths, mid)) {
+                low = mid;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return low;
+
+=======
+
+        int m = paths.size();
+        int l = 0, r = 1e9;
+        while (l < r) {
+            int mid = (l + r + 1) / 2;
+            if (check(mid, n, m, paths)) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+
+=======
+
+        int m = paths.size();
+        vector<vector<int>> h(m, vector<int>(paths[0].size()));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < paths[i].size(); ++j) {
+                h[i][j] = paths[i][j] + (j > 0 ? h[i][j - 1] : 0);
+            }
+        }
+        int l = 0, r = paths[0].size() - 1;
+        while (l < r) {
+            int mid = (l + r + 1) >> 1;
+            if (check(mid, n, paths, h)) l = mid;
+            else r = mid - 1;
+        }
+        return l;
+    }
+    bool check(int len, int n, vector<vector<int>>& paths, vector<vector<int>>& h) {
+        unordered_map<int, vector<int>> mp;
+        for (int i = 0; i < paths.size(); ++i) {
+            for (int j = 0; j + len <= paths[i].size(); ++j) {
+                int hash = h[i][j + len - 1] - (j > 0 ? h[i][j - 1] : 0);
+                hash = (hash * 31) % 1000000007;
+                mp[hash].push_back(j);
+            }
+        }
+        for (auto& [_, v] : mp) {
+            if (v.size() == paths.size()) {
+                bool flag = true;
+                for (int i = 1; i < v.size(); ++i) {
+                    if (v[i] - v[i - 1] < len) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) return true;
+            }
+        }
+        return false;
+
+=======
+
+        int m = paths.size();
+        vector<vector<int>> pre(m);
+        vector<int> cnt(n);
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            int sz = paths[i].size();
+            pre[i].resize(sz + 1);
+            for (int j = 0; j < sz; j++) {
+                pre[i][j + 1] = pre[i][j] ^ (1 << paths[i][j]);
+            }
+        }
+        for (int i = 1; i <= paths[0].size(); i++) {
+            int l = 0, r = i;
+            while (r <= paths[0].size()) {
+                int cur = pre[0][r] ^ pre[0][l];
+                for (int j = 1; j < m; j++) {
+                    if ((pre[j][r] ^ pre[j][l]) != cur) {
+                        cur = -1;
+                        break;
+                    }
+                }
+                if (cur != -1) {
+                    res = i;
+                    break;
+                }
+                l++;
+                r++;
+            }
+        }
+        return res;

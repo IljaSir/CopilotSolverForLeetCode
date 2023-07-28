@@ -1,0 +1,211 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int n = prevRoom.length;
+        List<Integer>[] g = new List[n];
+        for (int i = 0; i < n; i++) {
+            g[i] = new ArrayList<>();
+        }
+        for (int i = 1; i < n; i++) {
+            g[prevRoom[i]].add(i);
+        }
+        int[] size = new int[n];
+        int[] depth = new int[n];
+        dfs(g, size, depth, 0);
+        int[] fact = new int[n];
+        fact[0] = 1;
+        for (int i = 1; i < n; i++) {
+            fact[i] = (int) ((long) fact[i - 1] * i % 1000000007);
+        }
+        int[] pow = new int[n];
+        pow[0] = 1;
+        for (int i = 1; i < n; i++) {
+            pow[i] = (int) ((long) pow[i - 1] * 2 % 1000000007);
+        }
+        int[] dp = new int[n];
+        for (int i = n - 1; i >= 0; i--) {
+            int s = size[i];
+            dp[i] = fact[s - 1];
+            for (int j : g[i]) {
+                dp[i] = (int) ((long) dp[i] * dp[j] % 1000000007);
+            }
+            dp[i] = (int) ((long) dp[i] * pow[depth[i]] % 1000000007);
+        }
+        return dp[0];
+    }
+    void dfs(List<Integer>[] g, int[] size, int[] depth, int u) {
+        size[u] = 1;
+        for (int v : g[u]) {
+            depth[v] = depth[u] + 1;
+            dfs(g, size, depth, v);
+            size[u] += size[v];
+        }
+
+=======
+
+        int mod = 1000000007;
+        int n = prevRoom.length;
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            g.add(new ArrayList<>());
+        }
+        for (int i = 1; i < n; i++) {
+            g.get(prevRoom[i]).add(i);
+        }
+        int[] dp = new int[n];
+        dfs(g, dp, 0);
+        return dp[0];
+    }
+    private int dfs(List<List<Integer>> g, int[] dp, int u) {
+        int mod = 1000000007;
+        dp[u] = 1;
+        for (int v : g.get(u)) {
+            dp[u] = (int)((long)dp[u] * (dfs(g, dp, v) + 1) % mod);
+        }
+        return dp[u];
+
+=======
+
+        int n = prevRoom.length;
+        int mod = 1000000007;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<Integer>();
+        }
+        for (int i = 1; i < n; i++) {
+            graph[prevRoom[i]].add(i);
+        }
+        long[] factorial = new long[n];
+        factorial[0] = 1;
+        for (int i = 1; i < n; i++) {
+            factorial[i] = factorial[i - 1] * i % mod;
+        }
+        long[] ways = new long[n];
+        Arrays.fill(ways, -1);
+        ways[0] = 1;
+        return (int) dfs(graph, 0, ways, factorial, mod);
+    }
+    public long dfs(List<Integer>[] graph, int u, long[] ways, long[] factorial, int mod) {
+        if (ways[u] != -1) {
+            return ways[u];
+        }
+        long ans = factorial[graph[u].size()];
+        for (int v : graph[u]) {
+            ans = ans * dfs(graph, v, ways, factorial, mod) % mod;
+        }
+        ways[u] = ans;
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = prevRoom.length;
+        List<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int i = 1; i < n; i++) {
+            adj[prevRoom[i]].add(i);
+        }
+        long[] dp = new long[n];
+        dfs(adj, 0, dp);
+        return (int) dp[0];
+    }
+    private long dfs(List<Integer>[] adj, int u, long[] dp) {
+        if (dp[u] > 0) {
+            return dp[u];
+        }
+        dp[u] = 1;
+        for (int v : adj[u]) {
+            dp[u] = dp[u] * (dfs(adj, v, dp) + 1) % 1000000007;
+        }
+        return dp[u];
+
+=======
+
+        int n = prevRoom.length;
+        int mod = 1000000007;
+        List<Integer>[] adj = new List[n];
+        for (int i = 0; i < n; ++i) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int i = 1; i < n; ++i) {
+            adj[prevRoom[i]].add(i);
+        }
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            fact[i] = (int) ((long) fact[i - 1] * i % mod);
+        }
+        int[] size = new int[n];
+        dfs(adj, 0, size);
+        int[] dp = new int[n];
+        dp[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            dp[i] = fact[size[i]];
+            for (int j : adj[i]) {
+                dp[i] = (int) ((long) dp[i] * dp[j] % mod);
+            }
+        }
+        return dp[n - 1];
+    }
+
+    public void dfs(List<Integer>[] adj, int u, int[] size) {
+        size[u] = 1;
+        for (int v : adj[u]) {
+            dfs(adj, v, size);
+            size[u] += size[v];
+        }
+
+=======
+
+        int n = prevRoom.length;
+        int mod = 1000000007;
+        int[] f = new int[n];
+        f[0] = 1;
+        for (int i = 1; i < n; ++i) {
+            int cnt = 0;
+            for (int j = 0; j < i; ++j) {
+                if (prevRoom[j] == i) {
+                    ++cnt;
+                }
+            }
+            int[] g = new int[cnt + 1];
+            g[0] = 1;
+            for (int j = 1; j <= cnt; ++j) {
+                g[j] = (int) ((long) g[j - 1] * (i - j + 1) % mod);
+            }
+            f[i] = (int) ((long) f[prevRoom[i]] * g[cnt] % mod);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = (ans + f[i]) % mod;
+        }
+        return ans;
+
+=======
+
+        int n = prevRoom.length;
+        int[] children = new int[n];
+        for (int i = 1; i < n; i++) {
+            children[prevRoom[i]]++;
+        }
+        long[] factorial = new long[n];
+        factorial[0] = 1;
+        for (int i = 1; i < n; i++) {
+            factorial[i] = factorial[i - 1] * i % 1000000007;
+        }
+        return (int) dfs(prevRoom, children, factorial, 0);
+    }
+    private long dfs(int[] prevRoom, int[] children, long[] factorial, int root) {
+        long ret = 1;
+        for (int i = 0; i < children.length; i++) {
+            if (prevRoom[i] == root) {
+                ret *= factorial[children[i]];
+                ret %= 1000000007;
+                ret *= dfs(prevRoom, children, factorial, i);
+                ret %= 1000000007;
+            }
+        }
+        return ret;

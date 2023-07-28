@@ -1,0 +1,290 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = edges.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            int len = 0;
+            while (edges[j] != -1) {
+                if (dp[j] != -1) {
+                    len += dp[j];
+                    break;
+                }
+                len++;
+                int t = edges[j];
+                edges[j] = -1;
+                j = t;
+            }
+            j = i;
+            while (edges[j] != -1) {
+                dp[j] = len--;
+                j = edges[j];
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = edges.length;
+        int[] dist = new int[n];
+        Arrays.fill(dist, -1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] != -1) continue;
+            int p = i;
+            while (dist[p] == -1) {
+                dist[p] = i;
+                p = edges[p];
+            }
+            if (dist[p] == i) {
+                int len = 1;
+                for (int q = edges[p]; q != p; q = edges[q]) {
+                    len++;
+                }
+                ans = Math.max(ans, len);
+            }
+        }
+        return ans == 1 ? -1 : ans;
+
+=======
+
+        int n = edges.length;
+        int[] visited = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                int count = 0;
+                int j = i;
+                while (visited[j] == 0) {
+                    visited[j] = 1;
+                    j = edges[j];
+                    count++;
+                }
+                if (j == i && count > 1) {
+                    ans = Math.max(ans, count);
+                }
+            }
+        }
+        return ans == 0 ? -1 : ans;
+
+=======
+
+        int n = edges.length;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int slow = i, fast = i;
+            while (edges[slow] != -1 && edges[fast] != -1 && edges[fast = edges[fast]] != -1) {
+                slow = edges[slow];
+                if (slow == fast) {
+                    int cur = 1;
+                    while (slow != edges[fast]) {
+                        cur++;
+                        fast = edges[fast];
+                    }
+                    res = Math.max(res, cur);
+                    break;
+                }
+            }
+        }
+        return res == 1 ? -1 : res;
+
+=======
+
+        int n = edges.length;
+        int[] dp = new int[n];
+        int[] visited = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                res = Math.max(res, dfs(edges, visited, dp, i));
+            }
+        }
+        return res;
+    }
+    private int dfs(int[] edges, int[] visited, int[] dp, int i) {
+        if (visited[i] == 1) {
+            return 0;
+        }
+        if (visited[i] == 2) {
+            return dp[i];
+        }
+        visited[i] = 2;
+        int next = edges[i];
+        if (next == -1) {
+            dp[i] = 0;
+        } else {
+            dp[i] = dfs(edges, visited, dp, next) + 1;
+        }
+        visited[i] = 1;
+        return dp[i];
+
+=======
+
+        int n = edges.length;
+        int[] visited = new int[n];
+        int[] cycle = new int[n];
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                if (dfs(edges, visited, cycle, i, i, 0) == 1) {
+                    max = Math.max(max, cycle[i]);
+                }
+            }
+        }
+        return max;
+    }
+    
+    int dfs(int[] edges, int[] visited, int[] cycle, int start, int cur, int len) {
+        if (visited[cur] == 1) {
+            if (cur == start) {
+                cycle[cur] = len;
+                return 1;
+            }
+            return 0;
+        }
+        visited[cur] = 1;
+        if (edges[cur] == -1) {
+            return 0;
+        }
+        if (dfs(edges, visited, cycle, start, edges[cur], len + 1) == 1) {
+            cycle[cur] = cycle[edges[cur]] + 1;
+            return 1;
+        }
+        return 0;
+
+=======
+
+        int n = edges.length;
+        int[] color = new int[n];
+        int[] parent = new int[n];
+        int[] length = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (color[i] == 0) {
+                res = Math.max(res, dfs(edges, i, color, parent, length));
+            }
+        }
+        return res;
+    }
+    private int dfs(int[] edges, int i, int[] color, int[] parent, int[] length) {
+        color[i] = 1;
+        int res = 0;
+        if (edges[i] != -1) {
+            if (color[edges[i]] == 0) {
+                parent[edges[i]] = i;
+                res = dfs(edges, edges[i], color, parent, length);
+            } else if (color[edges[i]] == 1) {
+                int cur = i;
+                int l = 0;
+                while (cur != edges[i]) {
+                    l++;
+                    cur = parent[cur];
+                }
+                l++;
+                res = l;
+            }
+        }
+        color[i] = 2;
+        length[i] = res;
+        return res;
+
+=======
+
+        int n = edges.length;
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int cur = i;
+            int curLen = 0;
+            while (edges[cur] != -1) {
+                curLen++;
+                int next = edges[cur];
+                edges[cur] = -1;
+                cur = next;
+                if (dp[cur] != 0) {
+                    curLen += dp[cur];
+                    break;
+                }
+            }
+            ans = Math.max(ans, curLen);
+            dp[i] = curLen;
+        }
+        return ans < 3 ? -1 : ans;
+
+=======
+
+        int n = edges.length;
+        int[] visited = new int[n];
+        int[] parent = new int[n];
+        int[] depth = new int[n];
+        int max = 0;
+        for(int i = 0; i < n; i++) {
+            if(visited[i] == 0) {
+                int cycle = dfs(edges, i, visited, parent, depth);
+                max = Math.max(max, cycle);
+            }
+        }
+        return max;
+    }
+    
+    private int dfs(int[] edges, int i, int[] visited, int[] parent, int[] depth) {
+        if(visited[i] == 1) {
+            return depth[parent[i]] - depth[i] + 1;
+        } else if(visited[i] == 2) {
+            return 0;
+        }
+        visited[i] = 1;
+        parent[i] = i;
+        depth[i] = 0;
+        if(edges[i] != -1) {
+            parent[edges[i]] = i;
+            depth[edges[i]] = depth[i] + 1;
+            int cycle = dfs(edges, edges[i], visited, parent, depth);
+            if(cycle > 0) {
+                return cycle;
+            }
+        }
+        visited[i] = 2;
+        return 0;
+
+=======
+
+        int n = edges.length;
+        int[] visited = new int[n];
+        int[] path = new int[n];
+        int[] cycle = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (visited[i] != 0) continue;
+            int cur = i;
+            int count = 0;
+            while (visited[cur] == 0) {
+                visited[cur] = 1;
+                path[count++] = cur;
+                cur = edges[cur];
+            }
+            if (visited[cur] == 1) {
+                for (int j = 0; j < count; j++) {
+                    visited[path[j]] = 2;
+                    if (path[j] == cur) break;
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 2) {
+                int cur = i;
+                int count = 0;
+                while (cycle[cur] == 0) {
+                    cycle[cur] = 1;
+                    count++;
+                    cur = edges[cur];
+                }
+                max = Math.max(max, count);
+            }
+        }
+        return max;

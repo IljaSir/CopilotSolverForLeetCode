@@ -1,0 +1,287 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut max_heap = std::collections::BinaryHeap::new();
+        let mut min_heap = std::collections::BinaryHeap::new();
+        let mut left = 0;
+        let mut right = 0;
+        let mut res = 1;
+        while right < nums.len() {
+            max_heap.push(nums[right]);
+            min_heap.push(nums[right]);
+            while max_heap.peek().unwrap() - min_heap.peek().unwrap() > limit {
+                max_heap.pop();
+                min_heap.pop();
+                left += 1;
+            }
+            res = res.max(right - left + 1);
+            right += 1;
+        }
+        res as i32
+
+=======
+
+        let mut max = std::collections::VecDeque::new();
+        let mut min = std::collections::VecDeque::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut res = 0;
+        while j < nums.len() {
+            while !max.is_empty() && nums[*max.back().unwrap()] < nums[j] {
+                max.pop_back();
+            }
+            while !min.is_empty() && nums[*min.back().unwrap()] > nums[j] {
+                min.pop_back();
+            }
+            max.push_back(j);
+            min.push_back(j);
+            while nums[*max.front().unwrap()] - nums[*min.front().unwrap()] > limit {
+                i += 1;
+                if *max.front().unwrap() < i {
+                    max.pop_front();
+                }
+                if *min.front().unwrap() < i {
+                    min.pop_front();
+                }
+            }
+            res = res.max(j - i + 1);
+            j += 1;
+        }
+        res as i32
+
+=======
+
+        let mut max = std::collections::VecDeque::new();
+        let mut min = std::collections::VecDeque::new();
+        let mut left = 0;
+        let mut right = 0;
+        let mut res = 0;
+        while right < nums.len() {
+            while !max.is_empty() && max.back().unwrap() < &nums[right] {
+                max.pop_back();
+            }
+            max.push_back(nums[right]);
+            while !min.is_empty() && min.back().unwrap() > &nums[right] {
+                min.pop_back();
+            }
+            min.push_back(nums[right]);
+            while max.front().unwrap() - min.front().unwrap() > limit {
+                if max.front().unwrap() == &nums[left] {
+                    max.pop_front();
+                }
+                if min.front().unwrap() == &nums[left] {
+                    min.pop_front();
+                }
+                left += 1;
+            }
+            res = res.max(right - left + 1);
+            right += 1;
+        }
+        res as i32
+
+=======
+
+        let mut max = std::collections::VecDeque::new();
+        let mut min = std::collections::VecDeque::new();
+        let mut left = 0;
+        let mut right = 0;
+        let mut ans = 0;
+        while right < nums.len() {
+            while let Some(&v) = max.front() {
+                if v < nums[right] {
+                    max.pop_front();
+                } else {
+                    break;
+                }
+            }
+            while let Some(&v) = min.front() {
+                if v > nums[right] {
+                    min.pop_front();
+                } else {
+                    break;
+                }
+            }
+            max.push_front(nums[right]);
+            min.push_front(nums[right]);
+            while max.back().unwrap() - min.back().unwrap() > limit {
+                if nums[left] == *max.back().unwrap() {
+                    max.pop_back();
+                }
+                if nums[left] == *min.back().unwrap() {
+                    min.pop_back();
+                }
+                left += 1;
+            }
+            ans = std::cmp::max(ans, right - left + 1);
+            right += 1;
+        }
+        ans as i32
+
+=======
+
+        let mut min = std::collections::BinaryHeap::new();
+        let mut max = std::collections::BinaryHeap::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut res = 0;
+        while j < nums.len() {
+            min.push(std::cmp::Reverse(nums[j]));
+            max.push(nums[j]);
+            while !min.is_empty() && !max.is_empty() && max.peek().unwrap() - min.peek().unwrap().0 > limit {
+                if nums[i] == *max.peek().unwrap() {
+                    max.pop();
+                }
+                if nums[i] == min.peek().unwrap().0 {
+                    min.pop();
+                }
+                i += 1;
+            }
+            res = res.max(j - i + 1);
+            j += 1;
+        }
+        res as i32
+
+=======
+
+        let mut min = std::collections::BinaryHeap::new();
+        let mut max = std::collections::BinaryHeap::new();
+        let mut l = 0;
+        let mut r = 0;
+        let mut ans = 0;
+        while r < nums.len() {
+            min.push(std::cmp::Reverse(nums[r]));
+            max.push(nums[r]);
+            while max.peek().unwrap() - min.peek().unwrap().0 > limit {
+                min.retain(|&x| x.0 != nums[l]);
+                max.retain(|&x| x != nums[l]);
+                l += 1;
+            }
+            ans = ans.max(r - l + 1);
+            r += 1;
+        }
+        ans as i32
+
+=======
+
+        let mut max = std::collections::VecDeque::new();
+        let mut min = std::collections::VecDeque::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut result = 0;
+        while j < nums.len() {
+            while let Some(&x) = max.front_back() {
+                if nums[x] >= nums[j] {
+                    break;
+                }
+                max.pop_back();
+            }
+            max.push_back(j);
+            while let Some(&x) = min.front_back() {
+                if nums[x] <= nums[j] {
+                    break;
+                }
+                min.pop_back();
+            }
+            min.push_back(j);
+            while nums[max[0]] - nums[min[0]] > limit {
+                i += 1;
+                if max[0] < i {
+                    max.pop_front();
+                }
+                if min[0] < i {
+                    min.pop_front();
+                }
+            }
+            result = result.max(j - i + 1);
+            j += 1;
+        }
+        result as i32
+
+=======
+
+        let mut max_q = std::collections::VecDeque::new();
+        let mut min_q = std::collections::VecDeque::new();
+        let mut result = 0;
+        let mut left = 0;
+        for (right, &num) in nums.iter().enumerate() {
+            while let Some(&last) = max_q.back() {
+                if last <= num {
+                    max_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            while let Some(&last) = min_q.back() {
+                if last >= num {
+                    min_q.pop_back();
+                } else {
+                    break;
+                }
+            }
+            max_q.push_back(num);
+            min_q.push_back(num);
+            while let Some(&max) = max_q.front() {
+                if let Some(&min) = min_q.front() {
+                    if max - min <= limit {
+                        result = result.max(right - left + 1);
+                        break;
+                    } else {
+                        left += 1;
+                        if nums[left - 1] == max {
+                            max_q.pop_front();
+                        }
+                        if nums[left - 1] == min {
+                            min_q.pop_front();
+                        }
+                    }
+                }
+            }
+        }
+        result as i32
+    }
+}
+
+=======
+
+        let mut max = 0;
+        let mut left = 0;
+        let mut right = 0;
+        let mut maxq = std::collections::VecDeque::new();
+        let mut minq = std::collections::VecDeque::new();
+        while right < nums.len() {
+            while let Some(&last) = maxq.back() {
+                if last < nums[right] {
+                    maxq.pop_back();
+                } else {
+                    break;
+                }
+            }
+            while let Some(&last) = minq.back() {
+                if last > nums[right] {
+                    minq.pop_back();
+                } else {
+                    break;
+                }
+            }
+            maxq.push_back(nums[right]);
+            minq.push_back(nums[right]);
+            while maxq.front().unwrap() - minq.front().unwrap() > limit {
+                if maxq.front().unwrap() == &nums[left] {
+                    maxq.pop_front();
+                }
+                if minq.front().unwrap() == &nums[left] {
+                    minq.pop_front();
+                }
+                left += 1;
+            }
+            max = max.max(right - left + 1);
+            right += 1;
+        }
+        max as i32
+
+=======
+
+        
+    }
+}

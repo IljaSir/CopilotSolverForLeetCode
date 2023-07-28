@@ -1,0 +1,248 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for d in dislikes {
+            graph[d[0] as usize - 1].push(d[1] as usize - 1);
+            graph[d[1] as usize - 1].push(d[0] as usize - 1);
+        }
+        let mut color = vec![0; n];
+        for i in 0..n {
+            if color[i] != 0 {
+                continue;
+            }
+            color[i] = 1;
+            let mut q = std::collections::VecDeque::new();
+            q.push_back(i);
+            while let Some(u) = q.pop_front() {
+                for &v in &graph[u] {
+                    if color[v] == color[u] {
+                        return false;
+                    }
+                    if color[v] == 0 {
+                        color[v] = -color[u];
+                        q.push_back(v);
+                    }
+                }
+            }
+        }
+        true
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n];
+        for d in dislikes {
+            g[(d[0] - 1) as usize].push((d[1] - 1) as usize);
+            g[(d[1] - 1) as usize].push((d[0] - 1) as usize);
+        }
+        let mut color = vec![0; n];
+        for i in 0..n {
+            if color[i] != 0 {
+                continue;
+            }
+            color[i] = 1;
+            let mut q = std::collections::VecDeque::new();
+            q.push_back(i);
+            while let Some(u) = q.pop_front() {
+                for &v in &g[u] {
+                    if color[v] == color[u] {
+                        return false;
+                    }
+                    if color[v] == 0 {
+                        color[v] = -color[u];
+                        q.push_back(v);
+                    }
+                }
+            }
+        }
+        true
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for dislike in dislikes {
+            let (a, b) = (dislike[0] as usize - 1, dislike[1] as usize - 1);
+            graph[a].push(b);
+            graph[b].push(a);
+        }
+        let mut colors = vec![0; n];
+        for i in 0..n {
+            if colors[i] == 0 && !Self::dfs(i, &mut colors, &graph, 1) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(i: usize, colors: &mut Vec<i32>, graph: &Vec<Vec<usize>>, color: i32) -> bool {
+        if colors[i] != 0 {
+            return colors[i] == color;
+        }
+        colors[i] = color;
+        for &j in &graph[i] {
+            if !Self::dfs(j, colors, graph, -color) {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for dislike in dislikes {
+            let (a, b) = (dislike[0] as usize - 1, dislike[1] as usize - 1);
+            graph[a].push(b);
+            graph[b].push(a);
+        }
+        let mut colors = vec![0; n];
+        for i in 0..n {
+            if colors[i] == 0 {
+                let mut color = 1;
+                let mut stack = vec![i];
+                while !stack.is_empty() {
+                    let node = stack.pop().unwrap();
+                    if colors[node] == 0 {
+                        colors[node] = color;
+                    } else {
+                        continue;
+                    }
+                    for &nei in &graph[node] {
+                        stack.push(nei);
+                    }
+                    color = -color;
+                }
+            }
+        }
+        for i in 0..n {
+            for &nei in &graph[i] {
+                if colors[i] == colors[nei] {
+                    return false;
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut graph: Vec<Vec<i32>> = vec![vec![]; n as usize];
+        for dislike in dislikes {
+            graph[dislike[0] as usize - 1].push(dislike[1] - 1);
+            graph[dislike[1] as usize - 1].push(dislike[0] - 1);
+        }
+        let mut color: Vec<i32> = vec![-1; n as usize];
+        for i in 0..n {
+            if color[i as usize] == -1 && !Solution::dfs(i, &mut color, &graph) {
+                return false;
+            }
+        }
+        true
+    }
+    fn dfs(node: i32, color: &mut Vec<i32>, graph: &Vec<Vec<i32>>) -> bool {
+        color[node as usize] = 1;
+        for &v in &graph[node as usize] {
+            if color[v as usize] == -1 {
+                color[v as usize] = 0;
+                if !Solution::dfs(v, color, graph) {
+                    return false;
+                }
+            } else if color[v as usize] == color[node as usize] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for dislike in dislikes {
+            graph[(dislike[0]-1) as usize].push((dislike[1]-1) as usize);
+            graph[(dislike[1]-1) as usize].push((dislike[0]-1) as usize);
+        }
+        let mut color = vec![-1; n as usize];
+        for i in 0..n {
+            if color[i as usize] == -1 {
+                let mut queue = Vec::new();
+                queue.push(i as usize);
+                color[i as usize] = 0;
+                while !queue.is_empty() {
+                    let node = queue.remove(0);
+                    for neighbor in &graph[node] {
+                        if color[*neighbor] == -1 {
+                            color[*neighbor] = 1 - color[node];
+                            queue.push(*neighbor);
+                        } else if color[*neighbor] == color[node] {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        true
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![Vec::new(); n];
+        for edge in dislikes {
+            graph[(edge[0] - 1) as usize].push((edge[1] - 1) as usize);
+            graph[(edge[1] - 1) as usize].push((edge[0] - 1) as usize);
+        }
+        let mut color = vec![0; n];
+        for i in 0..n {
+            if color[i] == 0 {
+                let mut queue = Vec::new();
+                queue.push(i);
+                color[i] = 1;
+                while !queue.is_empty() {
+                    let node = queue.remove(0);
+                    for &next in &graph[node] {
+                        if color[next] == color[node] {
+                            return false;
+                        }
+                        if color[next] == 0 {
+                            color[next] = -color[node];
+                            queue.push(next);
+                        }
+                    }
+                }
+            }
+        }
+        true
+
+=======
+
+        let mut edges = vec![vec![]; n as usize];
+        for dislike in dislikes {
+            let (a, b) = (dislike[0] as usize - 1, dislike[1] as usize - 1);
+            edges[a].push(b);
+            edges[b].push(a);
+        }
+        let mut colors = vec![0; n as usize];
+        for i in 0..n as usize {
+            if colors[i] == 0 {
+                let mut queue = std::collections::VecDeque::new();
+                queue.push_back(i);
+                colors[i] = 1;
+                while !queue.is_empty() {
+                    let node = queue.pop_front().unwrap();
+                    for &edge in edges[node].iter() {
+                        if colors[edge] == colors[node] {
+                            return false;
+                        }
+                        if colors[edge] == 0 {
+                            colors[edge] = -colors[node];
+                            queue.push_back(edge);
+                        }
+                    }
+                }
+            }
+        }
+        true
+
+=======
+
+        false

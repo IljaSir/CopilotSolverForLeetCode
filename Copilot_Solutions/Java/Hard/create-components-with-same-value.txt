@@ -1,0 +1,410 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            sum[i] = nums[i];
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int pu = find(parent, u);
+            int pv = find(parent, v);
+            if (pu != pv) {
+                parent[pu] = pv;
+                sum[pv] += sum[pu];
+            }
+        }
+        int root = find(parent, 0);
+        if (sum[root] % 2 == 1) {
+            return -1;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i && sum[i] != sum[root] / 2) {
+                res++;
+            }
+        }
+        return res;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            sum[i] = nums[i];
+        }
+        for (int[] edge : edges) {
+            int a = find(edge[0], parent);
+            int b = find(edge[1], parent);
+            if (a != b) {
+                parent[a] = b;
+                sum[b] += sum[a];
+            }
+        }
+        int root = find(0, parent);
+        if (sum[root] % 3 != 0) {
+            return -1;
+        }
+        int target = sum[root] / 3;
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            int p = find(i, parent);
+            if (sum[p] == target) {
+                count[p]++;
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (count[i] >= 3) {
+                res += count[i] - 2;
+            }
+        }
+        return res;
+    }
+    private int find(int x, int[] parent) {
+        if (x != parent[x]) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        for (int[] edge : edges) {
+            int x = edge[0];
+            int y = edge[1];
+            int rootX = findRoot(parent, x);
+            int rootY = findRoot(parent, y);
+            if (rootX == rootY) {
+                continue;
+            }
+            if (size[rootX] > size[rootY]) {
+                parent[rootY] = rootX;
+                size[rootX] += size[rootY];
+            } else {
+                parent[rootX] = rootY;
+                size[rootY] += size[rootX];
+            }
+        }
+        int[] sum = new int[n];
+        int[] count = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int root = findRoot(parent, i);
+            sum[root] += nums[i];
+            count[root]++;
+        }
+        for (int i = 0; i < n; i++) {
+            if (sum[i] % count[i] != 0) {
+                return -1;
+            }
+            int target = sum[i] / count[i];
+            if (nums[i] != target) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    private int findRoot(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = findRoot(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i];
+        }
+        int count = n;
+        for (int[] edge : edges) {
+            int x = edge[0], y = edge[1];
+            int px = find(parent, x), py = find(parent, y);
+            if (px != py) {
+                parent[px] = py;
+                sum[py] += sum[px];
+                count--;
+            }
+        }
+        int maxValue = 0;
+        for (int s : sum) {
+            maxValue = Math.max(maxValue, s);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (sum[i] == maxValue) {
+                ans++;
+            }
+        }
+        return count - ans;
+    }
+    int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i];
+        }
+        for (int[] edge : edges) {
+            int p1 = findParent(parent, edge[0]);
+            int p2 = findParent(parent, edge[1]);
+            if (p1 != p2) {
+                parent[p1] = p2;
+                sum[p2] += sum[p1];
+            }
+        }
+        int total = sum[findParent(parent, 0)];
+        int count = 0;
+        for (int i = 1; i < n; i++) {
+            if (findParent(parent, i) == i) {
+                if (sum[i] == total) {
+                    count++;
+                }
+            }
+        }
+        return edges.length - count;
+    }
+    private int findParent(int[] parent, int i) {
+        if (i != parent[i]) {
+            parent[i] = findParent(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i];
+        }
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            count[i] = 1;
+        }
+        int res = 0;
+        for (int[] edge : edges) {
+            int a = edge[0];
+            int b = edge[1];
+            int pa = find(parent, a);
+            int pb = find(parent, b);
+            if (pa == pb) {
+                res++;
+                continue;
+            }
+            if (count[pa] > count[pb]) {
+                parent[pb] = pa;
+                sum[pa] += sum[pb];
+                count[pa] += count[pb];
+            } else {
+                parent[pa] = pb;
+                sum[pb] += sum[pa];
+                count[pb] += count[pa];
+            }
+        }
+        int root = find(parent, 0);
+        for (int i = 0; i < n; i++) {
+            if (find(parent, i) == root && sum[i] % count[i] != 0) {
+                return -1;
+            }
+        }
+        return res;
+    }
+    
+    private int find(int[] parent, int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        parent[i] = find(parent, parent[i]);
+        return parent[i];
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        int[] sum = new int[n];
+        for (int i = 0; i < n; i++) {
+            sum[i] = nums[i];
+        }
+        int[] size = new int[n];
+        Arrays.fill(size, 1);
+        int res = 0;
+        for (int[] edge : edges) {
+            int a = find(parent, edge[0]);
+            int b = find(parent, edge[1]);
+            if (a == b) {
+                continue;
+            }
+            if (size[a] < size[b]) {
+                int tmp = a;
+                a = b;
+                b = tmp;
+            }
+            parent[b] = a;
+            sum[a] += sum[b];
+            size[a] += size[b];
+            if (size[a] == n) {
+                return res;
+            }
+            if (sum[a] % size[a] != 0) {
+                res++;
+            }
+        }
+        return -1;
+    }
+
+    private int find(int[] parent, int x) {
+        while (x != parent[x]) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+}
+
+=======
+
+        int n = nums.length;
+        int[] p = new int[n];
+        for (int i = 0; i < n; i++) p[i] = i;
+        for (int[] e : edges) {
+            int a = find(p, e[0]);
+            int b = find(p, e[1]);
+            if (a != b) p[a] = b;
+        }
+        int[] c = new int[n];
+        for (int i = 0; i < n; i++) c[find(p, i)] += nums[i];
+        int[] d = new int[n];
+        for (int i = 0; i < n; i++) d[c[i]]++;
+        for (int i = 0; i < n; i++) if (d[i] > 1) return n - d[i];
+        return n - 1;
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        int[] size = new int[n];
+        int[] value = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+            value[i] = nums[i];
+        }
+        for (int[] edge : edges) {
+            int x = edge[0];
+            int y = edge[1];
+            if (find(parent, x) != find(parent, y)) {
+                union(parent, size, value, x, y);
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                ans += size[i] - 1;
+            }
+        }
+        return ans;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+
+    private void union(int[] parent, int[] size, int[] value, int x, int y) {
+        int rootX = find(parent, x);
+        int rootY = find(parent, y);
+        if (rootX != rootY) {
+            if (size[rootX] > size[rootY]) {
+                parent[rootY] = rootX;
+                size[rootX] += size[rootY];
+                value[rootX] += value[rootY];
+            } else {
+                parent[rootX] = rootY;
+                size[rootY] += size[rootX];
+                value[rootY] += value[rootX];
+            }
+        }
+
+=======
+
+        int n = nums.length;
+        int[] parent = new int[n];
+        for(int i = 0; i < n; i++){
+            parent[i] = i;
+        }
+        int[] sum = new int[n];
+        for(int i = 0; i < n; i++){
+            sum[i] = nums[i];
+        }
+        for(int[] edge : edges){
+            int root1 = findRoot(edge[0], parent);
+            int root2 = findRoot(edge[1], parent);
+            if(root1 != root2){
+                parent[root2] = root1;
+                sum[root1] += sum[root2];
+            }
+        }
+        int root = findRoot(0, parent);
+        for(int i = 0; i < n; i++){
+            if(sum[i] != sum[root]){
+                return -1;
+            }
+        }
+        int count = 0;
+        for(int i = 0; i < n; i++){
+            if(parent[i] == i){
+                count++;
+            }
+        }
+        return n - count;
+    }
+    private int findRoot(int x, int[] parent){
+        if(parent[x] != x){
+            parent[x] = findRoot(parent[x], parent);
+        }
+        return parent[x];

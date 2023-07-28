@@ -1,0 +1,460 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return new int[]{0, arr.length - 1};
+        }
+        if (count % 3 != 0) {
+            return new int[]{-1, -1};
+        }
+        int one = count / 3;
+        int[] result = new int[2];
+        int index = 0;
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count1++;
+            }
+            if (count1 == 1 && arr[i] == 0) {
+                result[0] = i;
+                break;
+            }
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count2++;
+            }
+            if (count2 == one + 1 && arr[i] == 0) {
+                index = i;
+                break;
+            }
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count3++;
+            }
+            if (count3 == one * 2 + 1 && arr[i] == 0) {
+                result[1] = i;
+                break;
+            }
+        }
+        if (result[0] == 0 || result[1] == 0) {
+            return new int[]{-1, -1};
+        }
+        if (result[1] >= arr.length || result[1] <= result[0]) {
+            return new int[]{-1, -1};
+        }
+        for (int i = result[0]; i < result[1]; i++) {
+            if (arr[i] != arr[i + index]) {
+                return new int[]{-1, -1};
+            }
+        }
+        return result;
+
+=======
+
+        int ones = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                ones++;
+            }
+        }
+        if (ones == 0) {
+            return new int[]{0, arr.length - 1};
+        }
+        if (ones % 3 != 0) {
+            return new int[]{-1, -1};
+        }
+        int onesInEachPart = ones / 3;
+        int[] firstPart = findLastOne(arr, onesInEachPart);
+        int[] secondPart = findLastOne(arr, 2 * onesInEachPart);
+        int[] thirdPart = findLastOne(arr, 3 * onesInEachPart);
+        if (firstPart[0] == -1 || secondPart[0] == -1 || thirdPart[0] == -1) {
+            return new int[]{-1, -1};
+        }
+        while (thirdPart[1] < arr.length && arr[firstPart[1]] == arr[secondPart[1]] && arr[secondPart[1]] == arr[thirdPart[1]]) {
+            firstPart[1]++;
+            secondPart[1]++;
+            thirdPart[1]++;
+        }
+        if (thirdPart[1] == arr.length) {
+            return new int[]{firstPart[1] - 1, secondPart[1]};
+        }
+        return new int[]{-1, -1};
+    }
+    
+    private int[] findLastOne(int[] arr, int ones) {
+        int[] result = new int[]{-1, -1};
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count++;
+                if (count == ones) {
+                    result[0] = i;
+                }
+                result[1] = i;
+            }
+        }
+        return result;
+
+=======
+
+        int count = 0;
+        for (int i : arr) {
+            if (i == 1) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return new int[]{0, arr.length - 1};
+        }
+        if (count % 3 != 0) {
+            return new int[]{-1, -1};
+        }
+        int k = count / 3;
+        int p1 = 0;
+        int p2 = 0;
+        int p3 = 0;
+        int i = 0;
+        while (k > 0) {
+            if (arr[i] == 1) {
+                k--;
+            }
+            i++;
+        }
+        p1 = i - 1;
+        while (i < arr.length && arr[i] == 0) {
+            i++;
+        }
+        p2 = i;
+        while (i < arr.length && arr[i] == 0) {
+            i++;
+        }
+        p3 = i;
+        while (p3 < arr.length) {
+            if (arr[p1] != arr[p2] || arr[p2] != arr[p3]) {
+                return new int[]{-1, -1};
+            }
+            p1++;
+            p2++;
+            p3++;
+        }
+        return new int[]{p1 - 1, p2};
+
+=======
+
+        int n = arr.length;
+        int ones = 0;
+        for (int i = 0; i < n; i++) {
+            ones += arr[i];
+        }
+        if (ones == 0) {
+            return new int[] {0, n - 1};
+        }
+        if (ones % 3 != 0) {
+            return new int[] {-1, -1};
+        }
+        int k = ones / 3;
+        int i = 0;
+        while (arr[i] == 0) {
+            i++;
+        }
+        int j = i;
+        while (k > 0) {
+            k -= arr[j++];
+        }
+        int p1 = i;
+        while (arr[p1] == 0) {
+            p1++;
+        }
+        int p2 = j;
+        while (p2 < n && arr[p1] == arr[p2]) {
+            p1++;
+            p2++;
+        }
+        if (p2 == n) {
+            return new int[] {j - 1, p2};
+        }
+        return new int[] {-1, -1};
+
+=======
+
+        int n = arr.length;
+        int count = 0;
+        for(int i = 0; i < n; i++){
+            if(arr[i] == 1) count++;
+        }
+        if(count % 3 != 0) return new int[]{-1, -1};
+        if(count == 0) return new int[]{0, n-1};
+        int k = count / 3;
+        int i = 0;
+        int j = 0;
+        int l = 0;
+        int r = 0;
+        int c = 0;
+        for(int p = 0; p < n; p++){
+            if(arr[p] == 1){
+                c++;
+                if(c == 1) i = p;
+                if(c == k + 1) l = p;
+                if(c == k * 2 + 1) j = p;
+                if(c == k * 3 + 1) r = p;
+            }
+        }
+        while(r < n && arr[i] == arr[l] && arr[l] == arr[j] && arr[j] == arr[r]){
+            i++;
+            l++;
+            j++;
+            r++;
+        }
+        if(r == n) return new int[]{i-1, j};
+        return new int[]{-1, -1};
+
+=======
+
+        int[] res = new int[]{-1, -1};
+        int ones = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) ones++;
+        }
+        if (ones == 0) return new int[]{0, arr.length - 1};
+        if (ones % 3 != 0) return res;
+        int part = ones / 3;
+        int start = -1, end = -1;
+        int count = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                count++;
+                if (count == 1) start = i;
+                if (count == part + 1) {
+                    end = i;
+                    break;
+                }
+            }
+        }
+        int[] startEnd = findEnd(arr, start, end);
+        if (startEnd[0] == -1) return res;
+        int[] endEnd = findEnd(arr, startEnd[1] + 1, end);
+        if (endEnd[0] == -1) return res;
+        return new int[]{startEnd[0], endEnd[1] + 1};
+    }
+    
+    private int[] findEnd(int[] arr, int start, int end) {
+        int[] res = new int[]{-1, -1};
+        int i = start, j = end;
+        while (i < arr.length && j < arr.length) {
+            if (arr[i] == arr[j]) {
+                i++;
+                j++;
+            } else {
+                return res;
+            }
+        }
+        return new int[]{start, j - 1};
+
+=======
+
+        int[] res = new int[]{-1, -1};
+        int len = arr.length;
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            if (arr[i] == 1) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return new int[]{0, len - 1};
+        }
+        if (count % 3 != 0) {
+            return res;
+        }
+        int part = count / 3;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int index1 = -1;
+        int index2 = -1;
+        int index3 = -1;
+        for (int l = 0; l < len; l++) {
+            if (arr[l] == 1) {
+                if (i == 0) {
+                    index1 = l;
+                    i++;
+                } else if (i == part) {
+                    index2 = l;
+                    i++;
+                } else if (i == 2 * part) {
+                    index3 = l;
+                    i++;
+                } else {
+                    i++;
+                }
+            }
+        }
+        while (index3 < len && arr[index1] == arr[index2] && arr[index2] == arr[index3]) {
+            index1++;
+            index2++;
+            index3++;
+        }
+        if (index3 == len) {
+            return new int[]{index1 - 1, index2};
+        }
+        return res;
+
+=======
+
+        int n = arr.length;
+        int[] result = new int[2];
+        result[0] = -1;
+        result[1] = -1;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == 1) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            result[0] = 0;
+            result[1] = n - 1;
+            return result;
+        }
+        if (count % 3 != 0) {
+            return result;
+        }
+        int k = count / 3;
+        int i = 0;
+        while (arr[i] == 0) {
+            i++;
+        }
+        int j = i;
+        while (k > 0) {
+            if (arr[j] == 1) {
+                k--;
+            }
+            j++;
+        }
+        int p1 = i;
+        int p2 = j;
+        while (arr[p1] == 0) {
+            p1++;
+        }
+        while (p2 < n && arr[p1] == arr[p2]) {
+            p1++;
+            p2++;
+        }
+        if (p2 == n) {
+            result[0] = i - 1;
+            result[1] = j;
+            return result;
+        }
+        return result;
+
+=======
+
+        int n = arr.length;
+        int[] ans = new int[]{-1, -1};
+        int totalOnes = 0;
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == 1) {
+                totalOnes++;
+            }
+        }
+        if (totalOnes == 0) {
+            return new int[]{0, n - 1};
+        }
+        if (totalOnes % 3 != 0) {
+            return ans;
+        }
+        int onesInEachPart = totalOnes / 3;
+        int firstPartEnd = -1;
+        int secondPartEnd = -1;
+        int ones = 0;
+        for (int i = 0; i < n; i++) {
+            if (arr[i] == 1) {
+                ones++;
+            }
+            if (ones == onesInEachPart) {
+                if (firstPartEnd == -1) {
+                    firstPartEnd = i;
+                } else {
+                    secondPartEnd = i;
+                }
+                ones = 0;
+            }
+        }
+        int i = firstPartEnd;
+        int j = secondPartEnd;
+        while (i < n && arr[i] == 0) {
+            i++;
+        }
+        while (j < n && arr[j] == 0) {
+            j++;
+        }
+        while (i < n && j < n) {
+            if (arr[i] != arr[j]) {
+                return ans;
+            }
+            i++;
+            j++;
+        }
+        if (i == n || j == n) {
+            return new int[]{i - 1, j};
+        }
+        return ans;
+
+=======
+
+        int[] res = new int[2];
+        int n = arr.length;
+        int count = 0;
+        for(int i=0;i<n;i++){
+            if(arr[i]==1) count++;
+        }
+        if(count==0){
+            res[0] = 0;
+            res[1] = n-1;
+            return res;
+        }
+        if(count%3!=0) return new int[]{-1,-1};
+        int k = count/3;
+        int i = 0;
+        int j = 0;
+        int l = 0;
+        int m = 0;
+        int p = 0;
+        while(p<k){
+            if(arr[i]==1) p++;
+            i++;
+        }
+        while(i<n && arr[i]==0) i++;
+        j = i;
+        p = 0;
+        while(p<k){
+            if(arr[j]==1) p++;
+            j++;
+        }
+        while(j<n && arr[j]==0) j++;
+        m = j;
+        p = 0;
+        while(p<k){
+            if(arr[m]==1) p++;
+            m++;
+        }
+        while(m<n && arr[m]==0) m++;
+        if(m!=n) return new int[]{-1,-1};
+        while(arr[i]==arr[j] && arr[j]==arr[m] && m<n){
+            i++;
+            j++;
+            m++;
+        }
+        if(m==n) return new int[]{i-1,j};
+        return new int[]{-1,-1};

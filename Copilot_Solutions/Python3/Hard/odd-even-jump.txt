@@ -1,0 +1,27 @@
+Synthesizing 1/10 solutions
+
+=======
+
+def oddEvenJumps(self, arr: List[int]) -> int:
+        n = len(arr)
+        next_higher = [None] * n
+        next_lower = [None] * n
+        stack = []
+        for a, i in sorted([a, i] for i, a in enumerate(arr)):
+            while stack and stack[-1] < i:
+                next_higher[stack.pop()] = i
+            stack.append(i)
+        stack = []
+        for a, i in sorted([-a, i] for i, a in enumerate(arr)):
+            while stack and stack[-1] < i:
+                next_lower[stack.pop()] = i
+            stack.append(i)
+        higher = [False] * n
+        lower = [False] * n
+        higher[-1] = lower[-1] = True
+        for i in range(n-2, -1, -1):
+            if next_higher[i] is not None:
+                higher[i] = lower[next_higher[i]]
+            if next_lower[i] is not None:
+                lower[i] = higher[next_lower[i]]
+        return higher.count(True)

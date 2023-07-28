@@ -1,0 +1,384 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int res = 0;
+        if (x > y) {
+            res += helper(s, 'a', 'b', x, y);
+            res += helper(s, 'b', 'a', y, x);
+        } else {
+            res += helper(s, 'b', 'a', y, x);
+            res += helper(s, 'a', 'b', x, y);
+        }
+        return res;
+    }
+    
+    private int helper(String s, char a, char b, int x, int y) {
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        while (j < s.length()) {
+            if (s.charAt(j) == b) {
+                if (i > 0 && s.charAt(i - 1) == a) {
+                    res += x;
+                    i--;
+                } else {
+                    s = s.substring(0, i) + s.substring(j + 1);
+                    j = i;
+                }
+            } else {
+                s = s.substring(0, i) + s.charAt(j) + s.substring(i);
+                i++;
+                j++;
+            }
+        }
+        return res;
+
+=======
+
+        int res = 0;
+        if (x > y) {
+            res += helper(s, "ab", "ba", x, y);
+        } else {
+            res += helper(s, "ba", "ab", y, x);
+        }
+        return res;
+    }
+
+    private int helper(String s, String ab, String ba, int x, int y) {
+        int res = 0;
+        int cnt = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ab.charAt(0)) {
+                cnt++;
+            } else if (s.charAt(i) == ab.charAt(1)) {
+                if (cnt > 0) {
+                    res += x;
+                    cnt--;
+                }
+            } else if (s.charAt(i) == ba.charAt(0)) {
+                if (cnt > 0) {
+                    res += y;
+                    cnt--;
+                }
+            } else if (s.charAt(i) == ba.charAt(1)) {
+                cnt++;
+            }
+        }
+        return res;
+
+=======
+
+        int score = 0;
+        if (x < y) {
+            int t = x;
+            x = y;
+            y = t;
+            char[] chars = s.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] == 'a') {
+                    chars[i] = 'b';
+                } else if (chars[i] == 'b') {
+                    chars[i] = 'a';
+                }
+            }
+            s = new String(chars);
+        }
+        int a = 0, b = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == 'a') {
+                a++;
+            } else if (c == 'b') {
+                if (a > 0) {
+                    a--;
+                    score += x;
+                } else {
+                    b++;
+                }
+            } else {
+                score += Math.min(a, b) * y;
+                a = 0;
+                b = 0;
+            }
+        }
+        score += Math.min(a, b) * y;
+        return score;
+
+=======
+
+        int ans = 0;
+        Stack<Character> stack = new Stack<>();
+        if (x < y) {
+            int tmp = x;
+            x = y;
+            y = tmp;
+            s = new StringBuilder(s).reverse().toString();
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == 'b') {
+                if (!stack.isEmpty() && stack.peek() == 'a') {
+                    stack.pop();
+                    ans += x;
+                } else {
+                    stack.push('b');
+                }
+            } else {
+                stack.push(s.charAt(i));
+            }
+        }
+        s = "";
+        while (!stack.isEmpty()) {
+            s += stack.pop();
+        }
+        stack = new Stack<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == 'a') {
+                if (!stack.isEmpty() && stack.peek() == 'b') {
+                    stack.pop();
+                    ans += y;
+                } else {
+                    stack.push('a');
+                }
+            } else {
+                stack.push(s.charAt(i));
+            }
+        }
+        return ans;
+
+=======
+
+        int a = 0, b = 0;
+        int count = 0;
+        if (x > y) {
+            for (char c : s.toCharArray()) {
+                if (c == 'a') {
+                    a++;
+                } else if (c == 'b') {
+                    if (a > 0) {
+                        a--;
+                        count += x;
+                    } else {
+                        b++;
+                    }
+                } else {
+                    count += a;
+                    a = 0;
+                    count += b;
+                    b = 0;
+                }
+            }
+            count += a;
+            count += b;
+            a = 0;
+            b = 0;
+            for (char c : s.toCharArray()) {
+                if (c == 'b') {
+                    b++;
+                } else if (c == 'a') {
+                    if (b > 0) {
+                        b--;
+                        count += y;
+                    } else {
+                        a++;
+                    }
+                } else {
+                    count += a;
+                    a = 0;
+                    count += b;
+                    b = 0;
+                }
+            }
+            count += a;
+            count += b;
+        } else {
+            for (char c : s.toCharArray()) {
+                if (c == 'b') {
+                    b++;
+                } else if (c == 'a') {
+                    if (b > 0) {
+                        b--;
+                        count += y;
+                    } else {
+                        a++;
+                    }
+                } else {
+                    count += a;
+                    a = 0;
+                    count += b;
+                    b = 0;
+                }
+            }
+            count += a;
+            count += b;
+            a = 0;
+            b = 0;
+            for (char c : s.toCharArray()) {
+                if (c == 'a') {
+                    a++;
+                } else if (c == 'b') {
+                    if (a > 0) {
+                        a--;
+                        count += x;
+                    } else {
+                        b++;
+                    }
+                } else {
+                    count += a;
+                    a = 0;
+                    count += b;
+                    b = 0;
+                }
+            }
+            count += a;
+            count += b;
+        }
+        return count;
+
+=======
+
+        int ans = 0;
+        int a = 0, b = 0;
+        int ab = 0, ba = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == 'a') {
+                a++;
+                if (b > 0) {
+                    ans += y;
+                    b--;
+                }
+            } else if (c == 'b') {
+                b++;
+                if (a > 0) {
+                    ans += x;
+                    a--;
+                }
+            } else if (c == 'x') {
+                ab += a;
+                a = 0;
+                ba += b;
+                b = 0;
+            } else {
+                ab += a;
+                a = 0;
+                ba += b;
+                b = 0;
+            }
+        }
+        ab += a;
+        ba += b;
+        ans += Math.min(ab, ba) * Math.max(x, y);
+        return ans;
+
+=======
+
+        int res = 0;
+        int a = x >= y ? x : y;
+        int b = x < y ? x : y;
+        char c1 = x >= y ? 'a' : 'b';
+        char c2 = x < y ? 'a' : 'b';
+        int[] cnt = new int[2];
+        for (char c : s.toCharArray()) {
+            if (c == c1) {
+                cnt[0]++;
+            } else if (c == c2) {
+                if (cnt[0] > 0) {
+                    cnt[0]--;
+                    res += a;
+                } else {
+                    cnt[1]++;
+                }
+            } else {
+                res += Math.min(cnt[0], cnt[1]) * b;
+                cnt[0] = cnt[1] = 0;
+            }
+        }
+        res += Math.min(cnt[0], cnt[1]) * b;
+        return res;
+
+=======
+
+        int n = s.length();
+        char[] arr = s.toCharArray();
+        int ans = 0;
+        int a = 0;
+        int b = 0;
+        for (int i = 0; i < n; ++i) {
+            if (arr[i] == 'a') {
+                if (b > 0) {
+                    --b;
+                    ++ans;
+                } else {
+                    ++a;
+                }
+            } else if (arr[i] == 'b') {
+                if (a > 0) {
+                    --a;
+                    ++ans;
+                } else {
+                    ++b;
+                }
+            } else {
+                ans += Math.min(a, b);
+                a = 0;
+                b = 0;
+            }
+        }
+        ans += Math.min(a, b);
+        return ans * Math.max(x, y) + (x == y ? 0 : Math.min(a, b) * Math.min(x, y));
+
+=======
+
+        int a = 0, b = 0, score = 0;
+        char[] arr = s.toCharArray();
+        if (x < y) {
+            return maximumGain(s, y, x);
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 'b') {
+                if (a > 0) {
+                    a--;
+                    score += x;
+                } else {
+                    b++;
+                }
+            } else if (arr[i] == 'a') {
+                a++;
+            } else {
+                score += Math.min(a, b) * y;
+                a = 0;
+                b = 0;
+            }
+        }
+        score += Math.min(a, b) * y;
+        return score;
+
+=======
+
+        char[] chars = s.toCharArray();
+        int[] count = new int[2];
+        int[] score = new int[2];
+        score[0] = x;
+        score[1] = y;
+        int[] order = new int[2];
+        order[0] = x > y ? 0 : 1;
+        order[1] = x > y ? 1 : 0;
+        int total = 0;
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == 'a' || c == 'b') {
+                int index = c - 'a';
+                if (count[order[index]] > 0) {
+                    count[order[index]]--;
+                    total += score[index];
+                } else {
+                    count[index]++;
+                }
+            } else {
+                total += Math.min(count[0], count[1]) * score[0];
+                count[0] = count[1] = 0;
+            }
+        }
+        total += Math.min(count[0], count[1]) * score[0];
+        return total;

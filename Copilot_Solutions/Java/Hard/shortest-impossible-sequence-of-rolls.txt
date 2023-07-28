@@ -1,0 +1,235 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = rolls.length;
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, n + 1);
+        dp[0] = 0;
+        int[] last = new int[k + 1];
+        Arrays.fill(last, -1);
+        for (int i = 0; i < n; ++i) {
+            int x = rolls[i];
+            if (i >= k) {
+                dp[i + 1] = Math.min(dp[i + 1], dp[i - k] + 1);
+            }
+            if (last[x] >= 0) {
+                dp[i + 1] = Math.min(dp[i + 1], dp[last[x]] + 1);
+            }
+            last[x] = i;
+        }
+        return dp[n] > n ? -1 : dp[n];
+
+=======
+
+        int n = rolls.length;
+        int[] dp = new int[n];
+        int[] last = new int[k+1];
+        Arrays.fill(last, -1);
+        dp[0] = 1;
+        last[rolls[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            int x = rolls[i];
+            if (i >= k) {
+                int y = rolls[i-k];
+                if (last[y] == i-k) {
+                    dp[i] = dp[i-1] + 1;
+                } else {
+                    dp[i] = dp[i-1];
+                }
+            } else {
+                dp[i] = dp[i-1] + 1;
+            }
+            last[x] = i;
+        }
+        return dp[n-1];
+
+=======
+
+        int n = rolls.length;
+        int[] d = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            d[i+1] = d[i] + (rolls[i] == k ? -1 : 1);
+        }
+        int res = n;
+        int min = 0;
+        for (int i = 0; i < n; i++) {
+            if (d[i+1] <= min) {
+                min = d[i+1];
+                res = Math.min(res, i + 1);
+            }
+        }
+        return res;
+
+=======
+
+        int n = rolls.length;
+        int[] f = new int[k + 1];
+        int[] g = new int[k + 1];
+        int[] h = new int[k + 1];
+        int[] dp = new int[k + 1];
+        int l = 0, r = 0;
+        int res = n + 1;
+        for (int i = 0; i < n; ++i) {
+            int x = rolls[i];
+            f[x]++;
+            if (f[x] == 1) {
+                g[x] = i;
+            }
+            h[x] = i;
+            while (l < r && f[dp[l]] > 1) {
+                f[dp[l]]--;
+                l++;
+            }
+            if (r - l + 1 < k) {
+                dp[r++] = x;
+            } else {
+                res = Math.min(res, h[dp[l]] - g[dp[l]] + 1);
+            }
+        }
+        return res <= n ? res : -1;
+
+=======
+
+        int n = rolls.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int[] cnt = new int[k+1];
+        cnt[rolls[0]]++;
+        int max = 1;
+        for (int i = 1; i < n; i++) {
+            int j = i - k;
+            if (j >= 0) {
+                cnt[rolls[j]]--;
+            }
+            cnt[rolls[i]]++;
+            if (cnt[rolls[i]] > 1) {
+                dp[i] = dp[i-1] + 1;
+            } else {
+                dp[i] = 1;
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        int n = rolls.length;
+        int[] count = new int[k + 1];
+        int[] maxCount = new int[k + 1];
+        int[] minCount = new int[k + 1];
+        int[] minCount2 = new int[k + 1];
+        int[] maxCount2 = new int[k + 1];
+        int[] minCount3 = new int[k + 1];
+        int[] maxCount3 = new int[k + 1];
+        for (int i = 0; i < n; i++) {
+            if (i >= k) {
+                count[rolls[i - k]]--;
+            }
+            count[rolls[i]]++;
+            for (int j = 1; j <= k; j++) {
+                maxCount[j] = Math.max(maxCount[j], count[j]);
+                minCount[j] = Math.min(minCount[j], count[j]);
+            }
+            if (i >= k - 1) {
+                for (int j = 1; j <= k; j++) {
+                    maxCount2[j] = Math.max(maxCount2[j], maxCount[j]);
+                    minCount2[j] = Math.min(minCount2[j], minCount[j]);
+                }
+            }
+            if (i >= 2 * k - 2) {
+                for (int j = 1; j <= k; j++) {
+                    maxCount3[j] = Math.max(maxCount3[j], maxCount2[j]);
+                    minCount3[j] = Math.min(minCount3[j], minCount2[j]);
+                }
+            }
+        }
+        int res = n + 1;
+        for (int i = 1; i <= k; i++) {
+            for (int j = 1; j <= k; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int cur = 0;
+                if (minCount3[i] < 0) {
+                    cur -= minCount3[i];
+                }
+                if (maxCount3[i] > 0) {
+                    cur += maxCount3[i];
+                }
+                if (minCount3[j] < 0) {
+                    cur -= minCount3[j];
+                }
+                if (maxCount3[j] > 0) {
+                    cur += maxCount3[j];
+                }
+                res = Math.min(res, cur);
+            }
+        }
+
+=======
+
+        int n = rolls.length;
+        int[] cnt = new int[k + 1];
+        int[] sum = new int[n + 1];
+        int[] dp = new int[n + 1];
+        int[] q = new int[n + 1];
+        int head = 0, tail = 0;
+        q[tail++] = 0;
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + rolls[i];
+            cnt[rolls[i]]++;
+            while (cnt[rolls[i]] > 1) {
+                cnt[rolls[q[head++]]]--;
+            }
+            while (head < tail && sum[i + 1] - sum[q[head]] > k) {
+                cnt[rolls[q[head++]]]--;
+            }
+            dp[i + 1] = dp[q[head]] + 1;
+            while (head < tail && dp[i + 1] <= dp[q[tail - 1]]) {
+                tail--;
+            }
+            q[tail++] = i + 1;
+        }
+        return dp[n];
+
+=======
+
+        int n = rolls.length;
+        int[] count = new int[k + 1];
+        int[] prefix = new int[n + 1];
+        int[] suffix = new int[n + 1];
+        int[] min = new int[n + 1];
+        int[] max = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + (count[rolls[i]]++ == 0 ? 1 : 0);
+        }
+        Arrays.fill(count, 0);
+        for (int i = n - 1; i >= 0; i--) {
+            suffix[i] = suffix[i + 1] + (count[rolls[i]]++ == 0 ? 1 : 0);
+        }
+        min[0] = max[0] = 0;
+        for (int i = 1; i <= n; i++) {
+            min[i] = Math.min(min[i - 1], prefix[i]);
+            max[i] = Math.max(max[i - 1], prefix[i]);
+        }
+        int ans = n + 1;
+        for (int i = 0; i < n; i++) {
+            int l = i + 1, r = n;
+            while (l < r) {
+                int m = l + r >> 1;
+                if (prefix[m] - prefix[i] - (max[m] - max[i]) <= k) {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            if (l > i + 1) {
+                int len = l - i - 1;
+                if (prefix[l - 1] - prefix[i] - (max[l - 1] - max[i]) <= k) {
+                    len += suffix[l - 1];
+                }
+                ans = Math.min(ans, len);
+            }
+        }
+        return ans > n ? -1 : ans;

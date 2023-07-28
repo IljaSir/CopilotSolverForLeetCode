@@ -1,0 +1,198 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<long long> sum(candiesCount.size());
+        sum[0] = candiesCount[0];
+        for (int i = 1; i < candiesCount.size(); i++) {
+            sum[i] = sum[i - 1] + candiesCount[i];
+        }
+        vector<bool> ans;
+        for (auto& query: queries) {
+            int type = query[0];
+            int day = query[1];
+            int cap = query[2];
+            long long min = type == 0 ? 0 : sum[type - 1];
+            long long max = sum[type];
+            ans.push_back(min <= day && day < max && day * cap + cap > min);
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<long long> prefix(n);
+        prefix[0] = candiesCount[0];
+        for (int i = 1; i < n; ++i) {
+            prefix[i] = prefix[i-1] + candiesCount[i];
+        }
+        vector<bool> ans;
+        for (auto& query : queries) {
+            int type = query[0];
+            int day = query[1];
+            int cap = query[2];
+            long long x1 = day + 1;
+            long long y1 = (day + 1) * cap;
+            long long x2 = type == 0 ? 1 : prefix[type - 1] + 1;
+            long long y2 = prefix[type];
+            ans.push_back(!(x1 > y2 || y1 < x2));
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<long long> sum(n + 1);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + candiesCount[i];
+        }
+        vector<bool> ans;
+        for (auto& q: queries) {
+            int favoriteType = q[0], favoriteDay = q[1], dailyCap = q[2];
+            long long x1 = favoriteDay + 1;
+            long long y1 = (long long)(favoriteDay + 1) * dailyCap;
+            long long x2 = sum[favoriteType] + 1;
+            long long y2 = sum[favoriteType + 1];
+            ans.push_back(!(x1 > y2 || y1 < x2));
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<long long> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + candiesCount[i];
+        }
+        vector<bool> ans;
+        for (auto& q : queries) {
+            int type = q[0], day = q[1], cap = q[2];
+            ans.push_back(sum[type] < (long long)(day + 1) * cap && sum[type + 1] > day);
+        }
+        return ans;
+
+=======
+
+        vector<long long> sum(candiesCount.size());
+        sum[0] = candiesCount[0];
+        for(int i = 1; i < candiesCount.size(); i++){
+            sum[i] = sum[i - 1] + candiesCount[i];
+        }
+        vector<bool> ans;
+        for(auto q: queries){
+            int favoriteType = q[0];
+            int favoriteDay = q[1];
+            int dailyCap = q[2];
+            long long x1 = favoriteDay + 1;
+            long long y1 = (long long)(favoriteDay + 1) * dailyCap;
+            long long x2 = favoriteType == 0 ? 1 : sum[favoriteType - 1] + 1;
+            long long y2 = sum[favoriteType];
+            ans.push_back(!(x1 > y2 || y1 < x2));
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<long long> sum(n, 0);
+        sum[0] = candiesCount[0];
+        for (int i = 1; i < n; ++i)
+            sum[i] = sum[i - 1] + candiesCount[i];
+        vector<bool> ans;
+        for (auto& q : queries) {
+            int type = q[0], day = q[1], cap = q[2];
+            long long x1 = day + 1, y1 = (long long)(day + 1) * cap;
+            long long x2 = (type == 0 ? 1 : sum[type - 1] + 1), y2 = sum[type];
+            ans.push_back(!(x1 > y2 || y1 < x2));
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<long long> preSum(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            preSum[i] = preSum[i - 1] + candiesCount[i - 1];
+        }
+        vector<bool> ans;
+        for (auto &q : queries) {
+            int type = q[0], day = q[1], cap = q[2];
+            long long minCandies = day + 1;
+            long long maxCandies = (long long)(day + 1) * cap;
+            long long minCandiesType = preSum[type] + 1;
+            long long maxCandiesType = preSum[type + 1];
+            ans.push_back(minCandies <= maxCandiesType && maxCandies >= minCandiesType);
+        }
+        return ans;
+
+=======
+
+        vector<bool> result;
+        vector<long> sum(candiesCount.size());
+        sum[0] = candiesCount[0];
+        for (int i = 1; i < candiesCount.size(); ++i) {
+            sum[i] = sum[i - 1] + candiesCount[i];
+        }
+        for (auto& query : queries) {
+            int type = query[0];
+            int day = query[1];
+            int cap = query[2];
+            long x1 = day + 1;
+            long y1 = (long)(day + 1) * cap;
+            long x2 = type == 0 ? 1 : sum[type - 1] + 1;
+            long y2 = sum[type];
+            result.push_back(!(x1 > y2 || y1 < x2));
+        }
+        return result;
+
+=======
+
+        vector<long long> sum;
+        long long s = 0;
+        for (int i = 0; i < candiesCount.size(); i++) {
+            s += candiesCount[i];
+            sum.push_back(s);
+        }
+        vector<bool> ans;
+        for (int i = 0; i < queries.size(); i++) {
+            long long min = queries[i][1] + 1;
+            long long max = (long long)(queries[i][1] + 1) * queries[i][2];
+            if (queries[i][0] == 0) {
+                if (max >= sum[0]) {
+                    ans.push_back(true);
+                } else {
+                    ans.push_back(false);
+                }
+            } else {
+                if (min <= sum[queries[i][0]] && max >= sum[queries[i][0] - 1] + 1) {
+                    ans.push_back(true);
+                } else {
+                    ans.push_back(false);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = candiesCount.size();
+        vector<bool> ans(queries.size(), true);
+        vector<long> sum(n, 0);
+        sum[0] = candiesCount[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + candiesCount[i];
+        }
+        for (int i = 0; i < queries.size(); i++) {
+            int type = queries[i][0];
+            int day = queries[i][1];
+            int cap = queries[i][2];
+            long min = (type == 0 ? 0 : sum[type - 1]) + 1;
+            long max = sum[type];
+            if (day + 1 < min || day + 1 > max) {
+                ans[i] = false;
+            }
+            if (day + 1 > max / cap) {
+                ans[i] = false;
+            }
+        }
+        return ans;

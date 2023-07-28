@@ -1,0 +1,60 @@
+Synthesizing 6/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut tasks = tasks
+            .into_iter()
+            .enumerate()
+            .map(|(i, t)| (t[0], t[1], i as i32))
+            .collect::<Vec<_>>();
+        tasks.sort();
+        let mut ans = Vec::new();
+        let mut idle = 0;
+        let mut heap = std::collections::BinaryHeap::new();
+        for (e, p, i) in tasks {
+            if e <= idle {
+                heap.push((-(p as i32), -i));
+            } else {
+                while !heap.is_empty() {
+                    let (p, i) = heap.pop().unwrap();
+                    ans.push(-i);
+                    idle += -p;
+                }
+                idle = e + p;
+                ans.push(i);
+            }
+        }
+        while !heap.is_empty() {
+            let (p, i) = heap.pop().unwrap();
+            ans.push(-i);
+            idle += -p;
+        }
+        ans
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut tasks = tasks;
+        tasks.sort_by(|a, b| a[0].cmp(&b[0]));
+        let mut heap = BinaryHeap::new();
+        let mut time = tasks[0][0];
+        let mut i = 0;
+        let mut res = vec![];
+        while i < tasks.len() || !heap.is_empty() {
+            while i < tasks.len() && tasks[i][0] <= time {
+                heap.push(Reverse((tasks[i][1], i as i32)));
+                i += 1;
+            }
+            if let Some(Reverse((_, idx))) = heap.pop() {
+                res.push(idx);
+                time += tasks[idx as usize][1];
+            } else {
+                time = tasks[i][0];
+            }
+        }
+        res

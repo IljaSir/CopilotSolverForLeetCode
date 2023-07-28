@@ -1,0 +1,363 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] primes = new int[100001];
+        for (int i = 2; i < primes.length; i++) {
+            if (primes[i] == 0) {
+                for (int j = i; j < primes.length; j += i) {
+                    if (primes[j] == 0) {
+                        primes[j] = i;
+                    }
+                }
+            }
+        }
+        int[] lcm = new int[100001];
+        for (int i = 2; i < lcm.length; i++) {
+            if (lcm[i] == 0) {
+                for (int j = i; j < lcm.length; j += i) {
+                    if (lcm[j] == 0) {
+                        lcm[j] = i;
+                    }
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && i < nums.length - 1 && nums[i] != nums[i - 1] && nums[i] != nums[i + 1] && primes[nums[i]] != nums[i] && primes[nums[i - 1]] != nums[i - 1] && primes[nums[i + 1]] != nums[i + 1]) {
+                int lcmNumber = lcm[nums[i - 1]] * lcm[nums[i + 1]];
+                lcmNumber = lcmNumber / gcd(lcmNumber, nums[i - 1]);
+                lcmNumber = lcmNumber / gcd(lcmNumber, nums[i + 1]);
+                result.add(lcmNumber);
+                i++;
+            } else {
+                result.add(nums[i]);
+            }
+        }
+        return result;
+    }
+    
+    private int gcd(int a, int b) {
+        if (a == 0) {
+            return b;
+        }
+        return gcd(b % a, a);
+
+=======
+
+        int[] primes = new int[100001];
+        for (int i = 2; i < 100001; i++) {
+            if (primes[i] == 0) {
+                for (int j = i; j < 100001; j += i) {
+                    primes[j] = i;
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            int num = nums[i];
+            int lcm = 1;
+            while (num > 1) {
+                int prime = primes[num];
+                while (num % prime == 0) {
+                    num /= prime;
+                }
+                lcm *= prime;
+            }
+            result.add(lcm);
+        }
+        return result;
+
+=======
+
+        int[] primes = new int[100001];
+        for (int i = 2; i <= 100000; i++) {
+            if (primes[i] == 0) {
+                for (int j = i; j <= 100000; j += i) {
+                    primes[j] = i;
+                }
+            }
+        }
+        int n = nums.length;
+        int[] lcms = new int[n];
+        int[] rcms = new int[n];
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            while (num > 1) {
+                int p = primes[num];
+                while (num % p == 0) {
+                    num /= p;
+                }
+                if (lcms[i] == 0) {
+                    lcms[i] = p;
+                } else {
+                    lcms[i] = lcm(lcms[i], p);
+                }
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            int num = nums[i];
+            while (num > 1) {
+                int p = primes[num];
+                while (num % p == 0) {
+                    num /= p;
+                }
+                if (rcms[i] == 0) {
+                    rcms[i] = p;
+                } else {
+                    rcms[i] = lcm(rcms[i], p);
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && lcms[i - 1] == rcms[i]) {
+                ans.add(lcms[i - 1]);
+                i++;
+            } else {
+                ans.add(nums[i]);
+            }
+        }
+        return ans;
+    }
+    
+    int lcm(int a, int b) {
+        return a / gcd(a, b) * b;
+
+=======
+
+        int[] primes = new int[100001];
+        for (int i = 2; i < primes.length; i++) {
+            if (primes[i] == 0) {
+                primes[i] = i;
+                for (int j = i * i; j < primes.length; j += i) {
+                    primes[j] = i;
+                }
+            }
+        }
+        int[] maxPrime = new int[100001];
+        for (int i = 0; i < nums.length; i++) {
+            int n = nums[i];
+            while (n > 1) {
+                int prime = primes[n];
+                maxPrime[prime] = Math.max(maxPrime[prime], nums[i]);
+                while (n % prime == 0) {
+                    n /= prime;
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            int n = nums[i];
+            boolean found = false;
+            while (n > 1) {
+                int prime = primes[n];
+                if (maxPrime[prime] > nums[i]) {
+                    result.add(maxPrime[prime]);
+                    found = true;
+                    break;
+                }
+                while (n % prime == 0) {
+                    n /= prime;
+                }
+            }
+            if (!found) {
+                result.add(nums[i]);
+            }
+        }
+        return result;
+
+=======
+
+        int max = 0;
+        for (int num : nums) {
+            max = Math.max(max, num);
+        }
+        int[] primes = new int[max + 1];
+        for (int i = 2; i <= max; i++) {
+            if (primes[i] == 0) {
+                primes[i] = i;
+                for (int j = i * 2; j <= max; j += i) {
+                    if (primes[j] == 0) {
+                        primes[j] = i;
+                    }
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        for (int num : nums) {
+            if (num == 1) {
+                result.add(1);
+                continue;
+            }
+            int d = num;
+            int p = primes[d];
+            while (d > 1) {
+                d /= primes[d];
+                if (p != primes[d]) {
+                    result.add(num);
+                    break;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int[] sieve = new int[100001];
+        for (int i = 2; i < sieve.length; i++) {
+            if (sieve[i] == 0) {
+                sieve[i] = i;
+                for (int j = 2 * i; j < sieve.length; j += i) {
+                    if (sieve[j] == 0) {
+                        sieve[j] = i;
+                    }
+                }
+            }
+        }
+        List<Integer> res = new ArrayList<>();
+        for (int n : nums) {
+            if (n == 1) {
+                res.add(1);
+            } else {
+                int p = sieve[n];
+                int m = n;
+                while (m % p == 0) {
+                    m /= p;
+                }
+                if (m == 1) {
+                    res.add(n);
+                } else {
+                    res.add(p * m);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] primes = new int[100001];
+        for (int i = 2; i < primes.length; i++) {
+            if (primes[i] == 0) {
+                for (int j = i; j < primes.length; j += i) {
+                    primes[j] = i;
+                }
+            }
+        }
+        int[] lcm = new int[100001];
+        for (int i = 2; i < lcm.length; i++) {
+            if (lcm[i] == 0) {
+                int p = primes[i];
+                for (int j = i; j < lcm.length; j += p) {
+                    lcm[j] = i;
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int x : nums) {
+            ans.add(lcm[x]);
+        }
+        return ans;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int[] primeFactors = new int[100001];
+        for (int i = 2; i < 100001; i++) {
+            if (primeFactors[i] == 0) {
+                for (int j = i; j < 100001; j += i) {
+                    if (primeFactors[j] == 0) {
+                        primeFactors[j] = i;
+                    }
+                }
+            }
+        }
+        int[] maxPrimeFactors = new int[100001];
+        for (int i = 2; i < 100001; i++) {
+            int num = i;
+            while (num > 1) {
+                int primeFactor = primeFactors[num];
+                maxPrimeFactors[i] = Math.max(maxPrimeFactors[i], primeFactor);
+                while (num % primeFactor == 0) {
+                    num /= primeFactor;
+                }
+            }
+        }
+        for (int num : nums) {
+            if (maxPrimeFactors[num] != 0) {
+                result.add(maxPrimeFactors[num]);
+            } else {
+                result.add(num);
+            }
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        List<Integer> res = new ArrayList<>();
+        int[] primes = new int[100001];
+        int[] factors = new int[100001];
+        for (int i = 2; i <= 100000; i++) {
+            if (primes[i] == 0) {
+                for (int j = i; j <= 100000; j += i) {
+                    if (primes[j] == 0) {
+                        primes[j] = i;
+                    }
+                }
+            }
+        }
+        for (int i = 2; i <= 100000; i++) {
+            int j = i;
+            while (j > 1) {
+                int p = primes[j];
+                while (j % p == 0) {
+                    j /= p;
+                }
+                factors[i] = p;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            if (factors[num] == num) {
+                res.add(num);
+            } else {
+                res.add(factors[num]);
+                while (i + 1 < n && factors[nums[i + 1]] != nums[i + 1]) {
+                    i++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[100001];
+        int[] max = new int[100001];
+        for(int i = 0; i < 100001; i++) {
+            dp[i] = i;
+        }
+        for(int i = 2; i < 100001; i++) {
+            if(dp[i] == i) {
+                for(int j = i; j < 100001; j += i) {
+                    dp[j] = i;
+                }
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            max[dp[nums[i]]] = Math.max(max[dp[nums[i]]], nums[i]);
+        }
+        for(int i = 2; i < 100001; i++) {
+            max[i] = Math.max(max[i], max[i - 1]);
+        }
+        List<Integer> res = new ArrayList<Integer>();
+        for(int i = 0; i < n; i++) {
+            if(nums[i] != max[dp[nums[i]]]) {
+                res.add(-1);
+            } else {
+                res.add(nums[i]);
+            }
+        }
+        return res;

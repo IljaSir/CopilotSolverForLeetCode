@@ -1,0 +1,290 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        queue<int> q;
+        for (int i = 0; i < initialBoxes.size(); i++) {
+            if (status[initialBoxes[i]] == 1) {
+                q.push(initialBoxes[i]);
+            }
+        }
+        int res = 0;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            res += candies[cur];
+            for (int i = 0; i < keys[cur].size(); i++) {
+                status[keys[cur][i]] = 1;
+                if (status[keys[cur][i]] == 1) {
+                    q.push(keys[cur][i]);
+                }
+            }
+            for (int i = 0; i < containedBoxes[cur].size(); i++) {
+                if (status[containedBoxes[cur][i]] == 1) {
+                    q.push(containedBoxes[cur][i]);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = status.size();
+        vector<int> visited(n, 0);
+        queue<int> q;
+        for (int b : initialBoxes) {
+            q.push(b);
+            visited[b] = 1;
+        }
+        int res = 0;
+        while (!q.empty()) {
+            int b = q.front();
+            q.pop();
+            if (status[b] == 0) {
+                q.push(b);
+                continue;
+            }
+            res += candies[b];
+            for (int k : keys[b]) {
+                status[k] = 1;
+                if (visited[k] == 0) {
+                    q.push(k);
+                    visited[k] = 1;
+                }
+            }
+            for (int cb : containedBoxes[b]) {
+                if (visited[cb] == 0) {
+                    q.push(cb);
+                    visited[cb] = 1;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = status.size();
+        vector<bool> visited(n, false);
+        vector<bool> opened(n, false);
+        queue<int> q;
+        for (int i = 0; i < initialBoxes.size(); i++) {
+            q.push(initialBoxes[i]);
+        }
+        int ans = 0;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            if (visited[cur]) {
+                continue;
+            }
+            visited[cur] = true;
+            if (status[cur] == 0 && !opened[cur]) {
+                q.push(cur);
+                continue;
+            }
+            ans += candies[cur];
+            opened[cur] = true;
+            for (int i = 0; i < keys[cur].size(); i++) {
+                status[keys[cur][i]] = 1;
+            }
+            for (int i = 0; i < containedBoxes[cur].size(); i++) {
+                q.push(containedBoxes[cur][i]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = status.size();
+        vector<int> visited(n, 0);
+        queue<int> q;
+        int ans = 0;
+        for (int i = 0; i < initialBoxes.size(); i++) {
+            q.push(initialBoxes[i]);
+        }
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            if (visited[cur]) continue;
+            visited[cur] = 1;
+            if (status[cur]) {
+                ans += candies[cur];
+                for (int i = 0; i < keys[cur].size(); i++) {
+                    status[keys[cur][i]] = 1;
+                    if (visited[keys[cur][i]]) {
+                        q.push(keys[cur][i]);
+                    }
+                }
+                for (int i = 0; i < containedBoxes[cur].size(); i++) {
+                    q.push(containedBoxes[cur][i]);
+                }
+            } else {
+                q.push(cur);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = status.size();
+        vector<bool> visited(n, false);
+        vector<bool> opened(n, false);
+        vector<bool> hasKey(n, false);
+        for (int i = 0; i < initialBoxes.size(); i++) {
+            opened[initialBoxes[i]] = true;
+        }
+        int ans = 0;
+        while (true) {
+            bool changed = false;
+            for (int i = 0; i < n; i++) {
+                if (opened[i] && !visited[i]) {
+                    visited[i] = true;
+                    ans += candies[i];
+                    for (int j = 0; j < keys[i].size(); j++) {
+                        hasKey[keys[i][j]] = true;
+                    }
+                    for (int j = 0; j < containedBoxes[i].size(); j++) {
+                        opened[containedBoxes[i][j]] = true;
+                    }
+                    changed = true;
+                }
+            }
+            if (!changed) break;
+            for (int i = 0; i < n; i++) {
+                if (hasKey[i] && !opened[i] && status[i] == 1) {
+                    opened[i] = true;
+                    changed = true;
+                }
+            }
+            if (!changed) break;
+        }
+        return ans;
+
+=======
+
+        int n = status.size();
+        vector<bool> opened(n, false);
+        vector<bool> gotKey(n, false);
+        for (int box : initialBoxes) {
+            opened[box] = true;
+        }
+        int ans = 0;
+        while (true) {
+            vector<int> newBoxes;
+            for (int box : initialBoxes) {
+                if (opened[box]) {
+                    ans += candies[box];
+                    for (int key : keys[box]) {
+                        gotKey[key] = true;
+                    }
+                    for (int newBox : containedBoxes[box]) {
+                        newBoxes.push_back(newBox);
+                    }
+                }
+            }
+            if (newBoxes.empty()) {
+                break;
+            }
+            initialBoxes = newBoxes;
+            for (int box : initialBoxes) {
+                if (gotKey[box]) {
+                    opened[box] = true;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = status.size();
+        vector<bool> opened(n, false), visited(n, false);
+        int res = 0;
+        queue<int> q;
+        for (int i : initialBoxes) {
+            q.push(i);
+            opened[i] = true;
+        }
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            if (visited[cur]) continue;
+            visited[cur] = true;
+            if (status[cur]) {
+                res += candies[cur];
+                for (int i : containedBoxes[cur]) {
+                    q.push(i);
+                    opened[i] = true;
+                }
+                for (int i : keys[cur]) {
+                    status[i] = 1;
+                    if (opened[i]) q.push(i);
+                }
+            } else {
+                q.push(cur);
+            }
+        }
+        return res;
+
+=======
+
+        int n = status.size();
+        vector<bool> keysGot(n, false);
+        vector<bool> boxesGot(n, false);
+        queue<int> q;
+        for (int i : initialBoxes) {
+            if (status[i] == 1)
+                q.push(i);
+            else
+                boxesGot[i] = true;
+        }
+        int ans = 0;
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            ans += candies[i];
+            for (int j : keys[i])
+                keysGot[j] = true;
+            for (int j : containedBoxes[i]) {
+                if (status[j] == 1 || keysGot[j]) {
+                    q.push(j);
+                } else {
+                    boxesGot[j] = true;
+                }
+            }
+            for (int j = 0; j < n; j++)
+                if (boxesGot[j] && (status[j] == 1 || keysGot[j])) {
+                    q.push(j);
+                    boxesGot[j] = false;
+                }
+        }
+        return ans;
+
+=======
+
+        int n = status.size();
+        set<int> opened;
+        set<int> initial(initialBoxes.begin(), initialBoxes.end());
+        int res = 0;
+        while (true) {
+            set<int> newOpened;
+            for (int i = 0; i < n; ++i) {
+                if (opened.count(i) || !initial.count(i)) continue;
+                bool canOpen = true;
+                for (int k : keys[i]) {
+                    if (!opened.count(k)) {
+                        canOpen = false;
+                        break;
+                    }
+                }
+                if (canOpen) {
+                    newOpened.insert(i);
+                }
+            }
+            if (newOpened.empty()) break;
+            for (int i : newOpened) {
+                res += candies[i];
+                opened.insert(i);
+                initial.insert(containedBoxes[i].begin(), containedBoxes[i].end());
+            }
+        }
+        return res;

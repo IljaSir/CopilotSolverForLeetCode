@@ -1,0 +1,45 @@
+impl Solution {
+    pub fn color_border(grid: Vec<Vec<i32>>, row: i32, col: i32, color: i32) -> Vec<Vec<i32>> {
+        
+        let mut grid = grid;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((row as usize, col as usize));
+        visited[row as usize][col as usize] = true;
+        let mut border = false;
+        let mut directions = vec![(1, 0), (-1, 0), (0, 1), (0, -1)];
+        let mut color = color;
+        while !queue.is_empty() {
+            let (row, col) = queue.pop_front().unwrap();
+            for (dx, dy) in directions.iter() {
+                let x = row as i32 + dx;
+                let y = col as i32 + dy;
+                if x < 0 || y < 0 || x >= grid.len() as i32 || y >= grid[0].len() as i32 {
+                    border = true;
+                    continue;
+                }
+                let x = x as usize;
+                let y = y as usize;
+                if grid[x][y] != grid[row][col] {
+                    border = true;
+                    continue;
+                }
+                if !visited[x][y] {
+                    visited[x][y] = true;
+                    queue.push_back((x, y));
+                }
+            }
+        }
+        if border {
+            color = grid[row as usize][col as usize];
+        }
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if visited[i][j] {
+                    grid[i][j] = color;
+                }
+            }
+        }
+        grid
+    }
+}

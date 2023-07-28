@@ -1,0 +1,271 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int max = 0;
+        long sum = 0;
+        for (int num : nums) {
+            max = Math.max(max, num);
+            sum += num;
+        }
+        if (k == 1) return (int) sum;
+        long l = max, r = sum;
+        while (l < r) {
+            long mid = (l + r) / 2;
+            if (valid(nums, mid, k)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return (int) l;
+    }
+
+    private boolean valid(int[] nums, long target, int k) {
+        int count = 1;
+        long total = 0;
+        for (int num : nums) {
+            total += num;
+            if (total > target) {
+                total = num;
+                count++;
+                if (count > k) return false;
+            }
+        }
+        return true;
+
+=======
+
+        int max = 0;
+        long sum = 0;
+        for (int num : nums) {
+            max = Math.max(max, num);
+            sum += num;
+        }
+        if (k == 1) {
+            return (int) sum;
+        }
+        long left = max;
+        long right = sum;
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (valid(nums, k, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return (int) left;
+    }
+
+    private boolean valid(int[] nums, int k, long target) {
+        int sum = 0;
+        int count = 1;
+        for (int num : nums) {
+            sum += num;
+            if (sum > target) {
+                sum = num;
+                count++;
+                if (count > k) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.length;
+        int[] sum = new int[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        int[][] dp = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][1] = sum[i];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 2; j <= Math.min(k, i + 1); j++) {
+                for (int p = 0; p < i; p++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[p][j - 1], sum[i] - sum[p]));
+                }
+            }
+        }
+        return dp[n - 1][k];
+
+=======
+
+        int n = nums.length;
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        int[][] dp = new int[n][k + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][1] = prefix[i + 1];
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 2; j <= k; j++) {
+                for (int l = 0; l < i; l++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[l][j - 1], prefix[i + 1] - prefix[l + 1]));
+                }
+            }
+        }
+        return dp[n - 1][k];
+
+=======
+
+        int start = 0;
+        int end = 0;
+        for (int i = 0; i < nums.length; i++) {
+            start = Math.max(start, nums[i]);
+            end += nums[i];
+        }
+        while (start < end) {
+            int mid = (start + end) / 2;
+            if (isValid(nums, k, mid)) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return start;
+    }
+    
+    private boolean isValid(int[] nums, int k, int max) {
+        int sum = 0;
+        int count = 1;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (sum > max) {
+                count++;
+                sum = nums[i];
+            }
+        }
+        return count <= k;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n + 1][k + 1];
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= k; j++) {
+                for (int p = 0; p < i; p++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[p][j - 1], sum[i] - sum[p]));
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = nums.length;
+        long[] sums = new long[n + 1];
+        for (int i = 0; i < n; ++i) {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        long[] dp = new long[n];
+        for (int i = 0; i < n; ++i) {
+            dp[i] = sums[n] - sums[i];
+        }
+        for (int i = 0; i < k - 1; ++i) {
+            long[] ndp = new long[n];
+            Arrays.fill(ndp, Integer.MAX_VALUE);
+            for (int j = 0; j < n; ++j) {
+                for (int l = j + 1; l < n; ++l) {
+                    long cur = Math.max(dp[l], sums[l] - sums[j]);
+                    ndp[j] = Math.min(ndp[j], cur);
+                }
+            }
+            dp = ndp;
+        }
+        return (int)dp[0];
+
+=======
+
+        int sum = 0, max = 0;
+        for (int num : nums) {
+            sum += num;
+            max = Math.max(max, num);
+        }
+        int left = max, right = sum;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (check(nums, k, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    private boolean check(int[] nums, int k, int max) {
+        int sum = 0, count = 1;
+        for (int num : nums) {
+            sum += num;
+            if (sum > max) {
+                sum = num;
+                count++;
+                if (count > k) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int len = nums.length;
+        int[] sums = new int[len+1];
+        for (int i = 0; i < len; i++) {
+            sums[i+1] = sums[i] + nums[i];
+        }
+        int[][] dp = new int[k+1][len+1];
+        for (int i = 0; i <= k; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= k; i++) {
+            for (int j = i; j <= len; j++) {
+                for (int p = 0; p < j; p++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[i-1][p], sums[j] - sums[p]));
+                }
+            }
+        }
+        return dp[k][len];
+
+=======
+
+        int len = nums.length;
+        int[][] dp = new int[len + 1][k + 1];
+        int[] sum = new int[len + 1];
+        for (int i = 0; i < len; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        for (int i = 0; i <= len; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= len; i++) {
+            for (int j = 1; j <= k; j++) {
+                for (int x = 0; x < i; x++) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[x][j - 1], sum[i] - sum[x]));
+                }
+            }
+        }
+        return dp[len][k];

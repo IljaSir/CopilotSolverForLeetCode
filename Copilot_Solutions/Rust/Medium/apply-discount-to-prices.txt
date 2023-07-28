@@ -1,0 +1,211 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        sentence
+            .split_whitespace()
+            .map(|word| {
+                if word.chars().nth(0).unwrap() == '$' {
+                    let price = word[1..].parse::<f64>().unwrap();
+                    format!("${:.2}", price * (100.0 - discount as f64) / 100.0)
+                } else {
+                    word.to_string()
+                }
+            })
+            .collect::<Vec<String>>()
+            .join(" ")
+    }
+}
+
+=======
+
+        let mut res = String::new();
+        let mut is_price = false;
+        for c in sentence.chars() {
+            if c == '$' {
+                is_price = true;
+                res.push(c);
+            } else if is_price {
+                if c.is_digit(10) {
+                    res.push(c);
+                } else {
+                    is_price = false;
+                    let mut price = res.split_off(res.len() - 2);
+                    let price = price.parse::<f32>().unwrap();
+                    let discount = discount as f32 / 100.0;
+                    let price = price * (1.0 - discount);
+                    res.push_str(&format!("{:.2}", price));
+                    res.push(c);
+                }
+            } else {
+                res.push(c);
+            }
+        }
+        res
+
+=======
+
+        sentence.split(' ').map(|s| {
+            if s.starts_with('$') {
+                let mut price = s[1..].parse::<i32>().unwrap();
+                price = price * (100 - discount) / 100;
+                let mut res = String::new();
+                res.push('$');
+                res.push_str(&price.to_string());
+                res.push_str(".00");
+                res
+            } else {
+                s.to_string()
+            }
+        }).collect::<Vec<String>>().join(" ")
+    }
+}
+
+=======
+
+        let mut result = String::new();
+        for word in sentence.split_whitespace() {
+            if word.starts_with("$") {
+                let price = word[1..].parse::<f32>().unwrap();
+                let discount = (price * discount as f32) / 100.0;
+                result.push_str(&format!("${:.2}", price - discount));
+            } else {
+                result.push_str(word);
+            }
+            result.push(' ');
+        }
+        result.pop();
+        result
+    }
+}
+
+=======
+
+        let mut output = String::new();
+        for word in sentence.split(' ') {
+            if word.starts_with('$') {
+                output.push('$');
+                let price: i32 = word[1..].parse().unwrap();
+                output.push_str(&format!("{:.2}", (price as f32) * (1.0 - (discount as f32) / 100.0)));
+            } else {
+                output.push_str(word);
+            }
+            output.push(' ');
+        }
+        output.pop();
+        output
+
+=======
+
+        let mut result = String::new();
+        let mut price = String::new();
+        let mut discount = discount as f64;
+        discount /= 100.0;
+        for c in sentence.chars() {
+            if c == '$' {
+                price.push(c);
+            } else if c.is_digit(10) {
+                price.push(c);
+            } else {
+                if price.len() > 0 {
+                    let mut price: f64 = price[1..].parse().unwrap();
+                    price *= 1.0 - discount;
+                    price = price * 100.0;
+                    price = price.round() / 100.0;
+                    result.push_str(&format!("${:.2}", price));
+                    price.clear();
+                }
+                result.push(c);
+            }
+        }
+        if price.len() > 0 {
+            let mut price: f64 = price[1..].parse().unwrap();
+            price *= 1.0 - discount;
+            price = price * 100.0;
+            price = price.round() / 100.0;
+            result.push_str(&format!("${:.2}", price));
+        }
+        result
+
+=======
+
+        let mut result = String::new();
+        let mut words: Vec<&str> = sentence.split(' ').collect();
+        for word in words.iter_mut() {
+            if word.starts_with('$') {
+                let mut price: Vec<char> = word.chars().collect();
+                price.remove(0);
+                let price: f64 = price.into_iter().collect::<String>().parse().unwrap();
+                let price = price - price*discount as f64/100.0;
+                *word = format!("${:.2}", price).as_str();
+            }
+        }
+        result = words.join(" ");
+        result
+
+=======
+
+        let mut result = String::new();
+        let mut price = String::new();
+        let mut flag = false;
+        let mut count = 0;
+        for c in sentence.chars() {
+            if c == '$' {
+                flag = true;
+            }
+            if flag {
+                if c.is_digit(10) {
+                    price.push(c);
+                } else {
+                    if !price.is_empty() {
+                        let mut p = price.parse::<i32>().unwrap();
+                        p = p - p * discount / 100;
+                        result.push_str(&p.to_string());
+                        count += 1;
+                        price = String::new();
+                    }
+                    flag = false;
+                    result.push(c);
+                }
+            } else {
+                result.push(c);
+            }
+        }
+        if !price.is_empty() {
+            let mut p = price.parse::<i32>().unwrap();
+            p = p - p * discount / 100;
+            result.push_str(&p.to_string());
+            count += 1;
+        }
+        result
+
+=======
+
+        let mut res = String::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut price = false;
+        let mut d = discount as f64 / 100.0;
+        while i < sentence.len() {
+            let c = sentence.chars().nth(i).unwrap();
+            if c == '$' {
+                price = true;
+                j = i + 1;
+            }
+            if price {
+                if c == ' ' || i == sentence.len() - 1 {
+                    let mut p = sentence[j..i].to_string();
+                    if i == sentence.len() - 1 {
+                        p.push(c);
+                    }
+                    let p = p.parse::<f64>().unwrap();
+                    let p = p - p * d;
+                    res.push_str(&format!("${:.2}", p));
+                    price = false;
+                }
+            } else {
+                res.push(c);
+            }
+            i += 1;
+        }
+        res

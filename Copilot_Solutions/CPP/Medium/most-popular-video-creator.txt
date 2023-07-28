@@ -1,0 +1,138 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        unordered_map<string, pair<int, string>> m;
+        for (int i = 0; i < creators.size(); ++i) {
+            if (m.find(creators[i]) == m.end() || m[creators[i]].first < views[i]) {
+                m[creators[i]] = {views[i], ids[i]};
+            } else if (m[creators[i]].first == views[i] && m[creators[i]].second > ids[i]) {
+                m[creators[i]] = {views[i], ids[i]};
+            }
+        }
+        int maxView = 0;
+        for (auto& it : m) {
+            maxView = max(maxView, it.second.first);
+        }
+        vector<vector<string>> res;
+        for (auto& it : m) {
+            if (it.second.first == maxView) {
+                res.push_back({it.first, it.second.second});
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<string, pair<string, int>> mp;
+        for (int i = 0; i < creators.size(); ++i) {
+            mp[creators[i]] = max(mp[creators[i]], {ids[i], views[i]});
+        }
+        vector<vector<string>> res;
+        int max_view = 0;
+        for (auto& [creator, p]: mp) {
+            if (p.second > max_view) {
+                max_view = p.second;
+                res = {{creator, p.first}};
+            } else if (p.second == max_view) {
+                res.push_back({creator, p.first});
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> pop;
+        unordered_map<string, unordered_map<string, int>> vid;
+        for(int i = 0; i < creators.size(); i++)
+        {
+            pop[creators[i]] += views[i];
+            vid[creators[i]][ids[i]] += views[i];
+        }
+        vector<vector<string>> res;
+        int mx = 0;
+        for(auto& p : pop)
+        {
+            if(p.second > mx)
+            {
+                mx = p.second;
+                res.clear();
+            }
+            if(p.second == mx)
+            {
+                string id = "";
+                int mv = 0;
+                for(auto& q : vid[p.first])
+                {
+                    if(q.second > mv)
+                    {
+                        mv = q.second;
+                        id = q.first;
+                    }
+                    if(q.second == mv)
+                        id = min(id, q.first);
+                }
+                res.push_back({p.first, id});
+            }
+        }
+        return res;
+
+=======
+
+        unordered_map<string, int> viewsMap;
+        unordered_map<string, string> maxViewsMap;
+        for (int i = 0; i < creators.size(); i++) {
+            if (viewsMap.find(creators[i]) == viewsMap.end()) {
+                viewsMap[creators[i]] = views[i];
+                maxViewsMap[creators[i]] = ids[i];
+            } else {
+                viewsMap[creators[i]] += views[i];
+                if (maxViewsMap[creators[i]] > ids[i]) {
+                    maxViewsMap[creators[i]] = ids[i];
+                }
+            }
+        }
+        
+        int maxViews = 0;
+        for (auto it = viewsMap.begin(); it != viewsMap.end(); it++) {
+            maxViews = max(maxViews, it->second);
+        }
+        
+        vector<vector<string>> result;
+        for (auto it = viewsMap.begin(); it != viewsMap.end(); it++) {
+            if (it->second == maxViews) {
+                result.push_back({it->first, maxViewsMap[it->first]});
+            }
+        }
+        
+        return result;
+
+=======
+
+        unordered_map<string, int> creatorViewMap;
+        unordered_map<string, string> creatorMostViewedVideoMap;
+        for (int i = 0; i < creators.size(); i++) {
+            creatorViewMap[creators[i]] += views[i];
+            if (creatorMostViewedVideoMap.find(creators[i]) == creatorMostViewedVideoMap.end()) {
+                creatorMostViewedVideoMap[creators[i]] = ids[i];
+            } else {
+                if (views[i] > creatorViewMap[creatorMostViewedVideoMap[creators[i]]]) {
+                    creatorMostViewedVideoMap[creators[i]] = ids[i];
+                } else if (views[i] == creatorViewMap[creatorMostViewedVideoMap[creators[i]]]) {
+                    if (ids[i] < creatorMostViewedVideoMap[creators[i]]) {
+                        creatorMostViewedVideoMap[creators[i]] = ids[i];
+                    }
+                }
+            }
+        }
+        int maxViewCount = 0;
+        for (auto creatorView : creatorViewMap) {
+            maxViewCount = max(maxViewCount, creatorView.second);
+        }
+        vector<vector<string>> result;
+        for (auto creatorView : creatorViewMap) {
+            if (creatorView.second == maxViewCount) {
+                result.push_back({creatorView.first, creatorMostViewedVideoMap[creatorView.first]});
+            }
+        }
+        return result;

@@ -1,0 +1,322 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] ans = new int[queries.length];
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        for (int i = 0; i < queries.length; i++) {
+            int[] query = queries[i];
+            int minSize = query[1];
+            int preferredId = query[0];
+            int minDiff = Integer.MAX_VALUE;
+            int roomId = -1;
+            for (int[] room : rooms) {
+                if (room[1] < minSize) {
+                    break;
+                }
+                int diff = Math.abs(room[0] - preferredId);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    roomId = room[0];
+                } else if (diff == minDiff) {
+                    roomId = Math.min(roomId, room[0]);
+                }
+            }
+            ans[i] = roomId;
+        }
+        return ans;
+
+=======
+
+        int n = rooms.length;
+        int m = queries.length;
+        int[] res = new int[m];
+        int[][] q = new int[m][3];
+        for (int i = 0; i < m; i++) {
+            q[i][0] = queries[i][0];
+            q[i][1] = queries[i][1];
+            q[i][2] = i;
+        }
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        Arrays.sort(q, (a, b) -> b[1] - a[1]);
+        TreeSet<Integer> set = new TreeSet<>();
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            while (j < n && rooms[j][1] >= q[i][1]) {
+                set.add(rooms[j++][0]);
+            }
+            Integer floor = set.floor(q[i][0]);
+            Integer ceil = set.ceiling(q[i][0]);
+            if (floor == null && ceil == null) {
+                res[q[i][2]] = -1;
+            } else if (floor == null) {
+                res[q[i][2]] = ceil;
+            } else if (ceil == null) {
+                res[q[i][2]] = floor;
+            } else {
+                res[q[i][2]] = Math.abs(ceil - q[i][0]) < Math.abs(floor - q[i][0]) ? ceil : floor;
+            }
+        }
+        return res;
+
+=======
+
+        int n = rooms.length;
+        int m = queries.length;
+        int[] res = new int[m];
+        int[] index = new int[m];
+        for (int i = 0; i < m; i++) {
+            index[i] = i;
+        }
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        Arrays.sort(index, (a, b) -> queries[b][1] - queries[a][1]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]);
+        int idx = 0;
+        for (int i = 0; i < m; i++) {
+            int[] q = queries[index[i]];
+            while (idx < n && rooms[idx][1] >= q[1]) {
+                pq.offer(new int[]{rooms[idx][0], rooms[idx][1]});
+                idx++;
+            }
+            while (!pq.isEmpty() && pq.peek()[0] > q[0]) {
+                pq.poll();
+            }
+            if (pq.isEmpty()) {
+                res[index[i]] = -1;
+            } else {
+                res[index[i]] = pq.peek()[0];
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[queries.length];
+        int[][] sortedRooms = new int[rooms.length][2];
+        for (int i = 0; i < rooms.length; i++) {
+            sortedRooms[i][0] = rooms[i][0];
+            sortedRooms[i][1] = rooms[i][1];
+        }
+        Arrays.sort(sortedRooms, (a, b) -> a[1] == b[1] ? a[0] - b[0] : b[1] - a[1]);
+        for (int i = 0; i < queries.length; i++) {
+            int[] q = queries[i];
+            int minDiff = Integer.MAX_VALUE;
+            int minRoom = -1;
+            for (int[] r : sortedRooms) {
+                if (r[1] < q[1]) {
+                    break;
+                }
+                if (minDiff > Math.abs(r[0] - q[0])) {
+                    minDiff = Math.abs(r[0] - q[0]);
+                    minRoom = r[0];
+                } else if (minDiff == Math.abs(r[0] - q[0]) && minRoom > r[0]) {
+                    minRoom = r[0];
+                }
+            }
+            res[i] = minRoom;
+        }
+        return res;
+
+=======
+
+        int n = rooms.length;
+        int m = queries.length;
+        int[] res = new int[m];
+        Integer[] idx = new Integer[m];
+        for (int i = 0; i < m; ++i) {
+            idx[i] = i;
+        }
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        Arrays.sort(idx, (a, b) -> queries[b][1] - queries[a][1]);
+        TreeSet<Integer> set = new TreeSet<>();
+        int j = 0;
+        for (int i = 0; i < m; ++i) {
+            int[] q = queries[idx[i]];
+            while (j < n && rooms[j][1] >= q[1]) {
+                set.add(rooms[j][0]);
+                ++j;
+            }
+            if (set.isEmpty()) {
+                res[idx[i]] = -1;
+            } else {
+                Integer l = set.floor(q[0]);
+                Integer r = set.ceiling(q[0]);
+                if (l == null) {
+                    res[idx[i]] = r;
+                } else if (r == null) {
+                    res[idx[i]] = l;
+                } else if (q[0] - l <= r - q[0]) {
+                    res[idx[i]] = l;
+                } else {
+                    res[idx[i]] = r;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        int n = queries.length;
+        int[] ans = new int[n];
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        Arrays.sort(index, (a, b) -> queries[b][1] - queries[a][1]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]);
+        int i = 0;
+        for (int j : index) {
+            while (i < rooms.length && rooms[i][1] >= queries[j][1]) {
+                pq.offer(rooms[i]);
+                i++;
+            }
+            while (!pq.isEmpty() && pq.peek()[0] > queries[j][0]) {
+                pq.poll();
+            }
+            if (pq.isEmpty()) {
+                ans[j] = -1;
+            } else {
+                ans[j] = pq.peek()[0];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = rooms.length;
+        int m = queries.length;
+        int[] ans = new int[m];
+        Arrays.fill(ans, -1);
+        int[] idx = new int[m];
+        for (int i = 0; i < m; i++) {
+            idx[i] = i;
+        }
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        Arrays.sort(idx, (a, b) -> queries[b][1] - queries[a][1]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] == b[0] ? b[1] - a[1] : b[0] - a[0]);
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            int[] q = queries[idx[i]];
+            while (j < n && rooms[j][1] >= q[1]) {
+                pq.add(new int[]{rooms[j][0], rooms[j][1]});
+                j++;
+            }
+            while (!pq.isEmpty() && pq.peek()[0] > q[0]) {
+                pq.poll();
+            }
+            if (!pq.isEmpty()) {
+                ans[idx[i]] = pq.peek()[0];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = rooms.length;
+        int k = queries.length;
+        int[] ans = new int[k];
+        Integer[] qid = new Integer[k];
+        for (int i = 0; i < k; i++) {
+            qid[i] = i;
+        }
+        Arrays.sort(qid, (a, b) -> {
+            return queries[a][1] - queries[b][1];
+        });
+        Arrays.sort(rooms, (a, b) -> {
+            return b[1] - a[1];
+        });
+        TreeSet<Integer> s = new TreeSet<>();
+        int j = 0;
+        for (int i = 0; i < k; i++) {
+            while (j < n && rooms[j][1] >= queries[qid[i]][1]) {
+                s.add(rooms[j][0]);
+                j++;
+            }
+            if (s.size() == 0) {
+                ans[qid[i]] = -1;
+            } else {
+                int id = queries[qid[i]][0];
+                Integer left = s.floor(id);
+                Integer right = s.ceiling(id);
+                if (left == null) {
+                    ans[qid[i]] = right;
+                } else if (right == null) {
+                    ans[qid[i]] = left;
+                } else {
+                    ans[qid[i]] = (id - left <= right - id) ? left : right;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = rooms.length;
+        int m = queries.length;
+        int[] res = new int[m];
+        Arrays.fill(res, -1);
+        Room[] roomArr = new Room[n];
+        for (int i = 0; i < n; i++) {
+            roomArr[i] = new Room(rooms[i][0], rooms[i][1]);
+        }
+        Arrays.sort(roomArr, (a, b) -> b.size - a.size);
+        Query[] queryArr = new Query[m];
+        for (int i = 0; i < m; i++) {
+            queryArr[i] = new Query(queries[i][0], queries[i][1], i);
+        }
+        Arrays.sort(queryArr, (a, b) -> b.minSize - a.minSize);
+        TreeSet<Integer> set = new TreeSet<>();
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            while (j < n && roomArr[j].size >= queryArr[i].minSize) {
+                set.add(roomArr[j].id);
+                j++;
+            }
+            if (set.isEmpty()) {
+                continue;
+            }
+            Integer left = set.floor(queryArr[i].preferred);
+            Integer right = set.ceiling(queryArr[i].preferred);
+            if (left != null && right != null) {
+                res[queryArr[i].index] = Math.abs(left - queryArr[i].preferred) <= Math.abs(right - queryArr[i].preferred) ? left : right;
+            } else if (left != null) {
+                res[queryArr[i].index] = left;
+            } else if (right != null) {
+                res[queryArr[i].index] = right;
+            }
+        }
+        return res;
+    }
+}
+
+=======
+
+        int length = rooms.length;
+        int[] result = new int[queries.length];
+        int[] index = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            index[i] = i;
+        }
+        Arrays.sort(rooms, (a, b) -> b[1] - a[1]);
+        Arrays.sort(index, (a, b) -> queries[b][1] - queries[a][1]);
+        Arrays.sort(queries, (a, b) -> b[1] - a[1]);
+        TreeSet<Integer> set = new TreeSet<>();
+        int j = 0;
+        for (int i = 0; i < queries.length; i++) {
+            while (j < rooms.length && rooms[j][1] >= queries[i][1]) {
+                set.add(rooms[j++][0]);
+            }
+            Integer low = set.floor(queries[i][0]);
+            Integer high = set.ceiling(queries[i][0]);
+            if (low == null && high == null) {
+                result[index[i]] = -1;
+            } else if (low == null) {
+                result[index[i]] = high;
+            } else if (high == null) {
+                result[index[i]] = low;
+            } else {
+                result[index[i]] = Math.abs(queries[i][0] - low) <= Math.abs(queries[i][0] - high) ? low : high;
+            }
+        }
+        return result;

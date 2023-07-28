@@ -1,0 +1,221 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let n = words.len();
+        let mut masks = vec![0; n];
+        let mut lens = vec![0; n];
+        for (i, word) in words.iter().enumerate() {
+            let mut mask = 0;
+            for c in word.chars() {
+                mask |= 1 << (c as u8 - b'a');
+            }
+            masks[i] = mask;
+            lens[i] = word.len();
+        }
+        let mut ans = 0;
+        for i in 0..n {
+            for j in i + 1..n {
+                if masks[i] & masks[j] == 0 {
+                    ans = ans.max(lens[i] * lens[j]);
+                }
+            }
+        }
+        ans as i32
+
+=======
+Suggestion 2
+
+        let n = words.len();
+        let mut masks = vec![0; n];
+        let mut lens = vec![0; n];
+        for (i, word) in words.iter().enumerate() {
+            for ch in word.chars() {
+                masks[i] |= 1 << (ch as u8 - b'a');
+            }
+            lens[i] = word.len();
+        }
+        let mut ret = 0;
+        for i in 0..n {
+            for j in i + 1..n {
+                if masks[i] & masks[j] == 0 {
+                    ret = ret.max(lens[i] * lens[j]);
+                }
+            }
+        }
+        ret as i32
+
+=======
+Suggestion 3
+
+        let mut mask = vec![0; words.len()];
+        let mut max = 0;
+        for (i, word) in words.iter().enumerate() {
+            for c in word.chars() {
+                mask[i] |= 1 << (c as u8 - b'a' as u8);
+            }
+            for j in 0..i {
+                if mask[i] & mask[j] == 0 {
+                    max = max.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        max as i32
+
+=======
+Suggestion 4
+
+        let mut masks = vec![0; words.len()];
+        for (i, word) in words.iter().enumerate() {
+            for c in word.chars() {
+                masks[i] |= 1 << (c as usize - 97);
+            }
+        }
+        let mut max = 0;
+        for i in 0..masks.len() {
+            for j in i + 1..masks.len() {
+                if masks[i] & masks[j] == 0 {
+                    max = max.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        max as i32
+
+=======
+Suggestion 5
+
+        let mut words: Vec<Vec<char>> = words.iter().map(|s| s.chars().collect()).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut max = 0;
+        for i in 0..words.len() {
+            for j in i + 1..words.len() {
+                let mut flag = true;
+                for c in &words[i] {
+                    if words[j].contains(&c) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    max = max.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        max as i32
+
+=======
+Suggestion 6
+
+        let mut ans = 0;
+        let words: Vec<Vec<char>> = words.iter().map(|x| x.chars().collect()).collect();
+        for (i, word1) in words.iter().enumerate() {
+            for (j, word2) in words.iter().enumerate() {
+                if i == j {
+                    continue;
+                }
+                let mut flag = true;
+                for &c in word1.iter() {
+                    if word2.contains(&c) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    ans = ans.max(word1.len() * word2.len());
+                }
+            }
+        }
+        ans as i32
+    }
+}
+
+=======
+Suggestion 7
+
+        let mut word_nums = vec![0i32; words.len()];
+        for (i, word) in words.iter().enumerate() {
+            for c in word.chars() {
+                word_nums[i] |= 1 << (c as u8 - b'a');
+            }
+        }
+        let mut max = 0;
+        for i in 0..words.len() {
+            for j in i+1..words.len() {
+                if word_nums[i] & word_nums[j] == 0 {
+                    max = max.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        max as i32
+
+=======
+Suggestion 8
+
+        let mut words = words;
+        let mut result = 0;
+        for i in 0..words.len() {
+            for j in i..words.len() {
+                let mut flag = true;
+                for c in words[i].chars() {
+                    if words[j].contains(c) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if flag {
+                    result = result.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        result as i32
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut max = 0;
+        let mut bit_words = vec![];
+        for w in words {
+            let mut bit_word = 0;
+            for c in w.chars() {
+                bit_word |= 1 << (c as u8 - 'a' as u8);
+            }
+            bit_words.push(bit_word);
+        }
+        for i in 0..bit_words.len() {
+            for j in i+1..bit_words.len() {
+                if bit_words[i] & bit_words[j] == 0 {
+                    let product = words[i].len() * words[j].len();
+                    if product > max {
+                        max = product;
+                    }
+                }
+            }
+        }
+        max as i32
+
+=======
+Suggestion 10
+
+        let mut n = words.len();
+        let mut v = Vec::new();
+        for i in 0..n {
+            let mut t = 0;
+            for c in words[i].as_bytes() {
+                t |= 1 << (c - b'a');
+            }
+            v.push(t);
+        }
+        let mut ans = 0;
+        for i in 0..n {
+            for j in i+1..n {
+                if v[i] & v[j] == 0 {
+                    ans = ans.max(words[i].len() * words[j].len());
+                }
+            }
+        }
+        ans as i32
+    }
+}

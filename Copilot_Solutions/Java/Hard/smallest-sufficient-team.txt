@@ -1,0 +1,372 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = req_skills.length;
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(req_skills[i], i);
+        }
+        int m = people.size();
+        int[] dp = new int[1 << n];
+        int[] pre = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int skill = 0;
+            for (String s : people.get(i)) {
+                skill |= 1 << map.get(s);
+            }
+            for (int j = 0; j < (1 << n); j++) {
+                if (dp[j] + 1 < dp[j | skill]) {
+                    dp[j | skill] = dp[j] + 1;
+                    pre[j | skill] = i;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int status = (1 << n) - 1;
+        for (int i = ans.length - 1; i >= 0; i--) {
+            ans[i] = pre[status];
+            status ^= 1 << map.get(req_skills[pre[status]]);
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        Map<String, Integer> skillToIndex = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            skillToIndex.put(req_skills[i], i);
+        }
+        int m = people.size();
+        int[] peopleSkills = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (String skill : people.get(i)) {
+                peopleSkills[i] |= (1 << skillToIndex.get(skill));
+            }
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        int[] parent = new int[1 << n];
+        for (int i = 0; i < m; i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                int nj = j | peopleSkills[i];
+                if (dp[nj] > dp[j] + 1) {
+                    dp[nj] = dp[j] + 1;
+                    parent[nj] = j;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int cur = (1 << n) - 1;
+        for (int i = ans.length - 1; i >= 0; i--) {
+            ans[i] = Integer.numberOfTrailingZeros(cur ^ parent[cur]);
+            cur = parent[cur];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        Map<String, Integer> skillToIndex = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            skillToIndex.put(req_skills[i], i);
+        }
+        int m = people.size();
+        int[] peopleSkills = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (String skill : people.get(i)) {
+                peopleSkills[i] |= 1 << skillToIndex.get(skill);
+            }
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        int[] prev = new int[1 << n];
+        Arrays.fill(prev, -1);
+        for (int i = 0; i < m; i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] + 1 < dp[j | peopleSkills[i]]) {
+                    dp[j | peopleSkills[i]] = dp[j] + 1;
+                    prev[j | peopleSkills[i]] = i;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int state = (1 << n) - 1;
+        int index = ans.length - 1;
+        while (state != 0) {
+            ans[index--] = prev[state];
+            state = state & ~(1 << prev[state]);
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        Map<String, Integer> skillMap = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            skillMap.put(req_skills[i], i);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        int[] pre = new int[1 << n];
+        Arrays.fill(pre, -1);
+        for (int i = 0; i < people.size(); i++) {
+            List<String> skills = people.get(i);
+            int skill = 0;
+            for (String s : skills) {
+                skill |= 1 << skillMap.get(s);
+            }
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] != Integer.MAX_VALUE && dp[j | skill] > dp[j] + 1) {
+                    dp[j | skill] = dp[j] + 1;
+                    pre[j | skill] = i;
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        int state = (1 << n) - 1;
+        while (state != 0) {
+            ans.add(pre[state]);
+            state = state & ~(1 << pre[state]);
+        }
+        int[] res = new int[ans.size()];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = ans.get(i);
+        }
+        return res;
+
+=======
+
+        int n = req_skills.length;
+        int m = people.size();
+        int[] req = new int[n];
+        for (int i = 0; i < n; i++) {
+            req[i] = 1 << i;
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(req_skills[i], 1 << i);
+        }
+        int[] dp = new int[1 << n];
+        int[] pre = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int mask = 0;
+            for (String skill : people.get(i)) {
+                mask |= map.get(skill);
+            }
+            for (int j = 0; j < (1 << n); j++) {
+                if (dp[j] + 1 < dp[j | mask]) {
+                    dp[j | mask] = dp[j] + 1;
+                    pre[j | mask] = i;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int cur = (1 << n) - 1;
+        for (int i = ans.length - 1; i >= 0; i--) {
+            ans[i] = pre[cur];
+            cur ^= 1 << pre[cur];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        int m = people.size();
+        Map<String, Integer> skillToIndex = new HashMap<>();
+        for (int i = 0; i < n; ++i) {
+            skillToIndex.put(req_skills[i], i);
+        }
+        int[] peopleSkills = new int[m];
+        for (int i = 0; i < m; ++i) {
+            for (String skill : people.get(i)) {
+                peopleSkills[i] |= 1 << skillToIndex.get(skill);
+            }
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        int[] pre = new int[1 << n];
+        Arrays.fill(pre, -1);
+        for (int mask = 0; mask < (1 << n) - 1; ++mask) {
+            for (int i = 0; i < m; ++i) {
+                int next = mask | peopleSkills[i];
+                if (dp[next] > dp[mask] + 1) {
+                    dp[next] = dp[mask] + 1;
+                    pre[next] = i;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int t = ans.length - 1;
+        int mask = (1 << n) - 1;
+        while (t >= 0) {
+            ans[t--] = pre[mask];
+            mask ^= peopleSkills[pre[mask]];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        int m = people.size();
+        int[] dp = new int[1 << n];
+        int[] pre = new int[1 << n];
+        Arrays.fill(dp, Integer.MAX_VALUE / 2);
+        dp[0] = 0;
+        for(int i = 0; i < m; i++){
+            int mask = 0;
+            for(String skill : people.get(i)){
+                for(int j = 0; j < n; j++){
+                    if(skill.equals(req_skills[j])){
+                        mask |= (1 << j);
+                        break;
+                    }
+                }
+            }
+            for(int j = 0; j < (1 << n); j++){
+                if(dp[j] + 1 < dp[j | mask]){
+                    dp[j | mask] = dp[j] + 1;
+                    pre[j | mask] = i;
+                }
+            }
+        }
+        int mask = (1 << n) - 1;
+        int[] res = new int[dp[mask]];
+        int index = 0;
+        while(mask > 0){
+            res[index++] = pre[mask];
+            mask &= ~(1 << pre[mask]);
+        }
+        return res;
+
+=======
+
+        int n = req_skills.length, m = people.size();
+        Map<String, Integer> skill2idx = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            skill2idx.put(req_skills[i], i);
+        }
+        int[] dp = new int[1 << n];
+        Arrays.fill(dp, m + 1);
+        dp[0] = 0;
+        int[] prev = new int[1 << n];
+        for (int i = 0; i < m; i++) {
+            int skill = 0;
+            for (String s : people.get(i)) {
+                skill |= 1 << skill2idx.get(s);
+            }
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] > m) {
+                    continue;
+                }
+                int nxt = j | skill;
+                if (dp[nxt] > dp[j] + 1) {
+                    dp[nxt] = dp[j] + 1;
+                    prev[nxt] = j;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int idx = ans.length - 1;
+        int state = (1 << n) - 1;
+        while (state > 0) {
+            int last = state - prev[state];
+            for (int i = 0; i < m; i++) {
+                int skill = 0;
+                for (String s : people.get(i)) {
+                    skill |= 1 << skill2idx.get(s);
+                }
+                if (skill == last) {
+                    ans[idx--] = i;
+                    break;
+                }
+            }
+            state = prev[state];
+        }
+        return ans;
+
+=======
+
+        int n = req_skills.length;
+        int m = people.size();
+        int[] dp = new int[1 << n];
+        int[] pre = new int[1 << n];
+        int[] skill = new int[m];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            for (String s : people.get(i)) {
+                for (int j = 0; j < n; j++) {
+                    if (s.equals(req_skills[j])) {
+                        skill[i] |= (1 << j);
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = (1 << n) - 1; j >= 0; j--) {
+                if (dp[j] != Integer.MAX_VALUE && dp[j | skill[i]] > dp[j] + 1) {
+                    dp[j | skill[i]] = dp[j] + 1;
+                    pre[j | skill[i]] = i;
+                }
+            }
+        }
+        int[] ans = new int[dp[(1 << n) - 1]];
+        int now = (1 << n) - 1;
+        for (int i = ans.length - 1; i >= 0; i--) {
+            ans[i] = pre[now];
+            now -= skill[pre[now]];
+        }
+        return ans;
+
+=======
+
+        int[] dp = new int[1 << req_skills.length];
+        int[] pre = new int[1 << req_skills.length];
+        int[] skillMap = new int[req_skills.length];
+        for (int i = 0; i < req_skills.length; i++) {
+            skillMap[i] = 1 << i;
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < req_skills.length; i++) {
+            map.put(req_skills[i], i);
+        }
+        for (int i = 0; i < people.size(); i++) {
+            int skill = 0;
+            for (String s : people.get(i)) {
+                skill |= 1 << map.get(s);
+            }
+            for (int j = 0; j < (1 << req_skills.length); j++) {
+                if (dp[j] > 0 || j == 0) {
+                    int state = j | skill;
+                    if (dp[state] == 0 || dp[state] > dp[j] + 1) {
+                        dp[state] = dp[j] + 1;
+                        pre[state] = j;
+                    }
+                }
+            }
+        }
+        int state = (1 << req_skills.length) - 1;
+        int[] res = new int[dp[state]];
+        int k = 0;
+        while (state > 0) {
+            int nextState = pre[state];
+            int diff = state ^ nextState;
+            for (int i = 0; i < req_skills.length; i++) {
+                if ((diff & skillMap[i]) > 0) {
+                    res[k++] = i;
+                    break;
+                }
+            }
+            state = nextState;
+        }
+        return res;

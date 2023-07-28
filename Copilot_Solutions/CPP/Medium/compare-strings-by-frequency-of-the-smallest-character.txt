@@ -1,0 +1,211 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        vector<int> q(queries.size()), w(words.size());
+        for (int i = 0; i < queries.size(); ++i) {
+            q[i] = f(queries[i]);
+        }
+        for (int i = 0; i < words.size(); ++i) {
+            w[i] = f(words[i]);
+        }
+        vector<int> res(queries.size());
+        for (int i = 0; i < queries.size(); ++i) {
+            for (int j = 0; j < words.size(); ++j) {
+                if (q[i] < w[j]) {
+                    res[i]++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> q(queries.size(), 0);
+        vector<int> w(words.size(), 0);
+        for (int i = 0; i < queries.size(); i++) {
+            q[i] = f(queries[i]);
+        }
+        for (int i = 0; i < words.size(); i++) {
+            w[i] = f(words[i]);
+        }
+        sort(w.begin(), w.end());
+        vector<int> ret(queries.size(), 0);
+        for (int i = 0; i < queries.size(); i++) {
+            int idx = upper_bound(w.begin(), w.end(), q[i]) - w.begin();
+            ret[i] = words.size() - idx;
+        }
+        return ret;
+    }
+    int f(string s) {
+        sort(s.begin(), s.end());
+        int cnt = 1;
+        for (int i = 1; i < s.size(); i++) {
+            if (s[i] == s[i-1]) {
+                cnt++;
+            } else {
+                break;
+            }
+        }
+        return cnt;
+
+=======
+
+        vector<int> q, w;
+        for (auto& s : queries) {
+            q.push_back(f(s));
+        }
+        for (auto& s : words) {
+            w.push_back(f(s));
+        }
+        sort(w.begin(), w.end());
+        vector<int> result;
+        for (int i = 0; i < q.size(); i++) {
+            result.push_back(w.end() - upper_bound(w.begin(), w.end(), q[i]));
+        }
+        return result;
+
+=======
+
+        vector<int> q;
+        for (auto& s: queries) {
+            q.push_back(f(s));
+        }
+        vector<int> w;
+        for (auto& s: words) {
+            w.push_back(f(s));
+        }
+        sort(w.begin(), w.end());
+        vector<int> res;
+        for (int i = 0; i < q.size(); ++i) {
+            int count = 0;
+            for (int j = 0; j < w.size(); ++j) {
+                if (q[i] < w[j]) {
+                    count += w.size() - j;
+                    break;
+                }
+            }
+            res.push_back(count);
+        }
+        return res;
+    }
+    int f(string s) {
+        sort(s.begin(), s.end());
+        char c = s[0];
+        int count = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == c) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
+
+=======
+
+        vector<int> q;
+        vector<int> w;
+        for (auto& s : queries) {
+            q.push_back(f(s));
+        }
+        for (auto& s : words) {
+            w.push_back(f(s));
+        }
+        sort(w.begin(), w.end());
+        vector<int> res;
+        for (auto& i : q) {
+            res.push_back(w.end() - upper_bound(w.begin(), w.end(), i));
+        }
+        return res;
+    }
+    
+    int f(const string& s) {
+        int res = 0;
+        char c = 'z';
+        for (auto& i : s) {
+            if (i < c) {
+                c = i;
+                res = 1;
+            } else if (i == c) {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        vector<int> fwords;
+        for (auto w : words) {
+            fwords.push_back(f(w));
+        }
+        sort(fwords.begin(), fwords.end());
+        for (auto q : queries) {
+            int fq = f(q);
+            auto it = upper_bound(fwords.begin(), fwords.end(), fq);
+            res.push_back(fwords.end() - it);
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        vector<int> freqWords;
+        for (auto word: words) {
+            freqWords.push_back(f(word));
+        }
+        sort(freqWords.begin(), freqWords.end());
+        for (auto query: queries) {
+            int freqQuery = f(query);
+            int count = 0;
+            for (auto freqWord: freqWords) {
+                if (freqQuery < freqWord) {
+                    count++;
+                }
+            }
+            ans.push_back(count);
+        }
+        return ans;
+    }
+    
+    int f(string& s) {
+        int freq = 0;
+        char ch = 'z';
+        for (auto c: s) {
+            if (c < ch) {
+                ch = c;
+                freq = 1;
+            } else if (c == ch) {
+                freq++;
+            }
+        }
+        return freq;
+
+=======
+
+        vector<int> res;
+        for(auto& q: queries){
+            int count = 0;
+            for(auto& w: words){
+                if(frequency(q) < frequency(w)){
+                    count++;
+                }
+            }
+            res.push_back(count);
+        }
+        return res;
+    }
+    
+    int frequency(string& s){
+        int count = 0;
+        char c = 'z';
+        for(auto& ch: s){
+            if(c > ch){
+                c = ch;
+                count = 1;
+            }else if(c == ch){
+                count++;
+            }
+        }
+        return count;

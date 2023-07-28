@@ -1,0 +1,106 @@
+Synthesizing 9/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut result = vec![0; nums.len()];
+        let mut primes = vec![0; 100001];
+        for i in 2..=100000 {
+            if primes[i] == 0 {
+                for j in (i..=100000).step_by(i) {
+                    primes[j] = i;
+                }
+            }
+        }
+        let mut lcms = vec![0; 100001];
+        for i in 1..=100000 {
+            if primes[i] == i {
+                lcms[i] = i;
+            } else {
+                lcms[i] = lcms[i / primes[i]] * primes[i];
+            }
+        }
+        let mut map = std::collections::HashMap::new();
+        for i in (0..nums.len()).rev() {
+            let n = nums[i];
+            if map.contains_key(&n) {
+                result[i] = *map.get(&n).unwrap();
+            } else {
+                result[i] = -1;
+            }
+            if i > 0 {
+                let n = lcms[nums[i - 1] as usize];
+                if map.contains_key(&n) {
+                    map.insert(n, i - 1);
+                } else {
+                    map.insert(n, i - 1);
+                }
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut v = vec![0; 100001];
+        let mut res = vec![0; nums.len()];
+        for i in 2..100001 {
+            if v[i] == 0 {
+                let mut j = i;
+                while j < 100001 {
+                    v[j] = i;
+                    j += i;
+                }
+            }
+        }
+        for i in 0..nums.len() {
+            let mut j = i + 1;
+            while j < nums.len() && v[nums[i] as usize] == v[nums[j] as usize] {
+                j += 1;
+            }
+            if j < nums.len() && v[nums[i] as usize] != v[nums[j] as usize] {
+                res[i] = nums[j];
+                res[j] = nums[i];
+                i = j;
+            } else {
+                res[i] = nums[i];
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![0; nums.len()];
+        let mut primes = vec![0; 10_001];
+        let mut i = 2;
+        while i < 100 {
+            if primes[i] == 0 {
+                let mut j = i * i;
+                while j < 10_001 {
+                    primes[j] = i;
+                    j += i;
+                }
+            }
+            i += 1;
+        }
+        let mut max = 0;
+        for i in 0..nums.len() {
+            let mut n = nums[i];
+            while primes[n] > 0 {
+                n /= primes[n];
+            }
+            ans[i] = max;
+            max = std::cmp::max(max, n);
+        }
+        for i in 0..nums.len() {
+            ans[i] = if ans[i] == 0 { nums[i] } else { ans[i] };
+        }
+        ans

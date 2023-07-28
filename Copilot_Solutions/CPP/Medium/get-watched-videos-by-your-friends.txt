@@ -1,0 +1,360 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = friends.size();
+        vector<int> dist(n, INT_MAX);
+        dist[id] = 0;
+        queue<int> q;
+        q.push(id);
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for (int v : friends[u]) {
+                if (dist[v] == INT_MAX) {
+                    dist[v] = dist[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+        unordered_map<string, int> cnt;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] == level) {
+                for (string& video : watchedVideos[i]) {
+                    cnt[video]++;
+                }
+            }
+        }
+        vector<pair<string, int>> v;
+        for (auto& [video, c] : cnt) {
+            v.push_back({video, c});
+        }
+        sort(v.begin(), v.end(), [](auto& a, auto& b) {
+            if (a.second == b.second) {
+                return a.first < b.first;
+            }
+            return a.second < b.second;
+        });
+        vector<string> ans;
+        for (auto& [video, c] : v) {
+            ans.push_back(video);
+        }
+        return ans;
+
+=======
+
+        int n = watchedVideos.size();
+        vector<int> dist(n, INT_MAX);
+        dist[id] = 0;
+        queue<int> q;
+        q.push(id);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (int v : friends[u]) {
+                if (dist[v] == INT_MAX) {
+                    dist[v] = dist[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+        vector<string> res;
+        unordered_map<string, int> cnt;
+        for (int i = 0; i < n; ++i) {
+            if (dist[i] == level) {
+                for (string video : watchedVideos[i]) {
+                    ++cnt[video];
+                }
+            }
+        }
+        sort(res.begin(), res.end(), [&](string& a, string& b) {
+            if (cnt[a] == cnt[b]) {
+                return a < b;
+            }
+            return cnt[a] < cnt[b];
+        });
+        return res;
+
+=======
+
+        vector<vector<int>> graph(friends.size());
+        for (int i = 0; i < friends.size(); ++i)
+            for (int j = 0; j < friends[i].size(); ++j)
+                graph[i].push_back(friends[i][j]);
+        vector<int> dist(friends.size(), -1);
+        queue<int> q;
+        q.push(id);
+        dist[id] = 0;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            for (int i = 0; i < graph[cur].size(); ++i) {
+                int next = graph[cur][i];
+                if (dist[next] == -1) {
+                    dist[next] = dist[cur] + 1;
+                    q.push(next);
+                }
+            }
+        }
+        unordered_map<string, int> freq;
+        for (int i = 0; i < dist.size(); ++i)
+            if (dist[i] == level)
+                for (int j = 0; j < watchedVideos[i].size(); ++j)
+                    ++freq[watchedVideos[i][j]];
+        vector<pair<int, string>> ans;
+        for (auto& p : freq)
+            ans.push_back({p.second, p.first});
+        sort(ans.begin(), ans.end());
+        vector<string> res;
+        for (auto& p : ans)
+            res.push_back(p.second);
+        return res;
+
+=======
+
+        int n = watchedVideos.size();
+        vector<bool> visited(n, false);
+        queue<int> q;
+        q.push(id);
+        visited[id] = true;
+        int depth = 0;
+        while (!q.empty()) {
+            int sz = q.size();
+            for (int i = 0; i < sz; ++i) {
+                int cur = q.front();
+                q.pop();
+                if (depth == level) {
+                    unordered_map<string, int> mp;
+                    for (const string& video : watchedVideos[cur]) {
+                        ++mp[video];
+                    }
+                    vector<pair<int, string>> vec;
+                    for (const auto& p : mp) {
+                        vec.push_back({p.second, p.first});
+                    }
+                    sort(vec.begin(), vec.end());
+                    vector<string> ans;
+                    for (const auto& p : vec) {
+                        ans.push_back(p.second);
+                    }
+                    return ans;
+                }
+                for (int next : friends[cur]) {
+                    if (!visited[next]) {
+                        q.push(next);
+                        visited[next] = true;
+                    }
+                }
+            }
+            ++depth;
+        }
+        return {};
+
+=======
+
+        vector<int> visited(friends.size(), 0);
+        visited[id] = 1;
+        queue<int> q;
+        q.push(id);
+        int curLevel = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int cur = q.front();
+                q.pop();
+                if (curLevel == level) {
+                    unordered_map<string, int> m;
+                    for (string s : watchedVideos[cur]) {
+                        m[s]++;
+                    }
+                    for (int f : friends[cur]) {
+                        if (!visited[f]) {
+                            for (string s : watchedVideos[f]) {
+                                m[s]++;
+                            }
+                        }
+                    }
+                    vector<pair<string, int>> v;
+                    for (auto it = m.begin(); it != m.end(); it++) {
+                        v.push_back(make_pair(it->first, it->second));
+                    }
+                    sort(v.begin(), v.end(), [](pair<string, int> a, pair<string, int> b) {
+                        if (a.second == b.second) {
+                            return a.first < b.first;
+                        }
+                        return a.second < b.second;
+                    });
+                    vector<string> res;
+                    for (int i = 0; i < v.size(); i++) {
+                        res.push_back(v[i].first);
+                    }
+                    return res;
+                }
+                for (int f : friends[cur]) {
+                    if (!visited[f]) {
+                        visited[f] = 1;
+                        q.push(f);
+                    }
+                }
+            }
+            curLevel++;
+        }
+        return {};
+
+=======
+
+        int N = friends.size();
+        vector<int> visited(N, 0);
+        queue<int> q;
+        q.push(id);
+        visited[id] = 1;
+        while (!q.empty()) {
+            int sz = q.size();
+            while (sz--) {
+                int cur = q.front();
+                q.pop();
+                if (level == 0) {
+                    vector<string> res;
+                    unordered_map<string, int> freq;
+                    for (auto &video: watchedVideos[cur]) {
+                        freq[video]++;
+                    }
+                    for (auto &p: freq) {
+                        res.push_back(p.first);
+                    }
+                    sort(res.begin(), res.end(), [&](const string &a, const string &b) {
+                        if (freq[a] == freq[b]) {
+                            return a < b;
+                        }
+                        return freq[a] < freq[b];
+                    });
+                    return res;
+                }
+                for (auto &f: friends[cur]) {
+                    if (visited[f]) {
+                        continue;
+                    }
+                    visited[f] = 1;
+                    q.push(f);
+                }
+            }
+            level--;
+        }
+        return {};
+
+=======
+
+        vector<string> res;
+        unordered_map<string, int> freq;
+        unordered_set<int> visited;
+        queue<int> q;
+        q.push(id);
+        visited.insert(id);
+        int curLevel = 0;
+        while(!q.empty() && curLevel <= level){
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                int curId = q.front();
+                q.pop();
+                if(curLevel == level){
+                    for(string video: watchedVideos[curId]){
+                        freq[video]++;
+                    }
+                }
+                for(int j = 0; j < friends[curId].size(); j++){
+                    if(visited.count(friends[curId][j]) == 0){
+                        visited.insert(friends[curId][j]);
+                        q.push(friends[curId][j]);
+                    }
+                }
+            }
+            curLevel++;
+        }
+        vector<pair<int, string>> tmp;
+        for(auto it = freq.begin(); it != freq.end(); it++){
+            tmp.push_back(make_pair(it->second, it->first));
+        }
+        sort(tmp.begin(), tmp.end());
+        for(int i = 0; i < tmp.size(); i++){
+            res.push_back(tmp[i].second);
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        unordered_map<string, int> m;
+        queue<int> q;
+        q.push(id);
+        int l = 0;
+        vector<int> visited(friends.size(), 0);
+        visited[id] = 1;
+        while (!q.empty()) {
+            int n = q.size();
+            for (int i = 0; i < n; i++) {
+                int t = q.front(); q.pop();
+                if (l == level) {
+                    for (string s : watchedVideos[t]) {
+                        m[s]++;
+                    }
+                }
+                else {
+                    for (int f : friends[t]) {
+                        if (visited[f] == 0) {
+                            visited[f] = 1;
+                            q.push(f);
+                        }
+                    }
+                }
+            }
+            l++;
+        }
+        vector<pair<int, string>> v;
+        for (auto it = m.begin(); it != m.end(); it++) {
+            v.push_back({it->second, it->first});
+        }
+        sort(v.begin(), v.end());
+        for (auto p : v) {
+            res.push_back(p.second);
+        }
+        return res;
+
+=======
+
+        int n = friends.size();
+        vector<string> res;
+        unordered_map<string, int> freq;
+        queue<int> q;
+        unordered_set<int> visited;
+        q.push(id);
+        visited.insert(id);
+        int l = 0;
+        while (!q.empty() && l <= level) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int f = q.front();
+                q.pop();
+                for (int j = 0; j < friends[f].size(); ++j) {
+                    int ff = friends[f][j];
+                    if (visited.count(ff)) continue;
+                    visited.insert(ff);
+                    q.push(ff);
+                }
+            }
+            ++l;
+        }
+        while (!q.empty()) {
+            int f = q.front();
+            q.pop();
+            for (int i = 0; i < watchedVideos[f].size(); ++i) {
+                ++freq[watchedVideos[f][i]];
+            }
+        }
+        vector<pair<int, string>> tmp;
+        for (auto& it : freq) {
+            tmp.emplace_back(it.second, it.first);
+        }
+        sort(tmp.begin(), tmp.end());
+        for (auto& it : tmp) {
+            res.push_back(it.second);
+        }
+        return res;

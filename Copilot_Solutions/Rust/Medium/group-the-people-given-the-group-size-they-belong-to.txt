@@ -1,0 +1,156 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let mut map: std::collections::HashMap<i32, Vec<i32>> = std::collections::HashMap::new();
+        for (i, size) in group_sizes.iter().enumerate() {
+            map.entry(*size).or_insert_with(|| Vec::new()).push(i as i32);
+        }
+        let mut ret: Vec<Vec<i32>> = Vec::new();
+        for (size, mut group) in map.into_iter() {
+            while !group.is_empty() {
+                ret.push(group.drain(0..size as usize).collect());
+            }
+        }
+        ret
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        let mut map = std::collections::HashMap::new();
+        for (i, size) in group_sizes.iter().enumerate() {
+            map.entry(size).or_insert(Vec::new()).push(i as i32);
+        }
+        for (size, group) in map {
+            let mut i = 0;
+            while i < group.len() {
+                res.push(group[i..(i+size as usize)].to_vec());
+                i += size as usize;
+            }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut map = std::collections::HashMap::new();
+        for (i, &size) in group_sizes.iter().enumerate() {
+            let v = map.entry(size).or_insert(vec![]);
+            v.push(i as i32);
+            if v.len() == size as usize {
+                res.push(v.clone());
+                v.clear();
+            }
+        }
+        res
+
+=======
+
+        let mut result: Vec<Vec<i32>> = vec![];
+        let mut group: Vec<Vec<i32>> = vec![vec![]; 501];
+        for i in 0..group_sizes.len() {
+            group[group_sizes[i] as usize].push(i as i32);
+        }
+        for i in 1..group.len() {
+            let mut j = 0;
+            while j < group[i].len() {
+                result.push(group[i][j..(j + i)].to_vec());
+                j += i;
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let mut ret = vec![];
+        let mut map = std::collections::HashMap::new();
+        for (i, &size) in group_sizes.iter().enumerate() {
+            let v = map.entry(size).or_insert(vec![]);
+            v.push(i as i32);
+            if v.len() == size as usize {
+                ret.push(v.clone());
+                v.clear();
+            }
+        }
+        ret
+
+=======
+
+        let mut result: Vec<Vec<i32>> = Vec::new();
+        let mut group: Vec<Vec<i32>> = vec![Vec::new(); 501];
+        for (i, size) in group_sizes.iter().enumerate() {
+            group[*size as usize].push(i as i32);
+            if group[*size as usize].len() == *size as usize {
+                result.push(group[*size as usize].clone());
+                group[*size as usize].clear();
+            }
+        }
+        result
+
+=======
+
+        let mut ret = Vec::new();
+        let mut map = std::collections::HashMap::new();
+        for (i, size) in group_sizes.iter().enumerate() {
+            let size = *size;
+            let group = map.entry(size).or_insert(Vec::new());
+            group.push(i as i32);
+            if group.len() == size as usize {
+                ret.push(std::mem::take(group));
+            }
+        }
+        ret
+
+=======
+
+        let mut groups: Vec<Vec<i32>> = vec![];
+        let mut group_sizes = group_sizes.clone();
+        for (i, &size) in group_sizes.iter().enumerate() {
+            if size > 0 {
+                let mut group: Vec<i32> = vec![];
+                group.push(i as i32);
+                group_sizes[i] -= 1;
+                for j in i + 1..group_sizes.len() {
+                    if group_sizes[j] == size {
+                        group.push(j as i32);
+                        group_sizes[j] -= 1;
+                    }
+                    if group.len() == size as usize {
+                        break;
+                    }
+                }
+                groups.push(group);
+            }
+        }
+        groups
+    }
+}
+
+=======
+
+        let mut groups = vec![];
+        let mut group = vec![];
+        let mut group_size = 0;
+        let mut group_sizes = group_sizes;
+        group_sizes.sort();
+        for i in 0..group_sizes.len() {
+            if group_size != group_sizes[i] {
+                if group_size != 0 {
+                    groups.push(group);
+                }
+                group_size = group_sizes[i];
+                group = vec![];
+            }
+            group.push(i as i32);
+            if group_size == group.len() as i32 {
+                groups.push(group);
+                group = vec![];
+            }
+        }
+        groups
+    }
+}

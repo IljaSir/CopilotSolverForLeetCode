@@ -1,0 +1,232 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = grades.length;
+        int[] cnt = new int[100001];
+        for (int i = 0; i < n; i++) {
+            cnt[grades[i]]++;
+        }
+        int ans = 0;
+        int sum = 0;
+        int cntSum = 0;
+        for (int i = 100000; i >= 1; i--) {
+            if (cnt[i] == 0) {
+                continue;
+            }
+            int num = cnt[i];
+            int k = num / (sum + 1);
+            ans += k;
+            num -= k * (sum + 1);
+            cntSum += k * (sum + 1);
+            sum += k * (sum + 1);
+            if (num > 0) {
+                ans++;
+                cntSum += num;
+                sum += num;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] count = new int[100001];
+        for (int grade : grades) {
+            count[grade]++;
+        }
+        int ans = 0;
+        for (int i = 1; i < count.length; i++) {
+            if (count[i] > 0) {
+                ans++;
+                count[i]--;
+                int sum = i;
+                int j = i + 1;
+                while (j < count.length && count[j] > 0) {
+                    if (sum + j <= i * 2) {
+                        sum += j;
+                        count[j]--;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] count = new int[100001];
+        for (int i = 0; i < grades.length; i++) {
+            count[grades[i]]++;
+        }
+        int[] dp = new int[100001];
+        dp[0] = 0;
+        int max = 0;
+        for (int i = 1; i <= 100000; i++) {
+            dp[i] = dp[i - 1];
+            if (count[i] > 0) {
+                dp[i] = Math.max(dp[i], dp[i - 1] + count[i]);
+                if (i > 1 && count[i - 1] > 0) {
+                    dp[i] = Math.max(dp[i], dp[i - 2] + count[i] + count[i - 1]);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        int[] counts = new int[100001];
+        for (int grade : grades) {
+            counts[grade]++;
+        }
+        int[] sums = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            sums[i] = sums[i - 1] + counts[i];
+        }
+        int[] groups = new int[100001];
+        groups[0] = 1;
+        for (int i = 1; i < 100001; i++) {
+            if (counts[i] == 0) {
+                groups[i] = groups[i - 1];
+            } else {
+                int maxGroups = 0;
+                for (int j = 1; j * i <= 100000; j++) {
+                    int sum = sums[j * i] - sums[i - 1];
+                    if (sum >= j) {
+                        maxGroups = Math.max(maxGroups, groups[j * i - 1] + 1);
+                    }
+                }
+                groups[i] = maxGroups;
+            }
+        }
+        return groups[100000];
+
+=======
+
+        int[] counts = new int[100001];
+        for (int grade : grades) {
+            counts[grade]++;
+        }
+        int ans = 0;
+        for (int i = 1; i < counts.length; i++) {
+            ans += counts[i] / i;
+            counts[i + 1] += counts[i] % i;
+        }
+        return ans;
+
+=======
+
+        int[] count = new int[100001];
+        for (int grade : grades) {
+            count[grade]++;
+        }
+        int[] dp = new int[100001];
+        int res = 0;
+        for (int i = 1; i <= 100000; i++) {
+            if (count[i] == 0) {
+                continue;
+            }
+            dp[i] = count[i];
+            res = Math.max(res, dp[i]);
+            for (int j = i + i; j <= 100000; j += i) {
+                dp[j] = Math.max(dp[j], dp[i]);
+                res = Math.max(res, dp[j]);
+            }
+        }
+        return res;
+
+=======
+
+        int[] count = new int[100001];
+        for (int g : grades) {
+            count[g]++;
+        }
+        int[] sum = new int[100001];
+        int[] size = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            sum[i] = sum[i - 1] + i * count[i];
+            size[i] = size[i - 1] + count[i];
+        }
+        int n = grades.length;
+        int[] dp = new int[n + 1];
+        for (int i = 1; i < 100001; i++) {
+            for (int j = n; j >= size[i]; j--) {
+                dp[j] = Math.max(dp[j], dp[j - size[i]] + sum[i] - sum[i - 1]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int[] freq = new int[100001];
+        for (int grade : grades) {
+            freq[grade]++;
+        }
+        int[] dp = new int[grades.length + 1];
+        for (int i = 1; i <= 100000; i++) {
+            if (freq[i] == 0) {
+                continue;
+            }
+            int[] newDp = new int[grades.length + 1];
+            for (int j = 0; j <= grades.length; j++) {
+                if (dp[j] == 0) {
+                    continue;
+                }
+                int sum = 0;
+                for (int k = 0; k <= freq[i] && j + k <= grades.length; k++) {
+                    sum += i;
+                    newDp[j + k] = Math.max(newDp[j + k], dp[j] + (sum >= (j + k) * i ? 1 : 0));
+                }
+            }
+            dp = newDp;
+        }
+        int ans = 0;
+        for (int i = 0; i <= grades.length; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = grades.length;
+        int[] counts = new int[100001];
+        for (int grade : grades) {
+            counts[grade]++;
+        }
+        int[] prefix = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            prefix[i] = prefix[i - 1] + counts[i];
+        }
+        int[] sum = new int[100001];
+        for (int i = 1; i < 100001; i++) {
+            sum[i] = sum[i - 1] + i * counts[i];
+        }
+        int[] dp = new int[n + 1];
+        for (int i = 1; i < 100001; i++) {
+            for (int j = counts[i]; j <= n; j++) {
+                dp[j] = Math.max(dp[j], dp[j - counts[i]] + i * (prefix[j] - prefix[j - counts[i]]) - (sum[j] - sum[j - counts[i]]));
+            }
+        }
+        return dp[n];
+
+=======
+
+        int N = grades.length;
+        int[] count = new int[100001];
+        for (int grade : grades) {
+            count[grade]++;
+        }
+        int[][] dp = new int[2][N + 1];
+        for (int i = 1; i <= 100000; i++) {
+            for (int j = 1; j <= N; j++) {
+                dp[i % 2][j] = dp[i % 2][j - 1];
+                if (count[i] >= j) {
+                    dp[i % 2][j] = Math.max(dp[i % 2][j], dp[(i - 1) % 2][j - 1] + 1);
+                }
+                if (count[i] >= 2 * j) {
+                    dp[i % 2][j] = Math.max(dp[i % 2][j], dp[(i - 1) % 2][j] + 1);
+                }
+            }
+        }
+        return dp[100000 % 2][N];

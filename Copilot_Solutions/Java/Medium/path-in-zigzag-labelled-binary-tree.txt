@@ -1,0 +1,170 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        while (label != 0) {
+            ans.add(label);
+            label /= 2;
+        }
+        Collections.reverse(ans);
+        for (int i = 1; i < ans.size(); i += 2) {
+            int n = ans.get(i);
+            int left = (1 << (i)) - 1;
+            int right = (1 << (i + 1)) - 1;
+            ans.set(i, left + right - n);
+        }
+        return ans;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        while (label != 1) {
+            result.add(label);
+            label = label / 2;
+        }
+        result.add(1);
+        Collections.reverse(result);
+        for (int i = 0; i < result.size(); i++) {
+            if (i % 2 == 1) {
+                result.set(i, (1 << i + 1) - 1 - result.get(i) + (1 << i));
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int level = 0;
+        while (Math.pow(2, level) <= label) {
+            level++;
+        }
+        while (level > 0) {
+            result.add(0, label);
+            label = (int) (Math.pow(2, level - 1) + Math.pow(2, level) - 1 - label) / 2;
+            level--;
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int level = 0;
+        while (label > 0) {
+            result.add(0, label);
+            label /= 2;
+            level++;
+        }
+        for (int i = 1; i < level; i += 2) {
+            int start = (int) Math.pow(2, i);
+            int end = (int) Math.pow(2, i + 1) - 1;
+            for (int j = start; j < (start + end) / 2; j++) {
+                int temp = result.get(i);
+                result.set(i, result.get(end - j + start));
+                result.set(end - j + start, temp);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int level = (int)(Math.log(label) / Math.log(2));
+        int i = level;
+        while (i >= 0) {
+            result.add(0, label);
+            int start = (int)Math.pow(2, i);
+            int end = (int)Math.pow(2, i + 1) - 1;
+            label = start + end - label;
+            label = label / 2;
+            i--;
+        }
+        return result;
+
+=======
+
+        List<Integer> ans = new ArrayList<>();
+        int row = (int)(Math.log(label) / Math.log(2)) + 1;
+        int rowStart = (int)Math.pow(2, row - 1);
+        int rowEnd = (int)Math.pow(2, row) - 1;
+        while (row > 0) {
+            ans.add(label);
+            if (row % 2 == 0) {
+                label = rowStart + rowEnd - label;
+            }
+            label /= 2;
+            row--;
+            rowStart /= 2;
+            rowEnd /= 2;
+        }
+        Collections.reverse(ans);
+        return ans;
+
+=======
+
+        List<Integer> list = new ArrayList<>();
+        int level = (int) (Math.log(label) / Math.log(2));
+        int current = label;
+        while (level >= 0) {
+            list.add(current);
+            int lower = (int) Math.pow(2, level);
+            int upper = (int) Math.pow(2, level + 1) - 1;
+            int parent = (upper + lower - current) / 2;
+            current = parent;
+            level--;
+        }
+        Collections.reverse(list);
+        return list;
+
+=======
+
+        int level = (int)(Math.log(label)/Math.log(2));
+        List<Integer> path = new ArrayList<Integer>();
+        while (level >= 0) {
+            path.add(0, label);
+            label = (int)((Math.pow(2, level) + Math.pow(2, level + 1) - 1 - label) / 2);
+            level--;
+        }
+        return path;
+
+=======
+
+        List<Integer> ans = new ArrayList();
+        ans.add(label);
+        while (label != 1) {
+            label = label / 2;
+            int row = (int)(Math.log(label) / Math.log(2));
+            int max = (int)Math.pow(2, row + 1) - 1;
+            label = max - label + max / 2;
+            ans.add(label);
+        }
+        Collections.reverse(ans);
+        return ans;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int level = 1;
+        int count = 1;
+        while (count <= label) {
+            level++;
+            count = count * 2;
+        }
+        level--;
+        count = count / 2;
+        int diff = label - count;
+        int reverse = 0;
+        while (level > 0) {
+            int current = label;
+            if (level % 2 == 0) {
+                current = count - 1 - diff;
+                result.add(0, current);
+                diff = (current - 1) / 2;
+            } else {
+                result.add(0, current);
+                diff = (current - 1) / 2;
+            }
+            level--;
+            count = count / 2;
+        }
+        return result;

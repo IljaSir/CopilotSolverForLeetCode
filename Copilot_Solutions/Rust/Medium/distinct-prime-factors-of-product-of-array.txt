@@ -1,0 +1,218 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut max = 0;
+        for num in nums.iter() {
+            if *num > max {
+                max = *num;
+            }
+        }
+        let mut factors = vec![0; max as usize + 1];
+        for num in nums.iter() {
+            let mut n = *num as usize;
+            for i in 2..=n {
+                if n % i == 0 {
+                    factors[i] += 1;
+                    while n % i == 0 {
+                        n /= i;
+                    }
+                }
+            }
+        }
+        let mut result = 0;
+        for num in factors.iter() {
+            if *num > 0 {
+                result += 1;
+            }
+        }
+        result
+
+=======
+
+        let mut primes = vec![];
+        for i in 2..=1000 {
+            if primes.iter().all(|&x| i % x != 0) {
+                primes.push(i);
+            }
+        }
+        let mut factors = vec![0; 1001];
+        for i in 2..=1000 {
+            let mut n = i;
+            for &p in primes.iter() {
+                if n == 1 { break; }
+                if n % p == 0 {
+                    factors[i] += 1;
+                    n /= p;
+                    while n % p == 0 {
+                        n /= p;
+                    }
+                }
+            }
+        }
+        let mut res = 0;
+        for &n in nums.iter() {
+            res += factors[n as usize];
+        }
+        res
+
+=======
+
+        let mut max = 0;
+        for i in 0..nums.len() {
+            if nums[i] > max {
+                max = nums[i];
+            }
+        }
+        let mut res = 0;
+        let mut primes = vec![true; (max + 1) as usize];
+        for i in 2..(max + 1) {
+            if primes[i as usize] {
+                let mut j = i;
+                while j <= max {
+                    primes[j as usize] = false;
+                    j += i;
+                }
+                primes[i as usize] = true;
+                let mut count = 0;
+                for k in 0..nums.len() {
+                    if nums[k] % i == 0 {
+                        count += 1;
+                    }
+                }
+                if count > 1 {
+                    res += 1;
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut max = 0;
+        for i in &nums {
+            if *i > max {
+                max = *i;
+            }
+        }
+        let mut primes = vec![true; max as usize + 1];
+        primes[0] = false;
+        primes[1] = false;
+        for i in 2..=max {
+            if primes[i as usize] {
+                res += 1;
+                let mut j = i;
+                while j <= max {
+                    primes[j as usize] = false;
+                    j += i;
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut max = 0;
+        for x in nums.iter() {
+            if *x > max {
+                max = *x;
+            }
+        }
+        let mut prime = vec![0; max as usize + 1];
+        for i in 2..=max {
+            if prime[i as usize] == 0 {
+                prime[i as usize] = i;
+                let mut j = i * i;
+                while j <= max {
+                    if prime[j as usize] == 0 {
+                        prime[j as usize] = i;
+                    }
+                    j += i;
+                }
+            }
+        }
+        let mut res = 0;
+        let mut factors = std::collections::HashSet::new();
+        for x in nums.iter() {
+            let mut y = *x;
+            while y > 1 {
+                let p = prime[y as usize];
+                if !factors.contains(&p) {
+                    res += 1;
+                    factors.insert(p);
+                }
+                while y % p == 0 {
+                    y /= p;
+                }
+            }
+            factors.clear();
+        }
+        res
+
+=======
+
+        let mut count = 0;
+        let mut seen = vec![false; 1001];
+        for num in nums {
+            let mut num = num;
+            for i in 2..=num {
+                if num % i == 0 {
+                    while num % i == 0 {
+                        num /= i;
+                    }
+                    if !seen[i as usize] {
+                        count += 1;
+                        seen[i as usize] = true;
+                    }
+                }
+            }
+        }
+        count
+    }
+}
+
+=======
+
+        let mut factors = vec![];
+        for num in nums {
+            factors.push(Self::get_factors(num));
+        }
+        let mut res = 0;
+        for i in 2..=1000 {
+            let mut found = false;
+            for factor in &factors {
+                if factor.contains(&i) {
+                    found = true;
+                    break;
+                }
+            }
+            if found {
+                res += 1;
+            }
+        }
+        res
+    }
+    fn get_factors(num: i32) -> Vec<i32> {
+        let mut factors = vec![];
+        let mut n = num;
+        let mut i = 2;
+        while i * i <= n {
+            if n % i == 0 {
+                factors.push(i);
+                while n % i == 0 {
+                    n /= i;
+                }
+            }
+            i += 1;
+        }
+        if n > 1 {
+            factors.push(n);
+        }
+        factors

@@ -1,0 +1,338 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] time : times) {
+            if (!graph.containsKey(time[0])) {
+                graph.put(time[0], new HashMap<>());
+            }
+            graph.get(time[0]).put(time[1], time[2]);
+        }
+
+        Map<Integer, Integer> dist = new HashMap<>();
+        for (int node = 1; node <= n; node++) {
+            dist.put(node, Integer.MAX_VALUE);
+        }
+
+        dist.put(k, 0);
+
+        boolean[] seen = new boolean[n + 1];
+        while (true) {
+            int candNode = -1;
+            int candDist = Integer.MAX_VALUE;
+            for (int i = 1; i <= n; i++) {
+                if (!seen[i] && dist.get(i) < candDist) {
+                    candDist = dist.get(i);
+                    candNode = i;
+                }
+            }
+
+            if (candNode < 0) {
+                break;
+            }
+
+            seen[candNode] = true;
+            if (graph.containsKey(candNode)) {
+                for (int nei : graph.get(candNode).keySet()) {
+                    dist.put(nei, Math.min(dist.get(nei), dist.get(candNode) + graph.get(candNode).get(nei)));
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int cand : dist.values()) {
+            if (cand == Integer.MAX_VALUE) {
+                return -1;
+            }
+            ans = Math.max(ans, cand);
+        }
+        return ans;
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] edge : times) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            graph.computeIfAbsent(u, x -> new ArrayList<>()).add(new int[]{v, w});
+        }
+
+        Map<Integer, Integer> dist = new HashMap<>();
+        for (int node = 1; node <= n; ++node)
+            dist.put(node, Integer.MAX_VALUE);
+
+        dist.put(k, 0);
+        boolean[] seen = new boolean[n + 1];
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));
+        pq.offer(new int[]{0, k});
+
+        while (!pq.isEmpty()) {
+            int[] info = pq.poll();
+            int d = info[0], node = info[1];
+            seen[node] = true;
+            if (d > dist.get(node)) continue;
+            for (int[] edge : graph.getOrDefault(node, new ArrayList<>())) {
+                int nei = edge[0], d2 = edge[1];
+                if (seen[nei]) continue;
+                if (dist.get(node) + d2 < dist.get(nei)) {
+                    dist.put(nei, dist.get(node) + d2);
+                    pq.offer(new int[]{dist.get(nei), nei});
+                }
+            }
+        }
+
+        int ans = 0;
+        for (int cand : dist.values()) {
+            if (cand == Integer.MAX_VALUE) return -1;
+            ans = Math.max(ans, cand);
+        }
+        return ans;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(graph[i], -1);
+        }
+        for (int[] time : times) {
+            graph[time[0] - 1][time[1] - 1] = time[2];
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k - 1] = 0;
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
+                    u = j;
+                }
+            }
+            visited[u] = true;
+            for (int v = 0; v < n; v++) {
+                if (graph[u][v] != -1 && dist[u] + graph[u][v] < dist[v]) {
+                    dist[v] = dist[u] + graph[u][v];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] == Integer.MAX_VALUE) {
+                return -1;
+            }
+            ans = Math.max(ans, dist[i]);
+        }
+        return ans;
+
+=======
+
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k] = 0;
+        for (int i = 1; i < n; i++) {
+            for (int[] time : times) {
+                if (dist[time[0]] != Integer.MAX_VALUE) {
+                    dist[time[1]] = Math.min(dist[time[1]], dist[time[0]] + time[2]);
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 1; i <= n; i++) {
+            max = Math.max(max, dist[i]);
+        }
+        return max == Integer.MAX_VALUE ? -1 : max;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : times) {
+            if (!graph.containsKey(edge[0]))
+                graph.put(edge[0], new HashMap<Integer, Integer>());
+            graph.get(edge[0]).put(edge[1], edge[2]);
+        }
+        int[] dist = new int[n+1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k] = 0;
+        boolean[] visited = new boolean[n+1];
+        for (int count=0; count<n; count++) {
+            int u = -1;
+            for (int i=1; i<=n; i++) {
+                if (!visited[i] && (u==-1 || dist[i] < dist[u]))
+                    u = i;
+            }
+            visited[u] = true;
+            if (graph.containsKey(u)) {
+                for (int v : graph.get(u).keySet()) {
+                    dist[v] = Math.min(dist[v], dist[u] + graph.get(u).get(v));
+                }
+            }
+        }
+        int ans = 0;
+        for (int i=1; i<=n; i++) {
+            if (dist[i] == Integer.MAX_VALUE)
+                return -1;
+            ans = Math.max(ans, dist[i]);
+        }
+        return ans;
+
+=======
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k-1] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int[] time : times) {
+                int u = time[0] - 1, v = time[1] - 1, w = time[2];
+                if (dist[u] != Integer.MAX_VALUE && dist[v] > dist[u] + w) {
+                    dist[v] = dist[u] + w;
+                }
+            }
+        }
+        int ans = 0;
+        for (int time : dist) {
+            if (time == Integer.MAX_VALUE) {
+                return -1;
+            }
+            ans = Math.max(ans, time);
+        }
+        return ans;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(graph[i], Integer.MAX_VALUE);
+        }
+        for (int[] time : times) {
+            graph[time[0] - 1][time[1] - 1] = time[2];
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k - 1] = 0;
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int v = -1;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && (v == -1 || dist[j] < dist[v])) {
+                    v = j;
+                }
+            }
+            if (dist[v] == Integer.MAX_VALUE) {
+                break;
+            }
+            visited[v] = true;
+            for (int j = 0; j < n; j++) {
+                if (graph[v][j] != Integer.MAX_VALUE) {
+                    dist[j] = Math.min(dist[j], dist[v] + graph[v][j]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dist[i]);
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] g : graph)
+            Arrays.fill(g, -1);
+        for (int[] time : times)
+            graph[time[0] - 1][time[1] - 1] = time[2];
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k - 1] = 0;
+        boolean[] visited = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            int u = -1;
+            for (int j = 0; j < n; j++) {
+                if (!visited[j] && (u == -1 || dist[j] < dist[u]))
+                    u = j;
+            }
+            visited[u] = true;
+            for (int v = 0; v < n; v++) {
+                if (graph[u][v] != -1 && dist[u] + graph[u][v] < dist[v])
+                    dist[v] = dist[u] + graph[u][v];
+            }
+        }
+        int ans = Arrays.stream(dist).max().getAsInt();
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        // Build the graph
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : times) {
+            if (!graph.containsKey(edge[0])) {
+                graph.put(edge[0], new HashMap<>());
+            }
+            graph.get(edge[0]).put(edge[1], edge[2]);
+        }
+        // A priority queue to sort the edges
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, k});
+        Map<Integer, Integer> dist = new HashMap<>();
+        // Dijkstra's algorithm
+        while (!pq.isEmpty()) {
+            int[] edge = pq.poll();
+            int time = edge[0], node = edge[1];
+            if (dist.containsKey(node)) {
+                continue;
+            }
+            dist.put(node, time);
+            if (graph.containsKey(node)) {
+                for (int nei : graph.get(node).keySet()) {
+                    pq.offer(new int[]{time + graph.get(node).get(nei), nei});
+                }
+            }
+        }
+        // If there is no solution
+        if (dist.size() != n) {
+            return -1;
+        }
+        // Find the maximum distance
+        int ans = 0;
+        for (int cand : dist.values()) {
+            ans = Math.max(ans, cand);
+        }
+        return ans;
+
+=======
+
+        int[][] map = new int[n][n];
+        for(int i = 0; i < n; i++) {
+            Arrays.fill(map[i], -1);
+        }
+        for(int[] time: times) {
+            map[time[0] - 1][time[1] - 1] = time[2];
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[k - 1] = 0;
+        boolean[] visited = new boolean[n];
+        for(int i = 0; i < n; i++) {
+            int min = Integer.MAX_VALUE;
+            int minIndex = -1;
+            for(int j = 0; j < n; j++) {
+                if(!visited[j] && dist[j] < min) {
+                    minIndex = j;
+                    min = dist[j];
+                }
+            }
+            visited[minIndex] = true;
+            for(int j = 0; j < n; j++) {
+                if(map[minIndex][j] != -1 && dist[minIndex] != Integer.MAX_VALUE) {
+                    dist[j] = Math.min(dist[j], map[minIndex][j] + dist[minIndex]);
+                }
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < n; i++) {
+            if(dist[i] == Integer.MAX_VALUE) {
+                return -1;
+            }
+            max = Math.max(max, dist[i]);
+        }
+        return max;

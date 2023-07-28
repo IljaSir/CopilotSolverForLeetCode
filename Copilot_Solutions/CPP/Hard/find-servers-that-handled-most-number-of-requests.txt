@@ -1,0 +1,341 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        set<int> available;
+        for (int i = 0; i < k; i++) {
+            available.insert(i);
+        }
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> finished;
+        vector<int> busy(k, 0);
+        for (int i = 0; i < arrival.size(); i++) {
+            int start = arrival[i];
+            int end = start + load[i];
+            while (finished.size() && finished.top().first <= start) {
+                available.insert(finished.top().second);
+                finished.pop();
+            }
+            if (available.size() == 0) {
+                continue;
+            }
+            int server = i % k;
+            auto it = available.lower_bound(server);
+            if (it == available.end()) {
+                it = available.begin();
+            }
+            busy[*it]++;
+            finished.push({end, *it});
+            available.erase(it);
+        }
+        int max_busy = 0;
+        vector<int> result;
+        for (int i = 0; i < k; i++) {
+            if (busy[i] > max_busy) {
+                max_busy = busy[i];
+                result = {i};
+            } else if (busy[i] == max_busy) {
+                result.push_back(i);
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> servers(k, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int i = 0; i < arrival.size(); ++i) {
+            while (!pq.empty() && pq.top().first <= arrival[i]) {
+                servers[pq.top().second] = 0;
+                pq.pop();
+            }
+            int j = i % k;
+            while (servers[j] != 0) {
+                j = (j + 1) % k;
+            }
+            servers[j] = 1;
+            pq.push({arrival[i] + load[i], j});
+        }
+        int max = 0;
+        for (int i = 0; i < servers.size(); ++i) {
+            if (servers[i] > max) max = servers[i];
+        }
+        vector<int> res;
+        for (int i = 0; i < servers.size(); ++i) {
+            if (servers[i] == max) res.push_back(i);
+        }
+        return res;
+
+=======
+
+        set<int> free;
+        for(int i = 0; i < k; i++) free.insert(i);
+        vector<int> cnt(k, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for(int i = 0; i < arrival.size(); i++) {
+            while(!pq.empty() && pq.top().first <= arrival[i]) {
+                free.insert(pq.top().second);
+                pq.pop();
+            }
+            if(free.empty()) continue;
+            auto it = free.lower_bound(i % k);
+            if(it == free.end()) it = free.begin();
+            cnt[*it]++;
+            pq.push({arrival[i] + load[i], *it});
+            free.erase(it);
+        }
+        int maxCnt = *max_element(cnt.begin(), cnt.end());
+        vector<int> ans;
+        for(int i = 0; i < k; i++) {
+            if(cnt[i] == maxCnt) ans.push_back(i);
+        }
+        return ans;
+
+=======
+
+        set<int> available;
+        for (int i = 0; i < k; ++i) available.insert(i);
+        map<int, int> serverCount;
+        for (int i = 0; i < arrival.size(); ++i) {
+            int start = arrival[i];
+            int end = start + load[i];
+            auto it = available.lower_bound(i % k);
+            if (it == available.end()) it = available.begin();
+            if (it == available.end()) continue;
+            int server = *it;
+            available.erase(it);
+            serverCount[server]++;
+            available.insert((server + 1) % k);
+            while (!available.empty() && *available.begin() < server) {
+                available.erase(available.begin());
+            }
+        }
+        vector<int> ans;
+        int maxCount = 0;
+        for (auto p: serverCount) {
+            if (p.second > maxCount) {
+                maxCount = p.second;
+                ans = {p.first};
+            } else if (p.second == maxCount) {
+                ans.push_back(p.first);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        int n = arrival.size();
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        set<int> avail;
+        for (int i = 0; i < k; i++) avail.insert(i);
+        vector<int> cnt(k, 0);
+        for (int i = 0; i < n; i++) {
+            int t = arrival[i];
+            int l = load[i];
+            while (!pq.empty() && pq.top().first <= t) {
+                avail.insert(pq.top().second);
+                pq.pop();
+            }
+            if (avail.empty()) continue;
+            auto it = avail.lower_bound(i % k);
+            if (it == avail.end()) it = avail.begin();
+            int s = *it;
+            cnt[s]++;
+            pq.push({t + l, s});
+            avail.erase(s);
+        }
+        int mx = *max_element(cnt.begin(), cnt.end());
+        for (int i = 0; i < k; i++) {
+            if (cnt[i] == mx) res.push_back(i);
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        vector<int> cnt(k, 0);
+        set<int> st;
+        for (int i = 0; i < k; ++i) {
+            st.insert(i);
+        }
+        int n = arrival.size();
+        map<int, set<int>> mp;
+        for (int i = 0; i < n; ++i) {
+            int t = arrival[i];
+            int l = load[i];
+            while (!mp.empty() && mp.begin()->first <= t) {
+                int idx = *(mp.begin()->second.begin());
+                mp.begin()->second.erase(idx);
+                if (mp.begin()->second.empty()) {
+                    mp.erase(mp.begin());
+                }
+                st.insert(idx);
+            }
+            if (st.empty()) {
+                continue;
+            }
+            auto it = st.lower_bound(i % k);
+            if (it == st.end()) {
+                it = st.begin();
+            }
+            int idx = *it;
+            st.erase(idx);
+            cnt[idx]++;
+            mp[t + l].insert(idx);
+        }
+        int mx = *max_element(cnt.begin(), cnt.end());
+        for (int i = 0; i < k; ++i) {
+            if (cnt[i] == mx) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> busy(k);
+        vector<int> count(k);
+        int n = arrival.size();
+        set<int> free;
+        for (int i = 0; i < k; ++i) {
+            free.insert(i);
+        }
+        for (int i = 0; i < n; ++i) {
+            int start = arrival[i];
+            int end = start + load[i];
+            while (!busy.empty() && busy.front() <= start) {
+                free.insert(busy.front() % k);
+                busy.pop_front();
+            }
+            if (free.empty()) {
+                continue;
+            }
+            auto it = free.lower_bound(i % k);
+            if (it == free.end()) {
+                it = free.begin();
+            }
+            int id = *it;
+            free.erase(it);
+            busy.push_back(end);
+            ++count[id];
+        }
+        int maxCount = *max_element(count.begin(), count.end());
+        vector<int> ans;
+        for (int i = 0; i < k; ++i) {
+            if (count[i] == maxCount) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> busy(k, 0);
+        vector<int> count(k, 0);
+        int max_count = 0;
+        int n = arrival.size();
+        deque<int> q;
+        for (int i = 0; i < n; i++) {
+            while (q.size() > 0 && arrival[q.front()] + load[q.front()] <= arrival[i]) {
+                busy[q.front()] = 0;
+                q.pop_front();
+            }
+            int j = i % k;
+            while (busy[j] == 1) {
+                j = (j + 1) % k;
+            }
+            busy[j] = 1;
+            q.push_back(j);
+            count[j]++;
+            if (count[j] > max_count) {
+                max_count = count[j];
+            }
+        }
+        vector<int> res;
+        for (int i = 0; i < k; i++) {
+            if (count[i] == max_count) {
+                res.push_back(i);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        int n = arrival.size();
+        vector<int> server(k, 0);
+        vector<int> busy(k, 0);
+        set<int> s;
+        for (int i = 0; i < k; ++i) {
+            s.insert(i);
+        }
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && *s.begin() < i) {
+                s.erase(s.begin());
+            }
+            int time = arrival[i];
+            int len = load[i];
+            int j = i % k;
+            while (!s.empty() && busy[j] == 1) {
+                j = (j + 1) % k;
+            }
+            if (s.empty()) {
+                continue;
+            }
+            server[j]++;
+            busy[j] = 1;
+            s.erase(j);
+            s.insert((j + 1) % k);
+            int end = time + len;
+            for (int j = 0; j < k; ++j) {
+                if (busy[j] == 1 && arrival[j] + load[j] <= end) {
+                    busy[j] = 0;
+                    s.insert(j);
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < k; ++i) {
+            if (server[i] > max) {
+                max = server[i];
+            }
+        }
+        for (int i = 0; i < k; ++i) {
+            if (server[i] == max) {
+                result.push_back(i);
+            }
+        }
+        return result;
+
+=======
+
+        // We have k servers numbered from 0 to k-1
+        // Each server has infinite computational capacity
+        // Each server can handle only one request at a time
+        // Requests are assigned to servers according to the algorithm
+        // 1. The ith request arrives
+        // 2. If all servers are busy, the request is dropped
+        // 3. If the (i % k)th server is available, assign the request to that server
+        // 4. Otherwise, assign the request to the next available server
+        //    (wrapping around the list of servers and starting from 0 if necessary)
+        //    For example, if the ith server is busy, try to assign the request to the (i+1)th server,
+        //    then the (i+2)th server, and so on.
+        // We need to find the busiest server(s)
+        // A server is considered busiest if it handled the most number of requests successfully among all the servers.
+        // Return a list containing the IDs of the busiest server(s). You may return the IDs in any order.
+        // Example 1:
+        // k = 3, arrival = [1,2,3,4,5], load = [5,2,3,3,3]
+        // Output: [1]
+        // Explanation:
+        // All of the servers start out available.
+        // The first 3 requests are handled by the first 3 servers in order.
+        // Request 3 comes in. Server 0 is busy, so it's assigned to the next available server, which is 1.
+        // Request 4 comes in. It cannot be handled since all servers are busy, so it is dropped.
+        // Servers 0 and 2 handled one request each, while server 1 handled two requests. Hence server 1 is the busiest server.
+        // Example 2:
+        // k = 3, arrival = [1,2,3,4], load = [1,2,1,2]
+        // Output: [0]
+        // Explanation:
+        // The first 3 requests are handled by first 3 servers.
+        // Request 3 comes in. It is handled by server 0 since the server is available.
+        // Server 0 handled two requests, while servers 1 and 2 handled one request each. Hence server

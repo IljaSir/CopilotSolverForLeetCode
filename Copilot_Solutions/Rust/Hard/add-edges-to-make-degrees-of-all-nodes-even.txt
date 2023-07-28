@@ -1,0 +1,303 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for e in edges {
+            graph[e[0] as usize - 1].push(e[1] as usize - 1);
+            graph[e[1] as usize - 1].push(e[0] as usize - 1);
+        }
+        let mut degree = vec![0; n];
+        for i in 0..n {
+            degree[i] = graph[i].len();
+        }
+        let mut queue = std::collections::VecDeque::new();
+        for i in 0..n {
+            if degree[i] % 2 == 1 {
+                queue.push_back(i);
+            }
+        }
+        while !queue.is_empty() {
+            let cur = queue.pop_front().unwrap();
+            if degree[cur] % 2 == 1 {
+                for &next in &graph[cur] {
+                    degree[next] -= 1;
+                    degree[cur] -= 1;
+                    if degree[next] % 2 == 1 {
+                        queue.push_back(next);
+                    }
+                    break;
+                }
+            }
+        }
+        for i in 0..n {
+            if degree[i] % 2 == 1 {
+                return false;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut graph: Vec<Vec<i32>> = vec![vec![]; n as usize];
+        for edge in edges.iter() {
+            graph[edge[0] as usize - 1].push(edge[1]);
+            graph[edge[1] as usize - 1].push(edge[0]);
+        }
+        let mut degree: Vec<i32> = vec![0; n as usize];
+        for i in 0..n as usize {
+            degree[i] = graph[i].len() as i32;
+        }
+        let mut odd: Vec<i32> = vec![];
+        let mut even: Vec<i32> = vec![];
+        for i in 0..n as usize {
+            if degree[i] % 2 == 0 {
+                even.push(i as i32);
+            } else {
+                odd.push(i as i32);
+            }
+        }
+        if odd.len() == 0 {
+            return true;
+        }
+        if odd.len() % 2 == 1 {
+            return false;
+        }
+        let mut visited: Vec<bool> = vec![false; n as usize];
+        let mut queue: Vec<i32> = vec![];
+        queue.push(odd[0]);
+        visited[odd[0] as usize] = true;
+        while queue.len() > 0 {
+            let node = queue.remove(0);
+            for nei in graph[node as usize].iter() {
+                if !visited[*nei as usize - 1] {
+                    visited[*nei as usize - 1] = true;
+                    queue.push(*nei);
+                }
+            }
+        }
+        for i in 0..n as usize {
+            if degree[i] % 2 == 1 && !visited[i] {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let n = n as usize;
+        let mut adj = vec![vec![]; n + 1];
+        for edge in edges {
+            adj[edge[0] as usize].push(edge[1] as usize);
+            adj[edge[1] as usize].push(edge[0] as usize);
+        }
+        let mut degree = vec![0; n + 1];
+        for i in 1..=n {
+            degree[i] = adj[i].len();
+        }
+        let mut odd = 0;
+        for i in 1..=n {
+            if degree[i] % 2 == 1 {
+                odd += 1;
+            }
+        }
+        if odd == 0 {
+            return true;
+        }
+        if odd % 2 == 1 {
+            return false;
+        }
+        let mut visited = vec![false; n + 1];
+        for i in 1..=n {
+            if degree[i] % 2 == 1 {
+                if !visited[i] {
+                    if !dfs(i, &mut visited, &adj, &mut degree) {
+                        return false;
+                    }
+                }
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n + 1];
+        for e in edges.iter() {
+            g[e[0] as usize].push(e[1] as usize);
+            g[e[1] as usize].push(e[0] as usize);
+        }
+        let mut odd = 0;
+        for i in 1..=n {
+            if g[i].len() % 2 == 1 {
+                odd += 1;
+            }
+        }
+        if odd % 2 == 1 {
+            return false;
+        }
+        if odd == 0 {
+            return true;
+        }
+        let mut vis = vec![false; n + 1];
+        let mut q = vec![];
+        for i in 1..=n {
+            if g[i].len() % 2 == 1 {
+                q.push(i);
+                vis[i] = true;
+                break;
+            }
+        }
+        while !q.is_empty() {
+            let u = q.pop().unwrap();
+            for &v in g[u].iter() {
+                if vis[v] {
+                    continue;
+                }
+                vis[v] = true;
+                q.push(v);
+            }
+        }
+        for i in 1..=n {
+            if !vis[i] {
+                continue;
+            }
+            let mut q = vec![i];
+            let mut vis = vec![false; n + 1];
+            vis[i] = true;
+            while !q.is_empty() {
+                let u = q.pop().unwrap();
+                for &v in g[u].iter() {
+                    if vis[v] {
+                        continue;
+                    }
+                    vis[v] = true;
+                    q.push(v);
+                }
+            }
+            for j in 1..=n {
+                if vis[j] {
+                    continue;
+                }
+                if g[j].len() % 2 == 1 {
+                    return false;
+                }
+            }
+            return true;
+        }
+        false
+
+=======
+
+        let mut degree = vec![0; n as usize];
+        let mut g = vec![vec![]; n as usize];
+        for e in edges {
+            g[e[0] as usize - 1].push(e[1] as usize - 1);
+            g[e[1] as usize - 1].push(e[0] as usize - 1);
+            degree[e[0] as usize - 1] += 1;
+            degree[e[1] as usize - 1] += 1;
+        }
+        let mut odd = 0;
+        for i in 0..n as usize {
+            if degree[i] % 2 == 1 {
+                odd += 1;
+            }
+        }
+        if odd > 2 {
+            return false;
+        }
+        let mut visited = vec![false; n as usize];
+        let mut count = 0;
+        for i in 0..n as usize {
+            if !visited[i] {
+                count += 1;
+                Self::dfs(i, &mut visited, &g);
+            }
+        }
+        if count == 1 {
+            return true;
+        }
+        if odd == 0 {
+            return true;
+        }
+        if odd == 2 {
+            return false;
+        }
+        false
+    }
+    fn dfs(i: usize, visited: &mut Vec<bool>, g: &Vec<Vec<usize>>) {
+        visited[i] = true;
+        for j in &g[i] {
+            if !visited[*j] {
+                Self::dfs(*j, visited, g);
+            }
+        }
+
+=======
+
+        let n = n as usize;
+        let mut degree = vec![0; n];
+        let mut graph = vec![vec![]; n];
+        for edge in &edges {
+            let (x, y) = (edge[0] as usize - 1, edge[1] as usize - 1);
+            graph[x].push(y);
+            graph[y].push(x);
+            degree[x] += 1;
+            degree[y] += 1;
+        }
+        let mut queue = std::collections::VecDeque::new();
+        for i in 0..n {
+            if degree[i] % 2 == 1 {
+                queue.push_back(i);
+            }
+        }
+        while !queue.is_empty() {
+            let x = queue.pop_front().unwrap();
+            let mut found = false;
+            for &y in &graph[x] {
+                if degree[y] % 2 == 1 {
+                    degree[x] -= 1;
+                    degree[y] -= 1;
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut odd_degree_nodes = 0;
+        let mut adjacency_list = vec![vec![]; n as usize];
+        for edge in edges {
+            adjacency_list[(edge[0] - 1) as usize].push(edge[1]);
+            adjacency_list[(edge[1] - 1) as usize].push(edge[0]);
+        }
+        for i in 0..n as usize {
+            if adjacency_list[i].len() % 2 != 0 {
+                odd_degree_nodes += 1;
+            }
+        }
+        odd_degree_nodes <= 2
+    }
+}
+
+=======
+
+        false
+    }
+}

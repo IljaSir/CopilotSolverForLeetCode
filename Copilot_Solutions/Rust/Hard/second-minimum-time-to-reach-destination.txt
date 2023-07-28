@@ -1,0 +1,255 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            graph[edge[0] as usize - 1].push(edge[1] as usize - 1);
+            graph[edge[1] as usize - 1].push(edge[0] as usize - 1);
+        }
+        let mut visited = vec![false; n as usize];
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, 0, 0));
+        let mut ans = std::i32::MAX;
+        while let Some((node, dist, color)) = queue.pop_front() {
+            if node == n as usize - 1 {
+                if dist < ans {
+                    ans = dist;
+                }
+                continue;
+            }
+            visited[node] = true;
+            let color1 = (dist / change) % 2;
+            let color2 = (dist / change + 1) % 2;
+            for &next in &graph[node] {
+                if !visited[next] {
+                    if color == color1 {
+                        queue.push_back((next, dist + time, color1));
+                    } else {
+                        queue.push_back((next, dist + change - dist % change + time, color1));
+                    }
+                    if color == color2 {
+                        queue.push_back((next, dist + time, color2));
+                    } else {
+                        queue.push_back((next, dist + change - dist % change + time, color2));
+                    }
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for edge in edges {
+            graph[edge[0] as usize - 1].push(edge[1] as usize - 1);
+            graph[edge[1] as usize - 1].push(edge[0] as usize - 1);
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((0, 0));
+        let mut visited = vec![false; n as usize];
+        let mut min_time = std::i32::MAX;
+        let mut second_min_time = std::i32::MAX;
+        while !queue.is_empty() {
+            let (v, t) = queue.pop_front().unwrap();
+            if v == (n - 1) as usize {
+                if t < min_time {
+                    second_min_time = min_time;
+                    min_time = t;
+                } else if t < second_min_time {
+                    second_min_time = t;
+                }
+            }
+            if visited[v] || t >= second_min_time {
+                continue;
+            }
+            visited[v] = true;
+            for &next_v in &graph[v] {
+                let next_t = t + time + (next_v as i32 - v as i32) * change;
+                queue.push_back((next_v, next_t));
+            }
+        }
+        second_min_time
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n];
+        for e in edges {
+            let u = e[0] as usize - 1;
+            let v = e[1] as usize - 1;
+            g[u].push(v);
+            g[v].push(u);
+        }
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, 0));
+        let mut seen = vec![false; n];
+        let mut ans = 1 << 30;
+        while let Some((u, t)) = q.pop_front() {
+            let u = u as usize;
+            if u == n - 1 {
+                ans = ans.min(t);
+                continue;
+            }
+            if seen[u] {
+                continue;
+            }
+            seen[u] = true;
+            for &v in &g[u] {
+                let v = v as usize;
+                let t = t + time;
+                let t = t + (change - t % change) % change;
+                q.push_back((v, t));
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for e in edges {
+            let u = e[0] as usize - 1;
+            let v = e[1] as usize - 1;
+            graph[u].push(v);
+            graph[v].push(u);
+        }
+        let mut dist = vec![std::i32::MAX; n];
+        let mut q = std::collections::BinaryHeap::new();
+        q.push((0, 0));
+        while let Some((d, u)) = q.pop() {
+            let d = -d;
+            if dist[u] <= d {
+                continue;
+            }
+            dist[u] = d;
+            for &v in &graph[u] {
+                let cycle = (d / change) % 2;
+                let t = if cycle == 0 { time } else { change - d % change + time };
+                q.push((-d - t, v));
+            }
+        }
+        let mut ans = std::i32::MAX;
+        for &d in &dist {
+            if d < ans && d > dist[0] {
+                ans = d;
+            }
+        }
+        ans
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for edge in edges {
+            let (u, v) = (edge[0] as usize - 1, edge[1] as usize - 1);
+            graph[u].push(v);
+            graph[v].push(u);
+        }
+        let mut dist = vec![vec![std::i32::MAX; 2]; n];
+        dist[0][0] = 0;
+        let mut q = std::collections::BinaryHeap::new();
+        q.push((std::cmp::Reverse(0), 0, 0));
+        while let Some((std::cmp::Reverse(d), u, f)) = q.pop() {
+            if d > dist[u][f] {
+                continue;
+            }
+            for &v in &graph[u] {
+                let (d, f) = if f == 0 {
+                    (d + time, 1)
+                } else {
+                    let t = (d + time) % (2 * change);
+                    if t <= change {
+                        (d + time + change - t, 0)
+                    } else {
+                        (d + time + 2 * change - t, 1)
+                    }
+                };
+                if d < dist[v][f] {
+                    dist[v][f] = d;
+                    q.push((std::cmp::Reverse(d), v, f));
+                }
+            }
+        }
+        dist[n - 1][1]
+    }
+}
+
+=======
+
+        let mut g = vec![vec![]; n as usize];
+        for e in edges {
+            g[e[0] as usize - 1].push((e[1] as usize - 1, time));
+            g[e[1] as usize - 1].push((e[0] as usize - 1, time));
+        }
+        let mut dp = vec![std::i32::MAX; n as usize];
+        let mut q = std::collections::BinaryHeap::new();
+        q.push(std::cmp::Reverse((0, 0)));
+        while let Some(std::cmp::Reverse((t, u))) = q.pop() {
+            if dp[u] <= t {
+                continue;
+            }
+            dp[u] = t;
+            for &(v, c) in &g[u] {
+                let t = t + c + if (t / change) % 2 == 0 { 0 } else { change - t % change };
+                q.push(std::cmp::Reverse((t, v)));
+            }
+        }
+        let mut ans = std::i32::MAX;
+        for &t in &dp {
+            if t > dp[0] {
+                ans = ans.min(t);
+            }
+        }
+        ans
+
+=======
+
+        let mut g = vec![vec![]; n as usize];
+        for e in edges {
+            let u = e[0] as usize - 1;
+            let v = e[1] as usize - 1;
+            g[u].push(v);
+            g[v].push(u);
+        }
+        let mut q = std::collections::VecDeque::new();
+        let mut vis = vec![false; n as usize];
+        let mut t = vec![std::i32::MAX; n as usize];
+        q.push_back((0, 0));
+        vis[0] = true;
+        t[0] = 0;
+        while let Some((u, ti)) = q.pop_front() {
+            for &v in &g[u] {
+                if vis[v] {
+                    continue;
+                }
+                let mut nt = ti + time;
+                let mut c = (ti + time) / change;
+                if c % 2 == 0 {
+                    c += 1;
+                }
+                nt = std::cmp::max(nt, c * change);
+                if t[v] == std::i32::MAX {
+                    t[v] = nt;
+                    q.push_back((v, nt));
+                } else if t[v] > nt {
+                    t[v] = nt;
+                    q.push_back((v, nt));
+                }
+            }
+        }
+        let mut ans = std::i32::MAX;
+        for i in 1..n as usize {
+            if t[i] != std::i32::MAX {
+                ans = std::cmp::min(ans, t[i]);
+            }
+        }
+        ans
+
+=======
+
+        
+    }
+}

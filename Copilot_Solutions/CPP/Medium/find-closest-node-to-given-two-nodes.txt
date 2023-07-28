@@ -1,0 +1,304 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = edges.size();
+        vector<int> dist1(n, INT_MAX);
+        vector<int> dist2(n, INT_MAX);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        for (int i = 0; i < n; i++) {
+            if (edges[i] != -1) {
+                if (dist1[i] != INT_MAX) {
+                    dist1[edges[i]] = min(dist1[edges[i]], dist1[i] + 1);
+                }
+                if (dist2[i] != INT_MAX) {
+                    dist2[edges[i]] = min(dist2[edges[i]], dist2[i] + 1);
+                }
+            }
+        }
+        int ans = -1;
+        int minDist = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            if (dist1[i] != INT_MAX && dist2[i] != INT_MAX) {
+                if (dist1[i] + dist2[i] < minDist) {
+                    minDist = dist1[i] + dist2[i];
+                    ans = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        unordered_map<int, vector<int>> graph;
+        for (int i = 0; i < n; ++i) {
+            if (edges[i] != -1) {
+                graph[i].push_back(edges[i]);
+            }
+        }
+        queue<pair<int, int>> q;
+        q.push({node1, 0});
+        q.push({node2, 0});
+        unordered_set<int> visited;
+        int res = INT_MAX;
+        while (!q.empty()) {
+            auto [node, dist] = q.front();
+            q.pop();
+            if (visited.count(node)) {
+                res = min(res, dist);
+            }
+            visited.insert(node);
+            for (auto& next : graph[node]) {
+                q.push({next, dist + 1});
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int n = edges.size();
+        vector<int> dist(n, INT_MAX);
+        queue<int> q;
+        q.push(node1);
+        dist[node1] = 0;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            if (u == node2) break;
+            if (edges[u] >= 0 && dist[edges[u]] == INT_MAX) {
+                dist[edges[u]] = dist[u] + 1;
+                q.push(edges[u]);
+            }
+        }
+        if (dist[node2] != INT_MAX) return node2;
+        q.push(node2);
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            if (edges[u] >= 0 && dist[edges[u]] == INT_MAX) {
+                dist[edges[u]] = dist[u] + 1;
+                q.push(edges[u]);
+            }
+        }
+        int ans = -1, maxDist = INT_MIN;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] != INT_MAX && dist[i] > maxDist) {
+                maxDist = dist[i];
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        vector<int> dist(n, INT_MAX);
+        queue<int> q;
+        q.push(node1);
+        dist[node1] = 0;
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            if(edges[u] != -1) {
+                if(dist[edges[u]] == INT_MAX) {
+                    dist[edges[u]] = dist[u] + 1;
+                    q.push(edges[u]);
+                }
+            }
+        }
+        q.push(node2);
+        dist[node2] = 0;
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            if(edges[u] != -1) {
+                if(dist[edges[u]] == INT_MAX) {
+                    dist[edges[u]] = dist[u] + 1;
+                    q.push(edges[u]);
+                }
+            }
+        }
+        int ans = -1;
+        int maxDist = INT_MIN;
+        for(int i = 0; i < n; i++) {
+            if(dist[i] != INT_MAX) {
+                if(dist[i] > maxDist) {
+                    maxDist = dist[i];
+                    ans = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        vector<int> visited(n, 0);
+        int curr = node1;
+        while (curr != -1) {
+            visited[curr] = 1;
+            curr = edges[curr];
+        }
+        curr = node2;
+        while (curr != -1) {
+            if (visited[curr] == 1) {
+                return curr;
+            }
+            curr = edges[curr];
+        }
+        return -1;
+
+=======
+
+        int n = edges.size();
+        set<int> visited;
+        queue<int> q;
+        q.push(node1);
+        visited.insert(node1);
+        while (!q.empty()) {
+            int node = q.front(); q.pop();
+            if (node == node2) {
+                return node;
+            }
+            if (edges[node] != -1) {
+                if (visited.find(edges[node]) == visited.end()) {
+                    q.push(edges[node]);
+                    visited.insert(edges[node]);
+                }
+            }
+        }
+        visited.clear();
+        q.push(node2);
+        visited.insert(node2);
+        while (!q.empty()) {
+            int node = q.front(); q.pop();
+            if (node == node1) {
+                return node;
+            }
+            if (edges[node] != -1) {
+                if (visited.find(edges[node]) == visited.end()) {
+                    q.push(edges[node]);
+                    visited.insert(edges[node]);
+                }
+            }
+        }
+        return -1;
+    }
+    int findClosest(vector<int>& edges, int node1, int node2) {
+        int n = edges.size();
+        int node = closestMeetingNode(edges, node1, node2);
+        if (node == -1) {
+            return -1;
+        }
+        int node1_to_node = 0, node2_to_node = 0;
+        while (node1 != node) {
+            node1 = edges[node1];
+            node1_to_node++;
+        }
+        while (node2 != node) {
+            node2 = edges[node2];
+            node2_to_node++;
+        }
+        return max(node1_to_node, node2_to_node);
+
+=======
+
+        int n = edges.size();
+        vector<int> nodes(n, -1);
+        int i = node1;
+        while (i != -1) {
+            nodes[i] = 0;
+            i = edges[i];
+        }
+        i = node2;
+        while (i != -1) {
+            if (nodes[i] == 0)
+                nodes[i] = 1;
+            i = edges[i];
+        }
+        int min = INT_MAX, minNode = -1;
+        for (int i = 0; i < n; i++) {
+            if (nodes[i] == 1) {
+                int dist = abs(node1 - i) + abs(node2 - i);
+                if (dist < min) {
+                    min = dist;
+                    minNode = i;
+                }
+            }
+        }
+        return minNode;
+
+=======
+
+        int n = edges.size();
+        int ans = -1;
+        int minDist = INT_MAX;
+        vector<int> dist1(n, INT_MAX);
+        vector<int> dist2(n, INT_MAX);
+        dist1[node1] = 0;
+        dist2[node2] = 0;
+        for (int i = 0; i < n; ++i) {
+            if (edges[i] != -1) {
+                if (dist1[i] != INT_MAX) {
+                    dist1[edges[i]] = min(dist1[edges[i]], dist1[i] + 1);
+                }
+                if (dist2[i] != INT_MAX) {
+                    dist2[edges[i]] = min(dist2[edges[i]], dist2[i] + 1);
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (dist1[i] != INT_MAX && dist2[i] != INT_MAX) {
+                int curDist = max(dist1[i], dist2[i]);
+                if (curDist < minDist) {
+                    minDist = curDist;
+                    ans = i;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        int a = node1;
+        int b = node2;
+        vector<int> aPath;
+        vector<int> bPath;
+        while (a != -1) {
+            aPath.push_back(a);
+            a = edges[a];
+        }
+        while (b != -1) {
+            bPath.push_back(b);
+            b = edges[b];
+        }
+        int i = aPath.size() - 1;
+        int j = bPath.size() - 1;
+        while (i >= 0 && j >= 0 && aPath[i] == bPath[j]) {
+            i--;
+            j--;
+        }
+        return aPath[i + 1];
+
+=======
+
+        std::unordered_map<int, int> m;
+        int n = edges.size();
+        m[node1] = 0;
+        m[node2] = 0;
+        int node = node1;
+        while (node >= 0) {
+            if (m.find(node) != m.end()) {
+                m[node] = 0;
+            }
+            node = edges[node];
+        }
+        node = node2;
+        while (node >= 0) {
+            if (m.find(node) != m.end()) {
+                return node;
+            }
+            node = edges[node];
+        }
+        return -1;

@@ -1,0 +1,237 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = edges.size();
+        vector<vector<int>> graph(n);
+        for (int i = 0; i < n; ++i) {
+            if (edges[i] == -1) continue;
+            graph[i].push_back(edges[i]);
+        }
+        vector<int> visited(n, 0);
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (visited[i] == 0) {
+                int cycle = dfs(graph, visited, i);
+                if (cycle != -1) res = max(res, cycle);
+            }
+        }
+        return res;
+    }
+    
+    int dfs(vector<vector<int>>& graph, vector<int>& visited, int i) {
+        if (visited[i] == 1) return 1;
+        if (visited[i] == 2) return -1;
+        visited[i] = 1;
+        int res = -1;
+        for (int v : graph[i]) {
+            int cycle = dfs(graph, visited, v);
+            if (cycle != -1) res = max(res, cycle + 1);
+        }
+        visited[i] = 2;
+        return res;
+
+=======
+
+        int n = edges.size();
+        vector<int> vis(n, 0);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (vis[i]) continue;
+            vis[i] = 1;
+            int j = edges[i];
+            int cnt = 1;
+            while (j != -1 && !vis[j]) {
+                vis[j] = 1;
+                j = edges[j];
+                cnt++;
+            }
+            if (j == i) {
+                ans = max(ans, cnt);
+            }
+        }
+        return ans == 1 ? -1 : ans;
+
+=======
+
+        int n = edges.size();
+        vector<int> dp(n, -1);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] != -1) continue;
+            vector<int> path;
+            int j = i;
+            while (j != -1 && dp[j] == -1) {
+                dp[j] = 0;
+                path.push_back(j);
+                j = edges[j];
+            }
+            if (j == -1) continue;
+            int k = 0;
+            while (path[k] != j) k++;
+            res = max(res, (int)path.size() - k);
+        }
+        return res;
+
+=======
+
+        int n = edges.size();
+        vector<int> visited(n, 0);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                int cur = i;
+                int step = 0;
+                while (edges[cur] != -1 && visited[cur] == 0) {
+                    visited[cur] = 1;
+                    cur = edges[cur];
+                    step++;
+                }
+                if (edges[cur] == -1) {
+                    continue;
+                }
+                if (visited[cur] == 1) {
+                    res = max(res, step + 1);
+                }
+                cur = edges[cur];
+                step++;
+                while (cur != i) {
+                    cur = edges[cur];
+                    step++;
+                }
+                res = max(res, step);
+            }
+        }
+        return res;
+
+=======
+
+        int n = edges.size();
+        vector<int> dp(n, -1);
+        int ans = -1;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] != -1) continue;
+            int cur = i;
+            int len = 0;
+            while (edges[cur] != -1) {
+                if (dp[cur] != -1) {
+                    ans = max(ans, len - dp[cur]);
+                    break;
+                }
+                dp[cur] = len;
+                cur = edges[cur];
+                len++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        vector<int> dp(n, -1);
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int j = i;
+            int cur = 0;
+            while (edges[j] != -1) {
+                if (dp[j] != -1) {
+                    cur += dp[j];
+                    break;
+                }
+                int k = edges[j];
+                edges[j] = -1;
+                j = k;
+                ++cur;
+            }
+            if (j == i && cur > 0) {
+                ans = max(ans, cur);
+            }
+            j = i;
+            while (dp[j] == -1) {
+                dp[j] = cur--;
+                if (edges[j] == -1) break;
+                j = edges[j];
+            }
+        }
+        return ans == n ? -1 : ans;
+
+=======
+
+        int n = edges.size();
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int len = 0;
+            int j = i;
+            while (edges[j] != -1) {
+                int k = edges[j];
+                edges[j] = -1;
+                j = k;
+                len++;
+            }
+            if (j == i && len > 0) {
+                res = max(res, len);
+            }
+        }
+        return res == n ? -1 : res;
+
+=======
+
+        vector<int> vis(edges.size(), 0);
+        int ans = 0;
+        for (int i = 0; i < edges.size(); i++) {
+            if (vis[i]) continue;
+            int cur = i;
+            int len = 0;
+            while (edges[cur] != -1 && vis[cur] == 0) {
+                vis[cur] = 1;
+                cur = edges[cur];
+                len++;
+            }
+            if (edges[cur] == -1) continue;
+            if (vis[cur] == 1) {
+                ans = max(ans, len);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = edges.size();
+        vector<int> visited(n, -1);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            int c = 0;
+            while (visited[j] == -1) {
+                visited[j] = i;
+                j = edges[j];
+                c++;
+            }
+            if (visited[j] == i) {
+                res = max(res, c);
+            }
+        }
+        return res == n ? -1 : res;
+
+=======
+
+        int n = edges.size();
+        vector<int> path(n, 0);
+        vector<int> visited(n, 0);
+        int max_cycle = 0;
+        for (int i = 0; i < n; ++i) {
+            if (visited[i] == 0) {
+                int cycle = 0;
+                int node = i;
+                while (visited[node] == 0) {
+                    visited[node] = 1;
+                    path[node] = cycle++;
+                    node = edges[node];
+                }
+                if (visited[node] == 1) {
+                    max_cycle = max(max_cycle, cycle - path[node]);
+                    visited[node] = 2;
+                }
+            }
+        }
+        return max_cycle;

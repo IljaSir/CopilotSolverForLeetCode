@@ -1,0 +1,233 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = grid.size();
+        vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+        dist[0][0] = grid[0][0];
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({grid[0][0], 0});
+        vector<vector<int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        while (!pq.empty()) {
+            auto [d, u] = pq.top();
+            pq.pop();
+            int x = u / n, y = u % n;
+            if (x == n - 1 && y == n - 1) return d;
+            for (auto dir : dirs) {
+                int i = x + dir[0], j = y + dir[1];
+                if (i >= 0 && i < n && j >= 0 && j < n) {
+                    int v = i * n + j;
+                    int nd = max(d, grid[i][j]);
+                    if (nd < dist[i][j]) {
+                        dist[i][j] = nd;
+                        pq.push({nd, v});
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = grid.size();
+        vector<vector<int>> dir = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<vector<bool>> visited(n, vector<bool>(n, false));
+        pq.push({grid[0][0], 0});
+        visited[0][0] = true;
+        while (!pq.empty()) {
+            auto [t, idx] = pq.top();
+            pq.pop();
+            int i = idx / n, j = idx % n;
+            if (i == n - 1 && j == n - 1) {
+                return t;
+            }
+            for (auto d : dir) {
+                int ni = i + d[0], nj = j + d[1];
+                if (ni >= 0 && ni < n && nj >= 0 && nj < n && !visited[ni][nj]) {
+                    visited[ni][nj] = true;
+                    pq.push({max(t, grid[ni][nj]), ni * n + nj});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = grid.size();
+        int left = 0, right = n * n;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (check(grid, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    bool check(vector<vector<int>>& grid, int t) {
+        int n = grid.size();
+        vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+        dist[0][0] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        int dx[4] = {-1, 1, 0, 0};
+        int dy[4] = {0, 0, -1, 1};
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n && max(dist[x][y], grid[nx][ny]) <= t && max(dist[nx][ny], grid[nx][ny]) > t) {
+                    dist[nx][ny] = max(dist[x][y], grid[nx][ny]);
+                    q.push({nx, ny});
+                }
+            }
+        }
+        return dist[n - 1][n - 1] <= t;
+
+=======
+
+        int N = grid.size();
+        int ans = 0;
+        vector<vector<bool>> visited(N, vector<bool>(N, false));
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({grid[0][0], 0, 0});
+        visited[0][0] = true;
+        vector<int> dx = {1, 0, -1, 0};
+        vector<int> dy = {0, 1, 0, -1};
+        while(!pq.empty()) {
+            auto cur = pq.top();
+            pq.pop();
+            ans = max(ans, cur[0]);
+            int x = cur[1];
+            int y = cur[2];
+            if(x == N - 1 && y == N - 1) {
+                break;
+            }
+            for(int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if(nx >= 0 && nx < N && ny >= 0 && ny < N && !visited[nx][ny]) {
+                    visited[nx][ny] = true;
+                    pq.push({grid[nx][ny], nx, ny});
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = grid.size();
+        int lo = 0;
+        int hi = n * n;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (dfs(grid, 0, 0, mid)) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+
+=======
+
+        int n = grid.size();
+        int left = grid[0][0], right = n*n-1;
+        while (left < right) {
+            int mid = left + (right-left)/2;
+            if (canReach(grid, mid)) {
+                right = mid;
+            } else {
+                left = mid+1;
+            }
+        }
+        return left;
+
+=======
+
+        int n = grid.size();
+        int low = grid[0][0], high = n*n-1;
+        while (low < high) {
+            int mid = low + (high-low)/2;
+            if (canReach(grid, mid)) high = mid;
+            else low = mid+1;
+        }
+        return low;
+
+=======
+
+        int n = grid.size();
+        int l = 0;
+        int r = n*n-1;
+        while (l < r) {
+            int m = (l+r)/2;
+            vector<vector<bool>> visited(n, vector<bool>(n, false));
+            if (dfs(grid, visited, 0, 0, m)) {
+                r = m;
+            } else {
+                l = m+1;
+            }
+        }
+        return l;
+    }
+    
+    bool dfs(vector<vector<int>>& grid, vector<vector<bool>>& visited, int x, int y, int m) {
+        int n = grid.size();
+        if (x < 0 || x >= n || y < 0 || y >= n || visited[x][y] || grid[x][y] > m) {
+            return false;
+        }
+        if (x == n-1 && y == n-1) {
+            return true;
+        }
+        visited[x][y] = true;
+        return dfs(grid, visited, x+1, y, m) || dfs(grid, visited, x-1, y, m) || dfs(grid, visited, x, y+1, m) || dfs(grid, visited, x, y-1, m);
+
+=======
+
+        int n = grid.size();
+        int l = 0, r = n*n - 1;
+        vector<vector<int>> d = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        while (l < r) {
+            int mid = (l + r) / 2;
+            vector<vector<bool>> vis(n, vector<bool>(n, false));
+            queue<pair<int, int>> q;
+            q.push({0, 0});
+            vis[0][0] = true;
+            while (!q.empty()) {
+                auto [x, y] = q.front();
+                q.pop();
+                for (auto& dir : d) {
+                    int nx = x + dir[0], ny = y + dir[1];
+                    if (nx >= 0 && nx < n && ny >= 0 && ny < n && !vis[nx][ny] && grid[nx][ny] <= mid) {
+                        vis[nx][ny] = true;
+                        q.push({nx, ny});
+                    }
+                }
+            }
+            if (vis[n - 1][n - 1]) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = grid.size();
+        int left = 0, right = n*n;
+        int res = 0;
+        while(left < right){
+            int mid = left + (right - left)/2;
+            if(dfs(grid, mid, 0, 0)){
+                res = mid;
+                right = mid;
+            }else{
+                left = mid + 1;
+            }
+        }
+        return res;

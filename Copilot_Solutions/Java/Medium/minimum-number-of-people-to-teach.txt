@@ -1,0 +1,376 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Set<Integer>> langMap = new HashMap<>();
+        for (int i = 0; i < languages.length; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                langMap.computeIfAbsent(i, k -> new HashSet<>()).add(languages[i][j]);
+            }
+        }
+        Map<Integer, Set<Integer>> friendshipMap = new HashMap<>();
+        for (int i = 0; i < friendships.length; i++) {
+            int[] friendship = friendships[i];
+            if (langMap.get(friendship[0] - 1).equals(langMap.get(friendship[1] - 1))) {
+                continue;
+            }
+            friendshipMap.computeIfAbsent(friendship[0], k -> new HashSet<>()).add(friendship[1]);
+            friendshipMap.computeIfAbsent(friendship[1], k -> new HashSet<>()).add(friendship[0]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 1; i <= n; i++) {
+            Map<Integer, Integer> langCount = new HashMap<>();
+            for (Map.Entry<Integer, Set<Integer>> entry : friendshipMap.entrySet()) {
+                Set<Integer> langs = langMap.get(entry.getKey() - 1);
+                if (langs.contains(i)) {
+                    continue;
+                }
+                for (Integer friend : entry.getValue()) {
+                    Set<Integer> friendLangs = langMap.get(friend - 1);
+                    if (friendLangs.contains(i)) {
+                        continue;
+                    }
+                    langCount.compute(friend, (k, v) -> v == null ? 1 : v + 1);
+                }
+            }
+            min = Math.min(min, langCount.values().stream().mapToInt(v -> v).sum());
+        }
+        return min;
+
+=======
+
+        int m = languages.length;
+        Set<Integer>[] lang = new Set[m];
+        for (int i = 0; i < m; i++) {
+            lang[i] = new HashSet<>();
+            for (int j = 0; j < languages[i].length; j++) {
+                lang[i].add(languages[i][j]);
+            }
+        }
+        int[] count = new int[n + 1];
+        int res = m;
+        for (int[] f : friendships) {
+            int x = f[0] - 1, y = f[1] - 1;
+            if (lang[x].equals(lang[y])) continue;
+            for (int i = 1; i <= n; i++) {
+                if (lang[x].contains(i) || lang[y].contains(i)) {
+                    count[i]++;
+                }
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            res = Math.min(res, m - count[i]);
+        }
+        return res;
+
+=======
+
+        int m = languages.length;
+        int[] lang = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                lang[i] |= (1 << (languages[i][j] - 1));
+            }
+        }
+        int[] f = new int[friendships.length];
+        for (int i = 0; i < friendships.length; i++) {
+            f[i] = lang[friendships[i][0] - 1] | lang[friendships[i][1] - 1];
+        }
+        int[] count = new int[n + 1];
+        for (int i = 0; i < friendships.length; i++) {
+            if (f[i] == 0) {
+                count[0]++;
+            } else {
+                for (int j = 1; j <= n; j++) {
+                    if ((f[i] & (1 << (j - 1))) != 0) {
+                        count[j]++;
+                    }
+                }
+            }
+        }
+        int res = friendships.length;
+        for (int i = 1; i <= n; i++) {
+            res = Math.min(res, count[i]);
+        }
+        return res;
+
+=======
+
+        int m = languages.length;
+        Map<Integer, Set<Integer>> userLanguages = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            userLanguages.put(i + 1, new HashSet<>());
+            for (int j = 0; j < languages[i].length; j++) {
+                userLanguages.get(i + 1).add(languages[i][j]);
+            }
+        }
+        Map<Integer, Set<Integer>> langUsers = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            langUsers.put(i + 1, new HashSet<>());
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                langUsers.get(languages[i][j]).add(i + 1);
+            }
+        }
+        Map<Integer, Set<Integer>> friends = new HashMap<>();
+        for (int i = 0; i < friendships.length; i++) {
+            int u = friendships[i][0];
+            int v = friendships[i][1];
+            friends.putIfAbsent(u, new HashSet<>());
+            friends.putIfAbsent(v, new HashSet<>());
+            friends.get(u).add(v);
+            friends.get(v).add(u);
+        }
+        int result = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int lang = i + 1;
+            int count = 0;
+            Set<Integer> users = langUsers.get(lang);
+            for (int user : users) {
+                if (!hasCommonLanguage(user, userLanguages, lang, friends)) {
+                    count++;
+                }
+            }
+            result = Math.min(result, count);
+        }
+        return result;
+    }
+    
+    private boolean hasCommonLanguage(int user, Map<Integer, Set<Integer>> userLanguages, int lang, Map<Integer, Set<Integer>> friends) {
+        Set<Integer> friendList = friends.get(user);
+        if (friendList == null) {
+            return true;
+        }
+        for (int friend : friendList) {
+            Set<Integer> langs = userLanguages.get(friend);
+            if (langs.contains(lang)) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int m = languages.length;
+        Map<Integer, Set<Integer>> langSet = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            langSet.put(i, new HashSet<>());
+            for (int lang : languages[i]) {
+                langSet.get(i).add(lang);
+            }
+        }
+        Map<Integer, Set<Integer>> friendSet = new HashMap<>();
+        for (int[] fr : friendships) {
+            int u = fr[0] - 1;
+            int v = fr[1] - 1;
+            if (langSet.get(u).equals(langSet.get(v))) {
+                continue;
+            }
+            friendSet.putIfAbsent(u, new HashSet<>());
+            friendSet.putIfAbsent(v, new HashSet<>());
+            friendSet.get(u).add(v);
+            friendSet.get(v).add(u);
+        }
+        int ans = m;
+        for (int lang = 1; lang <= n; lang++) {
+            Set<Integer> set = new HashSet<>();
+            for (int i = 0; i < m; i++) {
+                if (langSet.get(i).contains(lang)) {
+                    set.add(i);
+                }
+            }
+            int cnt = 0;
+            for (int i = 0; i < m; i++) {
+                if (set.contains(i)) {
+                    continue;
+                }
+                if (friendSet.get(i) != null) {
+                    cnt++;
+                }
+            }
+            ans = Math.min(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int m = languages.length;
+        int[] languageCount = new int[n + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                languageCount[languages[i][j]]++;
+            }
+        }
+        int[] languageCount2 = languageCount.clone();
+        int[] languageCount3 = languageCount.clone();
+        for (int i = 0; i < friendships.length; i++) {
+            int[] friendship = friendships[i];
+            int a = friendship[0];
+            int b = friendship[1];
+            boolean flag = false;
+            for (int j = 0; j < languages[a - 1].length; j++) {
+                if (Arrays.binarySearch(languages[b - 1], languages[a - 1][j]) >= 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                for (int j = 0; j < languages[a - 1].length; j++) {
+                    languageCount2[languages[a - 1][j]]--;
+                }
+                for (int j = 0; j < languages[b - 1].length; j++) {
+                    languageCount3[languages[b - 1][j]]--;
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 1; i <= n; i++) {
+            min = Math.min(min, Math.min(languageCount2[i], languageCount3[i]));
+        }
+        return min;
+
+=======
+
+        int m = languages.length;
+        Set<Integer>[][] lang = new Set[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                if (lang[i][languages[i][j] - 1] == null) {
+                    lang[i][languages[i][j] - 1] = new HashSet<>();
+                }
+                lang[i][languages[i][j] - 1].add(i);
+            }
+        }
+        int[][] f = new int[friendships.length][2];
+        for (int i = 0; i < friendships.length; i++) {
+            f[i][0] = friendships[i][0] - 1;
+            f[i][1] = friendships[i][1] - 1;
+        }
+        int[] langCount = new int[n];
+        for (int i = 0; i < n; i++) {
+            Set<Integer> set = new HashSet<>();
+            for (int j = 0; j < m; j++) {
+                if (lang[j][i] != null) {
+                    set.addAll(lang[j][i]);
+                }
+            }
+            langCount[i] = set.size();
+        }
+        int min = m;
+        for (int i = 0; i < friendships.length; i++) {
+            int[] p = f[i];
+            int c = 0;
+            for (int j = 0; j < n; j++) {
+                if (lang[p[0]][j] != null && lang[p[1]][j] != null) {
+                    c = Math.max(c, langCount[j]);
+                }
+            }
+            min = Math.min(min, m - c);
+        }
+        return min;
+
+=======
+
+        int m = languages.length;
+        int[] langCount = new int[n + 1];
+        for (int[] lang : languages) {
+            for (int l : lang) {
+                langCount[l]++;
+            }
+        }
+        Map<Integer, Set<Integer>> langToUsers = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int l : languages[i]) {
+                langToUsers.computeIfAbsent(l, k -> new HashSet<>()).add(i);
+            }
+        }
+        int min = m;
+        for (int[] f : friendships) {
+            int u = f[0] - 1;
+            int v = f[1] - 1;
+            if (hasCommonLanguage(languages[u], languages[v])) {
+                continue;
+            }
+            int count = 0;
+            for (int l : languages[u]) {
+                count += langCount[l] - langToUsers.get(l).size();
+            }
+            for (int l : languages[v]) {
+                count += langCount[l] - langToUsers.get(l).size();
+            }
+            min = Math.min(min, count);
+        }
+        return min;
+    }
+    private boolean hasCommonLanguage(int[] a, int[] b) {
+        for (int i : a) {
+            for (int j : b) {
+                if (i == j) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int m = languages.length;
+        int f = friendships.length;
+        int[] lang = new int[m + 1];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < languages[i].length; j++) {
+                lang[i + 1] |= 1 << (languages[i][j] - 1);
+            }
+        }
+        int[] common = new int[f];
+        for (int i = 0; i < f; i++) {
+            common[i] = lang[friendships[i][0]] & lang[friendships[i][1]];
+        }
+        int ans = f;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = 0; j < f; j++) {
+                if (common[j] >> i == 0) {
+                    cnt++;
+                }
+            }
+            ans = Math.min(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int m = languages.length;
+        int[] friend = new int[m + 1];
+        for (int i = 0; i < friendships.length; i++) {
+            int[] f = friendships[i];
+            friend[f[0]] |= (1 << f[1]);
+            friend[f[1]] |= (1 << f[0]);
+        }
+        int[] cnt = new int[n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 0; j < languages[i - 1].length; j++) {
+                cnt[languages[i - 1][j]]++;
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 1; i <= m; i++) {
+            int[] cur = new int[n + 1];
+            for (int j = 0; j < languages[i - 1].length; j++) {
+                cur[languages[i - 1][j]]++;
+            }
+            int need = 0;
+            for (int j = 1; j <= m; j++) {
+                if ((friend[i] & (1 << j)) == 0) {
+                    continue;
+                }
+                int max = 0;
+                for (int k = 0; k < languages[j - 1].length; k++) {
+                    max = Math.max(max, cur[languages[j - 1][k]]);
+                }
+                need += cnt[languages[j - 1][0]] - max;
+            }
+            ans = Math.min(ans, need);
+        }
+        return ans;

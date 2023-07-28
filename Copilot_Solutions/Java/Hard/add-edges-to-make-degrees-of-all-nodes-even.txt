@@ -1,0 +1,437 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 1; i <= n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (List<Integer> edge : edges) {
+            int u = edge.get(0);
+            int v = edge.get(1);
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        int[] degree = new int[n + 1];
+        for (int u = 1; u <= n; u++) {
+            degree[u] = graph.get(u).size();
+        }
+        int odd = 0;
+        for (int u = 1; u <= n; u++) {
+            if (degree[u] % 2 == 1) {
+                odd++;
+            }
+        }
+        if (odd == 0) {
+            return true;
+        }
+        if (odd % 2 == 1) {
+            return false;
+        }
+        int[] color = new int[n + 1];
+        for (int u = 1; u <= n; u++) {
+            if (degree[u] % 2 == 1) {
+                if (!dfs(graph, degree, color, u, 1)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    private boolean dfs(Map<Integer, Set<Integer>> graph, int[] degree, int[] color, int u, int c) {
+        color[u] = c;
+        for (int v : graph.get(u)) {
+            if (color[v] == c) {
+                return false;
+            }
+            if (color[v] == 0 && !dfs(graph, degree, color, v, -c)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int[] degree = new int[n + 1];
+        for (List<Integer> edge : edges) {
+            degree[edge.get(0)]++;
+            degree[edge.get(1)]++;
+        }
+        int odd = 0;
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                odd++;
+            }
+        }
+        if (odd == 0) {
+            return true;
+        }
+        if (odd != 2) {
+            return false;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (List<Integer> edge : edges) {
+            int a = edge.get(0);
+            int b = edge.get(1);
+            if (degree[a] % 2 == 1 && degree[b] % 2 == 1) {
+                set.add(a);
+                set.add(b);
+            }
+        }
+        if (set.size() != 2) {
+            return false;
+        }
+        return true;
+
+=======
+
+        int[] degree = new int[n];
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (List<Integer> edge : edges) {
+            degree[edge.get(0) - 1]++;
+            degree[edge.get(1) - 1]++;
+            map.putIfAbsent(edge.get(0), new HashSet<>());
+            map.putIfAbsent(edge.get(1), new HashSet<>());
+            map.get(edge.get(0)).add(edge.get(1));
+            map.get(edge.get(1)).add(edge.get(0));
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < degree.length; i++) {
+            if (degree[i] % 2 == 1) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            if (degree[cur] % 2 == 1) {
+                for (int nei : map.get(cur + 1)) {
+                    degree[nei - 1]--;
+                    degree[cur]--;
+                    map.get(nei).remove(cur + 1);
+                    if (degree[nei - 1] % 2 == 1) {
+                        queue.offer(nei - 1);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < degree.length; i++) {
+            if (degree[i] % 2 == 1) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int[] degree = new int[n + 1];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (List<Integer> edge : edges) {
+            degree[edge.get(0)]++;
+            degree[edge.get(1)]++;
+            if (!map.containsKey(edge.get(0))) {
+                map.put(edge.get(0), new ArrayList<>());
+            }
+            if (!map.containsKey(edge.get(1))) {
+                map.put(edge.get(1), new ArrayList<>());
+            }
+            map.get(edge.get(0)).add(edge.get(1));
+            map.get(edge.get(1)).add(edge.get(0));
+        }
+        int odd = 0;
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                odd++;
+            }
+        }
+        if (odd == 0) {
+            return true;
+        }
+        if (odd % 2 == 1) {
+            return false;
+        }
+        int[] visited = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1 && visited[i] == 0) {
+                if (!dfs(map, visited, i, 1)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    private boolean dfs(Map<Integer, List<Integer>> map, int[] visited, int node, int color) {
+        visited[node] = color;
+        if (map.containsKey(node)) {
+            for (int next : map.get(node)) {
+                if (visited[next] == color) {
+                    return false;
+                }
+                if (visited[next] == 0 && !dfs(map, visited, next, -color)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        // build graph
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 1; i <= n; i++) {
+            graph.put(i, new HashSet<>());
+        }
+        for (List<Integer> edge : edges) {
+            int a = edge.get(0);
+            int b = edge.get(1);
+            graph.get(a).add(b);
+            graph.get(b).add(a);
+        }
+        
+        // count degree
+        int[] degree = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            degree[i] = graph.get(i).size();
+        }
+        
+        // remove odd degree nodes
+        boolean[] visited = new boolean[n + 1];
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                if (!dfs(graph, degree, visited, i)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private boolean dfs(Map<Integer, Set<Integer>> graph, int[] degree, boolean[] visited, int node) {
+        if (degree[node] % 2 == 1) {
+            visited[node] = true;
+            for (int next : graph.get(node)) {
+                if (visited[next]) {
+                    continue;
+                }
+                degree[node]--;
+                degree[next]--;
+                if (!dfs(graph, degree, visited, next)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return true;
+
+=======
+
+        int[] degrees = new int[n];
+        Map<Integer, Set<Integer>> adj = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            adj.put(i, new HashSet<>());
+        }
+        for (List<Integer> edge : edges) {
+            int u = edge.get(0) - 1;
+            int v = edge.get(1) - 1;
+            degrees[u]++;
+            degrees[v]++;
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (degrees[i] % 2 == 1) {
+                q.offer(i);
+            }
+        }
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            int v = q.poll();
+            degrees[u]++;
+            degrees[v]++;
+            adj.get(u).add(v);
+            adj.get(v).add(u);
+        }
+        for (int i = 0; i < n; i++) {
+            if (degrees[i] % 2 == 1) {
+                return false;
+            }
+        }
+        boolean[] visited = new boolean[n];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                dfs(adj, visited, i);
+                count++;
+            }
+        }
+        return count == 1;
+    }
+    private void dfs(Map<Integer, Set<Integer>> adj, boolean[] visited, int u) {
+        visited[u] = true;
+        for (int v : adj.get(u)) {
+            if (!visited[v]) {
+                dfs(adj, visited, v);
+            }
+        }
+
+=======
+
+        int[] degree = new int[n + 1];
+        for (List<Integer> edge: edges) {
+            degree[edge.get(0)]++;
+            degree[edge.get(1)]++;
+        }
+        int odds = 0;
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                odds++;
+            }
+        }
+        if (odds == 0 || odds == 2) {
+            return true;
+        }
+        return false;
+
+=======
+
+        int[] degree = new int[n];
+        int[] visited = new int[n];
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new HashSet<>());
+        }
+        for (List<Integer> edge : edges) {
+            map.get(edge.get(0) - 1).add(edge.get(1) - 1);
+            map.get(edge.get(1) - 1).add(edge.get(0) - 1);
+            degree[edge.get(0) - 1]++;
+            degree[edge.get(1) - 1]++;
+        }
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            if (degree[i] % 2 == 1) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            visited[cur]++;
+            if (visited[cur] > 2) {
+                return false;
+            }
+            for (int next : map.get(cur)) {
+                degree[next]--;
+                if (degree[next] % 2 == 1) {
+                    queue.offer(next);
+                }
+            }
+        }
+        return true;
+
+=======
+
+        if (n == 1) {
+            return true;
+        }
+        if (edges.size() == 0) {
+            return false;
+        }
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (List<Integer> edge : edges) {
+            int a = edge.get(0);
+            int b = edge.get(1);
+            if (!map.containsKey(a)) {
+                map.put(a, new ArrayList<>());
+            }
+            map.get(a).add(b);
+            if (!map.containsKey(b)) {
+                map.put(b, new ArrayList<>());
+            }
+            map.get(b).add(a);
+        }
+        int[] degree = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            degree[i] = map.get(i).size();
+        }
+        int odd = 0;
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                odd++;
+            }
+        }
+        if (odd == 0) {
+            return true;
+        }
+        if (odd != 2) {
+            return false;
+        }
+        int start = 0;
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                start = i;
+                break;
+            }
+        }
+        Set<Integer> visited = new HashSet<>();
+        if (!dfs(start, map, degree, visited)) {
+            return false;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (degree[i] % 2 == 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean dfs(int start, Map<Integer, List<Integer>> map, int[] degree, Set<Integer> visited) {
+        visited.add(start);
+        for (int next : map.get(start)) {
+            if (degree[next] % 2 == 1) {
+                if (visited.contains(next)) {
+                    return false;
+                }
+                if (!dfs(next, map, degree, visited)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        if (n < 3) return true;
+        if (edges.size() < n - 1) return false;
+        if (edges.size() == n - 1) {
+            return true;
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 1; i <= n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (List<Integer> edge: edges) {
+            graph.get(edge.get(0)).add(edge.get(1));
+            graph.get(edge.get(1)).add(edge.get(0));
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        int[] degree = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            degree[i] = graph.get(i).size();
+            if (degree[i] == 1) {
+                queue.offer(i);
+            }
+        }
+        int count = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            count += size;
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+                for (int next: graph.get(cur)) {
+                    degree[next]--;
+                    if (degree[next] == 1) {
+                        queue.offer(next);
+                    }
+                }
+            }
+        }
+        return count == n;

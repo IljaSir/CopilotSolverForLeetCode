@@ -1,0 +1,226 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(n, -1)));
+        dp[0][0][n - 1] = grid[0][0] + grid[0][n - 1];
+        for (int i = 1; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int k = 0; k < n; ++k) {
+                    if (dp[i - 1][j][k] < 0) continue;
+                    for (int d1 = -1; d1 <= 1; ++d1) {
+                        for (int d2 = -1; d2 <= 1; ++d2) {
+                            int j1 = j + d1;
+                            int k1 = k + d2;
+                            if (j1 < 0 || j1 >= n || k1 < 0 || k1 >= n) continue;
+                            int cur = dp[i - 1][j][k] + grid[i][j1];
+                            if (j1 != k1) cur += grid[i][k1];
+                            dp[i][j1][k1] = max(dp[i][j1][k1], cur);
+                        }
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int j = 0; j < n; ++j) {
+            for (int k = 0; k < n; ++k) {
+                res = max(res, dp[m - 1][j][k]);
+            }
+        }
+        return res;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = m - 1; i >= 0; --i) {
+            vector<vector<int>> dp2(n, vector<int>(n, 0));
+            for (int j = 0; j < n; ++j) {
+                for (int k = j; k < n; ++k) {
+                    for (int j2 = j - 1; j2 <= j + 1; ++j2) {
+                        for (int k2 = k - 1; k2 <= k + 1; ++k2) {
+                            if (j2 >= 0 && k2 >= 0 && j2 < n && k2 < n) {
+                                dp2[j][k] = max(dp2[j][k], dp[j2][k2]);
+                            }
+                        }
+                    }
+                    dp2[j][k] += grid[i][j];
+                    if (j != k) dp2[j][k] += grid[i][k];
+                }
+            }
+            dp = dp2;
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = m - 1; i >= 0; i--) {
+            vector<vector<int>> dp2(n, vector<int>(n, 0));
+            for (int j = 0; j < n; j++) {
+                for (int k = j; k < n; k++) {
+                    for (int j2 = j - 1; j2 <= j + 1; j2++) {
+                        for (int k2 = k - 1; k2 <= k + 1; k2++) {
+                            if (j2 >= 0 && k2 < n) {
+                                dp2[j][k] = max(dp2[j][k], dp[j2][k2]);
+                            }
+                        }
+                    }
+                    dp2[j][k] += grid[i][j] + (j == k ? 0 : grid[i][k]);
+                }
+            }
+            dp = dp2;
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int rows = grid.size();
+        int cols = grid[0].size();
+        vector<vector<vector<int>>> dp(rows, vector<vector<int>>(cols, vector<int>(cols, -1)));
+        dp[0][0][cols - 1] = grid[0][0] + grid[0][cols - 1];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                for (int k = 0; k < cols; k++) {
+                    if (dp[i][j][k] == -1) {
+                        continue;
+                    }
+                    if (j + 1 < cols) {
+                        dp[i][j + 1][k] = max(dp[i][j + 1][k], dp[i][j][k] + grid[i][j + 1]);
+                    }
+                    if (k - 1 >= 0) {
+                        dp[i][j][k - 1] = max(dp[i][j][k - 1], dp[i][j][k] + grid[i][k - 1]);
+                    }
+                    if (j + 1 < cols && k - 1 >= 0) {
+                        dp[i][j + 1][k - 1] = max(dp[i][j + 1][k - 1], dp[i][j][k] + grid[i][j + 1] + grid[i][k - 1]);
+                    }
+                    if (i + 1 < rows) {
+                        dp[i + 1][j][k] = max(dp[i + 1][j][k], dp[i][j][k] + grid[i + 1][j] + grid[i + 1][k]);
+                    }
+                    if (j + 1 < cols && i + 1 < rows) {
+                        dp[i + 1][j + 1][k] = max(dp[i + 1][j + 1][k], dp[i][j][k] + grid[i + 1][j + 1] + grid[i + 1][k]);
+                    }
+                    if (k - 1 >= 0 && i + 1 < rows) {
+                        dp[i + 1][j][k - 1] = max(dp[i + 1][j][k
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = m - 1; i >= 0; i--) {
+            vector<vector<int>> t(n, vector<int>(n, 0));
+            for (int j = 0; j < n; j++) {
+                for (int k = j; k < n; k++) {
+                    int cur = 0;
+                    cur = max(cur, dp[j][k]);
+                    if (j > 0) cur = max(cur, dp[j - 1][k]);
+                    if (k < n - 1) cur = max(cur, dp[j][k + 1]);
+                    if (j > 0 && k < n - 1) cur = max(cur, dp[j - 1][k + 1]);
+                    t[j][k] = cur + grid[i][j] + (j == k ? 0 : grid[i][k]);
+                }
+            }
+            dp = t;
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = m - 1; i >= 0; i--) {
+            vector<vector<int>> dp2(n, vector<int>(n, 0));
+            for (int j = 0; j < n; j++) {
+                for (int k = j; k < n; k++) {
+                    int cur = 0;
+                    cur += grid[i][j];
+                    if (j != k) cur += grid[i][k];
+                    int mx = 0;
+                    for (int j2 = j - 1; j2 <= j + 1; j2++) {
+                        for (int k2 = k - 1; k2 <= k + 1; k2++) {
+                            if (j2 >= 0 && j2 < n && k2 >= 0 && k2 < n) {
+                                mx = max(mx, dp[j2][k2]);
+                            }
+                        }
+                    }
+                    dp2[j][k] = cur + mx;
+                }
+            }
+            dp = dp2;
+        }
+        return dp[0][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        dp[0][n-1] = grid[0][0] + grid[0][n-1];
+        for (int i = 1; i < m; i++) {
+            vector<vector<int>> tmp(n, vector<int>(n, 0));
+            for (int j = 0; j < n; j++) {
+                for (int k = j; k < n; k++) {
+                    if (grid[i][j] == -1 || grid[i][k] == -1) continue;
+                    int cur = max(dp[j][k], max(dp[j][k-1], max(dp[j][k+1], max(dp[j-1][k], max(dp[j-1][k-1], max(dp[j-1][k+1], max(dp[j+1][k], max(dp[j+1][k-1], dp[j+1][k+1]))))))));
+                    tmp[j][k] = cur + grid[i][j] + grid[i][k] - (j == k ? grid[i][j] : 0);
+                }
+            }
+            dp = tmp;
+        }
+        return dp[0][n-1];
+
+=======
+
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        for (int i = n - 1; i >= 0; i--) {
+            vector<vector<int>> dp2(m, vector<int>(m, 0));
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < m; k++) {
+                    int val = grid[i][j];
+                    if (j != k) val += grid[i][k];
+                    int mx = 0;
+                    for (int p = j - 1; p <= j + 1; p++) {
+                        for (int q = k - 1; q <= k + 1; q++) {
+                            if (p >= 0 && p < m && q >= 0 && q < m) {
+                                mx = max(mx, dp[p][q]);
+                            }
+                        }
+                    }
+                    dp2[j][k] = mx + val;
+                }
+            }
+            dp = dp2;
+        }
+        return dp[0][m - 1];
+
+=======
+
+        int n = grid.size();
+        int m = grid[0].size();
+        int dp[n][m][m];
+        memset(dp, 0, sizeof(dp));
+        dp[0][0][m-1] = grid[0][0] + grid[0][m-1];
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < m; k++) {
+                    if (j > k) continue;
+                    int maxVal = 0;
+                    for (int x = -1; x <= 1; x++) {
+                        for (int y = -1; y <= 1; y++) {
+                            int nj = j + x;
+                            int nk = k + y;
+                            if (nj >= 0 && nj < m && nk >= 0 && nk < m) {
+                                maxVal = max(maxVal, dp[i-1][nj][nk]);
+                            }
+                        }
+                    }
+                    dp[i][j][k] = maxVal + (j == k ? grid[i][j] : grid[i][j] + grid[i][k]);
+                }
+            }
+        }
+        return dp[n-1][m-1][0];

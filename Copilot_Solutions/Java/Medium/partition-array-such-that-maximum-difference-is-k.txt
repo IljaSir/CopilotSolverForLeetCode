@@ -1,0 +1,198 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(nums);
+        int res = 1;
+        int min = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            max = Math.max(nums[i], max);
+            min = Math.min(nums[i], min);
+            if (max - min > k) {
+                res++;
+                max = nums[i];
+                min = nums[i];
+            }
+        }
+        return res;
+
+=======
+
+        if (nums.length == 1) {
+            return 1;
+        }
+        Arrays.sort(nums);
+        int count = 1;
+        int min = nums[0];
+        int max = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int num = nums[i];
+            if (num - min <= k && num - max <= k) {
+                max = Math.max(max, num);
+                min = Math.min(min, num);
+            } else {
+                count++;
+                max = num;
+                min = num;
+            }
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        Arrays.sort(nums);
+        int ans = 0;
+        int i = 0;
+        while (i < n) {
+            int j = i;
+            while (j < n && nums[j] - nums[i] <= k) {
+                j++;
+            }
+            ans++;
+            i = j;
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        int[] min = new int[n];
+        min[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            min[i] = Math.min(nums[i], min[i - 1]);
+        }
+        int[] max = new int[n];
+        max[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            max[i] = Math.max(nums[i], max[i + 1]);
+        }
+        int ans = 1;
+        for (int i = 0; i < n - 1; i++) {
+            if (max[i + 1] - min[i] > k) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(nums);
+        int min = 0;
+        int max = 0;
+        int count = 0;
+        while (max < nums.length) {
+            if (nums[max] - nums[min] > k) {
+                min = max;
+            }
+            max++;
+            if (min == max) {
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        Arrays.sort(nums);
+        int n = nums.length;
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (i < n) {
+            while (j < n && nums[j] - nums[i] <= k) {
+                j++;
+            }
+            i = j;
+            count++;
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        Arrays.sort(nums);
+        int ans = 1;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < n; i++) {
+            min = Math.min(min, nums[i]);
+            max = Math.max(max, nums[i]);
+            if (max - min > k) {
+                min = nums[i];
+                max = nums[i];
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        if (n == 1) {
+            return 1;
+        }
+        Arrays.sort(nums);
+        int max = nums[n - 1];
+        int min = nums[0];
+        int diff = max - min;
+        int count = 1;
+        int i = 0;
+        while (i < n) {
+            int j = i + 1;
+            while (j < n && nums[j] - nums[i] <= k) {
+                j++;
+            }
+            count++;
+            i = j;
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        int[] count = new int[100001];
+        for (int num : nums) count[num]++;
+        int[] prefix = new int[100001];
+        for (int i = 1; i < prefix.length; i++) prefix[i] = prefix[i-1] + count[i];
+        int result = n;
+        for (int i = 1; i < prefix.length; i++) {
+            int l = i;
+            int r = 100000;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (prefix[mid] - prefix[i-1] <= n - prefix[mid]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if (l - i <= k) result = Math.min(result, prefix[l] - prefix[i-1]);
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] min = new int[n];
+        int[] max = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i > 0 ? left[i - 1] + nums[i] : nums[i];
+            min[i] = i > 0 ? Math.min(min[i - 1], nums[i]) : nums[i];
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            right[i] = i < n - 1 ? right[i + 1] + nums[i] : nums[i];
+            max[i] = i < n - 1 ? Math.max(max[i + 1], nums[i]) : nums[i];
+        }
+        int ans = 1;
+        for (int i = 0; i < n - 1; i++) {
+            if (max[i + 1] - min[i] <= k) {
+                ans++;
+                i++;
+            }
+        }
+        return ans;

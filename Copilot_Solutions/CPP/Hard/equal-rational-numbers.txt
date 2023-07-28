@@ -1,0 +1,118 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        return f(s) == f(t);
+    }
+    double f(string s) {
+        int i = s.find("(");
+        if (i >= 0) {
+            string a = s.substr(0, i);
+            string b = s.substr(i + 1, s.size() - i - 2);
+            for (int i = 0; i < 20; ++i) a += b;
+            return stod(a);
+        }
+        return stod(s);
+
+=======
+
+        return parse(s) == parse(t);
+    }
+    double parse(string s) {
+        int i = s.find('(');
+        if (i != string::npos) {
+            string base = s.substr(0, i);
+            string rep = s.substr(i + 1, s.size() - i - 2);
+            for (int i = 0; i < 20; i++) base += rep;
+            return stod(base);
+        }
+        return stod(s);
+
+=======
+
+        return toDouble(s) == toDouble(t);
+    }
+    double toDouble(string s) {
+        int pos = s.find('(');
+        if (pos == string::npos) {
+            return stod(s);
+        }
+        string base = s.substr(0, pos);
+        string repeat = s.substr(pos + 1, s.length() - pos - 2);
+        for (int i = 0; i < 20; ++i) {
+            base += repeat;
+        }
+        return stod(base);
+
+=======
+
+        double a = parse(s);
+        double b = parse(t);
+        return abs(a - b) < 1e-10;
+    }
+    double parse(string s) {
+        int i = s.find('(');
+        if (i == string::npos) return stod(s);
+        int j = s.find(')');
+        string a = s.substr(0, i);
+        string b = s.substr(i + 1, j - i - 1);
+        int c = j - i - 1;
+        int k = s.find('.');
+        if (k == string::npos) {
+            return stod(a) + stod(b) / pow(10, c);
+        }
+        int d = s.length() - j - 1;
+        return stod(a) + stod(b) / pow(10, c) + stod(s.substr(j + 1)) / pow(10, d);
+
+=======
+
+        return getRational(s) == getRational(t);
+    }
+    
+    double getRational(string s) {
+        int pos = s.find("(");
+        if (pos == string::npos) {
+            return stod(s);
+        }
+        string base = s.substr(0, pos);
+        string rep = s.substr(pos + 1, s.size() - pos - 2);
+        int len = rep.size();
+        double res = stod(base.substr(0, base.find("."))) + stod(base.substr(base.find(".") + 1)) / pow(10, base.size() - base.find(".") - 1);
+        for (int i = 0; i < 20; ++i) {
+            res += stod(rep) / pow(10, base.size() - base.find(".") - 1) / pow(10, len) / pow(10, i);
+        }
+        return res;
+
+=======
+
+        double a = 0, b = 0;
+        int i = 0, j = 0;
+        while (i < s.size() && s[i] != '(') {
+            if (s[i] == '.') {
+                i++;
+                break;
+            }
+            a = a * 10 + s[i++] - '0';
+        }
+        while (j < t.size() && t[j] != '(') {
+            if (t[j] == '.') {
+                j++;
+                break;
+            }
+            b = b * 10 + t[j++] - '0';
+        }
+        double x = 0, y = 0;
+        int m = 0, n = 0;
+        while (i < s.size() && s[i] != ')') {
+            x = x * 10 + s[i++] - '0';
+            m++;
+        }
+        while (j < t.size() && t[j] != ')') {
+            y = y * 10 + t[j++] - '0';
+            n++;
+        }
+        for (int k = 0; k < max(m, n); k++) {
+            x *= 10;
+            y *= 10;
+        }
+        return a + x / pow(10, m) == b + y / pow(10, n);

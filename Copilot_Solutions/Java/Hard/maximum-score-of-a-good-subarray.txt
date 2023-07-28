@@ -1,0 +1,250 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[k] = k;
+        right[k] = k;
+        for (int i = k - 1; i >= 0; i--) {
+            left[i] = nums[i] > nums[i + 1] ? i : left[i + 1];
+        }
+        for (int i = k + 1; i < n; i++) {
+            right[i] = nums[i] > nums[i - 1] ? i : right[i - 1];
+        }
+        int res = nums[k];
+        for (int i = k, j = k; i >= 0 || j < n; ) {
+            if (i < 0 || j < n && nums[i] < nums[j]) {
+                j++;
+                res = Math.max(res, (right[j] - left[j] + 1) * nums[j]);
+            } else {
+                i--;
+                res = Math.max(res, (right[i] - left[i] + 1) * nums[i]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        stack.clear();
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && nums[stack.peek()] >= nums[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] < k && k < right[i]) {
+                ans = Math.max(ans, nums[i] * (right[i] - left[i] - 1));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i;
+            right[i] = i;
+        }
+        for (int i = 1; i < n; i++) {
+            int p = i - 1;
+            while (p >= 0 && nums[p] >= nums[i]) {
+                p = left[p] - 1;
+            }
+            left[i] = p + 1;
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            int p = i + 1;
+            while (p < n && nums[p] >= nums[i]) {
+                p = right[p] + 1;
+            }
+            right[i] = p - 1;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (k >= left[i] && k <= right[i]) {
+                res = Math.max(res, nums[i] * (right[i] - left[i] + 1));
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for (int i = 0; i < n; i++) {
+            left[i] = i;
+            right[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            while (left[i] > 0 && nums[left[i] - 1] >= nums[i]) {
+                left[i] = left[left[i] - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            while (right[i] < n - 1 && nums[right[i] + 1] >= nums[i]) {
+                right[i] = right[right[i] + 1];
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] <= k && k <= right[i]) {
+                ans = Math.max(ans, nums[i] * (right[i] - left[i] + 1));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[k] = k;
+        for (int i = k - 1; i >= 0; i--) {
+            left[i] = nums[i] > nums[left[i + 1]] ? left[i + 1] : i;
+        }
+        right[k] = k;
+        for (int i = k + 1; i < n; i++) {
+            right[i] = nums[i] > nums[right[i - 1]] ? right[i - 1] : i;
+        }
+        int ans = nums[k];
+        for (int i = k; i >= 0; i--) {
+            ans = Math.max(ans, nums[left[i]] * (right[i] - left[i] + 1));
+            if (i == 0) {
+                break;
+            }
+        }
+        for (int i = k; i < n; i++) {
+            ans = Math.max(ans, nums[right[i]] * (right[i] - left[i] + 1));
+            if (i == n - 1) {
+                break;
+            }
+        }
+        return ans;
+
+=======
+
+        int left = k;
+        int right = k;
+        int min = nums[k];
+        int max = min * (right - left + 1);
+        while (left > 0 || right < nums.length - 1) {
+            if (left == 0) {
+                right++;
+            } else if (right == nums.length - 1) {
+                left--;
+            } else if (nums[left - 1] < nums[right + 1]) {
+                right++;
+            } else {
+                left--;
+            }
+            min = Math.min(min, Math.min(nums[left], nums[right]));
+            max = Math.max(max, min * (right - left + 1));
+        }
+        return max;
+
+=======
+
+        int left = k, right = k;
+        int min = nums[k];
+        int res = min;
+        while (left > 0 || right < nums.length - 1) {
+            if (left == 0) {
+                right++;
+            } else if (right == nums.length - 1) {
+                left--;
+            } else if (nums[left - 1] < nums[right + 1]) {
+                right++;
+            } else {
+                left--;
+            }
+            min = Math.min(min, Math.min(nums[left], nums[right]));
+            res = Math.max(res, min * (right - left + 1));
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] stack = new int[n];
+        int top = -1;
+        for (int i = 0; i < n; i++) {
+            while (top >= 0 && nums[stack[top]] >= nums[i]) {
+                top--;
+            }
+            left[i] = top < 0 ? 0 : stack[top] + 1;
+            stack[++top] = i;
+        }
+        top = -1;
+        for (int i = n - 1; i >= 0; i--) {
+            while (top >= 0 && nums[stack[top]] >= nums[i]) {
+                top--;
+            }
+            right[i] = top < 0 ? n - 1 : stack[top] - 1;
+            stack[++top] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (left[i] <= k && k <= right[i]) {
+                ans = Math.max(ans, nums[i] * (right[i] - left[i] + 1));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int min = nums[k];
+        int ans = nums[k];
+        int i = k;
+        int j = k;
+        while (i > 0 || j < n - 1) {
+            if (i == 0) {
+                j++;
+            } else if (j == n - 1) {
+                i--;
+            } else if (nums[i - 1] < nums[j + 1]) {
+                j++;
+            } else {
+                i--;
+            }
+            min = Math.min(min, Math.min(nums[i], nums[j]));
+            ans = Math.max(ans, min * (j - i + 1));
+        }
+        return ans;
+
+=======
+
+        int max = nums[k];
+        int l = k;
+        int r = k;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            if (l > 0 && (r == n - 1 || nums[l - 1] > nums[r + 1])) {
+                l--;
+            } else {
+                r++;
+            }
+            max = Math.max(max, Math.min(nums[l], nums[r]) * (r - l + 1));
+        }
+        return max;

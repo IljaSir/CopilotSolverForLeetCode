@@ -1,0 +1,211 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![n + 2; n + 1];
+        dp[0] = 0;
+        for i in 0..=n {
+            let l = if i >= ranges[i] as usize { i - ranges[i] as usize } else { 0 };
+            let r = if i + ranges[i] as usize <= n { i + ranges[i] as usize } else { n };
+            for j in l..=r {
+                dp[j] = dp[j].min(dp[l] + 1);
+            }
+        }
+        if dp[n] >= n + 2 {
+            -1
+        } else {
+            dp[n]
+        }
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![std::i32::MAX; n + 1];
+        dp[0] = 0;
+        for i in 0..=n {
+            for j in i.saturating_sub(ranges[i] as usize)..=(i + ranges[i] as usize).min(n) {
+                dp[j] = dp[j].min(dp[i] + 1);
+            }
+        }
+        if dp[n] == std::i32::MAX {
+            -1
+        } else {
+            dp[n]
+        }
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![n + 2; n + 1];
+        dp[0] = 0;
+        for i in 0..n + 1 {
+            let l = if i as i32 - ranges[i] < 0 {
+                0
+            } else {
+                i - ranges[i] as usize
+            };
+            let r = if i as i32 + ranges[i] > n as i32 {
+                n
+            } else {
+                i + ranges[i] as usize
+            };
+            for j in l..r + 1 {
+                dp[j] = dp[j].min(dp[l] + 1);
+            }
+        }
+        if dp[n] >= n + 2 {
+            -1
+        } else {
+            dp[n]
+        }
+    }
+}
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        for i in 0..ranges.len() {
+            let left = i as i32 - ranges[i];
+            let right = i as i32 + ranges[i];
+            if left >= 0 {
+                dp[left as usize] = dp[left as usize].max(right);
+            }
+            if right >= 0 {
+                dp[right as usize] = dp[right as usize].max(right);
+            }
+        }
+        let mut res = 0;
+        let mut cur = 0;
+        let mut next = 0;
+        for i in 0..dp.len() {
+            if cur < i as i32 {
+                return -1;
+            }
+            next = next.max(dp[i]);
+            if next == i as i32 {
+                return -1;
+            }
+            if cur == i as i32 {
+                res += 1;
+                cur = next;
+            }
+        }
+        res
+
+=======
+
+        let mut dp = vec![-1; n as usize + 1];
+        dp[0] = 0;
+        for i in 0..n + 1 {
+            let left = (i - ranges[i as usize]).max(0) as usize;
+            let right = (i + ranges[i as usize]).min(n) as usize;
+            for j in left..right + 1 {
+                if dp[j] == -1 || dp[j] > dp[left] + 1 {
+                    dp[j] = dp[left] + 1;
+                }
+            }
+        }
+        dp[n as usize]
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        for i in 0..n as usize + 1 {
+            let l = i as i32 - ranges[i];
+            let r = i as i32 + ranges[i];
+            let l = l.max(0);
+            let r = r.min(n);
+            dp[l as usize] = dp[l as usize].max(r - l);
+        }
+        let mut maxr = 0;
+        let mut ans = 0;
+        let mut pre = 0;
+        for i in 0..n as usize + 1 {
+            if i > maxr {
+                return -1;
+            }
+            maxr = maxr.max(i as i32 + dp[i]);
+            if i as i32 == maxr {
+                return ans + 1;
+            }
+            if i as i32 == pre + dp[pre as usize] {
+                ans += 1;
+                pre = i as i32;
+            }
+        }
+        ans
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![n+1; n+1];
+        dp[0] = 0;
+        for i in 0..n+1 {
+            let l = i.saturating_sub(ranges[i] as usize);
+            let r = (i + ranges[i] as usize).min(n);
+            for j in l..r+1 {
+                dp[j] = dp[j].min(dp[l] + 1);
+            }
+        }
+        if dp[n] == n+1 { -1 } else { dp[n] as i32 }
+
+=======
+
+        let mut dp = vec![std::i32::MAX; (n + 1) as usize];
+        dp[0] = 0;
+        for i in 0..=n {
+            let left = i - ranges[i as usize];
+            let right = i + ranges[i as usize];
+            let left = left.max(0);
+            let right = right.min(n);
+            for j in left..=right {
+                dp[j as usize] = dp[j as usize].min(dp[left as usize] + 1);
+            }
+        }
+        if dp[n as usize] == std::i32::MAX {
+            -1
+        } else {
+            dp[n as usize]
+        }
+
+=======
+
+        let n = n as usize;
+        let mut dp = vec![n+1; n+1];
+        dp[0] = 0;
+        for i in 0..n+1 {
+            let left = i.saturating_sub(ranges[i] as usize);
+            let right = (i + ranges[i] as usize).min(n);
+            for j in left..right+1 {
+                dp[j] = dp[j].min(dp[left] + 1);
+            }
+        }
+        if dp[n] == n+1 {
+            return -1;
+        }
+        dp[n]
+
+=======
+
+        let mut dp = vec![0; n as usize + 1];
+        for i in 0..n + 1 {
+            let left = if i - ranges[i as usize] < 0 { 0 } else { i - ranges[i as usize] };
+            let right = i + ranges[i as usize];
+            dp[left as usize] = dp[left as usize].max(right);
+        }
+        let mut end = 0;
+        let mut far = 0;
+        let mut ans = 0;
+        for i in 0..n + 1 {
+            far = far.max(dp[i as usize]);
+            if i == end {
+                ans += 1;
+                end = far;
+            }
+        }
+        if end < n { -1 } else { ans }
+    }
+}

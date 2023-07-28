@@ -1,0 +1,281 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        long long dp[m][n][2];
+        memset(dp, 0, sizeof(dp));
+        dp[0][0][0] = dp[0][0][1] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0][0] = dp[i - 1][0][0] * grid[i][0];
+            dp[i][0][1] = dp[i - 1][0][1] * grid[i][0];
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i][0] = dp[0][i - 1][0] * grid[0][i];
+            dp[0][i][1] = dp[0][i - 1][1] * grid[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j][0] = max(dp[i - 1][j][0] * grid[i][j], dp[i][j - 1][0] * grid[i][j]);
+                dp[i][j][1] = min(dp[i - 1][j][1] * grid[i][j], dp[i][j - 1][1] * grid[i][j]);
+            }
+        }
+        return dp[m - 1][n - 1][0] < 0 ? -1 : dp[m - 1][n - 1][0] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> maxProd(m, vector<int>(n, 0));
+        vector<vector<int>> minProd(m, vector<int>(n, 0));
+        maxProd[0][0] = minProd[0][0] = grid[0][0];
+        for (int i = 1; i < m; ++i) {
+            maxProd[i][0] = maxProd[i - 1][0] * grid[i][0];
+            minProd[i][0] = minProd[i - 1][0] * grid[i][0];
+        }
+        for (int j = 1; j < n; ++j) {
+            maxProd[0][j] = maxProd[0][j - 1] * grid[0][j];
+            minProd[0][j] = minProd[0][j - 1] * grid[0][j];
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < n; ++j) {
+                if (grid[i][j] > 0) {
+                    maxProd[i][j] = max(maxProd[i - 1][j], maxProd[i][j - 1]) * grid[i][j];
+                    minProd[i][j] = min(minProd[i - 1][j], minProd[i][j - 1]) * grid[i][j];
+                } else {
+                    maxProd[i][j] = min(minProd[i - 1][j], minProd[i][j - 1]) * grid[i][j];
+                    minProd[i][j] = max(maxProd[i - 1][j], maxProd[i][j - 1]) * grid[i][j];
+                }
+            }
+        }
+        return maxProd[m - 1][n - 1] < 0 ? -1 : maxProd[m - 1][n - 1] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        long long dp[m][n][2];
+        memset(dp, 0, sizeof(dp));
+        dp[0][0][0] = grid[0][0];
+        dp[0][0][1] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0][0] = dp[i-1][0][0] * grid[i][0];
+            dp[i][0][1] = dp[i-1][0][1] * grid[i][0];
+        }
+        for (int j = 1; j < n; j++) {
+            dp[0][j][0] = dp[0][j-1][0] * grid[0][j];
+            dp[0][j][1] = dp[0][j-1][1] * grid[0][j];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (grid[i][j] >= 0) {
+                    dp[i][j][0] = max(dp[i-1][j][0], dp[i][j-1][0]) * grid[i][j];
+                    dp[i][j][1] = min(dp[i-1][j][1], dp[i][j-1][1]) * grid[i][j];
+                } else {
+                    dp[i][j][0] = min(dp[i-1][j][1], dp[i][j-1][1]) * grid[i][j];
+                    dp[i][j][1] = max(dp[i-1][j][0], dp[i][j-1][0]) * grid[i][j];
+                }
+            }
+        }
+        return dp[m-1][n-1][0] < 0 ? -1 : dp[m-1][n-1][0] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        long long dp[m][n][2];
+        memset(dp, 0, sizeof(dp));
+        dp[0][0][0] = grid[0][0];
+        dp[0][0][1] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0][0] = dp[i-1][0][0] * grid[i][0];
+            dp[i][0][1] = dp[i-1][0][1] * grid[i][0];
+        }
+        for (int i = 1; i < n; i++) {
+            dp[0][i][0] = dp[0][i-1][0] * grid[0][i];
+            dp[0][i][1] = dp[0][i-1][1] * grid[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                long long tmp1 = dp[i-1][j][0] * grid[i][j];
+                long long tmp2 = dp[i-1][j][1] * grid[i][j];
+                long long tmp3 = dp[i][j-1][0] * grid[i][j];
+                long long tmp4 = dp[i][j-1][1] * grid[i][j];
+                dp[i][j][0] = min(min(tmp1, tmp2), min(tmp3, tmp4));
+                dp[i][j][1] = max(max(tmp1, tmp2), max(tmp3, tmp4));
+            }
+        }
+        if (dp[m-1][n-1][1] < 0) return -1;
+        return dp[m-1][n-1][1] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<long long>> maxProd(m, vector<long long>(n, 0));
+        vector<vector<long long>> minProd(m, vector<long long>(n, 0));
+        maxProd[0][0] = minProd[0][0] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            maxProd[i][0] = maxProd[i-1][0]*grid[i][0];
+            minProd[i][0] = minProd[i-1][0]*grid[i][0];
+        }
+        for (int i = 1; i < n; i++) {
+            maxProd[0][i] = maxProd[0][i-1]*grid[0][i];
+            minProd[0][i] = minProd[0][i-1]*grid[0][i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                long long maxVal = max(max(maxProd[i-1][j]*grid[i][j], maxProd[i][j-1]*grid[i][j]),
+                                       max(minProd[i-1][j]*grid[i][j], minProd[i][j-1]*grid[i][j]));
+                long long minVal = min(min(maxProd[i-1][j]*grid[i][j], maxProd[i][j-1]*grid[i][j]),
+                                       min(minProd[i-1][j]*grid[i][j], minProd[i][j-1]*grid[i][j]));
+                maxProd[i][j] = maxVal;
+                minProd[i][j] = minVal;
+            }
+        }
+        long long res = maxProd[m-1][n-1];
+        if (res < 0) {
+            return -1;
+        }
+        return res % 1000000007;
+
+=======
+
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<long long>> dp(n, vector<long long>(m, 0));
+        dp[0][0] = grid[0][0];
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = dp[i - 1][0] * grid[i][0];
+        }
+        for (int j = 1; j < m; j++) {
+            dp[0][j] = dp[0][j - 1] * grid[0][j];
+        }
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < m; j++) {
+                if (grid[i][j] >= 0) {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]) * grid[i][j];
+                } else {
+                    dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) * grid[i][j];
+                }
+            }
+        }
+        return dp[n - 1][m - 1] < 0 ? -1 : dp[n - 1][m - 1] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<long>> max_dp(m, vector<long>(n, 0));
+        vector<vector<long>> min_dp(m, vector<long>(n, 0));
+        max_dp[0][0] = grid[0][0];
+        min_dp[0][0] = grid[0][0];
+        for (int i = 1; i < m; i++) {
+            max_dp[i][0] = max_dp[i-1][0] * grid[i][0];
+            min_dp[i][0] = min_dp[i-1][0] * grid[i][0];
+        }
+        for (int j = 1; j < n; j++) {
+            max_dp[0][j] = max_dp[0][j-1] * grid[0][j];
+            min_dp[0][j] = min_dp[0][j-1] * grid[0][j];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (grid[i][j] > 0) {
+                    max_dp[i][j] = max(max_dp[i-1][j], max_dp[i][j-1]) * grid[i][j];
+                    min_dp[i][j] = min(min_dp[i-1][j], min_dp[i][j-1]) * grid[i][j];
+                } else {
+                    max_dp[i][j] = min(min_dp[i-1][j], min_dp[i][j-1]) * grid[i][j];
+                    min_dp[i][j] = max(max_dp[i-1][j], max_dp[i][j-1]) * grid[i][j];
+                }
+            }
+        }
+        return max_dp[m-1][n-1] < 0 ? -1 : max_dp[m-1][n-1] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<long long>> maxGrid(m, vector<long long>(n, 0));
+        vector<vector<long long>> minGrid(m, vector<long long>(n, 0));
+        maxGrid[0][0] = grid[0][0];
+        minGrid[0][0] = grid[0][0];
+        
+        for (int i = 1; i < m; i++) {
+            maxGrid[i][0] = maxGrid[i - 1][0] * grid[i][0];
+            minGrid[i][0] = minGrid[i - 1][0] * grid[i][0];
+        }
+        
+        for (int i = 1; i < n; i++) {
+            maxGrid[0][i] = maxGrid[0][i - 1] * grid[0][i];
+            minGrid[0][i] = minGrid[0][i - 1] * grid[0][i];
+        }
+        
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                maxGrid[i][j] = max(maxGrid[i - 1][j] * grid[i][j], maxGrid[i][j - 1] * grid[i][j]);
+                minGrid[i][j] = min(minGrid[i - 1][j] * grid[i][j], minGrid[i][j - 1] * grid[i][j]);
+            }
+        }
+        
+        return maxGrid[m - 1][n - 1] < 0 ? -1 : maxGrid[m - 1][n - 1] % 1000000007;
+
+=======
+
+        int M = grid.size(), N = grid[0].size();
+        vector<vector<long>> dpMax(M, vector<long>(N, 0));
+        vector<vector<long>> dpMin(M, vector<long>(N, 0));
+        dpMax[0][0] = grid[0][0];
+        dpMin[0][0] = grid[0][0];
+        for(int i = 1; i < M; i++) {
+            dpMax[i][0] = dpMax[i - 1][0] * grid[i][0];
+            dpMin[i][0] = dpMin[i - 1][0] * grid[i][0];
+        }
+        for(int j = 1; j < N; j++) {
+            dpMax[0][j] = dpMax[0][j - 1] * grid[0][j];
+            dpMin[0][j] = dpMin[0][j - 1] * grid[0][j];
+        }
+        for(int i = 1; i < M; i++) {
+            for(int j = 1; j < N; j++) {
+                dpMax[i][j] = max(dpMax[i - 1][j] * grid[i][j], max(dpMax[i][j - 1] * grid[i][j], max(dpMin[i - 1][j] * grid[i][j], dpMin[i][j - 1] * grid[i][j])));
+                dpMin[i][j] = min(dpMin[i - 1][j] * grid[i][j], min(dpMin[i][j - 1] * grid[i][j], min(dpMax[i - 1][j] * grid[i][j], dpMax[i][j - 1] * grid[i][j])));
+            }
+        }
+        return dpMax[M - 1][N - 1] < 0 ? -1 : dpMax[M - 1][N - 1] % 1000000007;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        long long maxdp[m][n];
+        long long mindp[m][n];
+        long long mod = 1e9 + 7;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                maxdp[i][j] = INT_MIN;
+                mindp[i][j] = INT_MAX;
+            }
+        }
+        maxdp[0][0] = grid[0][0];
+        mindp[0][0] = grid[0][0];
+        for(int i = 1; i < m; i++){
+            maxdp[i][0] = maxdp[i-1][0] * grid[i][0];
+            mindp[i][0] = mindp[i-1][0] * grid[i][0];
+        }
+        for(int i = 1; i < n; i++){
+            maxdp[0][i] = maxdp[0][i-1] * grid[0][i];
+            mindp[0][i] = mindp[0][i-1] * grid[0][i];
+        }
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                if(grid[i][j] > 0){
+                    maxdp[i][j] = max(maxdp[i-1][j], maxdp[i][j-1]) * grid[i][j];
+                    mindp[i][j] = min(mindp[i-1][j], mindp[i][j-1]) * grid[i][j];
+                }else{
+                    maxdp[i][j] = min(mindp[i-1][j], mindp[i][j-1]) * grid[i][j];
+                    mindp[i][j] = max(maxdp[i-1][j], maxdp[i][j-1]) * grid[i][j];
+                }
+            }
+        }
+        long long ans = maxdp[m-1][n-1];
+        if(ans < 0) return -1;
+        return ans % mod;

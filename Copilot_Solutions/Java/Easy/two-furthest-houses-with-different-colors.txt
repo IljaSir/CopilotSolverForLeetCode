@@ -1,0 +1,230 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[101];
+        int[] right = new int[101];
+        Arrays.fill(left, n);
+        for (int i = 0; i < n; i++) {
+            left[colors[i]] = Math.min(left[colors[i]], i);
+            right[colors[i]] = i;
+        }
+        int ans = 0;
+        for (int i = 0; i < 101; i++) {
+            for (int j = 0; j < 101; j++) {
+                if (i != j) {
+                    ans = Math.max(ans, right[i] - left[j]);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[101];
+        int[] right = new int[101];
+        Arrays.fill(left, n);
+        Arrays.fill(right, -1);
+        for (int i = 0; i < n; i++) {
+            left[colors[i]] = Math.min(left[colors[i]], i);
+            right[colors[i]] = Math.max(right[colors[i]], i);
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 101; j++) {
+                if (colors[i] == j) {
+                    continue;
+                }
+                ans = Math.max(ans, Math.max(Math.abs(left[j] - i), Math.abs(right[j] - i)));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[101];
+        int[] right = new int[101];
+        Arrays.fill(left, n);
+        Arrays.fill(right, -1);
+        for (int i = 0; i < n; i++) {
+            left[colors[i]] = Math.min(left[colors[i]], i);
+            right[colors[i]] = Math.max(right[colors[i]], i);
+        }
+        int ans = 0;
+        for (int i = 0; i < 101; i++) {
+            for (int j = i + 1; j < 101; j++) {
+                ans = Math.max(ans, Math.abs(left[i] - right[j]));
+                ans = Math.max(ans, Math.abs(left[j] - right[i]));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = colors[0];
+        right[n - 1] = colors[n - 1];
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.min(left[i - 1], colors[i]);
+            right[n - i - 1] = Math.min(right[n - i], colors[n - i - 1]);
+        }
+        int ans = 0;
+        int i = 0, j = 0;
+        while (i < n && j < n) {
+            if (left[i] == right[j]) {
+                if (i == j) {
+                    if (i + 1 < n && left[i] != left[i + 1]) {
+                        ans = Math.max(ans, 1);
+                    }
+                    if (j + 1 < n && right[j] != right[j + 1]) {
+                        ans = Math.max(ans, 1);
+                    }
+                    i++;
+                    j++;
+                } else {
+                    ans = Math.max(ans, j - i);
+                    i++;
+                    j++;
+                }
+            } else {
+                ans = Math.max(ans, j - i);
+                if (left[i] < right[j]) {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[101];
+        int[] right = new int[101];
+        Arrays.fill(left, -1);
+        Arrays.fill(right, -1);
+        for (int i = 0; i < n; i++) {
+            if (left[colors[i]] == -1) {
+                left[colors[i]] = i;
+            } else {
+                right[colors[i]] = i;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 101; i++) {
+            for (int j = i + 1; j < 101; j++) {
+                if (left[i] != -1 && left[j] != -1) {
+                    ans = Math.max(ans, Math.abs(left[i] - left[j]));
+                }
+                if (left[i] != -1 && right[j] != -1) {
+                    ans = Math.max(ans, Math.abs(left[i] - right[j]));
+                }
+                if (right[i] != -1 && left[j] != -1) {
+                    ans = Math.max(ans, Math.abs(right[i] - left[j]));
+                }
+                if (right[i] != -1 && right[j] != -1) {
+                    ans = Math.max(ans, Math.abs(right[i] - right[j]));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length;
+        int[][] dp = new int[n][101];
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= 100; j++) {
+                dp[i][j] = i > 0 ? dp[i - 1][j] : 0;
+                if (colors[i] == j) {
+                    dp[i][j] = i;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= 100; j++) {
+                if (colors[i] != j) {
+                    res = Math.max(res, dp[i][j] - i);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[101];
+        int[] right = new int[101];
+        Arrays.fill(left, 100);
+        Arrays.fill(right, -1);
+        for (int i = 0; i < n; i++) {
+            left[colors[i]] = Math.min(left[colors[i]], i);
+            right[colors[i]] = Math.max(right[colors[i]], i);
+        }
+        int ans = 0;
+        for (int i = 0; i < 101; i++) {
+            for (int j = 0; j < 101; j++) {
+                if (i != j) {
+                    ans = Math.max(ans, Math.abs(right[i] - left[j]));
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[] last = new int[101];
+        int n = colors.length;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int c = colors[i];
+            ans = Math.max(ans, i - last[c]);
+            last[c] = i;
+        }
+        return ans;
+
+=======
+
+        int n = colors.length, max = 0;
+        int[] last = new int[101];
+        for(int i = 0; i < n; i++) {
+            max = Math.max(max, i - last[colors[i]]);
+            last[colors[i]] = i;
+        }
+        return max;
+
+=======
+
+        int n = colors.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] cnt = new int[101];
+        int max = 0;
+        for (int i = 0; i < n; ++i) {
+            left[i] = ++cnt[colors[i]];
+            max = Math.max(max, left[i]);
+        }
+        cnt = new int[101];
+        for (int i = n - 1; i >= 0; --i) {
+            right[i] = ++cnt[colors[i]];
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (left[i] == max) {
+                for (int j = 0; j < n; ++j) {
+                    if (colors[i] != colors[j]) {
+                        res = Math.max(res, Math.abs(i - j));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+}

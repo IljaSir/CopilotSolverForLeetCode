@@ -1,0 +1,28 @@
+impl Solution {
+    pub fn min_days(bloom_day: Vec<i32>, m: i32, k: i32) -> i32 {
+        
+        let (mut l, mut r) = (1, *bloom_day.iter().max().unwrap());
+        while l < r {
+            let mid = (l + r) / 2;
+            let mut bouquets = 0;
+            let mut flowers = 0;
+            for d in bloom_day.iter() {
+                if d <= &mid {
+                    flowers += 1;
+                    if flowers == k {
+                        bouquets += 1;
+                        flowers = 0;
+                    }
+                } else {
+                    flowers = 0;
+                }
+            }
+            if bouquets >= m {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        l
+    }
+}

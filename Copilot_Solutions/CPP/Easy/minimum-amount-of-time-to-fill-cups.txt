@@ -1,0 +1,268 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int a = amount[0], b = amount[1], c = amount[2];
+        int ans = 0;
+        while (a > 0 || b > 0 || c > 0) {
+            if (a > 0 && b > 0 && c > 0) {
+                a--, b--, c--, ans += 2;
+            } else if (a > 0 && b > 0) {
+                a--, b--, ans += 1;
+            } else if (b > 0 && c > 0) {
+                b--, c--, ans += 1;
+            } else if (a > 0 && c > 0) {
+                a--, c--, ans += 1;
+            } else {
+                ans += a + b + c;
+                break;
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        while (amount[0] || amount[1] || amount[2]) {
+            if (amount[0] == 0 && amount[1] == 0) {
+                amount[2] -= 2;
+                ans += 2;
+            } else if (amount[0] == 0 && amount[2] == 0) {
+                amount[1] -= 2;
+                ans += 2;
+            } else if (amount[1] == 0 && amount[2] == 0) {
+                amount[0] -= 2;
+                ans += 2;
+            } else if (amount[0] == 0) {
+                amount[1] -= 1;
+                amount[2] -= 1;
+                ans += 1;
+            } else if (amount[1] == 0) {
+                amount[0] -= 1;
+                amount[2] -= 1;
+                ans += 1;
+            } else if (amount[2] == 0) {
+                amount[0] -= 1;
+                amount[1] -= 1;
+                ans += 1;
+            } else {
+                amount[0] -= 1;
+                amount[1] -= 1;
+                amount[2] -= 1;
+                ans += 1;
+            }
+        }
+        return ans;
+
+=======
+
+        int res = 0;
+        int sum = 0;
+        for (int i = 0; i < 3; i++) {
+            sum += amount[i];
+            res += amount[i];
+        }
+        if (sum % 2 == 0) {
+            res += sum / 2;
+        } else {
+            res += sum / 2 + 1;
+        }
+        return res;
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < amount.size(); i++) {
+            if (max < amount[i]) {
+                max = amount[i];
+            }
+        }
+        int sum = 0;
+        for (int i = 0; i < amount.size(); i++) {
+            sum += amount[i];
+        }
+        return max + (sum - max) / 2;
+
+=======
+
+        int res = 0;
+        int water = 0;
+        while (amount[0] > 0 || amount[1] > 0 || amount[2] > 0) {
+            if (amount[0] > 0 && amount[1] > 0) {
+                amount[0]--;
+                amount[1]--;
+                water += 2;
+            } else if (amount[1] > 0 && amount[2] > 0) {
+                amount[1]--;
+                amount[2]--;
+                water += 2;
+            } else if (amount[0] > 0 && amount[2] > 0) {
+                amount[0]--;
+                amount[2]--;
+                water += 2;
+            } else if (amount[0] > 0) {
+                amount[0]--;
+                water += 1;
+            } else if (amount[1] > 0) {
+                amount[1]--;
+                water += 1;
+            } else if (amount[2] > 0) {
+                amount[2]--;
+                water += 1;
+            }
+            res++;
+        }
+        return res;
+    }
+    
+    int minimumTimeRequired(vector<int>& amount, int k) {
+        int n = amount.size();
+        int res = INT_MAX;
+        vector<int> workers(k, 0);
+        sort(amount.begin(), amount.end());
+        do {
+            res = min(res, dfs(amount, workers, n - 1));
+        } while (prev_permutation(amount.begin(), amount.end()));
+        return res;
+    }
+    
+    int dfs(vector<int>& amount, vector<int>& workers, int index) {
+        if (index < 0) {
+            return *max_element(workers.begin(), workers.end());
+        }
+        int res = INT_MAX;
+        for (int i = 0; i < workers.size(); i++) {
+            workers[i] += amount[index];
+            res = min(res, dfs(amount, workers, index - 1));
+            workers[i] -= amount[index];
+        }
+        return res;
+
+=======
+
+        int n = amount.size();
+        if (n == 0) return 0;
+        int res = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += amount[i];
+        }
+        int diff = 0;
+        int minDiff = 0;
+        for (int i = 0; i < n; i++) {
+            diff += amount[i] - amount[(i + 1) % n];
+            minDiff = min(minDiff, diff);
+        }
+        return sum - minDiff;
+
+=======
+
+        int res = 0;
+        while(amount[0] || amount[1] || amount[2]){
+            if(amount[0] && amount[1] && amount[2]){
+                int min = std::min(amount[0], amount[1]);
+                res += min;
+                amount[0] -= min;
+                amount[1] -= min;
+                amount[2] -= min;
+            }else if(amount[0] && amount[1]){
+                int min = std::min(amount[0], amount[1]);
+                res += min;
+                amount[0] -= min;
+                amount[1] -= min;
+            }else if(amount[1] && amount[2]){
+                int min = std::min(amount[1], amount[2]);
+                res += min;
+                amount[1] -= min;
+                amount[2] -= min;
+            }else if(amount[0] && amount[2]){
+                int min = std::min(amount[0], amount[2]);
+                res += min;
+                amount[0] -= min;
+                amount[2] -= min;
+            }else if(amount[0]){
+                res += amount[0];
+                amount[0] = 0;
+            }else if(amount[1]){
+                res += amount[1];
+                amount[1] = 0;
+            }else if(amount[2]){
+                res += amount[2];
+                amount[2] = 0;
+            }
+        }
+        return res;
+
+=======
+
+        int minTime = 0;
+        int minCup = 0;
+        for (int i = 0; i < amount.size(); i++) {
+            if (amount[i] < amount[minCup]) {
+                minCup = i;
+            }
+            minTime += amount[i];
+        }
+        minTime -= amount[minCup];
+        return minTime;
+
+=======
+
+        int ans = 0;
+        ans += amount[2];
+        ans += amount[1];
+        ans += amount[0] / 2;
+        amount[0] %= 2;
+        ans += amount[0];
+        amount[1] -= amount[0];
+        ans += amount[1] / 2;
+        amount[1] %= 2;
+        ans += amount[1];
+        amount[2] -= amount[1];
+        ans += amount[2] / 2;
+        amount[2] %= 2;
+        ans += amount[2];
+        return ans;
+
+=======
+
+        int n = amount.size();
+        int res = 0;
+        int i = 0;
+        while (i < n) {
+            if (amount[i] > 0) {
+                amount[i]--;
+                res++;
+            }
+            i++;
+        }
+        int j = 0;
+        while (j < n) {
+            if (amount[j] > 0) {
+                amount[j]--;
+                res++;
+            }
+            j++;
+        }
+        int k = 0;
+        while (k < n) {
+            if (amount[k] > 0) {
+                amount[k]--;
+                res++;
+            }
+            k++;
+        }
+        return res;
+    }
+    int minTimeToFill(vector<int>& amount) {
+        int res = 0;
+        int n = amount.size();
+        int i = 0;
+        while (i < n) {
+            if (amount[i] > 0) {
+                res = fillCups(amount);
+                break;
+            }
+            i++;
+        }
+        return res;

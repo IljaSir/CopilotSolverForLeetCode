@@ -1,0 +1,211 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
+                for (int k = 0; k <= 9; k++) {
+                    for (int l = 0; l <= 9; l++) {
+                        int total = i * 600 + j * 60 + k * 10 + l;
+                        if (total == targetSeconds) {
+                            min = Math.min(min, cost(startAt, moveCost, pushCost, i, j, k, l));
+                        }
+                    }
+                }
+            }
+        }
+        return min;
+
+=======
+
+        int cost = Integer.MAX_VALUE;
+        for (int i = 0; i <= 99; i++) {
+            for (int j = 0; j <= 99; j++) {
+                if (i * 60 + j == targetSeconds) {
+                    int[] digits = new int[]{i / 10, i % 10, j / 10, j % 10};
+                    int currentCost = 0;
+                    for (int k = 0; k < 4; k++) {
+                        int diff = Math.abs(startAt - digits[k]);
+                        currentCost += Math.min(diff, 10 - diff);
+                        startAt = digits[k];
+                    }
+                    cost = Math.min(cost, currentCost * pushCost);
+                }
+            }
+        }
+        return cost;
+
+=======
+
+        int[] digits = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[][] dp = new int[4][10];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 10; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][startAt] = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (dp[i][j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                for (int k = 0; k < 10; k++) {
+                    int cost = dp[i][j] + Math.abs(j - k) * moveCost;
+                    int next = (k + (j - k + 10) % 10) % 10;
+                    dp[i + 1][next] = Math.min(dp[i + 1][next], cost + pushCost);
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < 4; i++) {
+            int cost = dp[i][targetSeconds % 10];
+            if (cost == Integer.MAX_VALUE) {
+                continue;
+            }
+            cost += (targetSeconds / 10) * pushCost;
+            ans = Math.min(ans, cost);
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int[] digits = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] minutes = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99};
+        int[] seconds = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+
+=======
+
+        int[] dp = new int[6000];
+        for (int i = 1; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 0; i < 6000; i++) {
+            if (dp[i] != Integer.MAX_VALUE) {
+                int[] digits = new int[4];
+                int t = i;
+                for (int j = 3; j >= 0; j--) {
+                    digits[j] = t % 10;
+                    t /= 10;
+                }
+                for (int j = 0; j < 4; j++) {
+                    int newTime = i + 10 * (digits[j] - startAt);
+                    if (newTime < 6000) {
+                        dp[newTime] = Math.min(dp[newTime], dp[i] + (j + 1) * moveCost + digits[j] * pushCost);
+                    }
+                }
+            }
+        }
+        return dp[targetSeconds];
+
+=======
+
+        int[] dp = new int[4];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[startAt] = 0;
+        for (int i = 0; i < targetSeconds; i++) {
+            int[] ndp = new int[4];
+            Arrays.fill(ndp, Integer.MAX_VALUE);
+            for (int j = 0; j < 4; j++) {
+                if (dp[j] == Integer.MAX_VALUE) continue;
+                for (int k = 0; k < 10; k++) {
+                    int cost = dp[j] + Math.abs(k - j) * moveCost + k * pushCost;
+                    ndp[k] = Math.min(ndp[k], cost);
+                }
+            }
+            dp = ndp;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 10; j++) {
+                int cost = dp[i] + Math.abs(j - i) * moveCost + j * pushCost;
+                res = Math.min(res, cost);
+            }
+        }
+        return res;
+
+=======
+
+        int[] dp = new int[10];
+        int[] ndp = new int[10];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[startAt] = 0;
+        for (int i = 0; i < targetSeconds; i++) {
+            Arrays.fill(ndp, Integer.MAX_VALUE);
+            for (int j = 0; j < 10; j++) {
+                if (dp[j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                int cost = dp[j] + pushCost;
+                int next = (j + 1) % 10;
+                ndp[next] = Math.min(ndp[next], cost + moveCost);
+                next = (j + 9) % 10;
+                ndp[next] = Math.min(ndp[next], cost + moveCost);
+            }
+            dp = ndp;
+            ndp = new int[10];
+        }
+        int ret = Integer.MAX_VALUE;
+        for (int i = 0; i < 10; i++) {
+            if (dp[i] == Integer.MAX_VALUE) {
+                continue;
+            }
+            int cost = dp[i];
+            int[] nums = new int[4];
+            nums[0] = i;
+            for (int j = 1; j < 4; j++) {
+                nums[j] = targetSeconds % 10;
+                targetSeconds /= 10;
+            }
+            for (int j = 0; j < 4; j++) {
+                cost += Math.abs(nums[j] - nums[3 - j]) * pushCost;
+            }
+            ret = Math.min(ret, cost);
+        }
+        return ret;
+
+=======
+
+        int targetMinutes = targetSeconds / 60;
+        int targetSecondsRemainder = targetSeconds % 60;
+        int targetMinutesRemainder = targetMinutes % 100;
+        int targetMinutesQuotient = targetMinutes / 100;
+        int ans = 0;
+        ans += pushCost * (targetSecondsRemainder % 10);
+        ans += pushCost * (targetSecondsRemainder / 10);
+        ans += pushCost * (targetMinutesRemainder % 10);
+        ans += pushCost * (targetMinutesRemainder / 10);
+        ans += pushCost * (targetMinutesQuotient % 10);
+        ans += pushCost * (targetMinutesQuotient / 10);
+        ans += moveCost * Math.min(Math.abs(startAt - targetSecondsRemainder % 10), 10 - Math.abs(startAt - targetSecondsRemainder % 10));
+        ans += moveCost * Math.min(Math.abs(startAt - targetSecondsRemainder / 10), 10 - Math.abs(startAt - targetSecondsRemainder / 10));
+        ans += moveCost * Math.min(Math.abs(startAt - targetMinutesRemainder % 10), 10 - Math.abs(startAt - targetMinutesRemainder % 10));
+        ans += moveCost * Math.min(Math.abs(startAt - targetMinutesRemainder / 10), 10 - Math.abs(startAt - targetMinutesRemainder / 10));
+        ans += moveCost * Math.min(Math.abs(startAt - targetMinutesQuotient % 10), 10 - Math.abs(startAt - targetMinutesQuotient % 10));
+        ans += moveCost * Math.min(Math.abs(startAt - targetMinutesQuotient / 10), 10 - Math.abs(startAt - targetMinutesQuotient / 10));
+        return ans;
+
+=======
+
+        int[] dp = new int[100];
+        dp[startAt] = 0;
+        for (int i = startAt + 1; i < 100; ++i) {
+            dp[i] = dp[i - 1] + moveCost;
+        }
+        for (int i = startAt - 1; i >= 0; --i) {
+            dp[i] = dp[i + 1] + moveCost;
+        }
+        for (int i = 0; i < 100; ++i) {
+            dp[i] += Math.min(i, 100 - i) * pushCost;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 100; ++i) {
+            int time = i * 60 + dp[i % 10] + dp[i / 10];
+            if (time <= targetSeconds) {
+                min = Math.min(min, (targetSeconds - time) * pushCost);
+            }
+        }
+        return min;

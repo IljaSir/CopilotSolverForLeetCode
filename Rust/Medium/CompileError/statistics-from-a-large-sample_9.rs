@@ -1,0 +1,61 @@
+impl Solution {
+    pub fn sample_stats(count: Vec<i32>) -> Vec<f64> {
+        
+        let mut min = 255;
+        let mut max = 0;
+        let mut sum = 0;
+        let mut sum2 = 0;
+        let mut mode = 0;
+        let mut mode2 = 0;
+        let mut median = 0;
+        let mut median2 = 0;
+        let mut median3 = 0;
+        let mut median4 = 0;
+        let mut median5 = 0;
+        let mut median6 = 0;
+        let mut median7 = 0;
+        let mut median8 = 0;
+        let mut median9 = 0;
+        let mut median10 = 0;
+        let mut median11 = 0;
+        let mut median12 = 0;
+        let mut median13 = 0;
+        let mut median14 = 0;
+        let mut median15 = 0;
+        let mut median16 = 0;
+        let mut median17 = 0;
+        let mut median18 = 0;
+        let mut median19 = 0;
+        let mut median20 = 0;
+        let mut median21 = 0;
+        let mut median22 = 0;
+        let mut median23 = 0;
+        let mut median24 = 0;
+        let mut median25 = 0;
+        let mut median26 = 0;
+        let mut median27 = 0;
+        let mut median28 = 0;
+        let mut median29 = 0;
+        let mut median30 = 0;
+        let mut median31 = 0;
+        let mut median32 = 0;
+        let mut median33 = 0;
+        let mut median34 = 0;
+        let mut median35 = 0;
+        let mut median36 = 0;
+        let mut median37 = 0;
+        let mut median38 = 0;
+        let mut median39 = 0;
+        let mut median40 = 0;
+        let mut median41 = 0;
+        let mut median42 = 0;
+        let mut median43 = 0;
+        let mut median44 = 0;
+        let mut median45 = 0;
+        let mut median46 = 0;
+        let mut median47 = 0;
+        let mut median48 = 0;
+        let mut median49 = 0;
+        let mut median50 = 0;
+    }
+}

@@ -1,0 +1,256 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[71];
+        for (int i = 0; i <= 70; i++) {
+            dp[i] = Math.abs(target - i);
+        }
+        for (int i = 0; i < m; i++) {
+            int[] dp2 = new int[71];
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k <= 70; k++) {
+                    dp2[mat[i][j] + k] = Math.min(dp2[mat[i][j] + k], Math.abs(target - mat[i][j] - k));
+                }
+            }
+            dp = dp2;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i <= 70; i++) {
+            res = Math.min(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[800];
+        for (int i = 0; i < 800; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int[] temp = new int[800];
+            for (int j = 0; j < 800; j++) {
+                temp[j] = Integer.MAX_VALUE;
+            }
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < 800; k++) {
+                    if (dp[k] != Integer.MAX_VALUE) {
+                        temp[k + mat[i][j]] = Math.min(temp[k + mat[i][j]], dp[k]);
+                    }
+                }
+            }
+            dp = temp;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < 800; i++) {
+            if (dp[i] != Integer.MAX_VALUE) {
+                res = Math.min(res, Math.abs(i - target));
+            }
+        }
+        return res;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[800];
+        for (int i = 0; i < 800; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int[] next = new int[800];
+            for (int j = 0; j < 800; j++) {
+                next[j] = Integer.MAX_VALUE;
+            }
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < 800; k++) {
+                    if (dp[k] != Integer.MAX_VALUE) {
+                        next[k + mat[i][j]] = Math.min(next[k + mat[i][j]], dp[k] + mat[i][j]);
+                    }
+                }
+            }
+            dp = next;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < 800; i++) {
+            if (dp[i] != Integer.MAX_VALUE) {
+                res = Math.min(res, Math.abs(target - i));
+            }
+        }
+        return res;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[80 * 70 + 1];
+        for (int i = 0; i < 80 * 70 + 1; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int[] ndp = new int[80 * 70 + 1];
+            for (int j = 0; j < 80 * 70 + 1; j++) {
+                ndp[j] = Integer.MAX_VALUE;
+            }
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < 80 * 70 + 1; k++) {
+                    if (dp[k] != Integer.MAX_VALUE) {
+                        ndp[k + mat[i][j]] = Math.min(ndp[k + mat[i][j]], dp[k] + mat[i][j]);
+                    }
+                }
+            }
+            dp = ndp;
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < 80 * 70 + 1; i++) {
+            if (dp[i] != Integer.MAX_VALUE) {
+                ans = Math.min(ans, Math.abs(dp[i] - target));
+            }
+        }
+        return ans;
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[71];
+        Arrays.fill(dp, 1000);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int[] dp2 = new int[71];
+            Arrays.fill(dp2, 1000);
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k <= 70; k++) {
+                    dp2[Math.min(70, k + mat[i][j])] = Math.min(dp2[Math.min(70, k + mat[i][j])], dp[k]);
+                    dp2[Math.abs(k - mat[i][j])] = Math.min(dp2[Math.abs(k - mat[i][j])], dp[k] + 1);
+                }
+            }
+            dp = dp2;
+        }
+        return dp[target];
+
+=======
+
+        int m = mat.length, n = mat[0].length;
+        int[] dp = new int[71];
+        Arrays.fill(dp, 10000);
+        dp[0] = 0;
+        for (int i = 0; i < m; i++) {
+            int[] tmp = new int[71];
+            Arrays.fill(tmp, 10000);
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < 71; k++) {
+                    tmp[Math.min(70, k + mat[i][j])] = Math.min(tmp[Math.min(70, k + mat[i][j])], dp[k]);
+                    tmp[Math.max(0, k - mat[i][j])] = Math.min(tmp[Math.max(0, k - mat[i][j])], dp[k] + 1);
+                }
+            }
+            dp = tmp;
+        }
+        return dp[target];
+
+=======
+
+        int h = mat.length;
+        int w = mat[0].length;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < w; i++) {
+            set.add(mat[0][i]);
+        }
+        for (int i = 1; i < h; i++) {
+            Set<Integer> newSet = new HashSet<>();
+            for (int j = 0; j < w; j++) {
+                for (int s : set) {
+                    newSet.add(s + mat[i][j]);
+                }
+            }
+            set = newSet;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int s : set) {
+            min = Math.min(min, Math.abs(s - target));
+        }
+        return min;
+
+=======
+
+        int[] dp = new int[71];
+        Arrays.fill(dp, 1000);
+        dp[0] = 0;
+        for (int[] row : mat) {
+            int[] next = new int[71];
+            Arrays.fill(next, 1000);
+            for (int i = 0; i <= 70; i++) {
+                for (int j : row) {
+                    next[Math.abs(i - j)] = Math.min(next[Math.abs(i - j)], dp[i]);
+                    next[i + j] = Math.min(next[i + j], dp[i] + 1);
+                }
+            }
+            dp = next;
+        }
+        return dp[target];
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[71];
+        for (int i=0; i<71; i++) {
+            dp[i] = 1000;
+        }
+        for (int i=0; i<n; i++) {
+            dp[mat[0][i]] = 0;
+        }
+        for (int i=1; i<m; i++) {
+            int[] newDp = new int[71];
+            for (int j=0; j<71; j++) {
+                newDp[j] = 1000;
+            }
+            for (int j=0; j<n; j++) {
+                for (int k=0; k<71; k++) {
+                    if (dp[k] != 1000) {
+                        newDp[Math.abs(k-mat[i][j])] = Math.min(newDp[Math.abs(k-mat[i][j])], dp[k] + Math.abs(k-mat[i][j]));
+                    }
+                }
+            }
+            dp = newDp;
+        }
+        return dp[target];
+
+=======
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[] dp = new int[700*70+1];
+        Arrays.fill(dp, 100000);
+        dp[0] = 0;
+        for (int[] row : mat) {
+            int[] dp2 = new int[700*70+1];
+            Arrays.fill(dp2, 100000);
+            for (int i = 0; i <= 700*70; i++) {
+                for (int x : row) {
+                    if (i + x <= 700*70) {
+                        dp2[i+x] = Math.min(dp2[i+x], dp[i]);
+                    }
+                }
+            }
+            for (int i = 0; i <= 700*70; i++) {
+                dp2[i] = Math.min(dp2[i], dp2[i-1] + 1);
+            }
+            dp = dp2;
+        }
+        int ans = 100000;
+        for (int i = 0; i <= 700*70; i++) {
+            if (i >= target) {
+                ans = Math.min(ans, dp[i] + i - target);
+            } else {
+                ans = Math.min(ans, dp[i] + target - i);
+            }
+        }
+        return ans;

@@ -1,0 +1,42 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def sumOfDistancesInTree(self, n: int, edges: List[List[int]]) -> List[int]:
+        
+        pass
+
+=======
+
+def sumOfDistancesInTree(self, n: int, edges: List[List[int]]) -> List[int]:
+        
+        # create a map from node to its neighbors
+        graph = defaultdict(list)
+        for u, v in edges:
+            graph[u].append(v)
+            graph[v].append(u)
+            
+        # create an array to store the number of nodes in the subtree rooted at node i
+        count = [1] * n
+        
+        # create an array to store the sum of distances in the subtree rooted at node i
+        res = [0] * n
+        
+        # post order traversal to calculate count and res
+        def dfs(node, parent):
+            for child in graph[node]:
+                if child != parent:
+                    dfs(child, node)
+                    count[node] += count[child]
+                    res[node] += res[child] + count[child]
+        
+        # pre order traversal to calculate res
+        def dfs2(node, parent):
+            for child in graph[node]:
+                if child != parent:
+                    res[child] = res[node] - count[child] + n - count[child]
+                    dfs2(child, node)
+        
+        dfs(0, None)
+        dfs2(0, None)
+        return res

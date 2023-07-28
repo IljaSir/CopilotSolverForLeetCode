@@ -1,0 +1,264 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        if (n < 10) return n + 1;
+        string s = to_string(n);
+        int i = s.size() - 1;
+        while (i > 0 && s[i] <= s[i - 1]) --i;
+        if (i == 0) return n + 1;
+        int j = s.size() - 1;
+        while (j > i && s[j] <= s[i - 1]) --j;
+        swap(s[i - 1], s[j]);
+        sort(s.begin() + i, s.end());
+        return stoi(s);
+
+=======
+
+        string s = to_string(n);
+        int i = s.size() - 1;
+        while (i >= 0 && s[i] == '9') i--;
+        if (i < 0) return 11;
+        int j = i - 1;
+        while (j >= 0 && s[j] == s[i]) j--;
+        int d = i - j;
+        if (d + 1 > s[i] - '0') {
+            s[i] = s[i] + 1;
+            for (int k = i + 1; k < s.size(); k++) s[k] = '0';
+            return stoi(s);
+        }
+        s[i] = s[i] - 1;
+        s[j] = s[i];
+        for (int k = j + 1; k < i; k++) s[k] = '9';
+        return stoi(s);
+
+=======
+
+        string s = to_string(n);
+        int len = s.size();
+        int start = 0;
+        while (start < len && s[start] == '9') {
+            start++;
+        }
+        if (start == len) {
+            return n + 2;
+        }
+        s[start]++;
+        for (int i = start - 1; i >= 0; i--) {
+            s[i] = s[i + 1];
+        }
+        for (int i = start + 1; i < len; i++) {
+            s[i] = '0';
+        }
+        return stoi(s);
+
+=======
+
+        int temp = n;
+        vector<int> v;
+        while (temp) {
+            v.push_back(temp % 10);
+            temp /= 10;
+        }
+        reverse(v.begin(), v.end());
+        int i = v.size() - 1;
+        while (i > 0) {
+            if (v[i] > v[i - 1]) {
+                break;
+            }
+            i--;
+        }
+        if (i == 0) {
+            return -1;
+        }
+        int j = v.size() - 1;
+        while (j >= i) {
+            if (v[j] > v[i - 1]) {
+                break;
+            }
+            j--;
+        }
+        swap(v[j], v[i - 1]);
+        sort(v.begin() + i, v.end());
+        int res = 0;
+        for (int i = 0; i < v.size(); i++) {
+            res = res * 10 + v[i];
+        }
+        return res;
+
+=======
+
+        int n1 = n;
+        vector<int> digits;
+        while (n1) {
+            digits.push_back(n1 % 10);
+            n1 /= 10;
+        }
+        for (int i = 0; i < digits.size(); ++i) {
+            if (digits[i] < 9) {
+                digits[i]++;
+                for (int j = 0; j < i; ++j) {
+                    digits[j] = 0;
+                }
+                break;
+            }
+        }
+        int res = 0;
+        for (int i = digits.size() - 1; i >= 0; --i) {
+            res = res * 10 + digits[i];
+        }
+        return res;
+    }
+    int nextGreaterElement(int n) {
+        int n1 = n;
+        vector<int> digits;
+        while (n1) {
+            digits.push_back(n1 % 10);
+            n1 /= 10;
+        }
+        int i = 1;
+        for (; i < digits.size(); ++i) {
+            if (digits[i] < digits[i - 1]) {
+                break;
+            }
+        }
+        if (i == digits.size()) {
+            return -1;
+        }
+        int digit = digits[i];
+        int index = i;
+        for (int j = i + 1; j < digits.size(); ++j) {
+            if (digits[j] < digit && digits[j] > digits[i]) {
+                digit = digits[j];
+                index = j;
+            }
+        }
+        swap(digits[i], digits[index]);
+        sort(digits.begin(), digits.begin() + i);
+        int res = 0;
+        for (int i = digits.size() - 1; i >= 0; --i) {
+            res = res * 10 + digits[i];
+        }
+        if (res <= n) {
+            return -1;
+        }
+        return res;
+
+=======
+
+        int res = n + 1;
+        while (true) {
+            string s = to_string(res);
+            int cnt[10] = {0};
+            for (char c : s) {
+                ++cnt[c - '0'];
+            }
+            bool ok = true;
+            for (char c : s) {
+                if (cnt[c - '0'] != c - '0') {
+                    ok = false;
+                    break;
+                }
+            }
+            if (ok) {
+                return res;
+            }
+            ++res;
+        }
+        return 0;
+
+=======
+
+        int a[10] = {0};
+        int tmp = n;
+        while (tmp) {
+            a[tmp % 10]++;
+            tmp /= 10;
+        }
+        int i = 0;
+        while (i < 10) {
+            if (a[i] == i) {
+                i++;
+            } else if (a[i] > i) {
+                n = n + pow(10, i) * (a[i] - i);
+                i++;
+            } else {
+                n = n + pow(10, i) * (i - a[i]);
+                break;
+            }
+        }
+        return n;
+
+=======
+
+        int result = 0;
+        int count = 0;
+        int temp = n;
+        while (temp > 0) {
+            count++;
+            temp /= 10;
+        }
+        if (count == 0) {
+            return 22;
+        }
+        temp = n;
+        int i = 0;
+        while (temp > 0) {
+            int digit = temp % 10;
+            if (digit == 0) {
+                result += 2 * pow(10, i);
+                temp /= 10;
+                i++;
+                continue;
+            }
+            if (digit > 3) {
+                result += (digit - 3) * pow(10, i);
+                temp /= 10;
+                i++;
+                continue;
+            }
+            if (digit == 3) {
+                result += 3 * pow(10, i);
+                temp /= 10;
+                i++;
+                continue;
+            }
+            if (digit == 2) {
+                result += 2 * pow(10, i);
+                temp /= 10;
+                i++;
+                continue;
+            }
+            if (digit == 1) {
+                result += 1 * pow(10, i);
+                temp /= 10;
+                i++;
+                continue;
+            }
+        }
+        return result;
+
+=======
+
+        int x = n;
+        int d = 1;
+        int ans = 0;
+        while(x > 0) {
+            int r = x % 10;
+            ans += d * (r + 1);
+            d *= 10;
+            x /= 10;
+        }
+        return ans;
+    }
+    int nextGreaterElement(int n) {
+        int x = n;
+        int d = 1;
+        int ans = 0;
+        while(x > 0) {
+            int r = x % 10;
+            ans += d * (r + 1);
+            d *= 10;
+            x /= 10;
+        }
+        return ans;

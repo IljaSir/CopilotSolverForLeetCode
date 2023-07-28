@@ -1,0 +1,242 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        graph = collections.defaultdict(dict)
+        for (x, y), v in zip(equations, values):
+            graph[x][y] = v
+            graph[y][x] = 1 / v
+        def dfs(x, y, visited):
+            if x not in graph or y not in graph:
+                return -1.0
+            if y in graph[x]:
+                return graph[x][y]
+            for i in graph[x]:
+                if i not in visited:
+                    visited.add(i)
+                    temp = dfs(i, y, visited)
+                    if temp != -1.0:
+                        return temp * graph[x][i]
+            return -1.0
+        return [dfs(x, y, set()) for x, y in queries]
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        graph = collections.defaultdict(list)
+        for (x, y), val in zip(equations, values):
+            graph[x].append((y, val))
+            graph[y].append((x, 1 / val))
+        def dfs(x, y, visited):
+            if x not in graph or y not in graph:
+                return -1.0
+            if x == y:
+                return 1.0
+            visited.add(x)
+            for nei, val in graph[x]:
+                if nei not in visited:
+                    visited.add(nei)
+                    new_val = dfs(nei, y, visited)
+                    if new_val != -1.0:
+                        return new_val * val
+            return -1.0
+        return [dfs(x, y, set()) for x, y in queries]
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        graph = collections.defaultdict(dict)
+        for (x, y), val in zip(equations, values):
+            graph[x][y] = val
+            graph[y][x] = 1/val
+        def dfs(x, y, visited):
+            if x not in graph or y not in graph:
+                return -1.0
+            if y in graph[x]:
+                return graph[x][y]
+            for i in graph[x]:
+                if i not in visited:
+                    visited.add(i)
+                    temp = dfs(i, y, visited)
+                    if temp != -1.0:
+                        return temp * graph[x][i]
+            return -1.0
+        res = []
+        for x, y in queries:
+            res.append(dfs(x, y, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        n = len(equations)
+        graph = collections.defaultdict(list)
+        for i in range(n):
+            graph[equations[i][0]].append((equations[i][1], values[i]))
+            graph[equations[i][1]].append((equations[i][0], 1 / values[i]))
+        def dfs(a, b, visited):
+            if a not in graph or b not in graph:
+                return -1
+            if a == b:
+                return 1
+            visited.add(a)
+            for c, val in graph[a]:
+                if c in visited:
+                    continue
+                visited.add(c)
+                tmp = dfs(c, b, visited)
+                if tmp == -1:
+                    continue
+                return val * tmp
+            return -1
+        res = []
+        for a, b in queries:
+            res.append(dfs(a, b, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        from collections import defaultdict
+        graph = defaultdict(dict)
+        for (u,v), w in zip(equations, values):
+            graph[u][v] = w
+            graph[v][u] = 1/w
+        
+        def dfs(s, t, visited):
+            if s not in graph or t not in graph:
+                return -1.0
+            if t in graph[s]:
+                return graph[s][t]
+            for v in graph[s]:
+                if v not in visited:
+                    visited.add(v)
+                    tmp = dfs(v, t, visited)
+                    if tmp != -1.0:
+                        return graph[s][v] * tmp
+            return -1.0
+        
+        res = []
+        for s, t in queries:
+            res.append(dfs(s, t, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        def dfs(start, end, visited):
+            if start not in graph:
+                return -1
+            if start == end:
+                return 1
+            for node, val in graph[start]:
+                if node not in visited:
+                    visited.add(node)
+                    temp = dfs(node, end, visited)
+                    if temp != -1:
+                        return temp * val
+            return -1
+        
+        graph = collections.defaultdict(list)
+        for i in range(len(equations)):
+            a, b = equations[i]
+            graph[a].append((b, values[i]))
+            graph[b].append((a, 1/values[i]))
+        res = []
+        for a, b in queries:
+            res.append(dfs(a, b, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        def dfs(n, d, visited):
+            if n not in graph or d not in graph:
+                return -1.0
+            if d in graph[n]:
+                return graph[n][d]
+            for k in graph[n]:
+                if k not in visited:
+                    visited.add(k)
+                    tmp = dfs(k, d, visited)
+                    if tmp != -1.0:
+                        return graph[n][k] * tmp
+            return -1.0
+        graph = collections.defaultdict(dict)
+        for (n, d), v in zip(equations, values):
+            graph[n][d] = v
+            graph[d][n] = 1 / v
+        return [dfs(n, d, set()) for n, d in queries]
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        def dfs(a, b, visited):
+            if a == b:
+                return 1
+            visited.add(a)
+            for c in graph[a]:
+                if c not in visited:
+                    tmp = dfs(c, b, visited)
+                    if tmp != -1:
+                        return tmp * graph[a][c]
+            return -1
+        graph = collections.defaultdict(dict)
+        for (a, b), v in zip(equations, values):
+            graph[a][b] = v
+            graph[b][a] = 1 / v
+        res = []
+        for a, b in queries:
+            if a not in graph or b not in graph:
+                res.append(-1)
+            else:
+                res.append(dfs(a, b, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        
+        def dfs(s, e, visited):
+            if s in visited:
+                return -1.0
+            if s == e:
+                return 1.0
+            visited.add(s)
+            for nei in graph[s]:
+                res = dfs(nei, e, visited)
+                if res != -1.0:
+                    return res * graph[s][nei]
+            return -1.0
+        
+        graph = collections.defaultdict(dict)
+        for (s, e), v in zip(equations, values):
+            graph[s][e] = v
+            graph[e][s] = 1 / v
+        res = []
+        for s, e in queries:
+            if s not in graph or e not in graph:
+                res.append(-1.0)
+            else:
+                res.append(dfs(s, e, set()))
+        return res
+
+=======
+
+def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        def dfs(curr, end, visited):
+            if curr == end:
+                return 1
+            for next, val in graph[curr]:
+                if next not in visited:
+                    visited.add(next)
+                    res = dfs(next, end, visited)
+                    if res != -1:
+                        return res * val
+            return -1
+        graph = collections.defaultdict(list)
+        for (a, b), v in zip(equations, values):
+            graph[a].append((b, v))
+            graph[b].append((a, 1 / v))
+        return [dfs(a, b, set()) if a in graph and b in graph else -1 for a, b in queries]

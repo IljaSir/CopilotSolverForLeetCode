@@ -1,0 +1,470 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut dp = vec![vec![0; n]; m];
+        dp[0][0] = 1;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 0 {
+                    continue;
+                }
+                if i > 0 {
+                    dp[i][j] += dp[i-1][j];
+                }
+                if j > 0 {
+                    dp[i][j] += dp[i][j-1];
+                }
+            }
+        }
+        if dp[m-1][n-1] > 1 {
+            return true;
+        }
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    continue;
+                }
+                let mut count = 0;
+                if i > 0 && grid[i-1][j] == 1 {
+                    count += dp[i-1][j];
+                }
+                if i < m-1 && grid[i+1][j] == 1 {
+                    count += dp[m-1][n-1] - dp[i][j];
+                }
+                if j > 0 && grid[i][j-1] == 1 {
+                    count += dp[i][j-1];
+                }
+                if j < n-1 && grid[i][j+1] == 1 {
+                    count += dp[m-1][n-1] - dp[i][j];
+                }
+                if count > 1 {
+                    return true;
+                }
+            }
+        }
+        false
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        while !queue.is_empty() {
+            let (x, y) = queue.pop().unwrap();
+            if x == m - 1 && y == n - 1 {
+                return true;
+            }
+            if x + 1 < m && !visited[x + 1][y] && grid[x + 1][y] == 1 {
+                queue.push((x + 1, y));
+                visited[x + 1][y] = true;
+            }
+            if y + 1 < n && !visited[x][y + 1] && grid[x][y + 1] == 1 {
+                queue.push((x, y + 1));
+                visited[x][y + 1] = true;
+            }
+        }
+        false
+    }
+    
+    pub fn disconnect_path(grid: Vec<Vec<i32>>) -> bool {
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut grid2 = grid.clone();
+        for i in 0..m {
+            for j in 0..n {
+                if i == 0 && j == 0 || i == m - 1 && j == n - 1 {
+                    continue;
+                }
+                if grid[i][j] == 1 {
+                    grid2[i][j] = 0;
+                    if !Solution::is_possible_to_cut_path(grid2.clone()) {
+                        return true;
+                    }
+                    grid2[i][j] = 1;
+                }
+            }
+        }
+        false
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        visited[0][0] = true;
+        while !queue.is_empty() {
+            let (i, j) = queue.remove(0);
+            if i == m - 1 && j == n - 1 {
+                return true;
+            }
+            if i + 1 < m && !visited[i + 1][j] && grid[i + 1][j] == 1 {
+                visited[i + 1][j] = true;
+                queue.push((i + 1, j));
+            }
+            if j + 1 < n && !visited[i][j + 1] && grid[i][j + 1] == 1 {
+                visited[i][j + 1] = true;
+                queue.push((i, j + 1));
+            }
+        }
+        false
+    }
+    pub fn disconnect_path(grid: Vec<Vec<i32>>) -> bool {
+        let m = grid.len();
+        let n = grid[0].len();
+        if grid[0][0] == 1 && grid[m - 1][n - 1] == 1 {
+            if Solution::is_possible_to_cut_path(grid.clone()) {
+                return true;
+            }
+            for i in 1..m - 1 {
+                for j in 1..n - 1 {
+                    if grid[i][j] == 0 {
+                        let mut grid = grid.clone();
+                        grid[i][j] = 1;
+                        if !Solution::is_possible_to_cut_path(grid) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            true
+        } else {
+            false
+        }
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        visited[0][0] = true;
+        let mut count = 0;
+        while !queue.is_empty() {
+            let mut next = Vec::new();
+            for (i, j) in queue {
+                if i == m - 1 && j == n - 1 {
+                    return true;
+                }
+                if i < m - 1 && !visited[i + 1][j] && grid[i + 1][j] == 1 {
+                    visited[i + 1][j] = true;
+                    next.push((i + 1, j));
+                }
+                if j < n - 1 && !visited[i][j + 1] && grid[i][j + 1] == 1 {
+                    visited[i][j + 1] = true;
+                    next.push((i, j + 1));
+                }
+            }
+            queue = next;
+            count += 1;
+            if count > 2 {
+                return false;
+            }
+        }
+        false
+    }
+    pub fn disconnect_path(grid: Vec<Vec<i32>>) -> bool {
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        visited[0][0] = true;
+        let mut count = 0;
+        while !queue.is_empty() {
+            let mut next = Vec::new();
+            for (i, j) in queue {
+                if i == m - 1 && j == n - 1 {
+                    return true;
+                }
+                if i < m - 1 && !visited[i + 1][j] && grid[i + 1][j] == 1 {
+                    visited[i + 1][j] = true;
+                    next.push((i + 1, j));
+                }
+                if j < n - 1 && !visited[i][j + 1] && grid[i][j + 1] == 1 {
+                    visited[i][j + 1] = true;
+                    next.push((i,
+
+=======
+
+        let mut grid = grid;
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut count = 0;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    count += 1;
+                    if count > 1 {
+                        return true;
+                    }
+                    Solution::dfs(i, j, &mut grid);
+                }
+            }
+        }
+        false
+    }
+    fn dfs(i: usize, j: usize, grid: &mut Vec<Vec<i32>>) {
+        let m = grid.len();
+        let n = grid[0].len();
+        if i >= m || j >= n || grid[i][j] == 0 {
+            return;
+        }
+        grid[i][j] = 0;
+        Solution::dfs(i + 1, j, grid);
+        Solution::dfs(i, j + 1, grid);
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        let mut visited = vec![vec![false; n]; m];
+        visited[0][0] = true;
+        let mut found = false;
+        while !queue.is_empty() {
+            let mut next_queue = Vec::new();
+            for (i, j) in queue {
+                if i == m - 1 && j == n - 1 {
+                    found = true;
+                    break;
+                }
+                if i + 1 < m && !visited[i + 1][j] && grid[i + 1][j] == 1 {
+                    next_queue.push((i + 1, j));
+                    visited[i + 1][j] = true;
+                }
+                if j + 1 < n && !visited[i][j + 1] && grid[i][j + 1] == 1 {
+                    next_queue.push((i, j + 1));
+                    visited[i][j + 1] = true;
+                }
+            }
+            queue = next_queue;
+        }
+        if !found {
+            return true;
+        }
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    grid[i][j] = 0;
+                    let mut queue = Vec::new();
+                    queue.push((0, 0));
+                    let mut visited = vec![vec![false; n]; m];
+                    visited[0][0] = true;
+                    let mut found = false;
+                    while !queue.is_empty() {
+                        let mut next_queue = Vec::new();
+                        for (i, j) in queue {
+                            if i == m - 1 && j == n - 1 {
+                                found = true;
+                                break;
+                            }
+                            if i + 1 < m && !visited[i + 1][j] && grid[i + 1][j] == 1 {
+                                next_queue.push((i + 1, j));
+                                visited[i + 1][j] = true;
+                            }
+                            if j + 1 < n && !visited[i][j + 1] && grid[i][j + 1] == 1 {
+                                next_queue.push((i, j + 1));
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = vec![(0, 0)];
+        visited[0][0] = true;
+        while !queue.is_empty() {
+            let mut next_queue = vec![];
+            for (x, y) in queue {
+                let mut next = vec![(x + 1, y), (x, y + 1)];
+                if x == m - 1 && y == n - 1 {
+                    return true;
+                }
+                if grid[x][y] == 0 {
+                    next.push((x, y));
+                }
+                for (nx, ny) in next {
+                    if nx < m && ny < n && !visited[nx][ny] {
+                        visited[nx][ny] = true;
+                        next_queue.push((nx, ny));
+                    }
+                }
+            }
+            queue = next_queue;
+        }
+        false
+    }
+    pub fn disconnect_path_in_a_binary_matrix(grid: Vec<Vec<i32>>) -> bool {
+        let m = grid.len();
+        let n = grid[0].len();
+        if m == 1 && n == 1 {
+            return false;
+        }
+        if grid[0][0] == 0 {
+            return true;
+        }
+        if grid[m - 1][n - 1] == 0 {
+            return true;
+        }
+        if grid[0][0] == 1 && grid[m - 1][n - 1] == 1 {
+            return !Self::is_possible_to_cut_path(grid);
+        }
+        false
+
+=======
+
+        let mut grid = grid;
+        let n = grid.len();
+        let m = grid[0].len();
+        let mut count = 0;
+        for i in 0..n {
+            for j in 0..m {
+                if grid[i][j] == 1 {
+                    grid[i][j] = 0;
+                    if !Self::is_connected(&grid) {
+                        return true;
+                    }
+                    grid[i][j] = 1;
+                    count += 1;
+                }
+            }
+        }
+        count >= 2
+    }
+    pub fn is_connected(grid: &Vec<Vec<i32>>) -> bool {
+        let n = grid.len();
+        let m = grid[0].len();
+        let mut visited = vec![vec![false; m]; n];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, 0));
+        visited[0][0] = true;
+        while let Some((x, y)) = q.pop_front() {
+            if x == n - 1 && y == m - 1 {
+                return true;
+            }
+            if x + 1 < n && grid[x + 1][y] == 1 && !visited[x + 1][y] {
+                q.push_back((x + 1, y));
+                visited[x + 1][y] = true;
+            }
+            if y + 1 < m && grid[x][y + 1] == 1 && !visited[x][y + 1] {
+                q.push_back((x, y + 1));
+                visited[x][y + 1] = true;
+            }
+        }
+        false
+
+=======
+
+        let mut grid = grid;
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = vec![(0, 0)];
+        let mut path = 0;
+        let mut is_possible = false;
+        while !queue.is_empty() {
+            let mut next_queue = vec![];
+            for (i, j) in queue {
+                if i == m - 1 && j == n - 1 {
+                    is_possible = true;
+                    break;
+                }
+                if i < m - 1 && grid[i + 1][j] == 1 && !visited[i + 1][j] {
+                    next_queue.push((i + 1, j));
+                    visited[i + 1][j] = true;
+                }
+                if j < n - 1 && grid[i][j + 1] == 1 && !visited[i][j + 1] {
+                    next_queue.push((i, j + 1));
+                    visited[i][j + 1] = true;
+                }
+            }
+            if is_possible {
+                break;
+            }
+            if next_queue.is_empty() {
+                break;
+            }
+            if next_queue.len() > 1 {
+                return false;
+            }
+            let (i, j) = next_queue[0];
+            if i == m - 1 && j == n - 1 {
+                is_possible = true;
+                break;
+            }
+            grid[i][j] = 0;
+            visited = vec![vec![false; n]; m];
+            queue = vec![(0, 0)];
+            path += 1;
+            if path > 1 {
+                break;
+            }
+        }
+        is_possible
+    }
+}
+
+=======
+
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        let mut path = vec![(0, 0)];
+        let mut stack = vec![(0, 0)];
+        let mut flip = false;
+        while !stack.is_empty() {
+            let (x, y) = stack.pop().unwrap();
+            if x == grid.len() - 1 && y == grid[0].len() - 1 {
+                return true;
+            }
+            visited[x][y] = true;
+            let mut valid = false;
+            if x < grid.len() - 1 && grid[x + 1][y] == 1 {
+                if !visited[x + 1][y] {
+                    stack.push((x + 1, y));
+                    valid = true;
+                }
+            }
+            if y < grid[0].len() - 1 && grid[x][y + 1] == 1 {
+                if !visited[x][y + 1] {
+                    stack.push((x, y + 1));
+                    valid = true;
+                }
+            }
+            if !valid {
+                path.pop();
+                if !path.is_empty() {
+                    let (x, y) = path[path.len() - 1];
+                    if !visited[x][y] {
+                        stack.push((x, y));
+                    }
+                }
+            } else {
+                path.push((x, y));
+            }
+            if !flip {
+                if x < grid.len() - 1 && grid[x + 1][y] == 0 {
+                    grid[x + 1][y] = 1;
+                    visited = vec![vec![false; grid[0].len()]; grid.len()];
+                    path = vec![(0, 0)];
+                    stack = vec![(0, 0)];
+                    flip = true;
+                }
+                if y < grid[0].len() - 1 && grid[x][y + 1] == 0 {
+                    grid[x][y + 1] = 1;
+                    visited = vec![vec![false; grid[0].len()]; grid.len()];
+                    path = vec![(0, 0)];
+                    stack = vec![(0, 0)];
+                    flip = true;
+                }
+            }
+        }
+        false
+    }
+}

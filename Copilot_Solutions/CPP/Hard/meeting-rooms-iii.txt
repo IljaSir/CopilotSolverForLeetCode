@@ -1,0 +1,206 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> starts, ends;
+        for (auto m : meetings) {
+            starts.push_back(m[0]);
+            ends.push_back(m[1]);
+        }
+        sort(starts.begin(), starts.end());
+        sort(ends.begin(), ends.end());
+        int i = 0, j = 0, cnt = 0, maxCnt = 0, res = 0;
+        while (i < starts.size()) {
+            if (starts[i] < ends[j]) {
+                ++i;
+                ++cnt;
+                if (cnt > maxCnt) {
+                    maxCnt = cnt;
+                    res = i - 1;
+                }
+            } else {
+                ++j;
+                --cnt;
+            }
+        }
+        return starts[res];
+
+=======
+
+        vector<int> starts, ends;
+        for (auto meeting : meetings) {
+            starts.push_back(meeting[0]);
+            ends.push_back(meeting[1]);
+        }
+        sort(starts.begin(), starts.end());
+        sort(ends.begin(), ends.end());
+        int ans = 0, cur = 0;
+        for (int i = 0, j = 0; i < starts.size(); ++i) {
+            while (ends[j] <= starts[i]) {
+                ++j;
+                --cur;
+            }
+            ++cur;
+            ans = max(ans, cur);
+        }
+        return ans;
+
+=======
+
+        vector<int> rooms(n, 0);
+        for (auto& meeting : meetings) {
+            int start = meeting[0];
+            int end = meeting[1];
+            for (int i = 0; i < n; ++i) {
+                if (rooms[i] <= start) {
+                    rooms[i] = end;
+                    break;
+                }
+            }
+        }
+        int max = 0;
+        int maxIndex = 0;
+        for (int i = 0; i < n; ++i) {
+            int count = 0;
+            for (auto& meeting : meetings) {
+                if (meeting[0] >= rooms[i]) {
+                    ++count;
+                }
+            }
+            if (count > max) {
+                max = count;
+                maxIndex = i;
+            }
+        }
+        return maxIndex;
+
+=======
+
+        vector<int> start;
+        vector<int> end;
+        for(auto &m:meetings){
+            start.push_back(m[0]);
+            end.push_back(m[1]);
+        }
+        sort(start.begin(),start.end());
+        sort(end.begin(),end.end());
+        int i=0,j=0;
+        int cnt = 0;
+        int maxcnt = 0;
+        int maxroom = 0;
+        while(i<start.size() && j<end.size()){
+            if(start[i]<end[j]){
+                cnt++;
+                i++;
+            }else{
+                cnt--;
+                j++;
+            }
+            if(cnt>maxcnt){
+                maxcnt = cnt;
+                maxroom = j;
+            }
+        }
+        return maxroom;
+
+=======
+
+        vector<int> rooms(n);
+        for (auto& m : meetings) {
+            rooms[m[0]] += 1;
+            rooms[m[1]] -= 1;
+        }
+        int maxRoom = 0;
+        int maxBooked = 0;
+        int booked = 0;
+        for (int i = 0; i < rooms.size(); ++i) {
+            booked += rooms[i];
+            if (booked > maxBooked) {
+                maxRoom = i;
+                maxBooked = booked;
+            }
+        }
+        return maxRoom;
+
+=======
+
+        int ans = 0;
+        vector<int> cnt(n, 0);
+        for (auto& m : meetings) {
+            int start = m[0];
+            int end = m[1];
+            for (int i = start; i < end; ++i) {
+                ++cnt[i];
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (cnt[i] > cnt[ans]) ans = i;
+        }
+        return ans;
+
+=======
+
+        vector<int> cnt(n, 0);
+        for (auto& m : meetings) {
+            cnt[m[0]]++;
+            cnt[m[1]]--;
+        }
+
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            cnt[i] += cnt[i - 1];
+            if (cnt[i] > cnt[ans]) {
+                ans = i;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> times(500001, 0);
+        for (auto& meeting : meetings) {
+            times[meeting[0]]++;
+            times[meeting[1]]--;
+        }
+        int maxCount = 0, maxRoom = 0, curCount = 0;
+        for (int i = 0; i < times.size(); i++) {
+            curCount += times[i];
+            if (curCount > maxCount) {
+                maxCount = curCount;
+                maxRoom = i;
+            }
+        }
+        return maxRoom;
+
+=======
+
+        int res = 0;
+        vector<int> rooms(n);
+        for (auto &m : meetings) {
+            int start = m[0], end = m[1];
+            for (int i = 0; i < n; ++i) {
+                if (rooms[i] <= start) {
+                    rooms[i] = end;
+                    res = max(res, i);
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> rooms(n, 0);
+        for (auto meeting: meetings) {
+            rooms[meeting[0]]++;
+            rooms[meeting[1]]--;
+        }
+        int maxCount = rooms[0], maxIndex = 0;
+        for (int i = 1; i < n; i++) {
+            rooms[i] += rooms[i - 1];
+            if (rooms[i] > maxCount) {
+                maxCount = rooms[i];
+                maxIndex = i;
+            }
+        }
+        return maxIndex;

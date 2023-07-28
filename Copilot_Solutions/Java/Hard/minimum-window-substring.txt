@@ -1,0 +1,459 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        int left = 0, right = 0, count = t.length(), min = Integer.MAX_VALUE, start = 0;
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            if (map.containsKey(c)) {
+                map.put(c, map.get(c) - 1);
+                if (map.get(c) >= 0) {
+                    count--;
+                }
+            }
+            right++;
+            while (count == 0) {
+                if (right - left < min) {
+                    min = right - left;
+                    start = left;
+                }
+                char d = s.charAt(left);
+                if (map.containsKey(d)) {
+                    map.put(d, map.get(d) + 1);
+                    if (map.get(d) > 0) {
+                        count++;
+                    }
+                }
+                left++;
+            }
+        }
+        return min == Integer.MAX_VALUE ? "" : s.substring(start, start + min);
+
+=======
+
+        if (s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+        int[] map = new int[128];
+        for (char c : t.toCharArray()) {
+            map[c]++;
+        }
+        int left = 0, right = 0, required = t.length(), formed = 0;
+        int[] window = new int[128];
+        int[] ans = {-1, 0, 0};
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            window[c]++;
+            if (map[c] > 0 && window[c] <= map[c]) {
+                formed++;
+            }
+            while (left <= right && formed == required) {
+                c = s.charAt(left);
+                if (ans[0] == -1 || right - left + 1 < ans[0]) {
+                    ans[0] = right - left + 1;
+                    ans[1] = left;
+                    ans[2] = right;
+                }
+                window[c]--;
+                if (map[c] > 0 && window[c] < map[c]) {
+                    formed--;
+                }
+                left++;
+            }
+            right++;
+        }
+        return ans[0] == -1 ? "" : s.substring(ans[1], ans[2] + 1);
+
+=======
+
+        if (s.length() < t.length()) {
+            return "";
+        }
+        Map<Character, Integer> tMap = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            tMap.put(c, tMap.getOrDefault(c, 0) + 1);
+        }
+        int tSize = tMap.size();
+        int l = 0;
+        int r = 0;
+        int counter = tSize;
+        int minLen = Integer.MAX_VALUE;
+        int minL = 0;
+        int minR = 0;
+        Map<Character, Integer> sMap = new HashMap<>();
+        while (r < s.length()) {
+            char rc = s.charAt(r);
+            sMap.put(rc, sMap.getOrDefault(rc, 0) + 1);
+            if (tMap.containsKey(rc) && sMap.get(rc).intValue() == tMap.get(rc).intValue()) {
+                counter--;
+            }
+            while (counter == 0) {
+                int len = r - l + 1;
+                if (len < minLen) {
+                    minLen = len;
+                    minL = l;
+                    minR = r;
+                }
+                char lc = s.charAt(l);
+                sMap.put(lc, sMap.get(lc) - 1);
+                if (tMap.containsKey(lc) && sMap.get(lc).intValue() < tMap.get(lc).intValue()) {
+                    counter++;
+                }
+                l++;
+            }
+            r++;
+        }
+        if (minLen == Integer.MAX_VALUE) {
+            return "";
+        }
+        return s.substring(minL, minR + 1);
+
+=======
+
+        int[] map = new int[128];
+        for (char c : t.toCharArray()) {
+            map[c]++;
+        }
+        int start = 0, end = 0, minStart = 0, minLen = Integer.MAX_VALUE, counter = t.length();
+        while (end < s.length()) {
+            char c1 = s.charAt(end);
+            if (map[c1] > 0) counter--;
+            map[c1]--;
+            end++;
+            while (counter == 0) {
+                if (minLen > end - start) {
+                    minLen = end - start;
+                    minStart = start;
+                }
+                char c2 = s.charAt(start);
+                map[c2]++;
+                if (map[c2] > 0) counter++;
+                start++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
+
+=======
+
+        if (s.length() < t.length() || s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+        // Dictionary which keeps a count of all the unique characters in t.
+        Map<Character, Integer> dictT = new HashMap<Character, Integer>();
+        for (int i = 0; i < t.length(); i++) {
+            int count = dictT.getOrDefault(t.charAt(i), 0);
+            dictT.put(t.charAt(i), count + 1);
+        }
+
+        // Number of unique characters in t, which need to be present in the desired window.
+        int required = dictT.size();
+
+        // Left and Right pointer
+        int l = 0, r = 0;
+
+        // formed is used to keep track of how many unique characters in t
+        // are present in the current window in its desired frequency.
+        // e.g. if t is "AABC" then the window must have two A's, one B and one C.
+        // Thus formed would be = 3 when all these conditions are met.
+        int formed = 0;
+
+        // Dictionary which keeps a count of all the unique characters in the current window.
+        Map<Character, Integer> windowCounts = new HashMap<Character, Integer>();
+
+        // ans list of the form (window length, left, right)
+        int[] ans = {-1, 0, 0};
+
+        while (r < s.length()) {
+            // Add one character from the right to the window
+            char c = s.charAt(r);
+            int count = windowCounts.getOrDefault(c, 0);
+            windowCounts.put(c, count + 1);
+
+            // If the frequency of the current character added equals to the
+            // desired count in t then increment the formed count by 1.
+            if (dictT.containsKey(c) && windowCounts.get(c).intValue() == dictT.get(c).intValue()) {
+                formed++;
+            }
+
+            // Try and contract the window till the point where it ceases to be 'desirable'.
+            while (l <= r && formed == required) {
+                c = s.charAt(l);
+                // Save the smallest window until now.
+                if (ans[0] == -1 || r - l + 1 < ans[0]) {
+                    ans[0] = r - l + 1;
+                    ans[1] = l;
+
+=======
+
+        int[] count = new int[128];
+        for (char c : t.toCharArray()) {
+            count[c]++;
+        }
+        int left = 0;
+        int right = 0;
+        int minLeft = 0;
+        int minLen = Integer.MAX_VALUE;
+        int countT = t.length();
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            if (count[c] > 0) {
+                countT--;
+            }
+            count[c]--;
+            right++;
+            while (countT == 0) {
+                if (right - left < minLen) {
+                    minLeft = left;
+                    minLen = right - left;
+                }
+                char c2 = s.charAt(left);
+                if (count[c2] == 0) {
+                    countT++;
+                }
+                count[c2]++;
+                left++;
+            }
+        }
+        if (minLen == Integer.MAX_VALUE) {
+            return "";
+        } else {
+            return s.substring(minLeft, minLeft + minLen);
+        }
+
+=======
+
+        if (s.length() < t.length() || s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+        // Dictionary which keeps a count of all the unique characters in t.
+        Map<Character, Integer> dictT = new HashMap<Character, Integer>();
+        for (int i = 0; i < t.length(); i++) {
+            int count = dictT.getOrDefault(t.charAt(i), 0);
+            dictT.put(t.charAt(i), count + 1);
+        }
+
+        // Number of unique characters in t, which need to be present in the desired window.
+        int required = dictT.size();
+
+        // Left and Right pointer
+        int l = 0, r = 0;
+
+        // formed is used to keep track of how many unique characters in t
+        // are present in the current window in its desired frequency.
+        // e.g. if t is "AABC" then the window must have two A's, one B and one C.
+        // Thus formed would be = 3 when all these conditions are met.
+        int formed = 0;
+
+        // Dictionary which keeps a count of all the unique characters in the current window.
+        Map<Character, Integer> windowCounts = new HashMap<Character, Integer>();
+
+        // ans list of the form (window length, left, right)
+        int[] ans = {-1, 0, 0};
+
+        while (r < s.length()) {
+            // Add one character from the right to the window
+            char c = s.charAt(r);
+            int count = windowCounts.getOrDefault(c, 0);
+            windowCounts.put(c, count + 1);
+
+            // If the frequency of the current character added equals to the
+            // desired count in t then increment the formed count by 1.
+            if (dictT.containsKey(c) && windowCounts.get(c).intValue() == dictT.get(c).intValue()) {
+                formed++;
+            }
+
+            // Try and contract the window till the point where it ceases to be 'desirable'.
+            while (l <= r && formed == required) {
+                c = s.charAt(l);
+                // Save the smallest window until now.
+                if (ans[0] == -1 || r - l + 1 < ans[0]) {
+                    ans[0] = r - l + 1;
+                    ans[1] = l;
+
+=======
+
+        if (s.length() == 0 || t.length() == 0) {
+            return "";
+        }
+
+        int[] tCount = new int[128];
+        for (char c : t.toCharArray()) {
+            tCount[c]++;
+        }
+
+        int[] sCount = new int[128];
+        int count = 0;
+        int minLen = Integer.MAX_VALUE;
+        int minStart = 0;
+        int start = 0;
+
+        for (int end = 0; end < s.length(); end++) {
+            if (tCount[s.charAt(end)] == 0) {
+                continue;
+            }
+
+            sCount[s.charAt(end)]++;
+            if (sCount[s.charAt(end)] <= tCount[s.charAt(end)]) {
+                count++;tart + minLen);
+
+=======
+
+        int left = 0;
+        int right = 0;
+        int minLeft = 0;
+        int minRight = 0;
+        int minLen = Integer.MAX_VALUE;
+        int count = 0;
+        int[] map = new int[128];
+        for (int i = 0; i < t.length(); i++) {
+            map[t.charAt(i)]++;
+        }
+        while (right < s.length()) {
+            if (map[s.charAt(right)] > 0) {
+                count++;
+            }
+            map[s.charAt(right)]--;
+            right++;
+            while (count == t.length()) {
+                if (right - left < minLen) {
+                    minLen = right - lef;
+                    minLeft = left;
+                    minRight = right;
+                }
+                if (mp[s.chaAt(lef)] == 0) {
+                   count--;
+                }
+                map[s.charAt(left)]+;
+                left++;
+            }
+        }
+        return == Integer.MAX_VALUE ? "" : s.substring(minLeft, minRight
+            }
+
+            while (count == t.length()) {
+                if (end - start + 1 < minLen) {
+                    minLen = end - start + 1;
+                    minStart = start;
+                }
+
+                if (tCount[s.charAt(start)] == 0) {
+                    start++;
+                    continue;
+                }
+
+                sCount[s.charAt(start)]--;
+                if (sCount[s.charAt(start)] < tCount[s.charAt(start)]) {
+                    count--;
+                }
+
+                start++;
+            }
+        }
+
+        if (minLen == Integer.MAX_VALUE) {
+            return "";
+        }
+
+        return s.substring(minStart, minStart + minLen);
+
+=======
+
+        int[] count = new int[128];
+        for (char c : t.toCharArray()) {
+            count[c]++;
+        }
+        int i = 0, j = 0, minLen = Integer.MAX_VALUE, minStart = 0, len = 0;
+        while (j < s.length()) {
+            if (count[s.charAt(j++)]-- > 0) {
+                len++;
+            }
+            while (len == t.length()) {
+                if (j - i < minLen) {
+                    minLen = j - i;
+                    minStart = i;
+                }
+                if (count[s.charAt(i++)]++ == 0) {
+                    len--;
+                }
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
+
+=======
+
+        int left = 0;
+        int right = 0;
+        int minLeft = 0;
+        int minRight = 0;
+        int minLen = Integer.MAX_VALUE;
+        int count = 0;
+        int[] map = new int[128];
+        for (int i = 0; i < t.length(); i++) {
+            map[t.charAt(i)]++;
+        }
+        while (right < s.length()) {
+            if (map[s.charAt(right)] > 0) {
+                count++;
+            }
+            map[s.charAt(right)]--;
+            right++;
+            while (count == t.length()) {
+                if (right - left < minLen) {
+                    minLen = right - left;
+                    minLeft = left;
+                    minRight = right;
+                }
+                if (map[s.charAt(left)] == 0) {
+                    count--;
+                }
+                map[s.charAt(left)]++;
+                left++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minLeft, minRight);
+
+=======
+
+        int[] map = new int[128];
+        int[] window = new int[128];
+        int matched = 0;
+        int start = 0;
+        int minLen = Integer.MAX_VALUE;
+        int minStart = 0;
+        
+        for (char c : t.toCharArray()) {
+            map[c]++;
+        }
+        
+        for (int end = 0; end < s.length(); end++) {
+            char c = s.charAt(end);
+            window[c]++;
+            
+            if (window[c] <= map[c]) {
+                matched++;
+            }
+            
+            while (matched == t.length()) {
+                if (end - start + 1 < minLen) {
+                    minLen = end - start + 1;
+                    minStart = start;
+                }
+                
+                char c2 = s.charAt(start);
+                window[c2]--;
+                if (window[c2] < map[c2]) {
+                    matched--;
+                }
+                start++;
+            }
+        }
+        
+        if (minLen == Integer.MAX_VALUE) {
+            return "";
+        }
+        
+        return s.substring(minStart, minStart + minLen);

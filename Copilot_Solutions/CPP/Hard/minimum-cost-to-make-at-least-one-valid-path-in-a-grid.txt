@@ -1,0 +1,248 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            int x = q.front().first, y = q.front().second;
+            q.pop();
+            int c = cost[x][y];
+            int dx[4] = {0, 0, 1, -1}, dy[4] = {1, -1, 0, 0};
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dx[i], ny = y + dy[i];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    int nc = c + (i + 1 == grid[x][y] ? 0 : 1);
+                    if (nc < cost[nx][ny]) {
+                        cost[nx][ny] = nc;
+                        q.push({nx, ny});
+                    }
+                }
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        queue<pair<int, int>> q;
+        q.push(make_pair(0, 0));
+        while (!q.empty()) {
+            int x = q.front().first;
+            int y = q.front().second;
+            q.pop();
+            if (x > 0 && cost[x][y] + (grid[x][y] == 1 ? 0 : 1) < cost[x - 1][y]) {
+                cost[x - 1][y] = cost[x][y] + (grid[x][y] == 1 ? 0 : 1);
+                q.push(make_pair(x - 1, y));
+            }
+            if (x < m - 1 && cost[x][y] + (grid[x][y] == 3 ? 0 : 1) < cost[x + 1][y]) {
+                cost[x + 1][y] = cost[x][y] + (grid[x][y] == 3 ? 0 : 1);
+                q.push(make_pair(x + 1, y));
+            }
+            if (y > 0 && cost[x][y] + (grid[x][y] == 2 ? 0 : 1) < cost[x][y - 1]) {
+                cost[x][y - 1] = cost[x][y] + (grid[x][y] == 2 ? 0 : 1);
+                q.push(make_pair(x, y - 1));
+            }
+            if (y < n - 1 && cost[x][y] + (grid[x][y] == 4 ? 0 : 1) < cost[x][y + 1]) {
+                cost[x][y + 1] = cost[x][y] + (grid[x][y] == 4 ? 0 : 1);
+                q.push(make_pair(x, y + 1));
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<int> dx = {0, 0, 1, -1};
+        vector<int> dy = {1, -1, 0, 0};
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            int x = q.front().first, y = q.front().second;
+            q.pop();
+            for (int k = 0; k < 4; ++k) {
+                int nx = x + dx[k], ny = y + dy[k];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    int ncost = cost[x][y] + (grid[x][y] - 1 == k ? 0 : 1);
+                    if (ncost < cost[nx][ny]) {
+                        cost[nx][ny] = ncost;
+                        q.push({nx, ny});
+                    }
+                }
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        vector<pair<int, int>> dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dir[i].first;
+                int ny = y + dir[i].second;
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                int newCost = cost[x][y] + (grid[x][y] == i + 1 ? 0 : 1);
+                if (newCost < cost[nx][ny]) {
+                    cost[nx][ny] = newCost;
+                    q.push({nx, ny});
+                }
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        queue<int> q;
+        q.push(0);
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            int x = cur / n;
+            int y = cur % n;
+            int next = grid[x][y];
+            int xx = x, yy = y;
+            if (next == 1) yy++;
+            if (next == 2) yy--;
+            if (next == 3) xx++;
+            if (next == 4) xx--;
+            if (xx >= 0 && xx < m && yy >= 0 && yy < n) {
+                if (cost[x][y] < cost[xx][yy]) {
+                    cost[xx][yy] = cost[x][y];
+                    q.push(xx * n + yy);
+                }
+            }
+            for (int i = 1; i <= 4; i++) {
+                if (i == next) continue;
+                xx = x, yy = y;
+                if (i == 1) yy++;
+                if (i == 2) yy--;
+                if (i == 3) xx++;
+                if (i == 4) xx--;
+                if (xx >= 0 && xx < m && yy >= 0 && yy < n) {
+                    if (cost[x][y] + 1 < cost[xx][yy]) {
+                        cost[xx][yy] = cost[x][y] + 1;
+                        q.push(xx * n + yy);
+                    }
+                }
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        vector<vector<int>> dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dir[i][0], ny = y + dir[i][1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    int ncost = cost[x][y] + (grid[x][y] == i + 1 ? 0 : 1);
+                    if (ncost < cost[nx][ny]) {
+                        cost[nx][ny] = ncost;
+                        q.push({nx, ny});
+                    }
+                }
+            }
+        }
+        return cost[m - 1][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        int dx[4] = {1, 0, -1, 0};
+        int dy[4] = {0, 1, 0, -1};
+        queue<pair<int, int>> q;
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        dist[0][0] = 0;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            for (int k = 0; k < 4; k++) {
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                int cost = dist[x][y];
+                if (grid[x][y] != k + 1) cost++;
+                if (dist[nx][ny] <= cost) continue;
+                dist[nx][ny] = cost;
+                q.push({nx, ny});
+            }
+        }
+        return dist[m - 1][n - 1];
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        dist[0][0] = 0;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {0, 0}});
+        while (!pq.empty()) {
+            auto [d, p] = pq.top();
+            pq.pop();
+            if (d > dist[p.first][p.second]) continue;
+            for (int k = 0; k < 4; ++k) {
+                int i = p.first + dirs[k], j = p.second + dirs[k + 1];
+                if (i < 0 || i >= m || j < 0 || j >= n) continue;
+                int cost = d + (k + 1 == grid[p.first][p.second] ? 0 : 1);
+                if (cost < dist[i][j]) {
+                    dist[i][j] = cost;
+                    pq.push({cost, {i, j}});
+                }
+            }
+        }
+        return dist[m - 1][n - 1];
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> cost(m, vector<int>(n, INT_MAX));
+        cost[0][0] = 0;
+        // 0: up, 1: right, 2: down, 3: left
+        int dir[4][2] = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dir[i][0];
+                int ny = y + dir[i][1];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                int c = (grid[x][y] - 1 == i) ? cost[x][y] : cost[x][y] + 1;
+                if (c < cost[nx][ny]) {
+                    cost[nx][ny] = c;
+                    q.push({nx, ny});
+                }
+            }
+        }
+        return cost[m - 1][n - 1];

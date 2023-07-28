@@ -1,0 +1,178 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        def cross(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+        def convex_hull(points):
+            points.sort()
+            lower = []
+            for p in points:
+                while len(lower) >= 2 and cross(lower[-2], lower[-1], p) < 0:
+                    lower.pop()
+                lower.append(p)
+            upper = []
+            for p in reversed(points):
+                while len(upper) >= 2 and cross(upper[-2], upper[-1], p) < 0:
+                    upper.pop()
+                upper.append(p)
+            return set(lower[:-1] + upper[:-1])
+        return list(convex_hull(trees))
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        def cross(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+        
+        def convex_hull(points):
+            points = sorted(set(points))
+            if len(points) <= 1:
+                return points
+            hull = []
+            for p in points:
+                while len(hull) >= 2 and cross(hull[-2], hull[-1], p) < 0:
+                    hull.pop()
+                hull.append(p)
+            hull.pop()
+            for p in reversed(points):
+                while len(hull) >= 2 and cross(hull[-2], hull[-1], p) < 0:
+                    hull.pop()
+                hull.append(p)
+            return hull
+        
+        return convex_hull(trees)
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        def cross(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+        
+        trees.sort()
+        lower = []
+        for p in trees:
+            while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+                lower.pop()
+            lower.append(p)
+        upper = []
+        for p in reversed(trees):
+            while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+                upper.pop()
+            upper.append(p)
+        return list(set(lower[:-1] + upper[:-1]))
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        def ccw(A, B, C):
+            return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+        
+        def convex_hull(trees):
+            trees.sort()
+            upper = []
+            for t in trees:
+                while len(upper) > 1 and not ccw(upper[-2], upper[-1], t):
+                    upper.pop()
+                upper.append(t)
+            lower = []
+            for t in reversed(trees):
+                while len(lower) > 1 and not ccw(lower[-2], lower[-1], t):
+                    lower.pop()
+                lower.append(t)
+            return set(upper[:-1] + lower[:-1])
+        
+        return list(convex_hull(trees))
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        def orientation(p, q, r):
+            val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1])
+            if val == 0: return 0
+            return 1 if val > 0 else 2
+        
+        def distance(p1, p2):
+            return (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+        
+        n = len(trees)
+        if n < 4: return trees
+        trees.sort()
+        hull = []
+        for i in range(n):
+            while len(hull) >= 2 and orientation(hull[-2], hull[-1], trees[i]) != 2:
+                hull.pop()
+            hull.append(trees[i])
+        hull.pop()
+        for i in range(n - 1, -1, -1):
+            while len(hull) >= 2 and orientation(hull[-2], hull[-1], trees[i]) != 2:
+                hull.pop()
+            hull.append(trees[i])
+        hull.pop()
+        return list(set(map(tuple, hull)))
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        trees.sort()
+        def cross(o, a, b):
+            return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+        upper = []
+        for t in trees:
+            while len(upper) >= 2 and cross(upper[-2], upper[-1], t) > 0:
+                upper.pop()
+            upper.append(t)
+        lower = []
+        for t in reversed(trees):
+            while len(lower) >= 2 and cross(lower[-2], lower[-1], t) > 0:
+                lower.pop()
+            lower.append(t)
+        return list(set(upper + lower))
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        # https://www.geeksforgeeks.org/convex-hull-set-1-jarviss-algorithm-or-wrapping/
+        # https://www.geeksforgeeks.org/convex-hull-set-2-graham-scan/
+        def orientation(p1, p2, p3):
+            # https://www.geeksforgeeks.org/orientation-3-ordered-points/
+            # https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/
+            # https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/
+            val = (p2[1] - p1[1]) * (p3[0] - p2[0]) - (p2[0] - p1[0]) * (p3[1] - p2[1])
+            if val == 0:
+                return 0
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        # Find the leftmost point
+        leftmost = 0
+        for i in range(1, len(trees)):
+            if trees[i][0] < trees[leftmost][0]:
+                leftmost = i
+        # The leftmost is the starting point
+        start = leftmost
+        # The result
+        result = []
+        while True:
+            # Add the current point to the result
+            result.append(trees[start])
+            # The next point
+            next = (start + 1) % len(trees)
+            # Find the next point
+            for i in range(len(trees)):
+                if self.orientation(trees[start], trees[i], trees[next]) < 0:
+                    next = i
+            # If the next point is the starting point, we are done
+            if next == leftmost:
+                break
+            # Otherwise, move to the next point
+            start = next
+        return result
+
+=======
+
+def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        
+        pass

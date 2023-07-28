@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        int l = 0, r = 0;
+        int ans = 0;
+        multiset<int> s;
+        while (r < n) {
+            s.insert(nums[r]);
+            while (*s.rbegin() - *s.begin() > limit) {
+                s.erase(s.find(nums[l]));
+                l++;
+            }
+            ans = max(ans, r - l + 1);
+            r++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int i = 0, j = 0;
+        int res = 0;
+        multiset<int> s;
+        while (j < n) {
+            s.insert(nums[j]);
+            while (*s.rbegin() - *s.begin() > limit) {
+                s.erase(s.find(nums[i]));
+                i++;
+            }
+            res = max(res, j - i + 1);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        deque<int> maxQ;
+        deque<int> minQ;
+        int l = 0;
+        int r = 0;
+        int ans = 0;
+        while (r < n) {
+            while (!maxQ.empty() && nums[r] > maxQ.back()) {
+                maxQ.pop_back();
+            }
+            while (!minQ.empty() && nums[r] < minQ.back()) {
+                minQ.pop_back();
+            }
+            maxQ.push_back(nums[r]);
+            minQ.push_back(nums[r]);
+            while (!maxQ.empty() && !minQ.empty() && maxQ.front() - minQ.front() > limit) {
+                if (nums[l] == maxQ.front()) {
+                    maxQ.pop_front();
+                }
+                if (nums[l] == minQ.front()) {
+                    minQ.pop_front();
+                }
+                l++;
+            }
+            ans = max(ans, r - l + 1);
+            r++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        int left = 0, right = 0;
+        multiset<int> s;
+        while (right < n) {
+            s.insert(nums[right]);
+            while (*s.rbegin() - *s.begin() > limit) {
+                s.erase(s.find(nums[left]));
+                left++;
+            }
+            res = max(res, right - left + 1);
+            right++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 1;
+        int l = 0, r = 0;
+        multiset<int> ms;
+        while (r < n) {
+            ms.insert(nums[r]);
+            while (abs(*ms.rbegin() - *ms.begin()) > limit) {
+                ms.erase(ms.find(nums[l]));
+                l++;
+            }
+            ans = max(ans, r - l + 1);
+            r++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        deque<int> maxQ;
+        deque<int> minQ;
+        int res = 0;
+        int l = 0;
+        int r = 0;
+        while (r < n) {
+            while (!maxQ.empty() && maxQ.back() < nums[r]) {
+                maxQ.pop_back();
+            }
+            maxQ.push_back(nums[r]);
+            while (!minQ.empty() && minQ.back() > nums[r]) {
+                minQ.pop_back();
+            }
+            minQ.push_back(nums[r]);
+            while (maxQ.front() - minQ.front() > limit) {
+                if (maxQ.front() == nums[l]) {
+                    maxQ.pop_front();
+                }
+                if (minQ.front() == nums[l]) {
+                    minQ.pop_front();
+                }
+                l++;
+            }
+            res = max(res, r - l + 1);
+            r++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            int m = nums[i];
+            int M = nums[i];
+            for (int j = i+1; j < n; j++) {
+                m = min(m, nums[j]);
+                M = max(M, nums[j]);
+                if (M-m <= limit) {
+                    ans = max(ans, j-i+1);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int l = 0, r = 0;
+        int maxn = nums[0], minn = nums[0];
+        int res = 0;
+        while (r < n) {
+            maxn = max(maxn, nums[r]);
+            minn = min(minn, nums[r]);
+            if (maxn - minn <= limit) {
+                res = max(res, r - l + 1);
+            } else {
+                while (l < r && maxn - minn > limit) {
+                    l++;
+                    maxn = nums[l];
+                    minn = nums[l];
+                    for (int i = l; i <= r; i++) {
+                        maxn = max(maxn, nums[i]);
+                        minn = min(minn, nums[i]);
+                    }
+                }
+            }
+            r++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int i = 0, j = 0;
+        int res = 1;
+        deque<int> maxQ;
+        deque<int> minQ;
+        while (j < n) {
+            while (!maxQ.empty() && maxQ.back() < nums[j]) maxQ.pop_back();
+            while (!minQ.empty() && minQ.back() > nums[j]) minQ.pop_back();
+            maxQ.push_back(nums[j]);
+            minQ.push_back(nums[j]);
+            while (maxQ.front() - minQ.front() > limit) {
+                if (maxQ.front() == nums[i]) maxQ.pop_front();
+                if (minQ.front() == nums[i]) minQ.pop_front();
+                i++;
+            }
+            res = max(res, j - i + 1);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int l = 0;
+        int r = 0;
+        multiset<int> s;
+        while (r < n) {
+            while (r < n) {
+                if (s.size() == 0 || abs(nums[r] - *s.begin()) <= limit && abs(nums[r] - *s.rbegin()) <= limit) {
+                    s.insert(nums[r]);
+                    r++;
+                } else {
+                    break;
+                }
+            }
+            ans = max(ans, r - l);
+            while (l < r) {
+                s.erase(s.find(nums[l]));
+                l++;
+                if (s.size() == 0 || abs(nums[r - 1] - *s.begin()) <= limit && abs(nums[r - 1] - *s.rbegin()) <= limit) {
+                    break;
+                }
+            }
+        }
+        return ans;

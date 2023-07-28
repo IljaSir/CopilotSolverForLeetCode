@@ -1,0 +1,299 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int row = destination[0];
+        int col = destination[1];
+        vector<vector<int>> dp(row+1, vector<int>(col+1, 0));
+        dp[0][0] = 1;
+        for (int i=1; i<=row; i++) {
+            dp[i][0] = 1;
+        }
+        for (int j=1; j<=col; j++) {
+            dp[0][j] = 1;
+        }
+        for (int i=1; i<=row; i++) {
+            for (int j=1; j<=col; j++) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1];
+            }
+        }
+        string res;
+        int r = row;
+        int c = col;
+        while (r > 0 || c > 0) {
+            if (r == 0) {
+                res += 'H';
+                c--;
+            } else if (c == 0) {
+                res += 'V';
+                r--;
+            } else {
+                if (k <= dp[r-1][c]) {
+                    res += 'V';
+                    r--;
+                } else {
+                    k -= dp[r-1][c];
+                    res += 'H';
+                    c--;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int row = destination[0];
+        int col = destination[1];
+        vector<vector<int>> dp(row + 1, vector<int>(col + 1, 0));
+        for (int i = 0; i <= row; ++i) {
+            for (int j = 0; j <= col; ++j) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        string ans;
+        while (row > 0 || col > 0) {
+            if (col == 0) {
+                ans += 'H';
+                --row;
+            } else if (row == 0) {
+                ans += 'V';
+                --col;
+            } else {
+                if (dp[row - 1][col] >= k) {
+                    ans += 'H';
+                    --row;
+                } else {
+                    ans += 'V';
+                    k -= dp[row - 1][col];
+                    --col;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], col = destination[1];
+        int dp[row + col + 1];
+        dp[0] = 1;
+        for (int i = 1; i <= row + col; ++i) dp[i] = dp[i - 1] * i;
+        string ans;
+        int i = 0, j = 0;
+        while (i < row || j < col) {
+            int total = 0;
+            if (i < row) total = dp[row + col - i - j - 1] / dp[col - j];
+            if (k > total) {
+                ans += 'V';
+                ++i;
+                k -= total;
+            }
+            else {
+                ans += 'H';
+                ++j;
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], col = destination[1];
+        string ans;
+        while (row > 0 || col > 0) {
+            if (row == 0) {
+                ans.push_back('H');
+                --col;
+            } else if (col == 0) {
+                ans.push_back('V');
+                --row;
+            } else {
+                int cnt = 0;
+                for (int i = 0; i < row; ++i) {
+                    cnt += C(row + col - 1 - i, row - 1 - i);
+                }
+                if (cnt < k) {
+                    ans.push_back('H');
+                    --col;
+                    k -= cnt;
+                } else {
+                    ans.push_back('V');
+                    --row;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], col = destination[1];
+        int n = row + col;
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1));
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            dp[i][0] = dp[i][i] = 1;
+            for (int j = 1; j < i; j++) {
+                dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+            }
+        }
+        string ans = "";
+        for (int i = 0; i < n; i++) {
+            if (row > 0 && dp[row + col - 1][col - 1] >= k) {
+                ans += 'H';
+                row--;
+            } else {
+                ans += 'V';
+                col--;
+                if (row > 0) {
+                    k -= dp[row + col][col];
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> comb(31, vector<int>(31, 0));
+        comb[0][0] = 1;
+        for (int i = 1; i < 31; i++) {
+            comb[i][0] = 1;
+            for (int j = 1; j < 31; j++) {
+                comb[i][j] = comb[i - 1][j - 1] + comb[i - 1][j];
+            }
+        }
+        int x = destination[1], y = destination[0];
+        string ans;
+        while (x > 0 || y > 0) {
+            if (x > 0 && comb[x + y - 1][x - 1] >= k) {
+                ans.push_back('H');
+                x--;
+            } else {
+                if (x > 0) k -= comb[x + y - 1][x - 1];
+                ans.push_back('V');
+                y--;
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], col = destination[1];
+        int n = row + col;
+        vector<vector<int>> C(n + 1, vector<int>(n + 1));
+        C[0][0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            C[i][0] = C[i][i] = 1;
+            for (int j = 1; j < i; ++j) {
+                C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+            }
+        }
+        string ans;
+        for (int i = 0; i < n; ++i) {
+            if (row > 0) {
+                int cnt = C[row + col - 1][row - 1];
+                if (cnt >= k) {
+                    ans.push_back('H');
+                    --row;
+                }
+                else {
+                    ans.push_back('V');
+                    --col;
+                    k -= cnt;
+                }
+            }
+            else {
+                ans.push_back('V');
+                --col;
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], column = destination[1];
+        int n = row + column;
+        vector<vector<long>> dp(n + 1, vector<long>(n + 1, 0));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+            for (int j = 1; j <= i; j++) {
+                dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+            }
+        }
+        string ans;
+        for (int i = 0; i < n; i++) {
+            if (row > 0) {
+                if (dp[row + column - 1][row - 1] >= k) {
+                    ans += 'H';
+                    row--;
+                }
+                else {
+                    ans += 'V';
+                    column--;
+                    k -= dp[row + column + 1][row];
+                }
+            }
+            else {
+                ans += 'V';
+                column--;
+            }
+        }
+        return ans;
+
+=======
+
+        int row = destination[0], col = destination[1];
+        string res = "";
+        while (row > 0 || col > 0) {
+            int ways = 0;
+            if (row > 0) {
+                ways = getWays(row + col - 1, row - 1);
+            }
+            if (k <= ways) {
+                res += 'H';
+                --row;
+            } else {
+                res += 'V';
+                --col;
+                k -= ways;
+            }
+        }
+        return res;
+
+=======
+
+        string ans;
+        int r = destination[0], c = destination[1];
+        int n = r + c;
+        int m = r;
+        int cnt = 1;
+        while (r > 0 && c > 0) {
+            int tmp = cnt;
+            for (int i = 1; i <= c; ++i) {
+                tmp *= (m + n - i);
+                tmp /= i;
+            }
+            if (tmp >= k) {
+                ans.push_back('H');
+                --n;
+                --c;
+            } else {
+                ans.push_back('V');
+                --m;
+                --r;
+                k -= tmp;
+            }
+            cnt = tmp;
+        }
+        while (r > 0) {
+            ans.push_back('V');
+            --m;
+            --r;
+        }
+        while (c > 0) {
+            ans.push_back('H');
+            --n;
+            --c;
+        }
+        return ans;

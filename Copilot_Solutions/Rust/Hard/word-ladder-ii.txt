@@ -1,0 +1,439 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut word_list: Vec<Vec<char>> = word_list.into_iter().map(|s| s.chars().collect()).collect();
+        let begin_word: Vec<char> = begin_word.chars().collect();
+        let end_word: Vec<char> = end_word.chars().collect();
+        let mut result: Vec<Vec<String>> = vec![];
+        let mut cur: Vec<Vec<char>> = vec![begin_word.clone()];
+        let mut visited: Vec<Vec<char>> = vec![];
+        let mut found = false;
+        while !cur.is_empty() {
+            let mut next: Vec<Vec<char>> = vec![];
+            for word in cur {
+                if word == end_word {
+                    result.push(word.into_iter().collect());
+                    found = true;
+                } else {
+                    for i in 0..word.len() {
+                        for c in 'a' as u8..='z' as u8 {
+                            let mut new_word = word.clone();
+                            new_word[i] = c as char;
+                            if !word_list.contains(&new_word) || visited.contains(&new_word) {
+                                continue;
+                            }
+                            next.push(new_word.clone());
+                            visited.push(new_word);
+                        }
+                    }
+                }
+            }
+            if found {
+                break;
+            }
+            cur = next;
+        }
+        result
+    }
+}
+
+=======
+
+        let mut word_list = word_list;
+        let mut word_set = std::collections::HashSet::new();
+        for word in &word_list {
+            word_set.insert(word);
+        }
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back(vec![begin_word.clone()]);
+        let mut res = vec![];
+        let mut min_len = std::usize::MAX;
+        while !queue.is_empty() {
+            let mut size = queue.len();
+            let mut visited = std::collections::HashSet::new();
+            while size > 0 {
+                let mut path = queue.pop_front().unwrap();
+                let last_word = path.last().unwrap();
+                if last_word == &end_word {
+                    if path.len() <= min_len {
+                        min_len = path.len();
+                        res.push(path);
+                    } else {
+                        break;
+                    }
+                } else {
+                    for i in 0..last_word.len() {
+                        for c in 'a' as u8..='z' as u8 {
+                            let mut new_word = last_word.clone().into_bytes();
+                            new_word[i] = c;
+                            let new_word = String::from_utf8(new_word).unwrap();
+                            if word_set.contains(&new_word) && !visited.contains(&new_word) {
+                                let mut new_path = path.clone();
+                                new_path.push(new_word.clone());
+                                queue.push_back(new_path);
+                                visited.insert(new_word);
+                            }
+                        }
+                    }
+                }
+                size -= 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut word_list = word_list;
+        if !word_list.contains(&end_word) {
+            return vec![];
+        }
+        let mut word_set = word_list.iter().map(|s| s.as_str()).collect::<HashSet<_>>();
+        let mut queue = vec![vec![begin_word]];
+        let mut res = vec![];
+        let mut found = false;
+        while !queue.is_empty() {
+            let mut next_queue = vec![];
+            let mut visited = HashSet::new();
+            for path in queue {
+                let last_word = path.last().unwrap();
+                for i in 0..last_word.len() {
+                    for c in b'a'..=b'z' {
+                        let mut new_word = last_word.clone().into_bytes();
+                        new_word[i] = c;
+                        let new_word = String::from_utf8(new_word).unwrap();
+                        if word_set.contains(&new_word.as_str()) && !visited.contains(&new_word) {
+                            let mut new_path = path.clone();
+                            new_path.push(new_word.clone());
+                            if new_word == end_word {
+                                found = true;
+                                res.push(new_path);
+                            } else {
+                                next_queue.push(new_path);
+                            }
+                            visited.insert(new_word);
+                        }
+                    }
+                }
+            }
+            if found {
+                break;
+            }
+            queue = next_queue;
+        }
+        res
+
+=======
+
+        let mut ret = vec![];
+        let mut word_list = word_list;
+        if !word_list.contains(&end_word) {
+            return ret;
+        }
+        let mut visited = vec![false; word_list.len()];
+        let mut cur = vec![vec![begin_word]];
+        let mut next = vec![];
+        let mut found = false;
+        while !cur.is_empty() {
+            for path in cur {
+                let last = path.last().unwrap();
+                for (i, word) in word_list.iter().enumerate() {
+                    if visited[i] {
+                        continue;
+                    }
+                    if Self::diff(last, word) == 1 {
+                        let mut path = path.clone();
+                        path.push(word.clone());
+                        if word == end_word {
+                            ret.push(path);
+                            found = true;
+                        } else {
+                            next.push(path);
+                        }
+                    }
+                }
+            }
+            if found {
+                break;
+            }
+            for path in next.iter() {
+                let last = path.last().unwrap();
+                for (i, word) in word_list.iter().enumerate() {
+                    if visited[i] {
+                        continue;
+                    }
+                    if Self::diff(last, word) == 1 {
+                        visited[i] = true;
+                    }
+                }
+            }
+            cur = next;
+            next = vec![];
+        }
+        ret
+    }
+    fn diff(a: &str, b: &str) -> usize {
+        let mut diff = 0;
+        for (c, d) in a.chars().zip(b.chars()) {
+            if c != d {
+                diff += 1;
+            }
+        }
+        diff
+
+=======
+
+        let mut word_list: Vec<String> = word_list;
+        let mut ans: Vec<Vec<String>> = Vec::new();
+        let mut queue: Vec<(String, Vec<String>)> = Vec::new();
+        queue.push((begin_word.clone(), vec![begin_word.clone()]));
+        let mut min_len = 0;
+        let mut visited: HashSet<String> = HashSet::new();
+        while !queue.is_empty() {
+            let (word, path) = queue.remove(0);
+            if min_len > 0 && path.len() > min_len {
+                break;
+            }
+            if word == end_word {
+                ans.push(path);
+                min_len = path.len();
+                continue;
+            }
+            for i in 0..word.len() {
+                let mut chars: Vec<char> = word.chars().collect();
+                for c in 'a' as u8..'z' as u8 {
+                    chars[i] = c as char;
+                    let new_word = chars.iter().collect::<String>();
+                    if word_list.contains(&new_word) && !visited.contains(&new_word) {
+                        let mut new_path = path.clone();
+                        new_path.push(new_word.clone());
+                        queue.push((new_word, new_path));
+                    }
+                }
+            }
+            visited.insert(word);
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut word_list = word_list;
+        let mut ans = vec![];
+        if !word_list.contains(&end_word) {
+            return ans;
+        }
+        let mut queue = vec![(begin_word, vec![begin_word])];
+        let mut visited = vec![false; word_list.len()];
+        let mut min_len = usize::MAX;
+        while !queue.is_empty() {
+            let mut new_queue = vec![];
+            for (word, path) in queue {
+                if path.len() > min_len {
+                    continue;
+                }
+                if word == end_word {
+                    ans.push(path);
+                    min_len = path.len();
+                    continue;
+                }
+                for (i, w) in word_list.iter().enumerate() {
+                    if visited[i] {
+                        continue;
+                    }
+                    if word.len() != w.len() {
+                        continue;
+                    }
+                    let mut diff = 0;
+                    for (c1, c2) in word.chars().zip(w.chars()) {
+                        if c1 != c2 {
+                            diff += 1;
+                        }
+                    }
+                    if diff == 1 {
+                        let mut new_path = path.clone();
+                        new_path.push(w.clone());
+                        new_queue.push((w.clone(), new_path));
+                        visited[i] = true;
+                    }
+                }
+            }
+            queue = new_queue;
+        }
+        ans
+    }
+}
+
+=======
+
+        let word_list: Vec<String> = word_list.into_iter().filter(|w| w != &begin_word).collect();
+        let mut graph: HashMap<String, Vec<String>> = HashMap::new();
+        let mut queue: VecDeque<(String, i32)> = VecDeque::new();
+        let mut distance: HashMap<String, i32> = HashMap::new();
+        let mut result: Vec<Vec<String>> = Vec::new();
+        let mut min_distance: i32 = 0;
+        let mut visited: HashSet<String> = HashSet::new();
+        let mut path: Vec<String> = Vec::new();
+        queue.push_back((begin_word.clone(), 0));
+        distance.insert(begin_word.clone(), 0);
+        while !queue.is_empty() {
+            let (w, d) = queue.pop_front().unwrap();
+            if min_distance != 0 && d > min_distance {
+                break;
+            }
+            for i in 0..w.len() {
+                for c in b'a'..=b'z' {
+                    let mut s = w.clone();
+                    s.replace_range(i..i+1, &String::from_utf8(vec![c]).unwrap());
+                    if !visited.contains(&s) && word_list.contains(&s) {
+                        if !graph.contains_key(&w) {
+                            graph.insert(w.clone(), Vec::new());
+                        }
+                        graph.get_mut(&w).unwrap().push(s.clone());
+                        if !distance.contains_key(&s) {
+                            distance.insert(s.clone(), d + 1);
+                            queue.push_back((s.clone(), d + 1));
+                        }
+                        if s == end_word {
+                            min_distance = d + 1;
+                        }
+                    }
+                }
+            }
+            visited.insert(w.clone());
+        }
+        if min_distance == 0 {
+            return result;
+        }
+        path.push(begin_word);
+        Solution::dfs(&begin_word, &end_word, &mut graph, &mut path, &mut result);
+        result
+    }
+    fn dfs(begin_word: &String, end_word: &String, graph: &mut HashMap<String, Vec<String>>, path: &mut Vec<String>, result: &mut Vec<Vec<String>>) {
+        if begin_word == end_word {
+            result.push(path.clone());
+            return;
+        }
+        if !graph.contains_key(begin_word) {
+            return;
+        }
+        for w in graph.get(begin_word).unwrap
+
+=======
+
+        let mut ans = vec![];
+        let mut word_list = word_list;
+        let mut word_set: HashSet<String> = HashSet::new();
+        for word in word_list.iter() {
+            word_set.insert(word.to_string());
+        }
+        if !word_set.contains(&end_word) {
+            return ans;
+        }
+        let mut queue = VecDeque::new();
+        queue.push_back(vec![begin_word.to_string()]);
+        let mut visited = HashSet::new();
+        let mut found = false;
+        while !queue.is_empty() {
+            let mut size = queue.len();
+            visited.clear();
+            while size > 0 {
+                size -= 1;
+                let mut path = queue.pop_front().unwrap();
+                let word = path.last().unwrap();
+                if word == &end_word {
+                    ans.push(path);
+                    found = true;
+                }
+                if found {
+                    continue;
+                }
+                for i in 0..word.len() {
+                    for j in 0..26 {
+                        let mut new_word = word.to_string();
+                        new_word.replace_range(i..i+1, &((b'a' + j) as char).to_string());
+                        if word_set.contains(&new_word) && !visited.contains(&new_word) {
+                            visited.insert(new_word.to_string());
+                            let mut new_path = path.clone();
+                            new_path.push(new_word.to_string());
+                            queue.push_back(new_path);
+                        }
+                    }
+                }
+            }
+            if found {
+                break;
+            }
+        }
+        ans
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut word_list = word_list;
+        let mut res: Vec<Vec<String>> = vec![];
+        let mut word_set: HashSet<String> = HashSet::new();
+        word_set.insert(end_word.clone());
+        let mut begin_set: HashSet<String> = HashSet::new();
+        begin_set.insert(begin_word.clone());
+        let mut end_set: HashSet<String> = HashSet::new();
+        end_set.insert(end_word.clone());
+        let mut visited: HashSet<String> = HashSet::new();
+        let mut found = false;
+        let mut next_begin_set: HashSet<String> = HashSet::new();
+        let mut path_map: HashMap<String, Vec<Vec<String>>> = HashMap::new();
+        path_map.insert(begin_word.clone(), vec![vec![begin_word.clone()]]);
+        while !begin_set.is_empty() && !found {
+            for word in &begin_set {
+                word_set.remove(word);
+            }
+            for word in &begin_set {
+                let mut chars: Vec<char> = word.chars().collect();
+                for i in 0..chars.len() {
+                    let old = chars[i];
+                    for c in 'a'..='z' {
+                        if c == old {
+                            continue;
+                        }
+                        chars[i] = c;
+                        let new_word = chars.iter().collect::<String>();
+                        if word_set.contains(&new_word) {
+                            next_begin_set.insert(new_word.clone());
+                            let mut paths = path_map.get(word).unwrap().clone();
+                            for path in &mut paths {
+                                path.push(new_word.clone());
+                            }
+                            path_map.entry(new_word.clone()).or_insert(vec![]).append(&mut paths);
+                            if end_set.contains(&new_word) {
+                                found = true;
+                            }
+                        }
+                    }
+                    chars[i] = old;
+                }
+            }
+            for word in &next_begin_set {
+                visited.insert(word.clone());
+            }
+            begin_set = next_begin_set.clone();
+            next_begin_set.clear();
+            for word in &begin_set {
+                if visited.contains(word) {
+                    begin_set.remove(word);
+                }
+            }
+        }
+        if found {
+            res.append(path_map.get(&end_word).unwrap());
+        }
+        res
+    }
+}

@@ -1,0 +1,241 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        s = s.trim();
+        boolean pointSeen = false;
+        boolean eSeen = false;
+        boolean numberSeen = false;
+        boolean numberAfterE = true;
+        for (int i = 0; i < s.length(); i++) {
+            if ('0' <= s.charAt(i) && s.charAt(i) <= '9') {
+                numberSeen = true;
+                numberAfterE = true;
+            } else if (s.charAt(i) == '.') {
+                if (eSeen || pointSeen) {
+                    return false;
+                }
+                pointSeen = true;
+            } else if (s.charAt(i) == 'e' || s.charAt(i) == 'E') {
+                if (eSeen || !numberSeen) {
+                    return false;
+                }
+                numberAfterE = false;
+                eSeen = true;
+            } else if (s.charAt(i) == '-' || s.charAt(i) == '+') {
+                if (i != 0 && s.charAt(i - 1) != 'e' && s.charAt(i - 1) != 'E') {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return numberSeen && numberAfterE;
+
+=======
+
+        int i = 0;
+        int n = s.length();
+        while (i < n && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+            i++;
+        }
+        boolean isNumeric = false;
+        while (i < n && Character.isDigit(s.charAt(i))) {
+            i++;
+            isNumeric = true;
+        }
+        if (i < n && s.charAt(i) == '.') {
+            i++;
+            while (i < n && Character.isDigit(s.charAt(i))) {
+                i++;
+                isNumeric = true;
+            }
+        }
+        if (isNumeric && i < n && (s.charAt(i) == 'e' || s.charAt(i) == 'E')) {
+            i++;
+            isNumeric = false;
+            if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+                i++;
+            }
+            while (i < n && Character.isDigit(s.charAt(i))) {
+                i++;
+                isNumeric = true;
+            }
+        }
+        while (i < n && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        return isNumeric && i == n;
+
+=======
+
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+=======
+
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        s = s.trim();
+        if (s.length() == 0) {
+            return false;
+        }
+        boolean hasDot = false;
+        boolean hasE = false;
+        boolean hasDigit = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '+' || c == '-') {
+                if (i != 0 && s.charAt(i - 1) != 'e' && s.charAt(i - 1) != 'E') {
+                    return false;
+                }
+            } else if (c == '.') {
+                if (hasDot || hasE) {
+                    return false;
+                }
+                hasDot = true;
+            } else if (c == 'e' || c == 'E') {
+                if (hasE || !hasDigit) {
+                    return false;
+                }
+                hasE = true;
+                hasDigit = false;
+            } else if (c >= '0' && c <= '9') {
+                hasDigit = true;
+            } else {
+                return false;
+            }
+        }
+        return hasDigit;
+
+=======
+
+        return s.trim().matches("[-+]?([0-9]+(\\.[0-9]*)?|\\.[0-9]+)(e[-+]?[0-9]+)?");
+
+=======
+
+        s = s.trim();
+        if (s.length() == 0) return false;
+        if (s.length() == 1) {
+            char c = s.charAt(0);
+            return c >= '0' && c <= '9';
+        }
+        int i = 0;
+        if (s.charAt(i) == '+' || s.charAt(i) == '-') {
+            i++;
+        }
+        boolean hasDot = false;
+        boolean hasDigit = false;
+        boolean hasE = false;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+            if (c == '.') {
+                if (hasDot || hasE) return false;
+                hasDot = true;
+            } else if (c == 'e' || c == 'E') {
+                if (hasE) return false;
+                if (!hasDigit) return false;
+                hasE = true;
+                hasDigit = false;
+                if (i == s.length() - 1) return false;
+                if (s.charAt(i + 1) == '+' || s.charAt(i + 1) == '-') {
+                    i++;
+                }
+            } else if (c >= '0' && c <= '9') {
+                hasDigit = true;
+            } else {
+                return false;
+            }
+            i++;
+        }
+        return hasDigit;
+
+=======
+
+        try {
+            double d = Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+=======
+
+        s = s.trim();
+        boolean hasE = false, hasDot = false, hasNum = false;
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if(c == 'e' || c == 'E') {
+                if(hasE || !hasNum) return false;
+                hasE = true;
+                hasNum = false;
+            } else if(c == '.') {
+                if(hasE || hasDot) return false;
+                hasDot = true;
+            } else if(c == '+' || c == '-') {
+                if(i != 0 && s.charAt(i-1) != 'e' && s.charAt(i-1) != 'E') return false;
+            } else if(Character.isDigit(c)) {
+                hasNum = true;
+            } else {
+                return false;
+            }
+        }
+        return hasNum;
+
+=======
+
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        int i = 0;
+        int n = s.length();
+        // skip leading whitespaces
+        while (i < n && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        // skip leading sign
+        if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+            i++;
+        }
+        boolean isNumber = false;
+        // skip leading digits
+        while (i < n && Character.isDigit(s.charAt(i))) {
+            i++;
+            isNumber = true;
+        }
+        // skip a dot
+        if (i < n && s.charAt(i) == '.') {
+            i++;
+        }
+        // skip digits after dot
+        while (i < n && Character.isDigit(s.charAt(i))) {
+            i++;
+            isNumber = true;
+        }
+        // skip 'e' or 'E'
+        if (i < n && isNumber && (s.charAt(i) == 'e' || s.charAt(i) == 'E')) {
+            i++;
+            isNumber = false;
+            // skip sign
+            if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+                i++;
+            }
+            // skip digits after 'e' or 'E'
+            while (i < n && Character.isDigit(s.charAt(i))) {
+                i++;
+                isNumber = true;
+            }
+        }
+        // skip trailing whitespaces
+        while (i < n && Character.isWhitespace(s.charAt(i))) {
+            i++;
+        }
+        return isNumber && i == n;

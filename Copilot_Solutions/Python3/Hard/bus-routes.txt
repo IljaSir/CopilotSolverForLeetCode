@@ -1,0 +1,161 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        
+        pass
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+        stops = collections.defaultdict(set)
+        for i, route in enumerate(routes):
+            for stop in route:
+                stops[stop].add(i)
+        q = collections.deque([source])
+        visited = {source}
+        ans = 0
+        while q:
+            ans += 1
+            for _ in range(len(q)):
+                stop = q.popleft()
+                for bus in stops[stop]:
+                    for next_stop in routes[bus]:
+                        if next_stop == target:
+                            return ans
+                        if next_stop not in visited:
+                            visited.add(next_stop)
+                            q.append(next_stop)
+                    routes[bus] = []
+        return -1
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+        routes = [set(r) for r in routes]
+        stops = collections.defaultdict(set)
+        for i, r in enumerate(routes):
+            for s in r:
+                stops[s].add(i)
+        q = collections.deque([(source, 0)])
+        seen = {source}
+        while q:
+            stop, buses = q.popleft()
+            if stop == target:
+                return buses
+            for r in stops[stop]:
+                for s in routes[r]:
+                    if s not in seen:
+                        q.append((s, buses + 1))
+                        seen.add(s)
+        return -1
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+        buses = collections.defaultdict(list)
+        for i, route in enumerate(routes):
+            for stop in route:
+                buses[stop].append(i)
+        visited = set()
+        queue = collections.deque([(source, 0)])
+        while queue:
+            stop, cnt = queue.popleft()
+            for bus in buses[stop]:
+                if bus in visited:
+                    continue
+                visited.add(bus)
+                for next_stop in routes[bus]:
+                    if next_stop == target:
+                        return cnt + 1
+                    queue.append((next_stop, cnt + 1))
+        return -1
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+        routes = [set(route) for route in routes]
+        n = len(routes)
+        g = [[False] * n for _ in range(n)]
+        for i in range(n):
+            for j in range(i + 1, n):
+                if routes[i] & routes[j]:
+                    g[i][j] = g[j][i] = True
+        q = collections.deque()
+        dist = [-1] * n
+        for i, route in enumerate(routes):
+            if source in route:
+                q.append(i)
+                dist[i] = 1
+        while q:
+            x = q.popleft()
+            if target in routes[x]:
+                return dist[x]
+            for y in range(n):
+                if g[x][y] and dist[y] == -1:
+                    dist[y] = dist[x] + 1
+                    q.append(y)
+        return -1
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target: return 0
+        from collections import defaultdict
+        bus_routes = defaultdict(list)
+        for i in range(len(routes)):
+            for r in routes[i]:
+                bus_routes[r].append(i)
+        visited = set()
+        cur = [source]
+        step = 0
+        while cur:
+            step += 1
+            next = []
+            for c in cur:
+                for b in bus_routes[c]:
+                    if b in visited: continue
+                    visited.add(b)
+                    for r in routes[b]:
+                        if r == target: return step
+                        next.append(r)
+            cur = next
+        return -1
+
+=======
+
+def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source==target:
+            return 0
+        n=len(routes)
+        buses=[set() for _ in range(n)]
+        busstops=defaultdict(list)
+        for i in range(n):
+            for stop in routes[i]:
+                buses[i].add(stop)
+                busstops[stop].append(i)
+        q=deque([source])
+        visited=set()
+        visited.add(source)
+        count=0
+        while q:
+            count+=1
+            for _ in range(len(q)):
+                stop=q.popleft()
+                for bus in busstops[stop]:
+                    if target in buses[bus]:
+                        return count
+                    for next_stop in buses[bus]:
+                        if next_stop not in visited:
+                            q.append(next_stop)
+                            visited.add(next_stop)
+        return -1

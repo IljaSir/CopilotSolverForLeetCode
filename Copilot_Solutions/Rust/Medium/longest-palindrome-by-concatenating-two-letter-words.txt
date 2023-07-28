@@ -1,0 +1,264 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut ans = 0;
+        let mut cnt = vec![0; 26];
+        for word in words {
+            let mut mask = 0;
+            for c in word.chars() {
+                mask ^= 1 << (c as u8 - b'a');
+            }
+            for i in 0..26 {
+                if (mask & (1 << i)) == 0 {
+                    ans = ans.max(cnt[i] + word.len() as i32);
+                }
+            }
+            cnt[mask.trailing_zeros() as usize] = cnt[mask.trailing_zeros() as usize].max(word.len() as i32);
+        }
+        ans
+
+=======
+
+        let mut res = 0;
+        let mut cnt = vec![0; 26];
+        for word in words {
+            let mut mask = 0;
+            for c in word.chars() {
+                mask ^= 1 << (c as u8 - b'a');
+            }
+            cnt[mask.count_ones() as usize] += 1;
+        }
+        res += cnt[0] / 2 * 2;
+        for i in 1..26 {
+            for j in 1..26 {
+                if i == j {
+                    continue;
+                }
+                res += cnt[i].min(cnt[j]);
+            }
+        }
+        res
+
+=======
+
+        let mut res = 0;
+        let mut count = vec![0; 26 * 26];
+        for word in words {
+            let mut mask = 0;
+            for c in word.chars() {
+                mask |= 1 << (c as u8 - b'a');
+            }
+            if mask.count_ones() > 1 {
+                continue;
+            }
+            let mask = mask as usize;
+            count[mask] = count[mask].max(word.len());
+        }
+        for i in 0..26 {
+            for j in 0..26 {
+                let mask = 1 << i | 1 << j;
+                res += count[mask] * count[mask ^ 0x3ff];
+            }
+        }
+        for mask in 0..26 * 26 {
+            res += count[mask] * count[mask] / 2;
+        }
+        res as i32
+
+=======
+
+        let mut count = 0;
+        let mut map = std::collections::HashMap::new();
+        for w in words {
+            let mut chars = w.chars();
+            let c1 = chars.next().unwrap();
+            let c2 = chars.next().unwrap();
+            if c1 == c2 {
+                count += 2;
+            } else {
+                map.entry(c1).or_insert(0);
+                map.entry(c2).or_insert(0);
+                *map.get_mut(&c1).unwrap() += 1;
+                *map.get_mut(&c2).unwrap() += 1;
+            }
+        }
+        let mut odd = 0;
+        for v in map.values() {
+            if v % 2 == 1 {
+                odd += 1;
+            }
+        }
+        if odd > 0 {
+            count + odd - 1
+        } else {
+            count
+        }
+    }
+}
+
+=======
+
+        let mut map: Vec<Vec<bool>> = vec![vec![false; 26]; 26];
+        for word in words {
+            let (a, b) = (word.chars().nth(0).unwrap() as u8 - 97, word.chars().nth(1).unwrap() as u8 - 97);
+            map[a as usize][b as usize] = true;
+            map[b as usize][a as usize] = true;
+        }
+        let mut max = 0;
+        for i in 0..26 {
+            for j in 0..26 {
+                if map[i][j] {
+                    let mut count = 0;
+                    for k in 0..26 {
+                        if map[i][k] && map[j][k] {
+                            count += 1;
+                        }
+                    }
+                    max = max.max(count);
+                }
+            }
+        }
+        max * 2
+
+=======
+
+        let mut res = 0;
+        let mut odd = 0;
+        let mut cnt = vec![0; 26];
+        for w in words {
+            let mut mask = 0;
+            for c in w.chars() {
+                mask ^= 1 << (c as u8 - b'a');
+            }
+            if mask == 0 {
+                odd = 1;
+            } else {
+                for i in 0..26 {
+                    if (mask & (1 << i)) != 0 && cnt[i] != 0 {
+                        res += 2;
+                        cnt[i] = 0;
+                        mask = 0;
+                        break;
+                    }
+                }
+                if mask != 0 {
+                    for i in 0..26 {
+                        if (mask & (1 << i)) != 0 {
+                            cnt[i] += 1;
+                        }
+                    }
+                }
+            }
+        }
+        res + odd
+
+=======
+
+        let mut ans = 0;
+        let mut count = vec![0; 26 * 26];
+        for word in words {
+            let mut a = word.as_bytes()[0] - b'a';
+            let mut b = word.as_bytes()[1] - b'a';
+            if a > b {
+                std::mem::swap(&mut a, &mut b);
+            }
+            let i = (a * 26 + b) as usize;
+            count[i] = count[i].max(word.len() as i32);
+        }
+        for i in 0..26 {
+            for j in 0..26 {
+                let a = (i * 26 + j) as usize;
+                for k in 0..26 {
+                    let b = (j * 26 + k) as usize;
+                    ans = ans.max(count[a] + count[b]);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut map = vec![0; 26*26];
+        for word in words {
+            let mut a = word.chars().nth(0).unwrap() as usize - 'a' as usize;
+            let mut b = word.chars().nth(1).unwrap() as usize - 'a' as usize;
+            if a > b {
+                std::mem::swap(&mut a, &mut b);
+            }
+            map[a*26+b] = word.len().max(map[a*26+b]);
+        }
+        let mut ans = 0;
+        for i in 0..26 {
+            for j in 0..26 {
+                if i == j {
+                    ans += map[i*26+j] / 2 * 2;
+                } else {
+                    ans += map[i*26+j].min(map[j*26+i]);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for w in words {
+            let w = w.as_bytes();
+            let key = (w[0], w[1]);
+            let key2 = (w[1], w[0]);
+            let c = map.entry(key).or_insert(0);
+            *c += 1;
+            if key != key2 {
+                let c = map.entry(key2).or_insert(0);
+                *c += 1;
+            }
+        }
+        let mut ans = 0;
+        let mut has_single = false;
+        for (k, v) in map {
+            if v % 2 == 0 {
+                ans += v;
+            } else {
+                ans += v - 1;
+                if k.0 == k.1 {
+                    has_single = true;
+                }
+            }
+        }
+        if has_single {
+            ans += 1;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut ans = 0;
+        let mut map = vec![0; 26 * 26];
+        for word in words {
+            let mut key = (word.as_bytes()[0] - b'a') as usize;
+            key = key * 26 + (word.as_bytes()[1] - b'a') as usize;
+            map[key] = word.len().max(map[key]);
+        }
+        for i in 0..26 {
+            for j in 0..26 {
+                let key = i * 26 + j;
+                if map[key] == 0 {
+                    continue;
+                }
+                ans += map[key];
+                for k in j + 1..26 {
+                    let key2 = i * 26 + k;
+                    if map[key2] > 0 && i != k {
+                        ans += map[key2];
+                        map[key2] = 0;
+                    }
+                }
+                break;
+            }
+        }
+        ans
+    }
+}

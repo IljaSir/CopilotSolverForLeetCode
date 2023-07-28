@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut cnt = vec![0; 100001];
+        for g in grades {
+            cnt[g as usize] += 1;
+        }
+        let mut ans = 0;
+        let mut sum = 0;
+        let mut count = 0;
+        for i in (1..cnt.len()).rev() {
+            if cnt[i] > 0 {
+                if count + cnt[i] > sum + i {
+                    ans += 1;
+                    sum = count;
+                    count = 0;
+                }
+                count += cnt[i];
+            }
+        }
+        ans
+
+=======
+
+        let mut arr = vec![0; 100001];
+        for g in grades {
+            arr[g as usize] += 1;
+        }
+        let mut ans = 0;
+        let mut sum = 0;
+        let mut cnt = 0;
+        for i in 1..=100000 {
+            if arr[i] > 0 {
+                if sum + i > cnt + 1 {
+                    ans += 1;
+                    sum = 0;
+                    cnt = 0;
+                }
+                sum += i;
+                cnt += 1;
+            }
+        }
+        ans
+
+=======
+
+        let mut freq = vec![0; 100001];
+        for &grade in grades.iter() {
+            freq[grade as usize] += 1;
+        }
+        let mut ans = 0;
+        let mut sum = 0;
+        let mut cnt = 0;
+        for i in (1..100001).rev() {
+            if freq[i] > 0 {
+                if sum + i < sum || cnt + 1 < cnt {
+                    ans += 1;
+                    sum = 0;
+                    cnt = 0;
+                }
+                sum += i * freq[i];
+                cnt += freq[i];
+            }
+        }
+        ans + 1
+
+=======
+
+        let mut grades = grades;
+        grades.sort();
+        let (mut i, mut j, mut cnt) = (0, 0, 0);
+        while i < grades.len() {
+            while j < grades.len() && grades[j] - grades[i] <= 5 {
+                j += 1;
+            }
+            cnt += 1;
+            i = j;
+        }
+        cnt
+
+=======
+
+        let mut groups = vec![];
+        for grade in grades {
+            let mut i = 0;
+            while i < groups.len() {
+                if groups[i] >= grade {
+                    break;
+                }
+                i += 1;
+            }
+            if i < groups.len() {
+                groups[i] = grade;
+            } else {
+                groups.push(grade);
+            }
+        }
+        groups.len() as i32
+
+=======
+
+        let mut grades = grades;
+        grades.sort();
+        let mut groups = 0;
+        let mut i = 0;
+        let mut j = 0;
+        while i < grades.len() {
+            let mut sum = 0;
+            let mut count = 0;
+            while j < grades.len() && sum < grades[j] {
+                sum += grades[j];
+                count += 1;
+                j += 1;
+            }
+            if count > 1 {
+                groups += 1;
+            }
+            i = j;
+        }
+        groups
+
+=======
+
+        let mut groups = 0;
+        let mut sum = 0;
+        let mut count = 0;
+        let mut i = 0;
+        let mut j = grades.len() - 1;
+        let mut grades = grades;
+        grades.sort();
+        while i <= j {
+            let mut s = grades[j];
+            let mut c = 1;
+            j -= 1;
+            while i <= j && s + grades[i] <= s + c {
+                s += grades[i];
+                c += 1;
+                i += 1;
+            }
+            sum += s;
+            count += c;
+            if i < j && sum + grades[j] <= count + 1 {
+                groups += 1;
+                sum += grades[j];
+                count += 1;
+                j -= 1;
+            }
+        }
+        groups + 1
+
+=======
+
+        let mut count = 0;
+        let mut sum = 0;
+        let mut g = grades;
+        g.sort();
+        for i in 0..g.len() {
+            sum += g[i];
+            if sum < (i+1) as i32 * g[i] {
+                count += 1;
+            }
+        }
+        count
+    }
+}
+
+=======
+
+        let mut grades = grades;
+        grades.sort();
+        let mut groups = 1;
+        let mut sum = 0;
+        let mut size = 0;
+        for i in 0..grades.len() {
+            if sum + grades[i] <= size + 1 {
+                sum += grades[i];
+                size += 1;
+            } else {
+                sum = grades[i];
+                size = 1;
+                groups += 1;
+            }
+        }
+        groups
+
+=======
+
+        let mut groups = 0;
+        let mut sum = 0;
+        let mut count = 0;
+        let mut last = 0;
+        for g in grades.iter().rev() {
+            if *g != last {
+                if sum > 0 && count > 0 && sum < count {
+                    groups += 1;
+                }
+                sum = *g;
+                count = 1;
+                last = *g;
+            } else {
+                sum += *g;
+                count += 1;
+            }
+        }
+        if sum > 0 && count > 0 && sum < count {
+            groups += 1;
+        }
+        groups

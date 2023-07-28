@@ -1,0 +1,257 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = quantities.length;
+        int[] sum = new int[m];
+        sum[0] = quantities[0];
+        for (int i = 1; i < m; i++) {
+            sum[i] = sum[i - 1] + quantities[i];
+        }
+        int l = 1, r = sum[m - 1];
+        while (l < r) {
+            int mid = (l + r) / 2;
+            int k = 0;
+            for (int i = 0; i < m; i++) {
+                k += sum[i] / mid;
+            }
+            if (k >= n) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l - 1;
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < quantities.length; i++) {
+            max = Math.max(max, quantities[i]);
+        }
+        int l = 1, r = max;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (check(mid, n, quantities)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+    private boolean check(int x, int n, int[] quantities) {
+        int sum = 0;
+        for (int i = 0; i < quantities.length; i++) {
+            sum += quantities[i] / x;
+        }
+        return sum >= n;
+
+=======
+
+        int left = 1;
+        int right = 100000;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (check(n, quantities, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    
+    private boolean check(int n, int[] quantities, int x) {
+        long sum = 0;
+        for (int i = 0; i < quantities.length; i++) {
+            sum += (quantities[i] + x - 1) / x;
+        }
+        return sum <= n;
+
+=======
+
+        int sum = 0;
+        for (int q : quantities) {
+            sum += q;
+        }
+        int min = sum / n;
+        if (sum % n != 0) {
+            min++;
+        }
+        int max = 0;
+        for (int q : quantities) {
+            max = Math.max(max, q);
+        }
+        while (min < max) {
+            int mid = min + (max - min) / 2;
+            if (canDistribute(n, quantities, mid)) {
+                max = mid;
+            } else {
+                min = mid + 1;
+            }
+        }
+        return min;
+    }
+    
+    private boolean canDistribute(int n, int[] quantities, int max) {
+        int count = 0;
+        for (int q : quantities) {
+            count += q / max;
+            if (q % max != 0) {
+                count++;
+            }
+        }
+        return count <= n;
+
+=======
+
+        int m = quantities.length;
+        int lo = 1;
+        int hi = 100000;
+        while (lo < hi) {
+            int mid = (lo + hi) / 2;
+            int sum = 0;
+            for (int i = 0; i < m; i++) {
+                sum += quantities[i] / mid;
+                if (quantities[i] % mid != 0) {
+                    sum++;
+                }
+            }
+            if (sum <= n) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+
+=======
+
+        int left = 1;
+        int right = 100000;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (canDistribute(quantities, mid, n)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    private boolean canDistribute(int[] quantities, int x, int n) {
+        int sum = 0;
+        for (int quantity : quantities) {
+            sum += (quantity + x - 1) / x;
+        }
+        return sum <= n;
+
+=======
+
+        int m = quantities.length;
+        int[] counts = new int[m];
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            max = Math.max(max, quantities[i]);
+        }
+        int l = 1;
+        int r = max;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            int sum = 0;
+            for (int i = 0; i < m; i++) {
+                sum += quantities[i] / mid;
+                if (quantities[i] % mid != 0) {
+                    sum++;
+                }
+            }
+            if (sum <= n) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int m = quantities.length;
+        int[] count = new int[100001];
+        for (int q : quantities) {
+            count[q]++;
+        }
+        int[] sum = new int[100001];
+        for (int i = 100000; i >= 1; i--) {
+            sum[i] = sum[i + 1] + count[i];
+        }
+        int l = 1, r = 100000;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            int total = 0;
+            for (int i = 100000; i >= 1; i--) {
+                if (count[i] > 0) {
+                    total += Math.min(count[i], (sum[i] + mid - 1) / mid);
+                }
+            }
+            if (total > n) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+
+=======
+
+        int m = quantities.length;
+        int[] count = new int[100001];
+        for (int q : quantities) {
+            count[q]++;
+        }
+        int[] prefix = new int[100001];
+        for (int i = 1; i <= 100000; i++) {
+            prefix[i] = prefix[i - 1] + count[i];
+        }
+        int left = 0;
+        int right = 100000;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            int index = 100000;
+            int total = 0;
+            while (index > 0 && total < n) {
+                int c = Math.min(count[index], (n - total + mid - 1) / mid);
+                total += c;
+                index -= c;
+            }
+            if (total < n) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left;
+
+=======
+
+        int sum = 0;
+        for(int q: quantities) sum += q;
+        int l = 0, r = sum;
+        while(l < r) {
+            int mid = (l + r) / 2;
+            if(check(quantities, mid, n)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    }
+    
+    private boolean check(int[] quantities, int x, int n) {
+        int sum = 0;
+        for(int q: quantities) {
+            sum += (q + x - 1) / x;
+        }
+        return sum <= n;

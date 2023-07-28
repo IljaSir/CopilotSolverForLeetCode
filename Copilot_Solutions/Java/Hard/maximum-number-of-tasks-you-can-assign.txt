@@ -1,0 +1,323 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int n = tasks.length;
+        int m = workers.length;
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (workers[j - 1] >= tasks[i - 1]) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - 1] + 1);
+                }
+                dp[i][j] = Math.max(dp[i][j], dp[i][j - 1]);
+            }
+        }
+        int ans = dp[n][m];
+        for (int i = 1; i <= m; i++) {
+            int left = pills;
+            int j = i;
+            int cnt = 0;
+            while (j <= m && left > 0 && workers[j - 1] + left * strength >= tasks[n - 1]) {
+                cnt++;
+                left--;
+                j++;
+            }
+            ans = Math.max(ans, dp[n][i - 1] + cnt);
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length, m = workers.length;
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int l = 0, r = m - 1;
+        while (l < r) {
+            int mid = l + r + 1 >> 1;
+            if (check(tasks, workers, pills, strength, mid)) l = mid;
+            else r = mid - 1;
+        }
+        return l + 1;
+    }
+
+    public boolean check(int[] tasks, int[] workers, int pills, int strength, int r) {
+        int n = tasks.length, m = workers.length;
+        int i = 0, j = 0, k = m - 1;
+        while (i < n && j <= r) {
+            if (tasks[i] <= workers[j] + strength * pills) {
+                i++;
+            } else if (k > r) {
+                k--;
+                pills--;
+            } else {
+                j++;
+            }
+        }
+        return i == n;
+
+=======
+
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int n = tasks.length;
+        int m = workers.length;
+        int j = 0;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            while (j < m && workers[j] < tasks[i]) {
+                j++;
+            }
+            if (j < m) {
+                res++;
+                j++;
+            } else {
+                if (pills > 0) {
+                    pills--;
+                    res++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int m = workers.length;
+        int[] t = new int[n];
+        int[] w = new int[m];
+        for (int i = 0; i < n; i++) t[i] = tasks[i];
+        for (int i = 0; i < m; i++) w[i] = workers[i];
+        Arrays.sort(t);
+        Arrays.sort(w);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int j = 0;
+            while (j < m && w[j] < t[i]) j++;
+            if (j == m) break;
+            w[j] += strength;
+            if (pills > 0) {
+                pills--;
+                w[j] += strength;
+            }
+            ans++;
+        }
+        return ans;
+    }
+}
+
+=======
+
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int n = tasks.length;
+        int m = workers.length;
+        int[] dp = new int[n + 1];
+        int max = 0;
+        for (int i = 1; i <= n; i++) {
+            int left = 0;
+            int right = m - 1;
+            int index = -1;
+            while (left <= right) {
+                int mid = left + ((right - left) >> 1);
+                if (workers[mid] + pills * strength >= tasks[i - 1]) {
+                    index = mid;
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            if (index != -1) {
+                dp[i] = Math.max(dp[i], dp[index] + 1);
+            }
+            dp[i] = Math.max(dp[i], dp[i - 1]);
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+
+=======
+
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int n = tasks.length;
+        int m = workers.length;
+        int[] dp = new int[n];
+        int i = 0;
+        int j = 0;
+        int ans = 0;
+        while (i < n && j < m) {
+            if (workers[j] >= tasks[i]) {
+                dp[i] = j + 1;
+                ++i;
+                ++j;
+                ++ans;
+            } else {
+                ++j;
+            }
+        }
+        for (int k = 0; k < n; ++k) {
+            if (dp[k] == 0) {
+                break;
+            }
+            int p = pills;
+            int s = strength;
+            int t = k;
+            while (t < n && p > 0) {
+                if (dp[t] == 0) {
+                    break;
+                }
+                if (workers[dp[t] - 1] + s * p >= tasks[t]) {
+                    ++ans;
+                    --p;
+                    ++t;
+                } else {
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int n = tasks.length, m = workers.length;
+        int[] dp = new int[m];
+        int[] sum = new int[m];
+        int i = 0, j = 0;
+        while (i < n && j < m) {
+            if (tasks[i] <= workers[j]) {
+                if (j == 0) {
+                    dp[j] = 1;
+                } else {
+                    dp[j] = dp[j - 1] + 1;
+                }
+                sum[j] = sum[j] + 1;
+                i++;
+            } else {
+                j++;
+            }
+        }
+        int ans = dp[m - 1];
+        for (int k = 0; k < pills; k++) {
+            for (int l = 0; l < m; l++) {
+                if (l == 0) {
+                    dp[l] = sum[l] + 1;
+                } else {
+                    dp[l] = Math.max(dp[l - 1], sum[l] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[m - 1]);
+            for (int l = 0; l < m; l++) {
+                sum[l] += dp[l];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length, m = workers.length;
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int[] max = new int[m];
+        int[] sum = new int[m];
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            while (j < n && tasks[j] <= workers[i]) {
+                j++;
+            }
+            max[i] = j;
+        }
+        sum[m - 1] = max[m - 1];
+        for (int i = m - 2; i >= 0; i--) {
+            sum[i] = sum[i + 1] + max[i];
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            int left = Math.max(0, pills - i);
+            int right = Math.min(pills, m - 1 - i);
+            if (left <= right) {
+                res = Math.max(res, max[i] + sum[i + left] - sum[i + right + 1]);
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int m = workers.length;
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int[] pillsToWorker = new int[m];
+        int i = 0;
+        int j = 0;
+        int count = 0;
+        while (i < n && j < m) {
+            if (workers[j] >= tasks[i]) {
+                count++;
+                i++;
+            }
+            j++;
+        }
+        int ans = count;
+        for (int k = 0; k < m; k++) {
+            pillsToWorker[k] = Math.min(pills, (int) ((long) (strength - workers[k]) / strength));
+            if (pillsToWorker[k] == 0) {
+                continue;
+            }
+            i = 0;
+            j = 0;
+            count = 0;
+            while (i < n && j < m) {
+                if (workers[j] + pillsToWorker[k] * strength >= tasks[i]) {
+                    count++;
+                    i++;
+                }
+                j++;
+            }
+            ans = Math.max(ans, count);
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int m = workers.length;
+        int[] availableWorkers = new int[m];
+        Arrays.sort(tasks);
+        Arrays.sort(workers);
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            while (j < m && workers[j] < tasks[0]) {
+                j++;
+            }
+            availableWorkers[i] = j;
+        }
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            for (int k = 1; k <= pills && i - k >= 0; k++) {
+                int need = tasks[i] - (k * strength);
+                int pos = binarySearch(availableWorkers, need);
+                dp[i + 1] = Math.max(dp[i + 1], dp[i - k + 1] + pos);
+            }
+        }
+        return dp[n];
+    }
+
+    private int binarySearch(int[] a, int x) {
+        int l = 0;
+        int r = a.length - 1;
+        while (l <= r) {
+            int m = l + (r - l) / 2;
+            if (a[m] <= x) {
+                l = m + 1;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;

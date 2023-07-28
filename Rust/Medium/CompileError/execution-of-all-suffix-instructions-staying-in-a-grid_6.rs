@@ -1,0 +1,62 @@
+impl Solution {
+    pub fn execute_instructions(n: i32, start_pos: Vec<i32>, s: String) -> Vec<i32> {
+        
+        let mut res = vec![0; s.len()];
+        let mut pos = start_pos.clone();
+        let mut i = 0;
+        let mut j = 0;
+        let mut min = 0;
+        let mut max = 0;
+        let mut min1 = 0;
+        let mut max1 = 0;
+        let mut k = 0;
+        let mut l = 0;
+        let mut m = 0;
+        let mut n1 = 0;
+        let mut o = 0;
+        let mut p = 0;
+        let mut q = 0;
+        let mut r = 0;
+        let mut s1 = 0;
+        let mut t = 0;
+        let mut u = 0;
+        let mut v = 0;
+        let mut w = 0;
+        let mut x = 0;
+        let mut y = 0;
+        let mut z = 0;
+        let mut a1 = 0;
+        let mut b1 = 0;
+        let mut c1 = 0;
+        let mut d1 = 0;
+        let mut e1 = 0;
+        let mut f1 = 0;
+        let mut g1 = 0;
+        let mut h1 = 0;
+        let mut i1 = 0;
+        let mut j1 = 0;
+        let mut k1 = 0;
+        let mut l1 = 0;
+        let mut m1 = 0;
+        let mut n2 = 0;
+        let mut o1 = 0;
+        let mut p1 = 0;
+        let mut q1 = 0;
+        let mut r1 = 0;
+        let mut s2 = 0;
+        let mut t1 = 0;
+        let mut u1 = 0;
+        let mut v1 = 0;
+        let mut w1 = 0;
+        let mut x1 = 0;
+        let mut y1 = 0;
+        let mut z1 = 0;
+        let mut a2 = 0;
+        let mut b2 = 0;
+        let mut c2 = 0;
+        let mut d2 = 0;
+        let mut e2 = 0;
+        let mut f2 = 0;
+        let mut g2 = 0;
+    }
+}

@@ -1,0 +1,340 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int m = quantity.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int key : map.keySet()) {
+            list.add(map.get(key));
+        }
+        n = list.size();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = list.get(i);
+        }
+        int[] dp = new int[1 << m];
+        dp[0] = Integer.MAX_VALUE;
+        for (int i = 0; i < 1 << m; i++) {
+            if (dp[i] == 0) {
+                continue;
+            }
+            for (int j = 0; j < n; j++) {
+                int mask = 0;
+                for (int k = 0; k < m; k++) {
+                    if (((i >> k) & 1) == 0 && arr[j] >= quantity[k]) {
+                        mask |= 1 << k;
+                    }
+                }
+                if (mask > 0) {
+                    dp[i | mask] = Math.max(dp[i | mask], Math.min(dp[i], arr[j]));
+                }
+            }
+        }
+        return dp[(1 << m) - 1] > 0;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        int[] count = new int[map.size()];
+        int index = 0;
+        for (int value : map.values()) {
+            count[index++] = value;
+        }
+        return dfs(count, quantity, 0, 0);
+    }
+
+    private boolean dfs(int[] count, int[] quantity, int start, int mask) {
+        if (mask == (1 << quantity.length) - 1) {
+            return true;
+        }
+        for (int i = start; i < count.length; i++) {
+            if (count[i] >= quantity[Integer.bitCount(mask)]) {
+                count[i] -= quantity[Integer.bitCount(mask)];
+                if (dfs(count, quantity, i, mask | (1 << Integer.bitCount(mask)))) {
+                    return true;
+                }
+                count[i] += quantity[Integer.bitCount(mask)];
+            }
+        }
+        return false;
+
+=======
+
+        int n = nums.length;
+        int m = quantity.length;
+        int[] count = new int[101];
+        for (int i = 0; i < n; i++) {
+            count[nums[i]]++;
+        }
+        int[] a = new int[50];
+        int k = 0;
+        for (int i = 1; i <= 100; i++) {
+            if (count[i] > 0) {
+                a[k++] = count[i];
+            }
+        }
+        Arrays.sort(a, 0, k);
+        Arrays.sort(quantity);
+        int[] b = new int[m];
+        int[] c = new int[m];
+        return dfs(a, quantity, b, c, 0, 0, k - 1, m - 1);
+    }
+
+    public boolean dfs(int[] a, int[] quantity, int[] b, int[] c, int i, int j, int k, int l) {
+        if (i == quantity.length) {
+            return true;
+        }
+        if (j > l) {
+            return false;
+        }
+        if (c[j] + quantity[i] <= b[j]) {
+            c[j] += quantity[i];
+            if (dfs(a, quantity, b, c, i + 1, j, k, l)) {
+                return true;
+            }
+            c[j] -= quantity[i];
+        }
+        if (k >= 0 && a[k] + c[j] <= b[j]) {
+            a[k] += c[j];
+            c[j] = 0;
+            b[j] = a[k];
+            if (dfs(a, quantity, b, c, i, j + 1, k - 1, l)) {
+                return true;
+            }
+            c[j] = b[j] - a[k];
+            b[j] = 0;
+            a[k] -= c[j];
+        }
+        return false;
+    }
+}
+
+=======
+
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int num : nums) {
+            count.put(num, count.getOrDefault(num, 0) + 1);
+        }
+        int[] counts = new int[count.size()];
+        int i = 0;
+        for (int c : count.values()) {
+            counts[i++] = c;
+        }
+        return dfs(0, counts, quantity);
+    }
+    
+    private boolean dfs(int index, int[] counts, int[] quantity) {
+        if (index == counts.length) {
+            return true;
+        }
+        for (int i = 0; i < quantity.length; i++) {
+            if (counts[index] >= quantity[i]) {
+                counts[index] -= quantity[i];
+                if (dfs(index + 1, counts, quantity)) {
+                    return true;
+                }
+                counts[index] += quantity[i];
+            }
+        }
+        return false;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : nums) {
+            map.put(i, map.getOrDefault(i, 0) + 1);
+        }
+        int[] freq = new int[map.size()];
+        int i = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            freq[i++] = entry.getValue();
+        }
+        Arrays.sort(quantity);
+        return dfs(quantity, quantity.length - 1, freq, 0);
+    }
+
+    public boolean dfs(int[] quantity, int index, int[] freq, int start) {
+        if (index < 0) {
+            return true;
+        }
+        for (int i = start; i < freq.length; i++) {
+            if (freq[i] >= quantity[index]) {
+                freq[i] -= quantity[index];
+                if (dfs(quantity, index - 1, freq, i)) {
+                    return true;
+                }
+                freq[i] += quantity[index];
+            }
+        }
+        return false;
+
+=======
+
+        int m = quantity.length;
+        int n = nums.length;
+        int[] cnt = new int[101];
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        int[] q = new int[m];
+        int k = 0;
+        for (int i = 0; i < 101; i++) {
+            if (cnt[i] > 0) {
+                q[k++] = cnt[i];
+            }
+        }
+        int[] dp = new int[1 << m];
+        dp[0] = 10000;
+        for (int i = 0; i < k; i++) {
+            for (int j = (1 << m) - 1; j >= 0; j--) {
+                int s = dp[j];
+                for (int l = 0; l < m; l++) {
+                    if (((j >> l) & 1) == 0) {
+                        if (s >= quantity[l]) {
+                            dp[j | (1 << l)] = Math.max(dp[j | (1 << l)], s - quantity[l]);
+                        }
+                    }
+                }
+                if (s >= q[i]) {
+                    dp[j] = Math.max(dp[j], s - q[i]);
+                }
+            }
+        }
+        return dp[(1 << m) - 1] != 0;
+
+=======
+
+        int N = nums.length;
+        int M = quantity.length;
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int n : nums) {
+            count.put(n, count.getOrDefault(n, 0) + 1);
+        }
+        Integer[] freq = count.values().toArray(new Integer[count.size()]);
+        Arrays.sort(freq, Collections.reverseOrder());
+        Arrays.sort(quantity);
+        return dfs(freq, quantity, new int[M], 0);
+    }
+    
+    private boolean dfs(Integer[] freq, int[] quantity, int[] used, int i) {
+        if (i == quantity.length) {
+            return true;
+        }
+        for (int j = 0; j < used.length; j++) {
+            if (used[j] + quantity[i] <= freq[i]) {
+                used[j] += quantity[i];
+                if (dfs(freq, quantity, used, i + 1)) {
+                    return true;
+                }
+                used[j] -= quantity[i];
+            }
+            if (used[j] == 0) {
+                break;
+            }
+        }
+        return false;
+
+=======
+
+        int n = nums.length, m = quantity.length;
+        int[] cnt = new int[101];
+        for (int num : nums) cnt[num]++;
+        int[] q = new int[m];
+        for (int i = 0; i < m; i++) q[i] = quantity[i];
+        Arrays.sort(q);
+        return dfs(cnt, q, 100);
+    }
+    private boolean dfs(int[] cnt, int[] q, int max) {
+        while (max > 0 && cnt[max] == 0) max--;
+        if (max == 0) return true;
+        for (int i = 0; i < q.length; i++) {
+            if (q[i] <= cnt[max]) {
+                q[i] = 0;
+                if (dfs(cnt, q, max)) return true;
+                q[i] = quantity[i];
+            }
+        }
+        return false;
+
+=======
+
+        int n = nums.length;
+        int m = quantity.length;
+        int[] freq = new int[1001];
+        for (int num : nums) {
+            freq[num]++;
+        }
+        int[] count = new int[51];
+        for (int i = 1; i <= 1000; i++) {
+            if (freq[i] > 0) {
+                count[freq[i]]++;
+            }
+        }
+        return dfs(count, quantity, 0);
+    }
+    
+    private boolean dfs(int[] count, int[] quantity, int i) {
+        if (i == quantity.length) {
+            return true;
+        }
+        for (int j = 1; j < count.length; j++) {
+            if (count[j] > 0) {
+                count[j]--;
+                if (dfs(count, quantity, i + 1)) {
+                    return true;
+                }
+                count[j]++;
+            }
+        }
+        return false;
+
+=======
+
+        int n = nums.length;
+        int m = quantity.length;
+        int[] cnt = new int[101];
+        for (int num : nums) {
+            cnt[num]++;
+        }
+        Arrays.sort(quantity);
+        int[] q = new int[m];
+        int k = 0;
+        for (int i = m - 1; i >= 0; i--) {
+            if (k == 0 || quantity[i] != q[k - 1]) {
+                q[k++] = quantity[i];
+            }
+        }
+        int[] dp = new int[1 << k];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int i = 0; i < 101; i++) {
+            if (cnt[i] == 0) {
+                continue;
+            }
+            int[] next = Arrays.copyOf(dp, 1 << k);
+            for (int mask = 0; mask < (1 << k); mask++) {
+                if (dp[mask] == -1) {
+                    continue;
+                }
+                int sum = dp[mask];
+                for (int j = 0; j < k; j++) {
+                    if (((mask >> j) & 1) == 0) {
+                        if (sum + q[j] <= cnt[i]) {
+                            next[mask | (1 << j)] = Math.max(next[mask | (1 << j)], sum + q[j]);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            dp = next;
+        }
+        return dp[(1 << k) - 1] != -1;

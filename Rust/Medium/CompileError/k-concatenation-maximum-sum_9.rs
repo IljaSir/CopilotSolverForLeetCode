@@ -1,0 +1,61 @@
+impl Solution {
+    pub fn k_concatenation_max_sum(arr: Vec<i32>, k: i32) -> i32 {
+        
+        let mut sum = 0;
+        let mut max = 0;
+        let mut max2 = 0;
+        let mut sum2 = 0;
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = k;
+        let mut max3 = 0;
+        let mut sum3 = 0;
+        let mut max4 = 0;
+        let mut sum4 = 0;
+        let mut max5 = 0;
+        let mut sum5 = 0;
+        let mut max6 = 0;
+        let mut sum6 = 0;
+        let mut max7 = 0;
+        let mut sum7 = 0;
+        let mut max8 = 0;
+        let mut sum8 = 0;
+        let mut max9 = 0;
+        let mut sum9 = 0;
+        let mut max10 = 0;
+        let mut sum10 = 0;
+        let mut max11 = 0;
+        let mut sum11 = 0;
+        let mut max12 = 0;
+        let mut sum12 = 0;
+        let mut max13 = 0;
+        let mut sum13 = 0;
+        let mut max14 = 0;
+        let mut sum14 = 0;
+        let mut max15 = 0;
+        let mut sum15 = 0;
+        let mut max16 = 0;
+        let mut sum16 = 0;
+        let mut max17 = 0;
+        let mut sum17 = 0;
+        let mut max18 = 0;
+        let mut sum18 = 0;
+        let mut max19 = 0;
+        let mut sum19 = 0;
+        let mut max20 = 0;
+        let mut sum20 = 0;
+        let mut max21 = 0;
+        let mut sum21 = 0;
+        let mut max22 = 0;
+        let mut sum22 = 0;
+        let mut max23 = 0;
+        let mut sum23 = 0;
+        let mut max24 = 0;
+        let mut sum24 = 0;
+        let mut max25 = 0;
+        let mut sum25 = 0;
+        let mut max26 = 0;
+        let mut sum26 = 0;
+        let mut max27 = 0;
+    }
+}

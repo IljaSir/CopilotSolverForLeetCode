@@ -1,0 +1,286 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = arr.length;
+        long sum = 0;
+        long max = 0;
+        long min = 0;
+        long total = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum - min);
+            min = Math.min(min, sum);
+            total += arr[i];
+        }
+        long res = 0;
+        if (total > 0) {
+            res = Math.max(res, max + total * (k - 2));
+        }
+        res = Math.max(res, max);
+        res = Math.max(res, sum * k);
+        return (int)(res % (1000000007));
+
+=======
+
+        int n = arr.length;
+        int mod = 1000000007;
+        int[] preSum = new int[n];
+        preSum[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            preSum[i] = preSum[i - 1] + arr[i];
+        }
+        long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+        }
+        long res = 0;
+        if (k == 1) {
+            res = maxSubArray(arr, mod);
+        } else if (k == 2) {
+            res = maxSubArray(arr, mod);
+            res = Math.max(res, maxSubArray(arr, mod) + maxSubArray(arr, mod));
+        } else {
+            res = maxSubArray(arr, mod);
+            res = Math.max(res, maxSubArray(arr, mod) + maxSubArray(arr, mod));
+            if (sum > 0) {
+                res = Math.max(res, maxSubArray(arr, mod) + maxSubArray(arr, mod) + sum * (k - 2));
+            }
+        }
+        return (int) res;
+    }
+
+    public long maxSubArray(int[] arr, int mod) {
+        long max = 0;
+        long cur = 0;
+        for (int i = 0; i < arr.length; i++) {
+            cur += arr[i];
+            max = Math.max(max, cur);
+            if (cur < 0) {
+                cur = 0;
+            }
+        }
+        return max % mod;
+
+=======
+
+        int mod = 1000000007;
+        if (k == 1) {
+            return kadane(arr, mod);
+        }
+        long sum = 0;
+        for (int num : arr) {
+            sum += num;
+        }
+        if (sum < 0) {
+            return kadane(arr, mod);
+        }
+        int[] temp = new int[arr.length * 2];
+        for (int i = 0; i < arr.length; i++) {
+            temp[i] = arr[i];
+            temp[i + arr.length] = arr[i];
+        }
+        return (int) ((kadane(temp, mod) + (sum * (k - 2)) % mod) % mod);
+    }
+    
+    private int kadane(int[] arr, int mod) {
+        long sum = 0;
+        long max = 0;
+        for (int num : arr) {
+            sum += num;
+            max = Math.max(max, sum);
+            if (sum < 0) {
+                sum = 0;
+            }
+        }
+        return (int) (max % mod);
+
+=======
+
+        int mod = 1000000007;
+        long sum = 0;
+        long max = 0;
+        long minSum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum - minSum);
+            minSum = Math.min(minSum, sum);
+        }
+        if (k == 1) {
+            return (int) (max % mod);
+        }
+        long totalSum = sum;
+        long max2 = 0;
+        sum = 0;
+        minSum = 0;
+        for (int i = 0; i < arr.length * 2; i++) {
+            sum += arr[i % arr.length];
+            max2 = Math.max(max2, sum - minSum);
+            minSum = Math.min(minSum, sum);
+        }
+        if (totalSum > 0) {
+            return (int) (Math.max(max, (max2 + (k - 2) * totalSum) % mod) % mod);
+        } else {
+            return (int) (Math.max(max, max2) % mod);
+        }
+
+=======
+
+        int mod = 1000000007;
+        long sum = 0;
+        long max = 0;
+        long min = 0;
+        long total = 0;
+        for(int i = 0; i < arr.length; i++){
+            sum += arr[i];
+            max = Math.max(max, sum - min);
+            min = Math.min(min, sum);
+            total += arr[i];
+        }
+        long res = 0;
+        if(k == 1){
+            res = max;
+        }else if(total > 0){
+            res = max + (k - 2) * total;
+        }else{
+            res = max;
+        }
+        return (int)(res % mod);
+
+=======
+
+        int n = arr.length;
+        int mod = 1000000007;
+        long sum = 0;
+        long max = 0;
+        long min = 0;
+        long total = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum - min);
+            min = Math.min(min, sum);
+            total += arr[i];
+        }
+        if (k == 1) {
+            return (int) (max % mod);
+        }
+        if (total >= 0) {
+            return (int) (Math.max(max, total * (k - 2) + max) % mod);
+        }
+        return (int) (Math.max(max, total * (k - 2) + max - total) % mod);
+
+=======
+
+        long max = 0;
+        long sum = 0;
+        long maxSum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum);
+            maxSum = Math.max(maxSum, sum);
+        }
+        if (k > 1) {
+            long sum2 = 0;
+            for (int i = arr.length - 1; i >= 0; i--) {
+                sum2 += arr[i];
+                maxSum = Math.max(maxSum, sum2);
+            }
+            maxSum = Math.max(maxSum, sum + sum2);
+        }
+        return (int) (maxSum % 1000000007);
+
+=======
+
+        int n = arr.length;
+        long mod = 1000000007;
+        long max = 0;
+        long sum = 0;
+        long total = 0;
+        for (int i = 0; i < n; i++) {
+            total += arr[i];
+            sum += arr[i];
+            if (sum < 0) {
+                sum = 0;
+            }
+            max = Math.max(max, sum);
+        }
+        if (k == 1) {
+            return (int) (max % mod);
+        }
+        long res = 0;
+        if (total > 0) {
+            res = max + (k - 2) * total;
+        } else {
+            res = max;
+        }
+        sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            sum += arr[i];
+            if (sum < 0) {
+                sum = 0;
+            }
+            res = Math.max(res, sum);
+        }
+        return (int) (res % mod);
+
+=======
+
+        int n = arr.length;
+        long mod = (long) (1e9 + 7);
+        long sum = 0;
+        long max = 0;
+        long min = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum - min);
+            min = Math.min(min, sum);
+        }
+        if (k == 1) {
+            return (int) (max % mod);
+        }
+        long prefix = sum;
+        long suffix = sum;
+        sum *= 2;
+        max = 0;
+        min = 0;
+        for (int i = 0; i < n; i++) {
+            sum += arr[i];
+            max = Math.max(max, sum - min);
+            min = Math.min(min, sum);
+        }
+        sum /= 2;
+        for (int i = 0; i < n; i++) {
+            prefix += arr[i];
+            max = Math.max(max, prefix);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            suffix += arr[i];
+            max = Math.max(max, suffix);
+        }
+        return (int) (Math.max(max, sum) % mod);
+
+=======
+
+        int mod = 1000000007;
+        int max = 0;
+        int sum = 0;
+        int min = 0;
+        int maxSum = 0;
+        for(int i = 0; i < arr.length; i++){
+            sum += arr[i];
+            maxSum = Math.max(maxSum, sum - min);
+            min = Math.min(min, sum);
+        }
+        if(k == 1){
+            return maxSum;
+        }
+        int sum2 = 0;
+        for(int i = 0; i < arr.length; i++){
+            sum2 += arr[i];
+        }
+        if(sum2 > 0){
+            max = (int)(maxSum + (long)sum2 * (k - 2) % mod);
+        }else{
+            max = maxSum;
+        }
+        return max % mod;

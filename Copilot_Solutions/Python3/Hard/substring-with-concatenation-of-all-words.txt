@@ -1,0 +1,210 @@
+Synthesizing 8/10 solutions
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if len(words) == 0:
+            return []
+        word_len = len(words[0])
+        word_dict = {}
+        for word in words:
+            if word not in word_dict:
+                word_dict[word] = 1
+            else:
+                word_dict[word] += 1
+        result = []
+        for i in range(0, len(s) - len(words) * word_len + 1):
+            word_dict_copy = word_dict.copy()
+            for j in range(0, len(words)):
+                word = s[i + j * word_len:i + j * word_len + word_len]
+                if word not in word_dict_copy:
+                    break
+                else:
+                    word_dict_copy[word] -= 1
+                    if word_dict_copy[word] == 0:
+                        del word_dict_copy[word]
+            if len(word_dict_copy) == 0:
+                result.append(i)
+        return result
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        n = len(s)
+        m = len(words)
+        if n == 0 or m == 0:
+            return []
+        wlen = len(words[0])
+        if n < m * wlen:
+            return []
+        ans = []
+        words = Counter(words)
+        for i in range(0, n - m * wlen + 1):
+            if s[i:i + wlen] in words:
+                j = i
+                tmp = words.copy()
+                while j < i + m * wlen:
+                    w = s[j:j + wlen]
+                    if w in tmp:
+                        tmp[w] -= 1
+                        if tmp[w] == 0:
+                            del tmp[w]
+                        j += wlen
+                    else:
+                        break
+                if len(tmp) == 0:
+                    ans.append(i)
+        return ans
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if len(words) == 0:
+            return []
+        word_len = len(words[0])
+        word_count = len(words)
+        word_dict = {}
+        for word in words:
+            if word in word_dict:
+                word_dict[word] += 1
+            else:
+                word_dict[word] = 1
+        res = []
+        for i in range(len(s) - word_len * word_count + 1):
+            temp_dict = word_dict.copy()
+            for j in range(word_count):
+                word = s[i + j * word_len : i + (j + 1) * word_len]
+                if word in temp_dict:
+                    temp_dict[word] -= 1
+                    if temp_dict[word] == 0:
+                        temp_dict.pop(word)
+                else:
+                    break
+            if len(temp_dict) == 0:
+                res.append(i)
+        return res
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if not s or not words:
+            return []
+        word_len = len(words[0])
+        word_cnt = len(words)
+        word_dict = {}
+        for word in words:
+            if word in word_dict:
+                word_dict[word] += 1
+            else:
+                word_dict[word] = 1
+        result = []
+        for i in range(len(s) - word_len * word_cnt + 1):
+            j = 0
+            temp_dict = {}
+            while j < word_cnt:
+                word = s[i + j * word_len: i + (j + 1) * word_len]
+                if word in word_dict:
+                    if word in temp_dict:
+                        temp_dict[word] += 1
+                    else:
+                        temp_dict[word] = 1
+                    if temp_dict[word] > word_dict[word]:
+                        break
+                else:
+                    break
+                j += 1
+            if j == word_cnt:
+                result.append(i)
+        return result
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        n = len(words[0])
+        m = len(words)
+        d = {}
+        for word in words:
+            d[word] = d.get(word, 0) + 1
+        res = []
+        for i in range(len(s) - n * m + 1):
+            j = i
+            dd = {}
+            while j < i + n * m:
+                word = s[j:j+n]
+                dd[word] = dd.get(word, 0) + 1
+                if word not in d or dd[word] > d[word]:
+                    break
+                j += n
+            if j == i + n * m:
+                res.append(i)
+        return res
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if not words:
+            return []
+        word_len = len(words[0])
+        words_len = len(words) * word_len
+        res = []
+        for i in range(len(s) - words_len + 1):
+            if self.isConcat(s[i:i+words_len], words, word_len):
+                res.append(i)
+        return res
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if not words or not s:
+            return []
+        word_len = len(words[0])
+        word_num = len(words)
+        word_total_len = word_len * word_num
+        if len(s) < word_total_len:
+            return []
+        word_dict = {}
+        for word in words:
+            if word not in word_dict:
+                word_dict[word] = 1
+            else:
+                word_dict[word] += 1
+        res = []
+        for i in range(len(s) - word_total_len + 1):
+            tmp_dict = {}
+            for j in range(i, i + word_total_len, word_len):
+                tmp_word = s[j:j+word_len]
+                if tmp_word in word_dict:
+                    if tmp_word not in tmp_dict:
+                        tmp_dict[tmp_word] = 1
+                    else:
+                        tmp_dict[tmp_word] += 1
+                else:
+                    break
+            if tmp_dict == word_dict:
+                res.append(i)
+        return res
+
+=======
+
+def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if not s or not words:
+            return []
+        n = len(words[0])
+        m = len(words)
+        word_map = collections.Counter(words)
+        res = []
+        for i in range(len(s) - n * m + 1):
+            j = 0
+            while j < m:
+                word = s[i + j * n: i + j * n + n]
+                if word in word_map:
+                    word_map[word] -= 1
+                    if word_map[word] < 0:
+                        break
+                else:
+                    break
+                j += 1
+            if j == m:
+                res.append(i)
+            word_map = collections.Counter(words)
+        return res

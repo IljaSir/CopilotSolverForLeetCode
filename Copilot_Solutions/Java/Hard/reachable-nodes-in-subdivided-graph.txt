@@ -1,0 +1,315 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(graph[i], -1);
+        }
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            graph[u][v] = graph[v][u] = w;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, maxMoves});
+        int res = 0;
+        boolean[] seen = new boolean[n];
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int u = cur[0], moves = cur[1];
+            if (seen[u]) {
+                continue;
+            }
+            seen[u] = true;
+            res++;
+            for (int v = 0; v < n; v++) {
+                if (graph[u][v] >= 0) {
+                    int w = graph[u][v];
+                    if (moves > w && !seen[v]) {
+                        pq.offer(new int[]{v, moves - w - 1});
+                    }
+                    graph[v][u] -= Math.min(moves, w);
+                    res += Math.min(moves, w);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            graph.computeIfAbsent(u, x -> new HashMap<>()).put(v, w);
+            graph.computeIfAbsent(v, x -> new HashMap<>()).put(u, w);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[] {0, maxMoves});
+        Map<Integer, Integer> dist = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (dist.containsKey(cur[0])) continue;
+            dist.put(cur[0], cur[1]);
+            if (graph.containsKey(cur[0])) {
+                for (int nei : graph.get(cur[0]).keySet()) {
+                    int d = cur[1] - graph.get(cur[0]).get(nei) - 1;
+                    if (!dist.containsKey(nei) && d >= 0) {
+                        pq.offer(new int[] {nei, d});
+                    }
+                }
+            }
+        }
+        int res = dist.size();
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            int du = dist.getOrDefault(u, 0);
+            int dv = dist.getOrDefault(v, 0);
+            res += Math.min(du + dv, w);
+        }
+        return res;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge: edges) {
+            graph.computeIfAbsent(edge[0], x -> new HashMap<>()).put(edge[1], edge[2]);
+            graph.computeIfAbsent(edge[1], x -> new HashMap<>()).put(edge[0], edge[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, maxMoves});
+        Map<Integer, Integer> seen = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            if (!seen.containsKey(node[0])) {
+                seen.put(node[0], node[1]);
+                for (int nei: graph.getOrDefault(node[0], new HashMap<>()).keySet()) {
+                    int moves = node[1] - graph.get(node[0]).get(nei) - 1;
+                    if (!seen.containsKey(nei) && moves >= 0) {
+                        pq.offer(new int[]{nei, moves});
+                    }
+                }
+            }
+        }
+        int ans = seen.size();
+        for (int[] edge: edges) {
+            int a = seen.getOrDefault(edge[0], 0);
+            int b = seen.getOrDefault(edge[1], 0);
+            ans += Math.min(edge[2], a + b);
+        }
+        return ans;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], x -> new HashMap<>()).put(edge[1], edge[2] + 1);
+            graph.computeIfAbsent(edge[1], x -> new HashMap<>()).put(edge[0], edge[2] + 1);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, maxMoves});
+        Map<Integer, Integer> seen = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            if (!seen.containsKey(node[0])) {
+                seen.put(node[0], node[1]);
+                for (int nei : graph.getOrDefault(node[0], new HashMap<>()).keySet()) {
+                    int moves = node[1] - graph.get(node[0]).get(nei);
+                    if (!seen.containsKey(nei) && moves >= 0) {
+                        pq.offer(new int[]{nei, moves});
+                    }
+                }
+            }
+        }
+        int res = seen.size();
+        for (int[] edge : edges) {
+            int a = seen.getOrDefault(edge[0], 0);
+            int b = seen.getOrDefault(edge[1], 0);
+            res += Math.min(edge[2], a + b);
+        }
+        return res;
+
+=======
+
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], v -> new HashMap<>()).put(edge[1], edge[2]);
+            graph.computeIfAbsent(edge[1], v -> new HashMap<>()).put(edge[0], edge[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[] {0, maxMoves});
+        Map<Integer, Integer> seen = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            if (!seen.containsKey(node[0])) {
+                seen.put(node[0], node[1]);
+                for (int nei : graph.getOrDefault(node[0], new HashMap<>()).keySet()) {
+                    int moves = node[1] - graph.get(node[0]).get(nei) - 1;
+                    if (!seen.containsKey(nei) && moves >= 0) {
+                        pq.offer(new int[] {nei, moves});
+                    }
+                }
+            }
+        }
+        int res = seen.size();
+        for (int[] edge : edges) {
+            int a = seen.getOrDefault(edge[0], 0);
+            int b = seen.getOrDefault(edge[1], 0);
+            res += Math.min(edge[2], a + b);
+        }
+        return res;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for (int[] e : edges) {
+            graph[e[0]][e[1]] = graph[e[1]][e[0]] = e[2] + 1;
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (b[0] - a[0]));
+        pq.offer(new int[]{maxMoves, 0});
+        boolean[] visited = new boolean[n];
+        int res = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int moves = cur[0], node = cur[1];
+            if (visited[node]) continue;
+            visited[node] = true;
+            res++;
+            for (int nei = 0; nei < n; nei++) {
+                if (graph[node][nei] > 0) {
+                    if (moves > graph[node][nei] && !visited[nei]) {
+                        pq.offer(new int[]{moves - graph[node][nei], nei});
+                    }
+                    graph[nei][node] -= Math.min(moves, graph[node][nei]);
+                    res += Math.min(moves, graph[node][nei]);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] e : edges) {
+            graph.computeIfAbsent(e[0], k -> new HashMap<>()).put(e[1], e[2]);
+            graph.computeIfAbsent(e[1], k -> new HashMap<>()).put(e[0], e[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (cur[1] > dist[cur[0]]) continue;
+            for (int next : graph.getOrDefault(cur[0], new HashMap<>()).keySet()) {
+                int d = cur[1] + graph.get(cur[0]).get(next) + 1;
+                if (d < dist[next]) {
+                    dist[next] = d;
+                    pq.offer(new int[]{next, d});
+                }
+            }
+        }
+        int res = 0;
+        for (int d : dist) {
+            if (d <= maxMoves) res++;
+        }
+        for (int[] e : edges) {
+            int d1 = dist[e[0]] > maxMoves ? 0 : maxMoves - dist[e[0]];
+            int d2 = dist[e[1]] > maxMoves ? 0 : maxMoves - dist[e[1]];
+            res += Math.min(d1 + d2, e[2]);
+        }
+        return res;
+
+=======
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        Map<Integer, Map<Integer, Integer>> graph = new HashMap<>();
+        for (int[] e : edges) {
+            graph.putIfAbsent(e[0], new HashMap<>());
+            graph.putIfAbsent(e[1], new HashMap<>());
+            graph.get(e[0]).put(e[1], e[2]);
+            graph.get(e[1]).put(e[0], e[2]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        pq.offer(new int[]{0, 0});
+        while (!pq.isEmpty()) {
+            int[] top = pq.poll();
+            int d = top[0], node = top[1];
+            if (d > dist[node]) continue;
+            for (int nei : graph.getOrDefault(node, new HashMap<>()).keySet()) {
+                int d2 = d + graph.get(node).get(nei) + 1;
+                if (d2 < dist[nei]) {
+                    pq.offer(new int[]{d2, nei});
+                    dist[nei] = d2;
+                }
+            }
+        }
+        int res = 0;
+        for (int d : dist) {
+            if (d <= maxMoves) res++;
+        }
+        for (int[] e : edges) {
+            int u = e[0], v = e[1], cnt = e[2];
+            int d1 = dist[u] == Integer.MAX_VALUE ? 0 : dist[u];
+            int d2 = dist[v] == Integer.MAX_VALUE ? 0 : dist[v];
+            res += Math.max(0, Math.min(cnt, cnt - (d1 + d2 - maxMoves)));
+        }
+        return res;
+
+=======
+
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int[] edge: edges) {
+            graph.computeIfAbsent(edge[0], l -> new ArrayList<>()).add(new int[]{edge[1], edge[2]});
+            graph.computeIfAbsent(edge[1], l -> new ArrayList<>()).add(new int[]{edge[0], edge[2]});
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, maxMoves});
+        Map<Integer, Integer> seen = new HashMap<>();
+        while (!pq.isEmpty()) {
+            int[] node = pq.poll();
+            if (!seen.containsKey(node[0])) {
+                seen.put(node[0], node[1]);
+                for (int[] nei: graph.getOrDefault(node[0], new ArrayList<>())) {
+                    int moves = node[1] - nei[1] - 1;
+                    if (!seen.containsKey(nei[0]) && moves >= 0)
+                        pq.offer(new int[]{nei[0], moves});
+                }
+            }
+        }
+        int res = seen.size();
+        for (int[] edge: edges) {
+            int a = seen.getOrDefault(edge[0], 0);
+            int b = seen.getOrDefault(edge[1], 0);
+            res += Math.min(edge[2], a + b);
+        }
+        return res;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for(int i=0;i<edges.length;i++){
+            graph[edges[i][0]][edges[i][1]] = edges[i][2];
+            graph[edges[i][1]][edges[i][0]] = edges[i][2];
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->b[1]-a[1]);
+        pq.offer(new int[]{0,maxMoves});
+        boolean[] visited = new boolean[n];
+        int res = 0;
+        while(!pq.isEmpty()){
+            int[] cur = pq.poll();
+            if(visited[cur[0]]) continue;
+            visited[cur[0]] = true;
+            res++;
+            for(int i=0;i<n;i++){
+                if(graph[cur[0]][i]==0) continue;
+                if(cur[1]>graph[cur[0]][i] && !visited[i]){
+                    pq.offer(new int[]{i,cur[1]-graph[cur[0]][i]-1});
+                }
+                graph[i][cur[0]] -= Math.min(cur[1], graph[cur[0]][i]);
+                res += Math.min(cur[1], graph[cur[0]][i]);
+            }
+        }
+        return res;

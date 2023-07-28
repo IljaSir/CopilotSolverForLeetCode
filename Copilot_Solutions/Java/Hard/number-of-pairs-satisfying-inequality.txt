@@ -1,0 +1,198 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums1.length;
+        int[] a = new int[n];
+        int[] b = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = nums1[i] - nums2[i] + diff;
+            b[i] = nums1[i] - nums2[i];
+        }
+        Arrays.sort(a);
+        Arrays.sort(b);
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            int j = upperBound(a, b[i]);
+            res += j;
+        }
+        return res;
+    }
+    public int upperBound(int[] a, int x) {
+        int l = 0, r = a.length;
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (a[mid] <= x) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+
+=======
+
+        int n = nums1.length;
+        int[] cnt = new int[20001];
+        long res = 0;
+        for (int i = 0; i < n; i++) {
+            res += cnt[nums1[i] - nums2[i] + 10000 + diff];
+            cnt[nums1[i] - nums2[i] + 10000]++;
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        long res = 0;
+        int[] cnt = new int[20001];
+        for (int i = 0; i < n; ++i) {
+            res += cnt[nums1[i] - nums2[i] + 10000];
+            cnt[nums1[i] - nums2[i] - diff + 10000]++;
+        }
+        return res;
+
+=======
+
+        int n = nums1.length;
+        long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = nums1[i] - nums2[i] - diff;
+            int y = nums1[i] - nums2[i] + diff;
+            ans += upperBound(nums1, y) - upperBound(nums1, x);
+        }
+        return ans;
+    }
+    private int upperBound(int[] a, int x) {
+        int l = 0, r = a.length;
+        while (l < r) {
+            int m = l + r >> 1;
+            if (a[m] > x) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = nums1.length;
+        long ans = 0;
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0;
+        int j = 0;
+        while (i < n && j < n) {
+            if (nums1[i] - nums2[j] <= diff) {
+                ans += j;
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        long ans = 0;
+        int[] cnt = new int[20001];
+        for (int i = 0; i < n; ++i) {
+            int x = nums1[i] - nums2[i] + 10000;
+            ans += cnt[x - diff];
+            cnt[x]++;
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        long res = 0;
+        int[] cnt = new int[20001];
+        for (int i = 0; i < n; i++) {
+            int x = nums1[i] - nums2[i] + 10000;
+            int y = nums1[i] - nums2[i] - diff + 10000;
+            if (y < 0) {
+                continue;
+            }
+            res += cnt[y];
+            cnt[x]++;
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        int n = nums1.length;
+        int[] arr = new int[20001];
+        for (int i = 0; i < n; i++) {
+            arr[nums1[i] - nums2[i] + 10000]++;
+        }
+        for (int i = 0; i < n; i++) {
+            if (diff >= 0) {
+                res += arr[nums1[i] - nums2[i] + diff + 10000];
+            } else {
+                res += arr[nums1[i] - nums2[i] - diff + 10000];
+            }
+            if (nums1[i] - nums2[i] + diff + 10000 >= 0 && nums1[i] - nums2[i] + diff + 10000 <= 20000) {
+                arr[nums1[i] - nums2[i] + diff + 10000]--;
+            }
+        }
+        return res;
+
+=======
+
+        long res = 0;
+        for (int i = 0; i < nums1.length; i++) {
+            res += binarySearch(nums1[i] - diff, nums2, i + 1);
+        }
+        return res;
+    }
+
+    private long binarySearch(int target, int[] nums2, int start) {
+        int l = start, r = nums2.length - 1;
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            if (nums2[m] < target) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return nums2[r] >= target ? nums2.length - r : 0;
+
+=======
+
+        int n = nums1.length;
+        long ans = 0;
+        int[] dp = new int[n];
+        for (int i = 0; i < n; i++) {
+            int num = nums1[i] - diff;
+            int l = 0;
+            int r = i - 1;
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (nums2[mid] < num) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            dp[i] = l;
+        }
+        for (int i = 0; i < n; i++) {
+            int num = nums1[i] - nums2[i];
+            int l = i + 1;
+            int r = n - 1;
+            while (l <= r) {
+                int mid = l + (r - l) / 2;
+                if (nums1[mid] < num) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+            ans += l - dp[i];
+        }
+        return ans;

@@ -1,0 +1,357 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 1; i <= n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{1, 0});
+        Map<Integer, Integer> dist = new HashMap<>();
+        dist.put(1, 0);
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0], curDist = cur[1];
+            if (node == n) {
+                return curDist;
+            }
+            for (int next : graph.get(node)) {
+                int nextDist = curDist + time;
+                if (nextDist % change < change / 2) {
+                    nextDist += change - nextDist % change;
+                } else {
+                    nextDist += change * 2 - nextDist % change;
+                }
+                if (!dist.containsKey(next) || dist.get(next) > nextDist) {
+                    dist.put(next, nextDist);
+                    pq.offer(new int[]{next, nextDist});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0] - 1).add(edge[1] - 1);
+            graph.get(edge[1] - 1).add(edge[0] - 1);
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[] {0, 0});
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int v = cur[0], d = cur[1];
+            if (d >= dist[v]) {
+                continue;
+            }
+            dist[v] = d;
+            for (int u : graph.get(v)) {
+                int t = d + time;
+                int r = t % (2 * change);
+                if (r > change) {
+                    t += 2 * change - r;
+                }
+                queue.add(new int[] {u, t});
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] > dist[0] && dist[i] < ans) {
+                ans = dist[i];
+            }
+        }
+        return ans;
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new ArrayList<>()).add(edge[0]);
+        }
+        boolean[] visited = new boolean[n + 1];
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{1, 0});
+        int result = Integer.MAX_VALUE;
+        int minTime = Integer.MAX_VALUE;
+        while (!queue.isEmpty()) {
+            int[] node = queue.poll();
+            int vertex = node[0];
+            int timeElapsed = node[1];
+            if (vertex == n) {
+                if (minTime == Integer.MAX_VALUE) {
+                    minTime = timeElapsed;
+                } else {
+                    result = Math.min(result, timeElapsed);
+                }
+            }
+            visited[vertex] = true;
+            for (int next : graph.getOrDefault(vertex, Collections.emptyList())) {
+                if (visited[next]) {
+                    continue;
+                }
+                int nextTimeElapsed = timeElapsed + time;
+                int cycle = nextTimeElapsed / change;
+                if (cycle % 2 == 1) {
+                    nextTimeElapsed += change - nextTimeElapsed % change;
+                }
+                queue.offer(new int[]{next, nextTimeElapsed});
+            }
+        }
+        return result;
+
+=======
+
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] e : edges) {
+            graph.get(e[0] - 1).add(e[1] - 1);
+            graph.get(e[1] - 1).add(e[0] - 1);
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.offer(new int[]{0, 0});
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int v = cur[0], d = cur[1];
+            if (d > dist[v]) {
+                continue;
+            }
+            for (int nei : graph.get(v)) {
+                int t = d + time;
+                t += (t / change) % 2 == 1 ? change - t % change : 0;
+                if (t < dist[nei]) {
+                    dist[nei] = t;
+                    pq.offer(new int[]{nei, t});
+                }
+            }
+        }
+        return dist[n - 1];
+
+=======
+
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0] - 1).add(edge[1] - 1);
+            graph.get(edge[1] - 1).add(edge[0] - 1);
+        }
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int next : graph.get(cur)) {
+                int timeToNext = dist[cur] + time;
+                int cycle = timeToNext / change;
+                if (cycle % 2 == 1) {
+                    timeToNext = (cycle + 1) * change;
+                }
+                if (timeToNext < dist[next]) {
+                    dist[next] = timeToNext;
+                    queue.offer(next);
+                }
+            }
+        }
+        return dist[n - 1];
+
+=======
+
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], k -> new HashSet<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], k -> new HashSet<>()).add(edge[0]);
+        }
+        int[] visited = new int[n + 1];
+        Arrays.fill(visited, Integer.MAX_VALUE);
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{1, 0});
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            if (cur[0] == n) {
+                return cur[1];
+            }
+            if (visited[cur[0]] < cur[1]) {
+                continue;
+            }
+            visited[cur[0]] = cur[1];
+            int cycle = cur[1] / change;
+            int remain = cur[1] % change;
+            int nextTime = cycle * change + change;
+            for (int next : graph.getOrDefault(cur[0], new HashSet<>())) {
+                if (remain > 0) {
+                    queue.offer(new int[]{next, cur[1] + time + change - remain});
+                }
+                queue.offer(new int[]{next, nextTime + time});
+            }
+        }
+        return -1;
+
+=======
+
+        List<List<int[]>> graph = new ArrayList<>();
+        for (int i = 0; i <= n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(new int[]{edge[1], time});
+            graph.get(edge[1]).add(new int[]{edge[0], time});
+        }
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[1] = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        pq.add(new int[]{1, 0});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int u = cur[0];
+            int d = cur[1];
+            if (d > dist[u]) {
+                continue;
+            }
+            for (int[] next : graph.get(u)) {
+                int v = next[0];
+                int w = next[1];
+                int nd = d + w;
+                if (nd < dist[v]) {
+                    dist[v] = nd;
+                    pq.add(new int[]{v, nd});
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 2; i <= n; i++) {
+            int d = dist[i];
+            int r = d % (2 * change);
+            if (r > change) {
+                d += 2 * change - r;
+            }
+            res = Math.min(res, d);
+        }
+        return res;
+
+=======
+
+        int[] dist = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[1] = 0;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge : edges) {
+            graph.computeIfAbsent(edge[0], list -> new ArrayList<>()).add(edge[1]);
+            graph.computeIfAbsent(edge[1], list -> new ArrayList<>()).add(edge[0]);
+        }
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        queue.offer(new int[]{0, 1});
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int currDist = curr[0];
+            int currNode = curr[1];
+            if (currDist > dist[currNode]) {
+                continue;
+            }
+            for (int next : graph.getOrDefault(currNode, new ArrayList<>())) {
+                int nextDist = currDist + time + getExtraTime(currDist + time, change);
+                if (nextDist < dist[next]) {
+                    dist[next] = nextDist;
+                    queue.offer(new int[]{nextDist, next});
+                }
+            }
+        }
+        return dist[n];
+    }
+    
+    private int getExtraTime(int time, int change) {
+        int remainder = time % (2 * change);
+        if (remainder < change) {
+            return 0;
+        }
+        return 2 * change - remainder;
+
+=======
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            graph.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0] - 1).add(edge[1] - 1);
+            graph.get(edge[1] - 1).add(edge[0] - 1);
+        }
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[] {0, 0});
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int node = cur[0], d = cur[1];
+            if (d >= dist[node]) {
+                continue;
+            }
+            dist[node] = d;
+            for (int next : graph.get(node)) {
+                int cycle = d / change;
+                int remain = d % change;
+                int wait = cycle % 2 == 0 ? Math.max(0, change - remain) : remain;
+                q.offer(new int[] {next, d + time + wait});
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int d : dist) {
+            if (d > dist[0] && d < ans) {
+                ans = d;
+            }
+        }
+        return ans;
+
+=======
+
+        int[][] graph = new int[n][n];
+        for(int i = 0; i < n; i++)
+            Arrays.fill(graph[i], -1);
+        for(int[] edge : edges){
+            graph[edge[0] - 1][edge[1] - 1] = time;
+            graph[edge[1] - 1][edge[0] - 1] = time;
+        }
+        int[] minTime = new int[n];
+        Arrays.fill(minTime, Integer.MAX_VALUE);
+        minTime[0] = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(0);
+        while(!queue.isEmpty()){
+            int cur = queue.poll();
+            for(int i = 0; i < n; i++){
+                if(graph[cur][i] != -1){
+                    int next = (minTime[cur] / change + 1) * change;
+                    if(minTime[i] > next + graph[cur][i]){
+                        minTime[i] = next + graph[cur][i];
+                        queue.offer(i);
+                    }
+                }
+            }
+        }
+        int min = minTime[n - 1];
+        int secondMin = Integer.MAX_VALUE;
+        for(int i = 0; i < n; i++){
+            if(minTime[i] != min && minTime[i] < secondMin)
+                secondMin = minTime[i];
+        }
+        return secondMin;

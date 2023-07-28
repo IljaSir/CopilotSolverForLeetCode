@@ -1,0 +1,290 @@
+Synthesizing 9/10 solutions
+
+=======
+Suggestion 1
+
+        let mut visited = vec![vec![false; board[0].len()]; board.len()];
+        for i in 0..board.len() {
+            for j in 0..board[0].len() {
+                if Solution::dfs(&board, &word, i, j, &mut visited) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+    
+    fn dfs(board: &Vec<Vec<char>>, word: &String, i: usize, j: usize, visited: &mut Vec<Vec<bool>>) -> bool {
+        if word.len() == 0 {
+            return true;
+        }
+        if i >= board.len() || j >= board[0].len() || i < 0 || j < 0 || visited[i][j] || board[i][j] != word.chars().nth(0).unwrap() {
+            return false;
+        }
+        visited[i][j] = true;
+        let res = Solution::dfs(board, &word[1..].to_string(), i+1, j, visited) ||
+            Solution::dfs(board, &word[1..].to_string(), i-1, j, visited) ||
+            Solution::dfs(board, &word[1..].to_string(), i, j+1, visited) ||
+            Solution::dfs(board, &word[1..].to_string(), i, j-1, visited);
+        visited[i][j] = false;
+        res
+
+=======
+Suggestion 2
+
+        let mut visited = vec![vec![false; board[0].len()]; board.len()];
+        for i in 0..board.len() {
+            for j in 0..board[0].len() {
+                if board[i][j] == word.chars().nth(0).unwrap() {
+                    if Self::dfs(&board, &mut visited, &word, i, j, 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+    fn dfs(board: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>, word: &String, i: usize, j: usize, idx: usize) -> bool {
+        if idx == word.len() {
+            return true;
+        }
+        if i < 0 || i >= board.len() || j < 0 || j >= board[0].len() || visited[i][j] {
+            return false;
+        }
+        if board[i][j] != word.chars().nth(idx).unwrap() {
+            return false;
+        }
+        visited[i][j] = true;
+        let result = Self::dfs(board, visited, word, i + 1, j, idx + 1) || Self::dfs(board, visited, word, i - 1, j, idx + 1) || Self::dfs(board, visited, word, i, j + 1, idx + 1) || Self::dfs(board, visited, word, i, j - 1, idx + 1);
+        visited[i][j] = false;
+        result
+
+=======
+Suggestion 3
+
+        let (m, n) = (board.len(), board[0].len());
+        let mut visited = vec![vec![false; n]; m];
+        for i in 0..m {
+            for j in 0..n {
+                if Self::dfs(&board, &mut visited, &word, i, j, 0) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+    fn dfs(board: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>, word: &String, i: usize, j: usize, k: usize) -> bool {
+        if k == word.len() {
+            return true;
+        }
+        if i == board.len() || j == board[0].len() || i == 0 || j == 0 {
+            return false;
+        }
+        if visited[i][j] || board[i][j] != word.as_bytes()[k] as char {
+            return false;
+        }
+        visited[i][j] = true;
+        let res = Self::dfs(board, visited, word, i + 1, j, k + 1)
+            || Self::dfs(board, visited, word, i - 1, j, k + 1)
+            || Self::dfs(board, visited, word, i, j + 1, k + 1)
+            || Self::dfs(board, visited, word, i, j - 1, k + 1);
+        visited[i][j] = false;
+        res
+
+=======
+Suggestion 4
+
+        let mut visited = vec![vec![false; board[0].len()]; board.len()];
+        for i in 0..board.len() {
+            for j in 0..board[i].len() {
+                if Self::dfs(&board, &word, i, j, 0, &mut visited) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+    
+    fn dfs(board: &Vec<Vec<char>>, word: &String, i: usize, j: usize, k: usize, visited: &mut Vec<Vec<bool>>) -> bool {
+        if i >= board.len() || j >= board[i].len() || visited[i][j] || board[i][j] != word.as_bytes()[k] as char {
+            return false;
+        }
+        if k == word.len() - 1 {
+            return true;
+        }
+        visited[i][j] = true;
+        let res = Self::dfs(board, word, i + 1, j, k + 1, visited) || Self::dfs(board, word, i, j + 1, k + 1, visited) || Self::dfs(board, word, i - 1, j, k + 1, visited) || Self::dfs(board, word, i, j - 1, k + 1, visited);
+        visited[i][j] = false;
+        res
+
+=======
+Suggestion 5
+
+        let word = word.as_bytes();
+        let mut visited = vec![vec![false; board[0].len()]; board.len()];
+        for i in 0..board.len() {
+            for j in 0..board[0].len() {
+                if Self::dfs(&board, &mut visited, word, i, j, 0) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+    
+    fn dfs(board: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>, word: &[u8], i: usize, j: usize, index: usize) -> bool {
+        if index == word.len() {
+            return true;
+        }
+        if i >= board.len() || j >= board[0].len() || visited[i][j] || board[i][j] as u8 != word[index] {
+            return false;
+        }
+        visited[i][j] = true;
+        let result = Self::dfs(board, visited, word, i + 1, j, index + 1) || Self::dfs(board, visited, word, i, j + 1, index + 1) || Self::dfs(board, visited, word, i, j.checked_sub(1).unwrap_or(0), index + 1) || Self::dfs(board, visited, word, i.checked_sub(1).unwrap_or(0), j, index + 1);
+        visited[i][j] = false;
+        result
+
+=======
+Suggestion 6
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let word = word.chars().collect::<Vec<char>>();
+        for i in 0..m {
+            for j in 0..n {
+                if Self::dfs(&board, &mut visited, &word, i, j, 0) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+    fn dfs(board: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>, word: &Vec<char>, i: usize, j: usize, k: usize) -> bool {
+        if i >= board.len() || j >= board[i].len() || i < 0 || j < 0 || visited[i][j] || board[i][j] != word[k] {
+            return false;
+        }
+        if k == word.len() - 1 {
+            return true;
+        }
+        visited[i][j] = true;
+        let res = Self::dfs(board, visited, word, i + 1, j, k + 1) ||
+            Self::dfs(board, visited, word, i - 1, j, k + 1) ||
+            Self::dfs(board, visited, word, i, j + 1, k + 1) ||
+            Self::dfs(board, visited, word, i, j - 1, k + 1);
+        visited[i][j] = false;
+        return res;
+
+=======
+Suggestion 7
+
+        let m = board.len();
+        let n = board[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut result = false;
+        for i in 0..m {
+            for j in 0..n {
+                if board[i][j] == word.chars().nth(0).unwrap() {
+                    visited[i][j] = true;
+                    result = result || Self::find_word(&board, &mut visited, &word[1..], i, j);
+                    visited[i][j] = false;
+                }
+            }
+        }
+        result
+    }
+    
+    fn find_word(board: &Vec<Vec<char>>, visited: &mut Vec<Vec<bool>>, word: &str, i: usize, j: usize) -> bool {
+        if word.len() == 0 {
+            return true;
+        }
+        let m = board.len();
+        let n = board[0].len();
+        let mut result = false;
+        if i > 0 && !visited[i-1][j] && board[i-1][j] == word.chars().nth(0).unwrap() {
+            visited[i-1][j] = true;
+            result = result || Self::find_word(board, visited, &word[1..], i-1, j);
+            visited[i-1][j] = false;
+        }
+        if i < m-1 && !visited[i+1][j] && board[i+1][j] == word.chars().nth(0).unwrap() {
+            visited[i+1][j] = true;
+            result = result || Self::find_word(board, visited, &word[1..], i+1, j);
+            visited[i+1][j] = false;
+        }
+        if j > 0 && !visited[i][j-1] && board[i][j-1] == word.chars().nth(0).unwrap() {
+            visited[i][j-1] = true;
+            result = result || Self::find_word(board, visited, &word[1..], i, j-1);
+            visited[i][j-1] = false;
+        }
+        if j < n-1 && !visited[i][j+1] && board[i][j+1] == word.chars().nth(0).unwrap() {
+            visited[i][j+1] =
+
+=======
+Suggestion 8
+
+        let word = word.chars().collect::<Vec<char>>();
+        let mut board = board;
+        for i in 0..board.len() {
+            for j in 0..board[i].len() {
+                if word[0] == board[i][j] {
+                    if Solution::search(&mut board, &word, i, j, 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+    fn search(board: &mut Vec<Vec<char>>, word: &Vec<char>, i: usize, j: usize, index: usize) -> bool {
+        if index == word.len() {
+            return true;
+        }
+        if i >= board.len() || j >= board[i].len() || board[i][j] != word[index] {
+            return false;
+        }
+        let c = board[i][j];
+        board[i][j] = ' ';
+        let result = Solution::search(board, word, i + 1, j, index + 1)
+            || Solution::search(board, word, i, j + 1, index + 1)
+            || Solution::search(board, word, i, j.checked_sub(1).unwrap_or(0), index + 1)
+            || Solution::search(board, word, i.checked_sub(1).unwrap_or(0), j, index + 1);
+        board[i][j] = c;
+        result
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut board = board;
+        let mut word = word;
+        let mut word = word.as_bytes();
+        let mut word = word.to_vec();
+        let mut word = word.iter().map(|x| *x as char).collect::<Vec<char>>();
+        let mut board = board.iter_mut().map(|x| x.iter_mut().collect::<Vec<&mut char>>()).collect::<Vec<Vec<&mut char>>>();
+        let mut result = false;
+        for i in 0..board.len() {
+            for j in 0..board[0].len() {
+                if Self::search(&mut board, &mut word, i, j, 0) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        result
+    }
+    
+    fn search(board: &mut Vec<Vec<&mut char>>, word: &mut Vec<char>, i: usize, j: usize, k: usize) -> bool {
+        if i >= board.len() || j >= board[0].len() || i < 0 || j < 0 || board[i][j] != &word[k] {
+            return false;
+        }
+        if k == word.len() - 1 {
+            return true;
+        }
+        let tmp = board[i][j];
+        board[i][j] = &'#';
+        let result = Self::search(board, word, i + 1, j, k + 1) || Self::search(board, word, i, j + 1, k + 1) || Self::search(board, word, i - 1, j, k + 1) || Self::search(board, word, i, j - 1, k + 1);
+        board[i][j] = tmp;
+        result
+    }
+}

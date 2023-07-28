@@ -1,0 +1,155 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut dp = vec![0; s.len() + 1];
+        for i in 0..s.len() {
+            dp[i + 1] = dp[i] ^ (s.as_bytes()[i] - b'0') as i32;
+        }
+        queries.iter().map(|v| {
+            let (first, second) = (v[0], v[1]);
+            for i in 0..s.len() {
+                if dp[i + 1] ^ first == second {
+                    return vec![i as i32, (i + 1) as i32];
+                }
+            }
+            vec![-1, -1]
+        }).collect()
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        let mut dp = vec![0; s.len()];
+        dp[0] = s.as_bytes()[0] as i32 - 48;
+        for i in 1..s.len() {
+            dp[i] = dp[i - 1] ^ (s.as_bytes()[i] as i32 - 48);
+        }
+        for q in queries {
+            if q[0] == 0 {
+                res.push(vec![0, dp.iter().position(|&x| x == q[1]).unwrap() as i32]);
+            } else {
+                let x = dp[q[0] as usize - 1];
+                res.push(vec![q[0], dp.iter().position(|&y| y == q[1] ^ x).unwrap() as i32]);
+            }
+        }
+        return res;
+    }
+}
+
+=======
+
+        let mut prefix_xor = vec![0; s.len() + 1];
+        let mut result = vec![];
+        for (i, c) in s.chars().enumerate() {
+            prefix_xor[i + 1] = prefix_xor[i] ^ (c as i32 - '0' as i32);
+        }
+        for q in queries {
+            let (left, right) = (q[0], q[1]);
+            let mut i = 0;
+            for (j, &x) in prefix_xor.iter().enumerate() {
+                if x ^ left == right {
+                    i = j;
+                    break;
+                }
+            }
+            if i == 0 {
+                result.push(vec![-1, -1]);
+            } else {
+                result.push(vec![i as i32 - 1, i as i32]);
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut res = Vec::new();
+        let mut s = s.as_bytes();
+        let mut dp = vec![0; s.len() + 1];
+        for i in 0..s.len() {
+            dp[i + 1] = dp[i] ^ (s[i] - b'0');
+        }
+        for q in queries {
+            let (l, r) = (q[0] as usize, q[1] as usize);
+            res.push(vec![dp[l as usize] ^ dp[r + 1] ^ r as i32, r as i32]);
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        for query in queries {
+            let mut l = -1;
+            let mut r = -1;
+            let mut xor = 0;
+            for (i, c) in s.chars().enumerate() {
+                xor ^= c as i32 - 48;
+                if xor == query[1] {
+                    if l == -1 {
+                        l = i as i32;
+                    }
+                    r = i as i32;
+                }
+            }
+            res.push(vec![l, r]);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = Vec::new();
+        let mut s = s.chars().map(|c| c.to_digit(10).unwrap() as i32).collect::<Vec<i32>>();
+        let mut sum = vec![0; s.len()];
+        sum[0] = s[0];
+        for i in 1..s.len() {
+            sum[i] = sum[i-1] ^ s[i];
+        }
+        for q in queries {
+            let mut l = -1;
+            let mut r = -1;
+            for i in 0..s.len() {
+                if sum[i] ^ q[0] == q[1] {
+                    if l == -1 {
+                        l = i as i32;
+                    }
+                    r = i as i32;
+                }
+            }
+            ans.push(vec![l, r]);
+        }
+        ans
+
+=======
+
+        let mut res = vec![];
+        let mut v = vec![0; s.len()];
+        let mut x = 0;
+        for (i, c) in s.chars().enumerate() {
+            x ^= c.to_digit(2).unwrap() as i32;
+            v[i] = x;
+        }
+        for q in queries {
+            let l = q[0] as usize;
+            let r = q[1] as usize;
+            let mut x = v[r];
+            if l > 0 {
+                x ^= v[l - 1];
+            }
+            if x == q[1] {
+                res.push(vec![l as i32, r as i32]);
+            } else {
+                res.push(vec![-1, -1]);
+            }
+        }
+        res

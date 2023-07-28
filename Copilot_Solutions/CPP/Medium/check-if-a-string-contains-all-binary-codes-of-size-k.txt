@@ -1,0 +1,173 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.length();
+        unordered_set<string> set;
+        for (int i = 0; i <= n - k; ++i) {
+            set.insert(s.substr(i, k));
+        }
+        return set.size() == pow(2, k);
+
+=======
+
+        int n = s.length();
+        if (n < k) return false;
+        unordered_set<string> st;
+        for (int i = 0; i + k <= n; i++) {
+            st.insert(s.substr(i, k));
+        }
+        return st.size() == (1 << k);
+
+=======
+
+        int n = s.size();
+        if (n < k) return false;
+        if (n == k) return true;
+        unordered_set<string> st;
+        for (int i = 0; i < n - k + 1; i++) {
+            st.insert(s.substr(i, k));
+        }
+        return st.size() == (1 << k);
+
+=======
+
+        int n = s.length();
+        if (n <= k) return false;
+        unordered_set<string> st;
+        for (int i = 0; i <= n - k; i++) {
+            string sub = s.substr(i, k);
+            st.insert(sub);
+        }
+        return st.size() == pow(2, k);
+
+=======
+
+        int n = s.size();
+        if (n < k) return false;
+        vector<bool> seen(1 << k, false);
+        int allOne = (1 << k) - 1;
+        int hash = 0;
+        for (int i = 0; i < k; ++i) {
+            hash = (hash << 1) + (s[i] - '0');
+        }
+        seen[hash] = true;
+        for (int i = k; i < n; ++i) {
+            hash = ((hash << 1) & allOne) + (s[i] - '0');
+            seen[hash] = true;
+        }
+        for (bool v : seen) {
+            if (!v) return false;
+        }
+        return true;
+
+=======
+
+        int n = s.size();
+        if (n < k) return false;
+        int cnt = 1 << k;
+        vector<bool> vis(cnt, false);
+        int cur = 0;
+        for (int i = 0; i < k; i++) {
+            cur = (cur << 1) + (s[i] - '0');
+        }
+        vis[cur] = true;
+        cnt--;
+        for (int i = k; i < n; i++) {
+            cur = ((cur << 1) + (s[i] - '0')) & ((1 << k) - 1);
+            if (vis[cur] == false) {
+                vis[cur] = true;
+                cnt--;
+                if (cnt == 0) return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = s.size();
+        int mask = 1 << k;
+        vector<bool> seen(mask, false);
+        int hash = 0;
+        for (int i = 0; i < n; ++i) {
+            hash = hash * 2 + (s[i] - '0');
+            hash &= mask - 1;
+            if (i >= k - 1 && !seen[hash]) {
+                seen[hash] = true;
+                --mask;
+                if (!mask) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+=======
+
+        int n = s.length();
+        int m = 1 << k;
+        bool* has = new bool[m];
+        for (int i = 0; i < m; i++) {
+            has[i] = false;
+        }
+        int num = 0;
+        for (int i = 0; i < n; i++) {
+            num = (num << 1) + (s[i] - '0');
+            if (i >= k - 1) {
+                num &= (m - 1);
+                has[num] = true;
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            if (!has[i]) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = s.size();
+        if (n < k) return false;
+        int m = 1 << k;
+        vector<bool> f(m, false);
+        int mask = m - 1;
+        int v = 0;
+        for (int i = 0; i < k; i++) {
+            v = v << 1;
+            v |= s[i] - '0';
+        }
+        f[v] = true;
+        for (int i = k; i < n; i++) {
+            v = v << 1;
+            v |= s[i] - '0';
+            v &= mask;
+            f[v] = true;
+        }
+        for (int i = 0; i < m; i++) {
+            if (!f[i]) return false;
+        }
+        return true;
+
+=======
+
+        int n = s.size();
+        if(n < k) return false;
+        int max = (1 << k) - 1;
+        int mask = 0;
+        int i = 0;
+        for(; i < k; ++i) {
+            mask = (mask << 1) + (s[i] - '0');
+        }
+        //cout << "mask:" << mask << endl;
+        vector<bool> v(max + 1, false);
+        v[mask] = true;
+        int cnt = 1;
+        for(; i < n; ++i) {
+            mask = ((mask << 1) + (s[i] - '0')) & max;
+            if(!v[mask]) {
+                v[mask] = true;
+                ++cnt;
+            }
+        }
+        return cnt == max + 1;

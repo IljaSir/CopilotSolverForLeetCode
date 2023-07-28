@@ -1,0 +1,206 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        int m = queries.length;
+        for (int i = 0; i < m; ++i) queries[i] = new int[]{queries[i][0], queries[i][1], queries[i][2], i};
+        Arrays.sort(queries, (a, b) -> a[2] - b[2]);
+        Arrays.sort(edgeList, (a, b) -> a[2] - b[2]);
+        boolean[] res = new boolean[m];
+        DSU dsu = new DSU(n);
+        for (int i = 0, j = 0; i < m; ++i) {
+            while (j < edgeList.length && edgeList[j][2] < queries[i][2]) {
+                dsu.union(edgeList[j][0], edgeList[j][1]);
+                ++j;
+            }
+            res[queries[i][3]] = dsu.find(queries[i][0]) == dsu.find(queries[i][1]);
+        }
+        return res;
+    }
+}
+
+=======
+
+        int m = queries.length;
+        for(int i = 0; i < m; i++) {
+            queries[i] = new int[] {queries[i][0], queries[i][1], queries[i][2], i};
+        }
+        Arrays.sort(edgeList, (a, b) -> a[2] - b[2]);
+        Arrays.sort(queries, (a, b) -> a[2] - b[2]);
+        int[] parent = new int[n];
+        for(int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        boolean[] res = new boolean[m];
+        int idx = 0;
+        for(int[] q : queries) {
+            int u = q[0], v = q[1], limit = q[2], id = q[3];
+            while(idx < edgeList.length && edgeList[idx][2] < limit) {
+                int x = edgeList[idx][0], y = edgeList[idx][1];
+                int px = find(x, parent);
+                int py = find(y, parent);
+                if(px != py) {
+                    parent[px] = py;
+                }
+                idx++;
+            }
+            if(find(u, parent) == find(v, parent)) {
+                res[id] = true;
+            }
+        }
+        return res;
+    }
+    private int find(int x, int[] parent) {
+        if(parent[x] != x) {
+            parent[x] = find(parent[x], parent);
+        }
+        return parent[x];
+
+=======
+
+        boolean[] res = new boolean[queries.length];
+        int[] order = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            order[i] = i;
+        }
+        Arrays.sort(order, (a, b) -> queries[a][2] - queries[b][2]);
+        Arrays.sort(edgeList, (a, b) -> a[2] - b[2]);
+        UnionFind uf = new UnionFind(n);
+        for (int i = 0, j = 0; i < order.length; i++) {
+            while (j < edgeList.length && edgeList[j][2] < queries[order[i]][2]) {
+                uf.union(edgeList[j][0], edgeList[j][1]);
+                j++;
+            }
+            res[order[i]] = uf.find(queries[order[i]][0]) == uf.find(queries[order[i]][1]);
+        }
+        return res;
+    }
+    class UnionFind {
+        int[] parent;
+        int[] rank;
+        public UnionFind(int n) {
+            parent = new int[n];
+            rank = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+        public void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX == rootY) {
+                return;
+            }
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else {
+                parent[rootX] = rootY;
+                rank[rootY]++;
+            }
+        }
+
+=======
+
+        int m = queries.length;
+        int[] order = new int[m];
+        for (int i = 0; i < m; i++) {
+            order[i] = i;
+        }
+        Arrays.sort(order, (i, j) -> queries[i][2] - queries[j][2]);
+        Arrays.sort(edgeList, (e1, e2) -> e1[2] - e2[2]);
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        boolean[] result = new boolean[m];
+        int j = 0;
+        for (int i = 0; i < m; i++) {
+            int[] query = queries[order[i]];
+            while (j < edgeList.length && edgeList[j][2] < query[2]) {
+                int u = edgeList[j][0], v = edgeList[j][1];
+                union(parent, u, v);
+                j++;
+            }
+            result[order[i]] = find(parent, query[0]) == find(parent, query[1]);
+        }
+        return result;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+    }
+
+    private void union(int[] parent, int u, int v) {
+        int pu = find(parent, u), pv = find(parent, v);
+        if (pu != pv) {
+            parent[pu] = pv;
+        }
+
+=======
+
+        int m = queries.length;
+        boolean[] result = new boolean[m];
+        for (int i = 0; i < m; i++) {
+            result[i] = false;
+        }
+        int[][] queriesCopy = new int[m][3];
+        for (int i = 0; i < m; i++) {
+            queriesCopy[i][0] = queries[i][0];
+            queriesCopy[i][1] = queries[i][1];
+            queriesCopy[i][2] = i;
+        }
+        Arrays.sort(queriesCopy, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[2] - o2[2];
+            }
+        });
+        Arrays.sort(edgeList, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[2] - o2[2];
+            }
+        });
+        int[][] uf = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            uf[i][0] = i;
+            uf[i][1] = 1;
+        }
+        int i = 0;
+        for (int[] q : queriesCopy) {
+            while (i < edgeList.length && edgeList[i][2] < q[2]) {
+                union(uf, edgeList[i][0], edgeList[i][1]);
+                i++;
+            }
+            result[q[2]] = find(uf, q[0]) == find(uf, q[1]);
+        }
+        return result;
+    }
+    private int find(int[][] uf, int i) {
+        if (uf[i][0] == i) {
+            return i;
+        }
+        uf[i][0] = find(uf, uf[i][0]);
+        return uf[i][0];
+    }
+    private void union(int[][] uf, int i, int j) {
+        int a = find(uf, i);
+        int b = find(uf, j);
+        if (a == b) {
+            return;
+        }
+        if (uf[a][1] > uf[b][1]) {
+            uf[b][0] = a;
+        } else if (uf[a][1] < uf[b][1]) {
+            uf[a][0] = b;

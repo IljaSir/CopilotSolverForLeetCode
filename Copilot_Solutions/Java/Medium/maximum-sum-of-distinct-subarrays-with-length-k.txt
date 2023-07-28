@@ -1,0 +1,194 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long[] sum = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        long ans = 0;
+        TreeSet<Long> set = new TreeSet<>();
+        for (int i = 0; i <= nums.length; i++) {
+            if (i >= k) {
+                set.add(sum[i - k]);
+            }
+            if (set.size() > 0) {
+                ans = Math.max(ans, sum[i] - set.first());
+            }
+        }
+        return ans;
+
+=======
+
+        long[] prefix = new long[nums.length + 1];
+        for (int i = 0; i < nums.length; i++) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        long[] max = new long[nums.length + 1];
+        for (int i = 1; i <= nums.length; i++) {
+            max[i] = Math.max(max[i - 1], prefix[i]);
+        }
+        long result = 0;
+        TreeSet<Long> set = new TreeSet<>();
+        for (int i = k; i <= nums.length; i++) {
+            set.add(prefix[i - k]);
+            result = Math.max(result, max[i - k] + prefix[i] - set.first());
+        }
+        return result;
+
+=======
+
+        long total = 0;
+        for (int i = 0; i < k; i++) {
+            total += nums[i];
+        }
+        long max = total;
+        for (int i = k; i < nums.length; i++) {
+            total += nums[i];
+            total -= nums[i - k];
+            max = Math.max(max, total);
+        }
+        return max;
+
+=======
+
+        long max = 0;
+        long sum = 0;
+        TreeSet<Integer> set = new TreeSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            set.add(nums[i]);
+            if (i >= k) {
+                sum -= nums[i - k];
+                set.remove(nums[i - k]);
+            }
+            if (i >= k - 1) {
+                max = Math.max(max, sum - set.first());
+            }
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        long ans = 0;
+        long sum = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            set.add(nums[i]);
+            if (i >= k) {
+                sum -= nums[i - k];
+                set.remove(nums[i - k]);
+            }
+            if (i >= k - 1 && set.size() == k) {
+                ans = Math.max(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        long sum = 0;
+        long max = 0;
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            set.add(nums[i]);
+            if (i >= k) {
+                sum -= nums[i-k];
+                set.remove(nums[i-k]);
+            }
+            if (i >= k-1 && set.size() == k) {
+                max = Math.max(max, sum);
+            }
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        long[] sum = new long[n+1];
+        for(int i=0;i<n;i++) sum[i+1] = sum[i] + nums[i];
+        long ans = 0;
+        TreeSet<Long> set = new TreeSet<>();
+        for(int i=k;i<=n;i++){
+            set.add(sum[i-k]);
+            ans = Math.max(ans, sum[i] - set.first());
+        }
+        return ans;
+
+=======
+
+        long max = 0;
+        int i = 0;
+        int j = 0;
+        int n = nums.length;
+        long sum = 0;
+        Set<Integer> set = new HashSet<>();
+        while (j < n) {
+            if (set.contains(nums[j])) {
+                sum -= nums[i];
+                set.remove(nums[i]);
+                i++;
+            } else {
+                max = Math.max(max, sum);
+                set.add(nums[j]);
+                sum += nums[j];
+                j++;
+            }
+            if (j - i == k) {
+                sum -= nums[i];
+                set.remove(nums[i]);
+                i++;
+            }
+        }
+        return max;
+
+=======
+
+        int n = nums.length;
+        long ans = 0;
+        long sum = 0;
+        int[] cnt = new int[100001];
+        int distinct = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+            if (cnt[nums[i]]++ == 0) {
+                distinct++;
+            }
+            if (i >= k) {
+                if (--cnt[nums[i - k]] == 0) {
+                    distinct--;
+                }
+                sum -= nums[i - k];
+            }
+            if (distinct == k) {
+                ans = Math.max(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        long ans = 0;
+        for (int i = 0; i < k; ++i) {
+            ans += nums[i];
+        }
+        long cur = ans;
+        int[] cnt = new int[100001];
+        for (int i = 0; i < k; ++i) {
+            ++cnt[nums[i]];
+        }
+        for (int i = k; i < nums.length; ++i) {
+            cur += nums[i];
+            --cnt[nums[i - k]];
+            while (cnt[nums[i]] > 0) {
+                --cnt[nums[i - k]];
+                cur -= nums[i - k];
+                ++i;
+            }
+            ans = Math.max(ans, cur);
+        }
+        return ans;

@@ -1,0 +1,102 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut parent = [0; 26];
+        for i in 0..26 {
+            parent[i] = i;
+        }
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        for i in 0..s1.len() {
+            let c1 = s1[i] - b'a';
+            let c2 = s2[i] - b'a';
+            let mut p1 = c1 as i32;
+            let mut p2 = c2 as i32;
+            while p1 != parent[p1 as usize] as i32 {
+                p1 = parent[p1 as usize] as i32;
+            }
+            while p2 != parent[p2 as usize] as i32 {
+                p2 = parent[p2 as usize] as i32;
+            }
+            parent[p1 as usize] = p2 as u8;
+        }
+        let mut res = String::new();
+        let base_str = base_str.as_bytes();
+        for i in 0..base_str.len() {
+            let c = base_str[i] - b'a';
+            let mut p = c as i32;
+            while p != parent[p as usize] as i32 {
+                p = parent[p as usize] as i32;
+            }
+            res.push((p + b'a') as char);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut parents = vec![0; 26];
+        for i in 0..26 {
+            parents[i] = i;
+        }
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        for i in 0..s1.len() {
+            let p1 = Self::find(&mut parents, (s1[i] - b'a') as usize);
+            let p2 = Self::find(&mut parents, (s2[i] - b'a') as usize);
+            if p1 != p2 {
+                parents[p1] = p2;
+            }
+        }
+        let mut res = Vec::new();
+        for b in base_str.as_bytes() {
+            let p = Self::find(&mut parents, (b - b'a') as usize);
+            res.push((p + b'a') as char);
+        }
+        res.into_iter().collect()
+    }
+    fn find(parents: &mut Vec<usize>, i: usize) -> usize {
+        if parents[i] != i {
+            parents[i] = Self::find(parents, parents[i]);
+        }
+        parents[i]
+
+=======
+
+        let mut s1 = s1.as_bytes().to_vec();
+        let mut s2 = s2.as_bytes().to_vec();
+        let mut base_str = base_str.as_bytes().to_vec();
+        let mut parent = vec![0; 26];
+        for i in 0..26 { parent[i] = i; }
+        for i in 0..s1.len() {
+            let x = (s1[i] - b'a') as usize;
+            let y = (s2[i] - b'a') as usize;
+            let x = Solution::find_parent(&mut parent, x);
+            let y = Solution::find_parent(&mut parent, y);
+            if x < y {
+                parent[y] = x;
+            } else {
+                parent[x] = y;
+            }
+        }
+        for i in 0..base_str.len() {
+            let x = (base_str[i] - b'a') as usize;
+            let x = Solution::find_parent(&mut parent, x);
+            base_str[i] = (x as u8) + b'a';
+        }
+        String::from_utf8(base_str).unwrap()
+    }
+    fn find_parent(parent: &mut Vec<usize>, mut x: usize) -> usize {
+        while parent[x] != x {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        x

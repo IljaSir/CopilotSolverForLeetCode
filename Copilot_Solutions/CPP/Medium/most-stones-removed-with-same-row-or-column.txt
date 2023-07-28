@@ -1,0 +1,281 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = stones.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    int p1 = find(parent, i);
+                    int p2 = find(parent, j);
+                    if (p1 != p2) {
+                        parent[p1] = p2;
+                    }
+                }
+            }
+        }
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                cnt++;
+            }
+        }
+        return n - cnt;
+    }
+    
+    int find(vector<int>& parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent, parent[x]);
+        }
+        return parent[x];
+
+=======
+
+        int n = stones.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    unionSet(parent, i, j);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (parent[i] == i) {
+                ++ans;
+            }
+        }
+        return n - ans;
+    }
+    int findParent(vector<int>& parent, int x) {
+        return parent[x] == x ? x : findParent(parent, parent[x]);
+    }
+    void unionSet(vector<int>& parent, int x, int y) {
+        int px = findParent(parent, x);
+        int py = findParent(parent, y);
+        if (px != py) {
+            parent[px] = py;
+        }
+
+=======
+
+        int n = stones.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    parent[find(parent, i)] = find(parent, j);
+                }
+            }
+        }
+        unordered_set<int> seen;
+        for (int i = 0; i < n; ++i) {
+            seen.insert(find(parent, i));
+        }
+        return n - seen.size();
+    }
+    int find(vector<int>& parent, int index) {
+        if (parent[index] != index) {
+            parent[index] = find(parent, parent[index]);
+        }
+        return parent[index];
+
+=======
+
+        int n = stones.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    int pi = find(parent, i);
+                    int pj = find(parent, j);
+                    if (pi != pj) {
+                        parent[pj] = pi;
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (i == parent[i]) {
+                ++ans;
+            }
+        }
+        return n - ans;
+
+=======
+
+        int n = stones.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    unionSet(parent, i, j);
+                }
+            }
+        }
+        unordered_set<int> roots;
+        for (int i = 0; i < n; ++i) {
+            roots.insert(find(parent, i));
+        }
+        return n - roots.size();
+
+=======
+
+        int n = stones.size();
+        vector<int> fa(n);
+        for (int i = 0; i < n; i++) {
+            fa[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    merge(fa, i, j);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (fa[i] == i) {
+                ans++;
+            }
+        }
+        return n - ans;
+    }
+    int find(vector<int>& fa, int x) {
+        if (fa[x] == x) {
+            return x;
+        }
+        return fa[x] = find(fa, fa[x]);
+    }
+    void merge(vector<int>& fa, int x, int y) {
+        int fx = find(fa, x), fy = find(fa, y);
+        if (fx != fy) {
+            fa[fx] = fy;
+        }
+
+=======
+
+        int N = stones.size();
+        vector<vector<int>> graph(N);
+        for (int i = 0; i < N; i++) {
+            for (int j = i + 1; j < N; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    graph[i].push_back(j);
+                    graph[j].push_back(i);
+                }
+            }
+        }
+        vector<bool> visited(N, false);
+        int ans = 0;
+        for (int i = 0; i < N; i++) {
+            if (!visited[i]) {
+                ans += dfs(i, graph, visited) - 1;
+            }
+        }
+        return ans;
+    }
+    int dfs(int i, vector<vector<int>>& graph, vector<bool>& visited) {
+        visited[i] = true;
+        int ans = 1;
+        for (int j : graph[i]) {
+            if (!visited[j]) {
+                ans += dfs(j, graph, visited);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = stones.size();
+        int ans = 0;
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    unionSet(parent, i, j);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (parent[i] == i) {
+                ans++;
+            }
+        }
+        return n - ans;
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+    }
+    void unionSet(vector<int>& parent, int x, int y) {
+        int xset = find(parent, x);
+        int yset = find(parent, y);
+        if (xset != yset) {
+            parent[xset] = yset;
+        }
+
+=======
+
+        int n = stones.size();
+        if (n <= 1) return 0;
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    p[find(p, j)] = find(p, i);
+                }
+            }
+        }
+        unordered_set<int> s;
+        for (int i = 0; i < n; ++i) {
+            s.insert(find(p, i));
+        }
+        return n - s.size();
+
+=======
+
+        int n = stones.size();
+        int res = 0;
+        vector<int> f(n);
+        for (int i = 0; i < n; i++) {
+            f[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1]) {
+                    f[find(i, f)] = find(j, f);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (f[i] == i) {
+                res++;
+            }
+        }
+        return n - res;
+    }
+    int find(int x, vector<int>& f) {
+        if (f[x] != x) {
+            f[x] = find(f[x], f);
+        }
+        return f[x];

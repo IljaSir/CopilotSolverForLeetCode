@@ -1,0 +1,149 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut res: Vec<i32> = (0..mat.len() as i32).collect();
+        res.sort_by_key(|&i| (mat[i as usize].iter().sum::<i32>(), i));
+        res.truncate(k as usize);
+        res
+
+=======
+
+        let mut v = Vec::with_capacity(mat.len());
+        for i in 0..mat.len() {
+            let mut j = 0;
+            while j < mat[i].len() && mat[i][j] == 1 {
+                j += 1;
+            }
+            v.push((j, i));
+        }
+        v.sort_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)));
+        v.iter().map(|x| x.1 as i32).take(k as usize).collect()
+
+=======
+
+        let mut rows = mat
+            .into_iter()
+            .enumerate()
+            .map(|(i, row)| (i, row.iter().filter(|&&x| x == 1).count()))
+            .collect::<Vec<(usize, usize)>>();
+        rows.sort_by_key(|&(_, count)| count);
+        rows.into_iter().map(|(i, _)| i as i32).take(k as usize).collect()
+
+=======
+
+        let mut r = Vec::with_capacity(mat.len());
+        for (i, row) in mat.iter().enumerate() {
+            let mut j = 0;
+            while j < row.len() && row[j] == 1 {
+                j += 1;
+            }
+            r.push((i, j));
+        }
+        r.sort_by_key(|a| a.1);
+        r.iter().take(k as usize).map(|a| a.0 as i32).collect()
+
+=======
+
+        let mut res = Vec::new();
+        let mut tmp = Vec::new();
+        for (i, v) in mat.iter().enumerate() {
+            tmp.push((i, v.iter().filter(|&x| *x == 1).count()));
+        }
+        tmp.sort_by(|a, b| a.1.cmp(&b.1));
+        for i in 0..k as usize {
+            res.push(tmp[i].0 as i32);
+        }
+        res
+    }
+}
+
+=======
+
+        let mut soldiers = Vec::new();
+        for row in mat.iter() {
+            let mut count = 0;
+            for &v in row.iter() {
+                if v == 1 {
+                    count += 1;
+                } else {
+                    break;
+                }
+            }
+            soldiers.push(count);
+        }
+        let mut rows = Vec::new();
+        for i in 0..soldiers.len() {
+            rows.push(i);
+        }
+        rows.sort_by_key(|&i| (soldiers[i], i));
+        rows[..k as usize].to_vec()
+
+=======
+
+        let mut v = mat.iter().enumerate().map(|(i, row)| (i, row.iter().sum())).collect::<Vec<_>>();
+        v.sort_by_key(|&(_, sum)| sum);
+        v.iter().map(|&(i, _)| i as i32).take(k as usize).collect()
+
+=======
+
+        let mut result = Vec::new();
+        let mut tmp = Vec::new();
+        for (i, row) in mat.iter().enumerate() {
+            let mut count = 0;
+            for &item in row {
+                if item == 1 {
+                    count += 1;
+                } else {
+                    break;
+                }
+            }
+            tmp.push((i, count));
+        }
+        tmp.sort_by(|&(_, a), &(_, b)| a.cmp(&b));
+        for (i, _) in tmp.iter().take(k as usize) {
+            result.push(*i as i32);
+        }
+        result
+    }
+}
+
+=======
+
+        let mut tmp = mat.iter().map(|row| row.iter().sum()).collect::<Vec<i32>>();
+        let mut res = Vec::new();
+        for _ in 0..k {
+            let min = tmp.iter().enumerate().min_by_key(|(_, &v)| v).unwrap();
+            res.push(min.0 as i32);
+            tmp[min.0] = i32::max_value();
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ret = Vec::new();
+        let mut tmp = Vec::new();
+        for (i, v) in mat.iter().enumerate() {
+            let mut count = 0;
+            for &t in v {
+                if t == 1 {
+                    count += 1;
+                } else {
+                    break;
+                }
+            }
+            tmp.push((i, count));
+        }
+        tmp.sort_by(|a, b| {
+            if a.1 == b.1 {
+                a.0.cmp(&b.0)
+            } else {
+                a.1.cmp(&b.1)
+            }
+        });
+        for i in 0..k {
+            ret.push(tmp[i as usize].0 as i32);
+        }
+        ret

@@ -1,0 +1,186 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = message.size();
+        vector<string> res;
+        for (int i = 0; i < n; i += limit) {
+            int j = min(i + limit, n);
+            string s = message.substr(i, j - i);
+            s += "<" + to_string(res.size() + 1) + "/" + to_string((n + limit - 1) / limit) + ">";
+            res.push_back(s);
+        }
+        return res;
+
+=======
+
+        int n = message.length();
+        vector<string> res;
+        int i = 0;
+        while (i < n) {
+            int j = min(i + limit - 1, n - 1);
+            while (j > i && message[j] != ' ') {
+                j--;
+            }
+            if (j == i) {
+                return {};
+            }
+            res.push_back(message.substr(i, j - i) + "<" + to_string(res.size() + 1) + "/" + to_string((n + limit - 1) / limit) + ">");
+            i = j + 1;
+        }
+        return res;
+
+=======
+
+        int n = message.size();
+        vector<string> result;
+        if (n <= limit) {
+            result.push_back(message + "<1/1>");
+            return result;
+        }
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            j = i + limit - 1;
+            while (j < n && message[j] != ' ') {
+                j++;
+            }
+            if (j >= n) {
+                j = n - 1;
+            }
+            int len = j - i + 1;
+            int n_parts = ceil((double)n / limit);
+            string part = message.substr(i, len) + "<" + to_string(i / limit + 1) + "/" + to_string(n_parts) + ">";
+            result.push_back(part);
+            i = j + 1;
+        }
+        return result;
+
+=======
+
+        int n = message.size();
+        int part = (n + limit - 1) / limit;
+        vector<string> ans;
+        for (int i = 0; i < n; i += limit) {
+            string s = message.substr(i, limit);
+            s += "<" + to_string(i / limit + 1) + "/" + to_string(part) + ">";
+            ans.push_back(s);
+        }
+        return ans;
+
+=======
+
+        int n = message.size();
+        int parts = (n + limit - 1) / limit;
+        vector<string> result;
+        for (int i = 0; i < parts; ++i) {
+            int len = min(limit, n - i * limit);
+            result.push_back(message.substr(i * limit, len));
+            result.back() += "<" + to_string(i + 1) + "/" + to_string(parts) + ">";
+        }
+        return result;
+
+=======
+
+        int n = message.size();
+        vector<string> res;
+        if(n <= limit){
+            res.push_back(message + "<1/1>");
+            return res;
+        }
+        int i = 0;
+        int j = 0;
+        int part = 1;
+        while(i < n){
+            j = i + limit;
+            if(j >= n){
+                res.push_back(message.substr(i) + "<" + to_string(part) + "/" + to_string(part) + ">");
+                break;
+            }
+            while(j > i && message[j] != ' '){
+                j--;
+            }
+            if(j == i){
+                return {};
+            }
+            res.push_back(message.substr(i, j - i) + "<" + to_string(part) + "/" + to_string((n + limit - 1) / limit) + ">");
+            i = j + 1;
+            part++;
+        }
+        return res;
+
+=======
+
+        int n = message.size();
+        int parts = (n + limit - 1) / limit;
+        int partSize = n / parts;
+        int extra = n % parts;
+        vector<string> result;
+        int i = 0;
+        for (int p = 1; p <= parts; ++p) {
+            int part = partSize + (p <= extra);
+            result.push_back(message.substr(i, part) + "<" + to_string(p) + "/" + to_string(parts) + ">");
+            i += part;
+        }
+        return result;
+
+=======
+
+        vector<string> result;
+        int n = message.size();
+        int parts = n / limit;
+        if (n % limit != 0) parts++;
+        int begin = 0;
+        int end = 0;
+        for (int i = 0; i < parts; i++) {
+            end = begin + limit;
+            if (end > n) end = n;
+            result.push_back(message.substr(begin, end - begin) + "<" + to_string(i + 1) + "/" + to_string(parts) + ">");
+            begin = end;
+        }
+        return result;
+
+=======
+
+        int n = message.size();
+        int i = 0;
+        int p = 0;
+        vector<string> res;
+        while (i < n) {
+            int j = i;
+            int k = p;
+            int l = 0;
+            while (j < n && l < limit) {
+                if (message[j] == ' ') {
+                    k = j;
+                }
+                ++j;
+                ++l;
+            }
+            if (j < n && k == p) {
+                return {};
+            }
+            if (j < n) {
+                res.push_back(message.substr(i, k - i) + "<" + to_string(++p) + "/" + to_string(n / limit + 1) + ">");
+                i = k + 1;
+            } else {
+                res.push_back(message.substr(i) + "<" + to_string(++p) + "/" + to_string(n / limit + 1) + ">");
+                i = j;
+            }
+        }
+        return res;
+
+=======
+
+        vector<string> v;
+        int len = message.length();
+        int part = len/limit;
+        int i = 0;
+        while(i < len){
+            string s = message.substr(i, limit);
+            s += "<" + to_string(i/limit + 1) + "/" + to_string(part + 1) + ">";
+            v.push_back(s);
+            i += limit;
+        }
+        v[v.size()-1] = message.substr(i-limit, len - (i-limit));
+        return v;

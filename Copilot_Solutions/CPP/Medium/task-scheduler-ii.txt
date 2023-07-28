@@ -1,0 +1,231 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tasks.size();
+        vector<vector<int>> pos(n + 1);
+        for (int i = 0; i < n; i++) {
+            pos[tasks[i]].push_back(i);
+        }
+        vector<long long> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            dp[i] = dp[i - 1] + space + 1;
+            for (int j = 1; j <= n; j++) {
+                if (pos[j].empty()) continue;
+                auto it = upper_bound(pos[j].begin(), pos[j].end(), i - space - 1);
+                if (it == pos[j].begin()) continue;
+                --it;
+                dp[i] = min(dp[i], dp[*it + 1] + i - *it - 1);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = tasks.size();
+        vector<vector<int>> g(n);
+        vector<int> in(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (tasks[i] == tasks[j]) {
+                    g[i].push_back(j);
+                    in[j]++;
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) q.push(i);
+        }
+        int cnt = 0;
+        while (!q.empty()) {
+            cnt++;
+            int sz = q.size();
+            for (int i = 0; i < sz; i++) {
+                int u = q.front(); q.pop();
+                for (int v : g[u]) {
+                    if (--in[v] == 0) q.push(v);
+                }
+            }
+        }
+        return (long long)cnt + (long long)(n - cnt) * (space + 1);
+
+=======
+
+        int n = tasks.size();
+        if (n == 1) return 1;
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; i++) mp[tasks[i]]++;
+        priority_queue<pair<int, int>> pq;
+        for (auto it = mp.begin(); it != mp.end(); it++) {
+            pq.push({it->second, it->first});
+        }
+        int cnt = 0, days = 0;
+        vector<int> temp;
+        while (cnt < n) {
+            days++;
+            int k = space + 1;
+            while (k > 0 && !pq.empty()) {
+                auto cur = pq.top(); pq.pop();
+                temp.push_back(cur.first - 1);
+                k--;
+                cnt++;
+            }
+            for (int i = 0; i < temp.size(); i++) {
+                if (temp[i] > 0) pq.push({temp[i], 0});
+            }
+            temp.clear();
+            if (pq.empty()) break;
+            if (k > 0) days += k;
+        }
+        return days;
+
+=======
+
+        int n = tasks.size();
+        vector<int> last(n + 1, 0);
+        vector<long long> dp(n + 1, 0);
+        for (int i = 1; i <= n; i++) {
+            dp[i] = dp[i - 1] + 1;
+            if (last[tasks[i - 1]] > 0) {
+                dp[i] = min(dp[i], dp[last[tasks[i - 1]] - 1] + i - last[tasks[i - 1]]);
+            }
+            last[tasks[i - 1]] = i;
+        }
+        return dp[n];
+
+=======
+
+        int n = tasks.size();
+        int maxFreq = 0;
+        unordered_map<int, int> freq;
+        for (int x : tasks) {
+            freq[x]++;
+            maxFreq = max(maxFreq, freq[x]);
+        }
+        int maxCount = 0;
+        for (auto [_, cnt] : freq) {
+            if (cnt == maxFreq) {
+                maxCount++;
+            }
+        }
+        return max((long long)n, (long long)(maxFreq - 1) * (space + 1) + maxCount);
+
+=======
+
+        map<int, int> count;
+        for (int task: tasks) {
+            count[task]++;
+        }
+        priority_queue<pair<int, int>> pq;
+        for (auto& it: count) {
+            pq.push({it.second, it.first});
+        }
+        multiset<pair<int, int>> ms;
+        int days = 0;
+        while (!pq.empty() || !ms.empty()) {
+            if (ms.empty()) {
+                days += pq.top().first;
+                ms.insert({days + space, pq.top().second});
+                pq.pop();
+            }
+            else {
+                auto it = ms.begin();
+                days = max(days, it->first);
+                int freq = it->second;
+                ms.erase(it);
+                if (--freq > 0) {
+                    pq.push({freq, it->second});
+                }
+            }
+        }
+        return days;
+
+=======
+
+        int n = tasks.size();
+        vector<pair<int, int>> taskCount;
+        unordered_map<int, int> taskMap;
+        for (int task : tasks) {
+            taskMap[task]++;
+        }
+        for (auto &p : taskMap) {
+            taskCount.push_back({p.second, p.first});
+        }
+        sort(taskCount.begin(), taskCount.end(), greater<pair<int, int>>());
+        int maxCount = taskCount[0].first;
+        int maxTask = taskCount[0].second;
+        int maxCountCount = 0;
+        for (auto &p : taskCount) {
+            if (p.first == maxCount) {
+                maxCountCount++;
+            }
+        }
+        int maxSpace = (maxCount - 1) * (space + 1) + maxCountCount;
+        int minSpace = n;
+        return max(minSpace, maxSpace);
+
+=======
+
+        int n = tasks.size();
+        vector<int> cnt(100001, 0);
+        for (int task : tasks) {
+            cnt[task]++;
+        }
+        sort(cnt.begin(), cnt.end());
+        int maxCnt = cnt[100000];
+        int maxCntCnt = 0;
+        for (int i = 100000; i >= 0; i--) {
+            if (cnt[i] == maxCnt) {
+                maxCntCnt++;
+            } else {
+                break;
+            }
+        }
+        return max((long long)n, (long long)(maxCnt - 1) * (space + 1) + maxCntCnt);
+
+=======
+
+        int n = tasks.size();
+        vector<pair<int, int>> task_cnt;
+        for (int i = 0; i < n; ++i) {
+            bool found = false;
+            for (auto& [task, cnt] : task_cnt) {
+                if (task == tasks[i]) {
+                    found = true;
+                    ++cnt;
+                    break;
+                }
+            }
+            if (!found) {
+                task_cnt.push_back({tasks[i], 1});
+            }
+        }
+        sort(task_cnt.begin(), task_cnt.end(), [](const auto& a, const auto& b) {
+            return a.second > b.second;
+        });
+        int max_cnt = task_cnt[0].second;
+        int max_cnt_cnt = 0;
+        for (auto& [task, cnt] : task_cnt) {
+            if (cnt == max_cnt) {
+                ++max_cnt_cnt;
+            } else {
+                break;
+            }
+        }
+        return max((long long)n, (long long)(max_cnt - 1) * (space + 1) + max_cnt_cnt);
+
+=======
+
+        long long n = tasks.size();
+        vector<int> cnt(1000001, 0);
+        for (auto x : tasks) cnt[x]++;
+        sort(cnt.begin(), cnt.end(), greater<int>());
+        long long max_cnt = 0;
+        for (int i = 0; i < 1000001; i++) {
+            if (cnt[i] == cnt[0]) max_cnt++;
+            else break;
+        }
+        long long ans = (cnt[0] - 1) * (space + 1) + max_cnt;
+        return max(ans, n);

@@ -1,0 +1,409 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.size();
+        vector<int> left(26, n), right(26, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'a';
+            left[c] = min(left[c], i);
+            right[c] = i;
+        }
+        vector<int> stack;
+        for (int i = 0; i < n; ++i) {
+            if (i == left[s[i] - 'a']) {
+                stack.push_back(i);
+            }
+            int c = s[i] - 'a';
+            if (right[c] > stack.back()) {
+                stack.push_back(right[c]);
+            }
+        }
+        vector<string> res;
+        int prev = -1;
+        for (int i : stack) {
+            if (i > prev) {
+                res.push_back(s.substr(prev + 1, i - prev));
+                prev = i;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> left(26, s.size()), right(26, -1);
+        for (int i = 0; i < s.size(); ++i) {
+            int c = s[i] - 'a';
+            left[c] = min(left[c], i);
+            right[c] = max(right[c], i);
+        }
+        vector<int> stack;
+        for (int i = 0; i < s.size(); ++i) {
+            if (i == left[s[i] - 'a']) {
+                int l = i, r = right[s[i] - 'a'];
+                while (l < r) {
+                    r = max(r, right[s[l++] - 'a']);
+                }
+                while (stack.size() && left[s[stack.back()] - 'a'] >= l) {
+                    stack.pop_back();
+                }
+                if (stack.size() == 0 || right[s[stack.back()] - 'a'] < l) {
+                    stack.push_back(i);
+                }
+            }
+        }
+        vector<string> ans;
+        for (int i = 0; i < stack.size(); ++i) {
+            ans.push_back(s.substr(stack[i], right[s[stack[i]] - 'a'] - stack[i] + 1));
+        }
+        return ans;
+
+=======
+
+        vector<int> left(26, INT_MAX), right(26, INT_MIN);
+        for (int i = 0; i < s.size(); ++i) {
+            int idx = s[i] - 'a';
+            left[idx] = min(left[idx], i);
+            right[idx] = max(right[idx], i);
+        }
+        vector<int> st;
+        for (int i = 0; i < s.size(); ++i) {
+            if (i == left[s[i] - 'a']) {
+                st.push_back(i);
+            } else if (i > right[s[i] - 'a']) {
+                while (!st.empty() && st.back() > right[s[i] - 'a']) st.pop_back();
+            }
+            right[s[st.back()] - 'a'] = max(right[s[st.back()] - 'a'], right[s[i] - 'a']);
+        }
+        vector<string> res;
+        for (int i = 0; i < st.size(); ++i) {
+            res.push_back(s.substr(st[i], right[s[st[i]] - 'a'] - st[i] + 1));
+        }
+        return res;
+
+=======
+
+        vector<int> start(26, INT_MAX), end(26, INT_MIN);
+        for (int i = 0; i < s.size(); i++) {
+            start[s[i] - 'a'] = min(start[s[i] - 'a'], i);
+            end[s[i] - 'a'] = max(end[s[i] - 'a'], i);
+        }
+        vector<int> dp(s.size(), 0);
+        for (int i = 0; i < s.size(); i++) {
+            int charStart = start[s[i] - 'a'];
+            int charEnd = end[s[i] - 'a'];
+            int maxEnd = charEnd;
+            for (int j = charStart; j <= charEnd; j++) {
+                maxEnd = max(maxEnd, end[s[j] - 'a']);
+            }
+            dp[maxEnd] = max(dp[maxEnd], i - charStart + 1);
+        }
+        for (int i = 1; i < s.size(); i++) {
+            dp[i] = max(dp[i], dp[i - 1]);
+        }
+        vector<string> ans;
+        int i = 0;
+        while (i < s.size()) {
+            int charStart = start[s[i] - 'a'];
+            int charEnd = end[s[i] - 'a'];
+            int maxEnd = charEnd;
+            for (int j = charStart; j <= charEnd; j++) {
+                maxEnd = max(maxEnd, end[s[j] - 'a']);
+            }
+            if (dp[maxEnd] == maxEnd - charStart + 1) {
+                ans.push_back(s.substr(charStart, maxEnd - charStart + 1));
+            }
+            i = maxEnd + 1;
+        }
+        return ans;
+
+=======
+
+        int n = s.size();
+        vector<int> l(26, n), r(26, 0);
+        for (int i = 0; i < n; i++) {
+            l[s[i] - 'a'] = min(l[s[i] - 'a'], i);
+            r[s[i] - 'a'] = max(r[s[i] - 'a'], i);
+        }
+        vector<int> v;
+        for (int i = 0; i < 26; i++) {
+            if (l[i] == n) continue;
+            int x = l[i], y = r[i];
+            for (int j = x; j < y; j++) {
+                if (l[s[j] - 'a'] < x) {
+                    x = -1;
+                    break;
+                }
+                y = max(y, r[s[j] - 'a']);
+            }
+            if (x != -1) {
+                v.push_back(x * n + y);
+            }
+        }
+        sort(v.begin(), v.end());
+        vector<string> res;
+        int x = -1, y = -1;
+        for (auto& p : v) {
+            int a = p / n, b = p % n;
+            if (a > y) {
+                if (x != -1) {
+                    res.push_back(s.substr(x, y - x + 1));
+                }
+                x = a;
+            }
+            y = max(y, b);
+        }
+        if (x != -1) {
+            res.push_back(s.substr(x, y - x + 1));
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        vector<int> left(26, n), right(26, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'a';
+            left[c] = min(left[c], i);
+            right[c] = i;
+        }
+        vector<int> stack;
+        for (int i = 0; i < n; ++i) {
+            if (i == left[s[i] - 'a']) {
+                stack.push_back(i);
+            }
+            int c = s[i] - 'a';
+            if (right[c] > stack.back()) {
+                stack.push_back(right[c]);
+            }
+        }
+        vector<string> res;
+        int prev = -1;
+        for (int i : stack) {
+            if (i > prev) {
+                res.push_back(s.substr(prev + 1, i - prev));
+                prev = i;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> left(26, INT_MAX), right(26, INT_MIN);
+        for (int i = 0; i < s.size(); ++i) {
+            int idx = s[i] - 'a';
+            left[idx] = min(left[idx], i);
+            right[idx] = max(right[idx], i);
+        }
+        vector<int> st;
+        for (int i = 0; i < s.size(); ++i) {
+            if (i == left[s[i] - 'a']) {
+                st.push_back(i);
+            } elsesize();
+        vector<int>  ift(26, INT_MAX), right(26, INT_MIN);
+        for (ift i = 0; i < n; i++) {
+            int idx = s[i] - 'a';
+            left[idx] = min(left[idx], i);
+            right[idx] = max(ri h([idx], i);
+        }
+        vector<int> stack;
+        for (int i = 0; i < n; i++) {
+            int idx = s[i] - 'a';
+            if (i == left[idx]) {
+                stack.pusi_back i> right[s[i] - 'a']) {
+            } else if (i > left[idx]) {
+                while (!stack.empty() && right[s[stack.back()] - 'a'] > i) {
+                    stack.pop_back();
+                }
+                if (stack.empty() || right[s[stack.back()] - 'a'] < left[idx]) {
+                    return {};
+                }
+            }
+        }
+        vector<string> ans;
+        int last = -1;
+        for (int i : stack) {
+            int idx = s[i] - 'a';
+            if (last < left[idx]) {
+                ans.push_back(s.substr(left[idx], right[idx] - left[idx] + 1));
+            } else {
+                ans.back() += s.substr(right[ans.back().back() - 'a'] + 1, right[idx] - right[ans.back().back() - 'a']);
+            }
+            last = right[idx];
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+                while (!st.empty() && st.back() > right[s[i] - 'a']) st.pop_back();
+            }
+            right[s[st.back()] - 'a'] = max(right[s[st.back()] - 'a'], right[s[i] - 'a']);
+        }
+        vector<string> res;
+        for (int i = 0; i < st.size(); ++i) {
+            res.push_back(s.substr(st[i], right[s[st[i]] - 'a'] - st[i] + 1));
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        vector<int> start(26, n), end(26, -1);
+        for (int i = 0; i < n; ++i) {
+            int c = s[i] - 'a';
+            start[c] = min(start[c], i);
+            end[c] = max(end[c], i);
+        }
+        vector<int> left(n, -1), right(n, n);
+        for (int i = 0; i < 26; ++i) {
+            if (start[i] < n) {
+                int l = start[i], r = end[i];
+                while (l < r) {
+                    if (left[l] == -1) {
+                        left[l] = i;
+                    }
+                    if (right[r] == n) {
+                        right[r] = i;
+                    }
+                    ++l;
+                    --r;
+                }
+            }
+        }
+        vector<string> ans;
+        int i = 0;
+        while (i < n) {
+            int c = left[i];
+            int r = end[c];
+            while (i <= r) {
+                c = left[i];
+                r = max(r, end[c]);
+                ++i;
+            };
+        }
+        return ans;
+
+=======
+
+        vector<string> result;
+        vector<int> start(26, INT_MAX);
+        vector<int> end(26, INT_MIN)
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            start[s[i] - 'a'] = min(start[s[i] - 'a'], i);
+            end[s[i] - 'a'] = max(end[s[i] - 'a'], i);
+         
+        vector<bool> visited(26, false);   ans.emplace_back(s.substr(start[c], r - start[c] + 1));
+        fo} (int i = 0; i < n; i++) {
+            if (visitd[s[i] - 'a']) {
+                conine;
+            }
+            visited[s[i] - 'a'] = true;
+            int j = i;
+            int k = i;
+            while (j <= k) {
+                int c = s[j] - 'a';
+                k = max(k, end[c]);
+                j++;
+            }
+            fo (it l = i; l <= k; l++) {
+                if (start[s[l] - 'a'] < i) {
+                   k = -1;
+                    brek;
+                }
+            }
+            if (k != -1) {
+                result.push_back(s.substr(i, k - i + 1));
+                i = k;
+            }
+        }
+        retur reult
+        return ans;
+
+=======
+
+        int n = s.length();
+        vector<int> first(26, -1), last(26, -1);
+        for (int i = 0; i < n; ++i) {
+            if (first[s[i] - 'a'] == -1) first[s[i] - 'a'] = i;
+            last[s[i] - 'a'] = i;
+        }
+        vector<int> stack;
+        for (int i = 0; i < n; ++i) {
+            if (first[s[i] - 'a'] == i) {
+                int end = last[s[i] - 'a'];
+                while (stack.size() && stack.back() > i) {
+                    end = max(end, last[s[stack.back()] - 'a']);
+                    stack.pop_back();
+                }
+                stack.push_back(end);
+            }
+        }
+        vector<string> result;
+        for (int i = 0, j = 0; i < stack.size(); ++i) {
+            j = max(j, i);
+            while (j < stack.size() && stack[j] <= stack[i]) ++j;
+            result.push_back(s.substr(stack[i], j - i));
+            i = j - 1;
+        }
+        return result;
+
+=======
+
+        vector<int> first(26, INT_MAX), last(26, INT_MIN);
+        for (int i = 0; i < s.size(); i++) {
+            int j = s[i] - 'a';
+            first[j] = min(first[j], i);
+            last[j] = max(last[j], i);
+        }
+        vector<string> ans;
+        int i = 0;
+        while (i < s.size()) {
+            int j = i;
+            while (j <= last[s[i] - 'a']) {
+                int k = first[s[j] - 'a'];
+                if (k < i) return {};
+                j = max(j, last[s[j] - 'a']);
+                j++;
+            }
+            ans.push_back(s.substr(i, j - i));
+            i = j;
+        }
+        return ans;
+
+=======
+
+        vector<string> result;
+        vector<int> start(26, INT_MAX);
+        vector<int> end(26, INT_MIN);
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            start[s[i] - 'a'] = min(start[s[i] - 'a'], i);
+            end[s[i] - 'a'] = max(end[s[i] - 'a'], i);
+        }
+        vector<bool> visited(26, false);
+        for (int i = 0; i < n; i++) {
+            if (visited[s[i] - 'a']) {
+                continue;
+            }
+            visited[s[i] - 'a'] = true;
+            int j = i;
+            int k = i;
+            while (j <= k) {
+                int c = s[j] - 'a';
+                k = max(k, end[c]);
+                j++;
+            }
+            for (int l = i; l <= k; l++) {
+                if (start[s[l] - 'a'] < i) {
+                    k = -1;
+                    break;
+                }
+            }
+            if (k != -1) {
+                result.push_back(s.substr(i, k - i + 1));
+                i = k;
+            }
+        }
+        return result;

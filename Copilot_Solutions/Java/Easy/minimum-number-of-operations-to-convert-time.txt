@@ -1,0 +1,261 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int h1 = Integer.parseInt(current.substring(0, 2));
+        int m1 = Integer.parseInt(current.substring(3, 5));
+        int h2 = Integer.parseInt(correct.substring(0, 2));
+        int m2 = Integer.parseInt(correct.substring(3, 5));
+        int t1 = h1 * 60 + m1;
+        int t2 = h2 * 60 + m2;
+        int diff = t2 - t1;
+        int[] dp = new int[diff + 1];
+        Arrays.fill(dp, diff + 1);
+        dp[0] = 0;
+        for (int i = 0; i < diff; i++) {
+            if (dp[i] == diff + 1) continue;
+            int[] ops = new int[]{1, 5, 15, 60};
+            for (int op : ops) {
+                if (i + op <= diff) dp[i + op] = Math.min(dp[i + op], dp[i] + 1);
+            }
+        }
+        return dp[diff];
+
+=======
+
+        String[] c = current.split(":");
+        String[] r = correct.split(":");
+        int ch = Integer.parseInt(c[0]);
+        int cm = Integer.parseInt(c[1]);
+        int rh = Integer.parseInt(r[0]);
+        int rm = Integer.parseInt(r[1]);
+        int m = 0;
+        if (rm >= cm) {
+            m = rm - cm;
+        } else {
+            m = 60 + rm - cm;
+            rh--;
+        }
+        int h = 0;
+        if (rh >= ch) {
+            h = rh - ch;
+        } else {
+            h = 24 + rh - ch;
+        }
+        int[] a = new int[]{1, 5, 15, 60};
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < a.length; i++) {
+            int t = 0;
+            if (h > 0) {
+                t += h * 60 / a[i];
+            }
+            if (m > 0) {
+                t += m / a[i];
+            }
+            min = Math.min(min, t);
+        }
+        return min;
+
+=======
+
+        String[] cur = current.split(":");
+        String[] cor = correct.split(":");
+        int h = Integer.parseInt(cor[0]) - Integer.parseInt(cur[0]);
+        int m = Integer.parseInt(cor[1]) - Integer.parseInt(cur[1]);
+        int time = 60 * h + m;
+        int[] ops = {60, 15, 5, 1};
+        int ans = 0;
+        for (int i = 0; i < ops.length; i++) {
+            ans += time / ops[i];
+            time %= ops[i];
+        }
+        return ans;
+    }
+    public int minOperations(String current, String correct) {
+        String[] cur = current.split(":");
+        String[] cor = correct.split(":");
+        int h = Integer.parseInt(cor[0]) - Integer.parseInt(cur[0]);
+        int m = Integer.parseInt(cor[1]) - Integer.parseInt(cur[1]);
+        int time = 60 * h + m;
+        int[] ops = {60, 15, 5, 1};
+        int ans = 0;
+        for (int i = 0; i < ops.length; i++) {
+            ans += time / ops[i];
+            time %= ops[i];
+        }
+        return ans;
+
+=======
+
+        int hours = (correct.charAt(0) - '0') * 10 + correct.charAt(1) - '0' - ((current.charAt(0) - '0') * 10 + current.charAt(1) - '0');
+        int minutes = (correct.charAt(3) - '0') * 10 + correct.charAt(4) - '0' - ((current.charAt(3) - '0') * 10 + current.charAt(4) - '0');
+        if (minutes < 0) {
+            minutes += 60;
+            hours--;
+        }
+        return hours * 60 + minutes;
+    }
+    public int numberOfOperations(String current, String correct) {
+        int minutes = convertTime(current, correct);
+        int[] operations = new int[]{60, 15, 5, 1};
+        int result = 0;
+        for (int operation : operations) {
+            result += minutes / operation;
+            minutes %= operation;
+        }
+        return result;
+
+=======
+
+        int[] current_time = Arrays.stream(current.split(":")).mapToInt(Integer::parseInt).toArray();
+        int[] correct_time = Arrays.stream(correct.split(":")).mapToInt(Integer::parseInt).toArray();
+        int current_minutes = current_time[0] * 60 + current_time[1];
+        int correct_minutes = correct_time[0] * 60 + correct_time[1];
+        int diff = correct_minutes - current_minutes;
+        int[] steps = {60, 15, 5, 1};
+        int count = 0;
+        for (int i = 0; i < steps.length; i++) {
+            count += diff / steps[i];
+            diff %= steps[i];
+        }
+        return count;
+
+=======
+
+        int ans = 0;
+        int c = Integer.parseInt(current.substring(0,2)) * 60 + Integer.parseInt(current.substring(3,5));
+        int d = Integer.parseInt(correct.substring(0,2)) * 60 + Integer.parseInt(correct.substring(3,5));
+        int diff = d - c;
+        if(diff >= 60) {
+            ans += diff / 60;
+            diff %= 60;
+        }
+        if(diff >= 15) {
+            ans += diff / 15;
+            diff %= 15;
+        }
+        if(diff >= 5) {
+            ans += diff / 5;
+            diff %= 5;
+        }
+        ans += diff;
+        return ans;
+    }
+    public int numberOfRounds(String startTime, String finishTime) {
+        int ans = 0;
+        int c = Integer.parseInt(startTime.substring(0,2)) * 60 + Integer.parseInt(startTime.substring(3,5));
+        int d = Integer.parseInt(finishTime.substring(0,2)) * 60 + Integer.parseInt(finishTime.substring(3,5));
+        if(c > d) {
+            d += 24 * 60;
+        }
+        int diff = d - c;
+        if(diff >= 60) {
+            ans += diff / 60;
+            diff %= 60;
+        }
+        if(diff >= 15) {
+            ans += diff / 15;
+            diff %= 15;
+        }
+        if(diff >= 5) {
+            ans += diff / 5;
+            diff %= 5;
+        }
+        ans += diff;
+        return ans;
+    }
+    public int numberOfRounds1(String startTime, String finishTime) {
+        int ans = 0;
+        int c = convertTime(startTime, "00:00");
+        int d = convertTime(finishTime, "00:00");
+        if(c > d) {
+            d += 24 * 60;
+        }
+        int diff = d - c;
+        if(diff >= 60) {
+            ans += diff / 60;
+            diff %= 60;
+        }
+        if(diff >= 15) {
+            ans += diff / 15;
+            diff %= 15;
+        }
+        if(diff >= 5) {
+            ans += diff / 5;
+            diff %= 5;
+        }
+        ans += diff;
+        return ans;
+
+=======
+
+        int min = Integer.parseInt(current.substring(0,2))*60+Integer.parseInt(current.substring(3));
+        int max = Integer.parseInt(correct.substring(0,2))*60+Integer.parseInt(correct.substring(3));
+        int ans = 0;
+        while(min<max) {
+            if(max-min>=60) {
+                min+=60;
+                ans++;
+            } else if(max-min>=15) {
+                min+=15;
+                ans++;
+            } else if(max-min>=5) {
+                min+=5;
+                ans++;
+            } else {
+                min++;
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int[] time1 = getTime(current);
+        int[] time2 = getTime(correct);
+        int time1inMin = time1[0] * 60 + time1[1];
+        int time2inMin = time2[0] * 60 + time2[1];
+        int diff = time2inMin - time1inMin;
+        int[] minutes = {1, 5, 15, 60};
+        int result = 0;
+        for(int i = minutes.length - 1; i >= 0; i--) {
+            int min = minutes[i];
+            int count = diff / min;
+            result += count;
+            diff -= min * count;
+        }
+        return result;
+
+=======
+
+        int[] times = new int[2];
+        int[] timee = new int[2];
+        String[] time = current.split(":");
+        times[0] = Integer.parseInt(time[0]);
+        times[1] = Integer.parseInt(time[1]);
+        time = correct.split(":");
+        timee[0] = Integer.parseInt(time[0]);
+        timee[1] = Integer.parseInt(time[1]);
+        int start = times[0] * 60 + times[1];
+        int end = timee[0] * 60 + timee[1];
+        int[] dp = new int[end - start + 1];
+        for (int i = 1; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 0; i < dp.length; i++) {
+            if (dp[i] != Integer.MAX_VALUE) {
+                if (i + 1 < dp.length) {
+                    dp[i + 1] = Math.min(dp[i + 1], dp[i] + 1);
+                }
+                if (i + 5 < dp.length) {
+                    dp[i + 5] = Math.min(dp[i + 5], dp[i] + 1);
+                }
+                if (i + 15 < dp.length) {
+                    dp[i + 15] = Math.min(dp[i + 15], dp[i] + 1);
+                }
+                if (i + 60 < dp.length) {
+                    dp[i + 60] = Math.min(dp[i + 60], dp[i] + 1);
+                }
+            }
+        }
+        return dp[dp.length - 1];

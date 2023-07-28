@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        if (s1 == s2) {
+            return true;
+        }
+        if (s1.size() != s2.size()) {
+            return false;
+        }
+        int n = s1.size();
+        vector<vector<vector<bool>>> dp(n, vector<vector<bool>>(n, vector<bool>(n + 1, false)));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j][1] = s1[i] == s2[j];
+            }
+        }
+        for (int len = 2; len <= n; len++) {
+            for (int i = 0; i <= n - len; i++) {
+                for (int j = 0; j <= n - len; j++) {
+                    for (int k = 1; k < len; k++) {
+                        if (dp[i][j][k] && dp[i + k][j + k][len - k]) {
+                            dp[i][j][len] = true;
+                            break;
+                        }
+                        if (dp[i][j + len - k][k] && dp[i + k][j][len - k]) {
+                            dp[i][j][len] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][0][n];
+
+=======
+
+        if (s1 == s2) {
+            return true;
+        }
+        int n = s1.length();
+        vector<int> count(26, 0);
+        for (int i = 0; i < n; i++) {
+            count[s1[i] - 'a']++;
+            count[s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (count[i] != 0) {
+                return false;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i), s2.substr(i))) {
+                return true;
+            }
+            if (isScramble(s1.substr(0, i), s2.substr(n - i)) && isScramble(s1.substr(i), s2.substr(0, n - i))) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        if (s1 == s2) {
+            return true;
+        }
+        int n = s1.size();
+        int cnt[26] = {0};
+        for (int i = 0; i < n; i++) {
+            cnt[s1[i] - 'a']++;
+            cnt[s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (cnt[i] != 0) {
+                return false;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i, n - i), s2.substr(i, n - i))) {
+                return true;
+            }
+            if (isScramble(s1.substr(0, i), s2.substr(n - i, i)) && isScramble(s1.substr(i, n - i), s2.substr(0, n - i))) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        if (s1 == s2) return true;
+        if (s1.size() != s2.size()) return false;
+        int n = s1.size();
+        vector<vector<vector<bool>>> dp(n + 1, vector<vector<bool>>(n, vector<bool>(n, false)));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                dp[1][i][j] = s1[i] == s2[j];
+            }
+        }
+        for (int l = 2; l <= n; ++l) {
+            for (int i = 0; i + l <= n; ++i) {
+                for (int j = 0; j + l <= n; ++j) {
+                    for (int k = 1; k < l; ++k) {
+                        if ((dp[k][i][j] && dp[l - k][i + k][j + k]) || (dp[k][i][j + l - k] && dp[l - k][i + k][j])) {
+                            dp[l][i][j] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][0][0];
+
+=======
+
+        if (s1 == s2)
+            return true;
+        int n = s1.size();
+        int cnt[26] = {0};
+        for (int i = 0; i < n; ++i) {
+            cnt[s1[i] - 'a']++;
+            cnt[s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; ++i) {
+            if (cnt[i] != 0)
+                return false;
+        }
+        for (int i = 1; i < n; ++i) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i), s2.substr(i)))
+                return true;
+            if (isScramble(s1.substr(0, i), s2.substr(n - i)) && isScramble(s1.substr(i), s2.substr(0, n - i)))
+                return true;
+        }
+        return false;
+
+=======
+
+        if (s1 == s2) return true;
+        int n = s1.size();
+        int m = s2.size();
+        if (n != m) return false;
+        vector<int> cnt(26, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[s1[i] - 'a']++;
+            cnt[s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (cnt[i] != 0) return false;
+        }
+        for (int i = 1; i < n; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i), s2.substr(i))) return true;
+            if (isScramble(s1.substr(0, i), s2.substr(n - i)) && isScramble(s1.substr(i), s2.substr(0, n - i))) return true;
+        }
+        return false;
+
+=======
+
+        if (s1.length() != s2.length()) {
+            return false;
+        }
+        if (s1 == s2) {
+            return true;
+        }
+        int len = s1.length();
+        int count[26] = {0};
+        for (int i = 0; i < len; i++) {
+            count[s1[i] - 'a']++;
+            count[s2[i] - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (count[i] != 0) {
+                return false;
+            }
+        }
+        for (int i = 1; i < len; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i), s2.substr(i))) {
+                return true;
+            }
+            if (isScramble(s1.substr(0, i), s2.substr(len - i)) && isScramble(s1.substr(i), s2.substr(0, len - i))) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = s1.size();
+        if (n != s2.size()) return false;
+        if (n == 1) return s1 == s2;
+        vector<vector<vector<bool>>> dp(n, vector<vector<bool>>(n, vector<bool>(n+1, false)));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                dp[i][j][1] = s1[i] == s2[j];
+            }
+        }
+        for (int l = 2; l <= n; ++l) {
+            for (int i = 0; i <= n-l; ++i) {
+                for (int j = 0; j <= n-l; ++j) {
+                    for (int k = 1; k < l; ++k) {
+                        if ((dp[i][j][k] && dp[i+k][j+k][l-k]) || (dp[i][j+l-k][k] && dp[i+k][j][l-k])) {
+                            dp[i][j][l] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][0][n];
+
+=======
+
+        if (s1 == s2) return true;
+        int n = s1.length();
+        vector<int> cnt1(26), cnt2(26);
+        for (int i = 0; i < n; i++) {
+            cnt1[s1[i] - 'a']++;
+            cnt2[s2[i] - 'a']++;
+        }
+        if (cnt1 != cnt2) return false;
+        for (int i = 1; i < n; i++) {
+            if (isScramble(s1.substr(0, i), s2.substr(0, i)) && isScramble(s1.substr(i), s2.substr(i))) return true;
+            if (isScramble(s1.substr(0, i), s2.substr(n - i)) && isScramble(s1.substr(i), s2.substr(0, n - i))) return true;
+        }
+        return false;

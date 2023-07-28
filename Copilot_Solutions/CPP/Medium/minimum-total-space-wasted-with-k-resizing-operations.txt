@@ -1,0 +1,99 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(k + 1, INT_MAX / 2));
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            dp[i][0] = (sum[n] - sum[i]) - (n - i) * nums[i];
+        }
+        for (int j = 1; j <= k; ++j) {
+            for (int i = 0; i < n; ++i) {
+                int maxVal = nums[i];
+                for (int p = i; p < n; ++p) {
+                    maxVal = max(maxVal, nums[p]);
+                    dp[i][j] = min(dp[i][j], dp[p + 1][j - 1] + (sum[p + 1] - sum[i]) - (p - i + 1) * maxVal);
+                }
+            }
+        }
+        return dp[0][k];
+
+=======
+
+        int n = nums.size();
+        vector<int> sum(n+1, 0);
+        for (int i = 0; i < n; ++i)
+            sum[i+1] = sum[i] + nums[i];
+        vector<vector<int>> dp(n, vector<int>(k+1, INT_MAX));
+        return dfs(nums, k, 0, 0, sum, dp);
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> dp(n + 1, vector<int>(k + 1, INT_MAX / 2));
+        vector<int> sum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= k + 1; ++j) {
+                int maxVal = 0;
+                for (int p = i - 1; p >= 0; --p) {
+                    maxVal = max(maxVal, nums[p]);
+                    dp[i][j] = min(dp[i][j], dp[p][j - 1] + maxVal * (i - p) - (sum[i] - sum[p]));
+                }
+            }
+        }
+        return dp[n][k + 1];
+
+=======
+
+        int n = nums.size();
+        vector<vector<int>> dp(n, vector<int>(k + 1, INT_MAX));
+        vector<int> prefix(n + 1);
+        for (int i = 0; i < n; ++i)
+            prefix[i + 1] = prefix[i] + nums[i];
+        for (int i = 0; i < n; ++i) {
+            dp[i][0] = 0;
+            for (int j = 0; j < i; ++j) {
+                int cur = max(prefix[i + 1] - prefix[j], nums[j]);
+                for (int t = 1; t <= k; ++t) {
+                    if (dp[j][t - 1] != INT_MAX)
+                        dp[i][t] = min(dp[i][t], dp[j][t - 1] + cur - nums[i]);
+                }
+            }
+        }
+        return *min_element(dp[n - 1].begin(), dp[n - 1].end());
+
+=======
+
+        int n = nums.size();
+        int dp[n][k+1];
+        int sum[n];
+        sum[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            sum[i] = sum[i-1] + nums[i];
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = (i+1)*nums[i] - sum[i];
+        }
+        for (int j = 1; j <= k; j++) {
+            for (int i = n-1; i >= j; i--) {
+                int min = INT_MAX;
+                for (int l = j-1; l < i; l++) {
+                    int val = dp[l][j-1] + (i-l)*nums[i] - (sum[i]-sum[l]);
+                    if (val < min) min = val;
+                }
+                dp[i][j] = min;
+            }
+        }
+        int min = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            if (dp[i][k] < min) min = dp[i][k];
+        }
+        return min;

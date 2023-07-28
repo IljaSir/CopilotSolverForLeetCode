@@ -1,0 +1,91 @@
+Synthesizing 4/10 solutions
+
+=======
+
+        int[] dp = new int[target + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int t = 1; t <= target; ++t) {
+            int k = 32 - Integer.numberOfLeadingZeros(t);
+            if (t == (1 << k) - 1) {
+                dp[t] = k;
+                continue;
+            }
+            for (int j = 0; j < k - 1; ++j)
+                dp[t] = Math.min(dp[t], dp[t - (1 << (k - 1)) + (1 << j)] + k + j + 1);
+            if ((1 << k) - 1 - t < t)
+                dp[t] = Math.min(dp[t], dp[(1 << k) - 1 - t] + k + 1);
+        }
+        return dp[target];
+
+=======
+
+        int[] dp = new int[target + 1];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
+        dp[0] = 0;
+        for (int i = 0; i < dp.length; i++) {
+            int speed = 1;
+            int pos = 0;
+            for (int j = 0; j < dp.length; j++) {
+                if (pos == i) {
+                    dp[i] = Math.min(dp[i], j);
+                    break;
+                } else if (pos > i) {
+                    break;
+                }
+                pos += speed;
+                speed *= 2;
+            }
+            speed = 1;
+            pos = 0;
+            for (int j = 0; j < dp.length; j++) {
+                if (pos == i) {
+                    dp[i] = Math.min(dp[i], j + 1);
+                    break;
+                } else if (pos > i) {
+                    break;
+                }
+                pos += speed;
+                speed *= -2;
+            }
+        }
+        return dp[target];
+
+=======
+
+        int[] dp = new int[target+1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for(int t = 1; t <= target; t++){
+            int k = 32 - Integer.numberOfLeadingZeros(t);
+            if(t == (1<<k) - 1){
+                dp[t] = k;
+                continue;
+            }
+            for(int j = 0; j < k-1; j++)
+                dp[t] = Math.min(dp[t], dp[t - (1<<(k-1)) + (1<<j)] + k-1 + j + 2);
+            if((1<<k) - 1 - t < t)
+                dp[t] = Math.min(dp[t], dp[(1<<k) - 1 - t] + k + 1);
+        }
+        return dp[target];
+
+=======
+
+        int[] dp = new int[target + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        for (int i = 1; i <= target; ++i) {
+            int k = 1, pos = 1;
+            while (pos < i) {
+                for (int j = 0, q = 0; j < k; ++j, q = 0) {
+                    for (; q <= k - j; ++q) {
+                        dp[i] = Math.min(dp[i], k + 1 + j + 1 + q + dp[i - (pos - (1 << j) + (1 << q))]);
+                    }
+                }
+                k++;
+                pos = (1 << k) - 1;
+            }
+            dp[i] = Math.min(dp[i], k + (pos == i ? 0 : 1 + dp[pos - i]));
+        }
+        return dp[target];

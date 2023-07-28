@@ -1,0 +1,171 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<vector<int>> dp(m + 1, vector<int>(m + 1, INT_MIN));
+        dp[0][0] = 0;
+        for (int i = 0; i <= m; ++i) {
+            for (int j = 0; j <= i; ++j) {
+                if (i - 1 >= 0 && j - 1 >= 0) {
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j - 1] + nums[j - 1] * multipliers[i - 1]);
+                }
+                if (i - 1 >= 0 && j >= 0) {
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j] + nums[n - i + j] * multipliers[i - 1]);
+                }
+            }
+        }
+        int ans = INT_MIN;
+        for (int j = 0; j <= m; ++j) {
+            ans = max(ans, dp[m][j]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<vector<int>> dp(m + 1, vector<int>(m + 1, INT_MIN));
+        dp[0][0] = 0;
+        for (int i = 1; i <= m; i++) {
+            dp[i][0] = dp[i - 1][0] + nums[i - 1] * multipliers[i - 1];
+            for (int j = 1; j <= i; j++) {
+                dp[i][j] = max(dp[i - 1][j - 1] + nums[n - i + j - 1] * multipliers[i - 1],
+                               dp[i - 1][j] + nums[j - 1] * multipliers[i - 1]);
+            }
+        }
+        return *max_element(dp[m].begin(), dp[m].end());
+
+=======
+
+        int n = nums.size();
+        int m = multipliers.size();
+        vector<vector<int>> dp(m+1, vector<int>(m+1, INT_MIN));
+        dp[0][0] = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j <= i; j++) {
+                int k = i - j;
+                if (j > 0) {
+                    dp[j][k] = max(dp[j][k], dp[j-1][k] + nums[j-1] * multipliers[i]);
+                }
+                if (k > 0) {
+                    dp[j][k] = max(dp[j][k], dp[j][k-1] + nums[n-k] * multipliers[i]);
+                }
+            }
+        }
+        return *max_element(dp[m].begin(), dp[m].end());
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<int> dp(m+1, INT_MIN);
+        dp[0] = 0;
+        for (int i = 1; i <= m; ++i) {
+            for (int j = max(0, i-n); j <= min(i, m); ++j) {
+                dp[j] = max(dp[j], dp[j-1]) + (j == 0 ? 0 : multipliers[i-1] * nums[j-1]);
+                if (j < i) {
+                    dp[j] = max(dp[j], dp[j] + multipliers[i-1] * nums[n-(i-j)]);
+                }
+            }
+        }
+        return *max_element(dp.begin(), dp.end());
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<vector<int>> dp(m + 1, vector<int>(m + 1));
+        for (int i = 0; i < m; ++i) {
+            dp[i + 1][0] = dp[i][0] + nums[i] * multipliers[i];
+            dp[0][i + 1] = dp[0][i] + nums[n - i - 1] * multipliers[i];
+        }
+        for (int i = 1; i <= m; ++i) {
+            for (int j = 1; j <= m; ++j) {
+                dp[i][j] = max(dp[i - 1][j] + nums[i - 1] * multipliers[i + j - 1], dp[i][j - 1] + nums[n - j] * multipliers[i + j - 1]);
+            }
+        }
+        int res = INT_MIN;
+        for (int i = 0; i <= m; ++i) {
+            res = max(res, dp[i][m - i]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<int> dp(m + 1);
+        for (int i = 1; i <= m; ++i) {
+            for (int j = max(0, i - n); j <= min(i, m); ++j) {
+                int k = i - j;
+                dp[j] = max(j > 0 ? dp[j - 1] + nums[j - 1] * multipliers[i - 1] : INT_MIN,
+                            k > 0 ? dp[j] + nums[n - k] * multipliers[i - 1] : INT_MIN);
+            }
+        }
+        return *max_element(dp.begin(), dp.end());
+
+=======
+
+        int n = nums.size();
+        int m = multipliers.size();
+        vector<vector<int>> dp(m+1, vector<int>(m+1, 0));
+        for (int i = 0; i < m; i++) {
+            dp[i][0] = dp[i][i] = nums[i] * multipliers[i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i][j] = max(dp[i-1][j] + nums[i] * multipliers[i], dp[i-1][j+1] + nums[n-i-1] * multipliers[i]);
+            }
+        }
+        int ans = INT_MIN;
+        for (int i = 0; i < m; i++) {
+            ans = max(ans, dp[m-1][i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int m = multipliers.size();
+        vector<int> dp(m+1, INT_MIN);
+        dp[0] = 0;
+        for (int k = 1; k <= m; k++) {
+            int mk = multipliers[k-1];
+            for (int i = max(0, k-n); i <= min(k, m); i++) {
+                int j = k - i;
+                dp[i] = max(dp[i] + mk * nums[i], dp[i-1] + mk * nums[n-j]);
+            }
+        }
+        return *max_element(dp.begin(), dp.end());
+
+=======
+
+        int m = multipliers.size();
+        int n = nums.size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        for (int i = 0; i < m; i++) {
+            dp[i][i] = multipliers[i] * nums[i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < m - i; j++) {
+                dp[j][j + i] = max(multipliers[j] * nums[j] + dp[j + 1][j + i], multipliers[j + i] * nums[n - i + j] + dp[j][j + i - 1]);
+            }
+        }
+        return dp[0][m - 1];
+
+=======
+
+        int n = nums.size(), m = multipliers.size();
+        vector<vector<int>> dp(m, vector<int>(m, 0));
+        // dp[i][j] = max score of first i+1 elements + last j+1 elements
+        for (int i = 0; i < m; ++i) {
+            dp[i][0] = multipliers[i] * nums[i];
+            if (i) dp[i][0] = max(dp[i][0], dp[i-1][0] + multipliers[i] * nums[i]);
+        }
+        for (int j = 1; j < m; ++j) {
+            dp[0][j] = multipliers[j] * nums[n-j-1];
+            if (j) dp[0][j] = max(dp[0][j], dp[0][j-1] + multipliers[j] * nums[n-j-1]);
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < m; ++j) {
+                dp[i][j] = max(dp[i-1][j] + multipliers[i+j] * nums[i], dp[i][j-1] + multipliers[i+j] * nums[n-j-1]);
+            }
+        }
+        return dp[m-1][m-1];

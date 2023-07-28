@@ -1,0 +1,324 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        Set<String> positive = new HashSet<>(Arrays.asList(positive_feedback));
+        Set<String> negative = new HashSet<>(Arrays.asList(negative_feedback));
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            int id = student_id[i];
+            for (String word : words) {
+                if (positive.contains(word)) {
+                    map.put(id, map.getOrDefault(id, 0) + 3);
+                } else if (negative.contains(word)) {
+                    map.put(id, map.getOrDefault(id, 0) - 1);
+                }
+            }
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> map.get(a) != map.get(b) ? map.get(a) - map.get(b) : b - a);
+        for (int id : map.keySet()) {
+            pq.add(id);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        while (!pq.isEmpty()) {
+            ans.add(pq.poll());
+        }
+        Collections.reverse(ans);
+        return ans;
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        Set<String> positive = new HashSet<>(Arrays.asList(positive_feedback));
+        Set<String> negative = new HashSet<>(Arrays.asList(negative_feedback));
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (positive.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) + 3);
+                } else if (negative.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        List<Integer> list = new ArrayList<>(map.keySet());
+        Collections.sort(list, (a, b) -> map.get(b) == map.get(a) ? a - b : map.get(b) - map.get(a));
+        return list.subList(0, k);
+
+=======
+
+        Map<Integer, Integer> map = new HashMap<>();
+        Set<String> positive = new HashSet<>(Arrays.asList(positive_feedback));
+        Set<String> negative = new HashSet<>(Arrays.asList(negative_feedback));
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (positive.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) + 3);
+                } else if (negative.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                if (map.get(b) == map.get(a)) {
+                    return a - b;
+                }
+                return map.get(b) - map.get(a);
+            }
+        });
+        for (int key : map.keySet()) {
+            pq.offer(key);
+        }
+        List<Integer> res = new ArrayList<>();
+        while (k > 0) {
+            res.add(pq.poll());
+            k--;
+        }
+        return res;
+
+=======
+
+        Map<String, Integer> positive = new HashMap<>();
+        Map<String, Integer> negative = new HashMap<>();
+        for (String s : positive_feedback) {
+            positive.put(s, positive.getOrDefault(s, 0) + 1);
+        }
+        for (String s : negative_feedback) {
+            negative.put(s, negative.getOrDefault(s, 0) + 1);
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < report.length; i++) {
+            String s = report[i];
+            int id = student_id[i];
+            String[] words = s.split(" ");
+            for (String word : words) {
+                if (positive.containsKey(word)) {
+                    map.put(id, map.getOrDefault(id, 0) + 3);
+                }
+                if (negative.containsKey(word)) {
+                    map.put(id, map.getOrDefault(id, 0) - 1);
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int id : map.keySet()) {
+            ans.add(id);
+        }
+        ans.sort(new Comparator<Integer>() {
+            public int compare(Integer a, Integer b) {
+                if (map.get(a) != map.get(b)) {
+                    return map.get(b) - map.get(a);
+                } else {
+                    return a - b;
+                }
+            }
+        });
+        return ans.subList(0, k);
+
+=======
+
+        Map<Integer, Integer> score = new HashMap<>();
+        Set<String> pos = new HashSet<>(Arrays.asList(positive_feedback));
+        Set<String> neg = new HashSet<>(Arrays.asList(negative_feedback));
+        for (int i = 0; i < report.length; i++) {
+            int id = student_id[i];
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (pos.contains(word)) {
+                    score.put(id, score.getOrDefault(id, 0) + 3);
+                } else if (neg.contains(word)) {
+                    score.put(id, score.getOrDefault(id, 0) - 1);
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList<>(score.keySet());
+        ans.sort((a, b) -> {
+            int cmp = Integer.compare(score.get(b), score.get(a));
+            if (cmp != 0) {
+                return cmp;
+            }
+            return Integer.compare(a, b);
+        });
+        return ans.subList(0, k);
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        Set<String> positive = new HashSet<>(Arrays.asList(positive_feedback));
+        Set<String> negative = new HashSet<>(Arrays.asList(negative_feedback));
+        for (int i = 0; i < report.length; i++) {
+            String[] feedback = report[i].split(" ");
+            for (String word : feedback) {
+                if (positive.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) + 3);
+                } else if (negative.contains(word)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] != b[0] ? b[0] - a[0] : a[1] - b[1]);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            pq.add(new int[] {entry.getValue(), entry.getKey()});
+        }
+        while (k > 0) {
+            result.add(pq.poll()[1]);
+            k--;
+        }
+        return result;
+
+=======
+
+        Map<String, Integer> positive = new HashMap<>();
+        Map<String, Integer> negative = new HashMap<>();
+        for (String str : positive_feedback) {
+            positive.put(str, positive.getOrDefault(str, 0) + 1);
+        }
+        for (String str : negative_feedback) {
+            negative.put(str, negative.getOrDefault(str, 0) + 1);
+        }
+        Map<Integer, Integer> students = new HashMap<>();
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (positive.containsKey(word)) {
+                    students.put(student_id[i], students.getOrDefault(student_id[i], 0) + 3);
+                }
+                if (negative.containsKey(word)) {
+                    students.put(student_id[i], students.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        PriorityQueue<Map.Entry<Integer, Integer>> pq = new PriorityQueue<>((a, b) -> {
+            if (a.getValue() == b.getValue()) {
+                return a.getKey() - b.getKey();
+            }
+            return b.getValue() - a.getValue();
+        });
+        for (Map.Entry<Integer, Integer> entry : students.entrySet()) {
+            pq.offer(entry);
+        }
+        List<Integer> ans = new ArrayList<>();
+        while (k > 0) {
+            ans.add(pq.poll().getKey());
+            k--;
+        }
+        return ans;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (isPositive(word, positive_feedback)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) + 3);
+                } else if (isNegative(word, negative_feedback)) {
+                    map.put(student_id[i], map.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> map.get(a) != map.get(b) ? map.get(a) - map.get(b) : b - a);
+        for (int key : map.keySet()) {
+            pq.offer(key);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        while (!pq.isEmpty()) {
+            result.add(pq.poll());
+        }
+        Collections.reverse(result);
+        return result;
+    }
+    
+    private boolean isPositive(String word, String[] positive_feedback) {
+        for (String s : positive_feedback) {
+            if (word.equals(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isNegative(String word, String[] negative_feedback) {
+        for (String s : negative_feedback) {
+            if (word.equals(s)) {
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        Set<String> posSet = new HashSet<String>();
+        Set<String> negSet = new HashSet<String>();
+        for (String s : positive_feedback) posSet.add(s);
+        for (String s : negative_feedback) negSet.add(s);
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            int id = student_id[i];
+            for (String s : words) {
+                if (posSet.contains(s)) map.put(id, map.getOrDefault(id, 0) + 3);
+                else if (negSet.contains(s)) map.put(id, map.getOrDefault(id, 0) - 1);
+            }
+        }
+        List<Integer> ans = new ArrayList<Integer>();
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a, b) -> {
+            if (a[0] == b[0]) return a[1] - b[1];
+            return b[0] - a[0];
+        });
+        for (int id : map.keySet()) {
+            pq.add(new int[]{map.get(id), id});
+            if (pq.size() > k) pq.poll();
+        }
+        while (!pq.isEmpty()) {
+            ans.add(pq.poll()[1]);
+        }
+        Collections.reverse(ans);
+        return ans;
+
+=======
+
+        Map<String, Integer> positive = new HashMap<>();
+        Map<String, Integer> negative = new HashMap<>();
+        Map<Integer, Integer> points = new HashMap<>();
+        for (String s : positive_feedback) {
+            positive.put(s, 1);
+        }
+        for (String s : negative_feedback) {
+            negative.put(s, 1);
+        }
+        for (int i = 0; i < report.length; i++) {
+            String[] words = report[i].split(" ");
+            for (String word : words) {
+                if (positive.containsKey(word)) {
+                    points.put(student_id[i], points.getOrDefault(student_id[i], 0) + 3);
+                }
+                if (negative.containsKey(word)) {
+                    points.put(student_id[i], points.getOrDefault(student_id[i], 0) - 1);
+                }
+            }
+        }
+        List<Integer> result = new ArrayList<>();
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> points.get(a) == points.get(b) ? b - a : points.get(a) - points.get(b));
+        for (int id : points.keySet()) {
+            pq.offer(id);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        while (!pq.isEmpty()) {
+            result.add(pq.poll());
+        }
+        Collections.reverse(result);
+        return result;

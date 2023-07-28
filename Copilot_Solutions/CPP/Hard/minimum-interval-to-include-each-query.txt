@@ -1,0 +1,270 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        sort(intervals.begin(), intervals.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        });
+        sort(queries.begin(), queries.end());
+        vector<int> ans(queries.size(), -1);
+        int i = 0, n = intervals.size();
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        for (int j = 0; j < queries.size(); ++j) {
+            while (i < n && intervals[i][0] <= queries[j]) {
+                pq.push({intervals[i][1] - intervals[i][0] + 1, intervals[i][1]});
+                ++i;
+            }
+            while (!pq.empty() && pq.top()[1] < queries[j]) {
+                pq.pop();
+            }
+            if (!pq.empty()) {
+                ans[j] = pq.top()[0];
+            }
+        }
+        return ans;
+
+=======
+
+        sort(intervals.begin(), intervals.end(), [](vector<int> a, vector<int> b) {
+            return a[1] < b[1];
+        });
+        sort(queries.begin(), queries.end());
+        vector<int> res(queries.size());
+        int i = 0;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        for (int j = 0; j < queries.size(); j++) {
+            while (i < intervals.size() && intervals[i][1] <= queries[j]) {
+                pq.push({intervals[i][1] - intervals[i][0] + 1, intervals[i][0]});
+                i++;
+            }
+            while (!pq.empty() && pq.top().second > queries[j]) {
+                pq.pop();
+            }
+            res[j] = (pq.empty()) ? -1 : pq.top().first;
+        }
+        return res;
+
+=======
+
+        int n = intervals.size();
+        int m = queries.size();
+        vector<int> ans(m, -1);
+        vector<pair<int, int>> q(m);
+        for (int i = 0; i < m; ++i) {
+            q[i] = {queries[i], i};
+        }
+        sort(q.begin(), q.end());
+        sort(intervals.begin(), intervals.end());
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        int i = 0;
+        for (int j = 0; j < m; ++j) {
+            while (i < n && intervals[i][0] <= q[j].first) {
+                pq.push({intervals[i][1] - intervals[i][0] + 1, intervals[i][1]});
+                ++i;
+            }
+            while (!pq.empty() && pq.top().second < q[j].first) {
+                pq.pop();
+            }
+            if (!pq.empty()) {
+                ans[q[j].second] = pq.top().first;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = queries.size();
+        vector<int> ans(n, -1);
+        vector<vector<int>> q(n, vector<int>(2));
+        for (int i = 0; i < n; i++) {
+            q[i][0] = queries[i];
+            q[i][1] = i;
+        }
+        sort(intervals.begin(), intervals.end());
+        sort(q.begin(), q.end());
+        int j = 0;
+        set<pair<int, int>> s;
+        for (int i = 0; i < n; i++) {
+            while (j < intervals.size() && intervals[j][0] <= q[i][0]) {
+                s.insert({intervals[j][1] - intervals[j][0] + 1, intervals[j][1]});
+                j++;
+            }
+            while (s.size() && s.begin()->second < q[i][0]) {
+                s.erase(s.begin());
+            }
+            if (s.size()) {
+                ans[q[i][1]] = s.begin()->first;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = intervals.size();
+        vector<int> res(queries.size(), -1);
+        vector<pair<int, int>> q;
+        for (int i = 0; i < queries.size(); i++) {
+            q.push_back({queries[i], i});
+        }
+        sort(q.begin(), q.end());
+        sort(intervals.begin(), intervals.end(), [](const vector<int> &a, const vector<int> &b) {
+            return a[1] - a[0] < b[1] - b[0];
+        });
+        set<pair<int, int>> s;
+        int j = 0;
+        for (int i = 0; i < q.size(); i++) {
+            while (j < n && intervals[j][0] <= q[i].first) {
+                s.insert({intervals[j][1] - intervals[j][0] + 1, intervals[j][1]});
+                j++;
+            }
+            while (!s.empty() && s.begin()->second < q[i].first) {
+                s.erase(s.begin());
+            }
+            if (!s.empty()) {
+                res[q[i].second] = s.begin()->first;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        sort(intervals.begin(), intervals.end(), [](auto& a, auto& b) {
+            return a[1] < b[1];
+        });
+        sort(queries.begin(), queries.end());
+        int n = intervals.size(), m = queries.size();
+        int i = 0, j = 0;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        while (j < m) {
+            while (i < n && intervals[i][1] <= queries[j]) {
+                pq.push({intervals[i][1] - intervals[i][0] + 1, intervals[i][0]});
+                i++;
+            }
+            while (!pq.empty() && pq.top().second > queries[j]) {
+                pq.pop();
+            }
+            res.push_back(pq.empty() ? -1 : pq.top().first);
+            j++;
+        }
+        return res;
+
+=======
+
+        int n = intervals.size();
+        vector<int> ans(queries.size());
+        vector<pair<int, int>> query;
+        for (int i = 0; i < queries.size(); ++i) {
+            query.push_back({queries[i], i});
+        }
+        sort(query.begin(), query.end());
+        sort(intervals.begin(), intervals.end());
+        set<pair<int, int>> s;
+        int i = 0;
+        for (auto q : query) {
+            while (i < n && intervals[i][0] <= q.first) {
+                s.insert({intervals[i][1] - intervals[i][0] + 1, intervals[i][1]});
+                ++i;
+            }
+            while (s.size() && s.begin()->second < q.first) {
+                s.erase(s.begin());
+            }
+            ans[q.second] = s.size() ? s.begin()->first : -1;
+        }
+        return ans;
+
+=======
+
+        int n = intervals.size();
+        vector<int> ans;
+        vector<pair<int, int>> q(queries.size());
+        for (int i = 0; i < queries.size(); i++) {
+            q[i].first = queries[i];
+            q[i].second = i;
+        }
+        sort(q.begin(), q.end());
+        sort(intervals.begin(), intervals.end());
+        int j = 0;
+        set<pair<int, int>> s;
+        for (int i = 0; i < queries.size(); i++) {
+            while (j < n && intervals[j][0] <= q[i].first) {
+                s.insert({intervals[j][1] - intervals[j][0] + 1, intervals[j][1]});
+                j++;
+            }
+            while (!s.empty() && s.begin()->second < q[i].first) {
+                s.erase(s.begin());
+            }
+            if (s.empty()) {
+                ans.push_back(-1);
+            } else {
+                ans.push_back(s.begin()->first);
+            }
+        }
+        vector<int> res(queries.size());
+        for (int i = 0; i < queries.size(); i++) {
+            res[q[i].second] = ans[i];
+        }
+        return res;
+
+=======
+
+        int n=intervals.size();
+        int q=queries.size();
+        vector<int> ans(q,-1);
+        vector<vector<int>> qv;
+        for(int i=0;i<q;i++)
+            qv.push_back({queries[i],i});
+        sort(qv.begin(),qv.end());
+        sort(intervals.begin(),intervals.end());
+        int j=0;
+        set<vector<int>> s;
+        for(int i=0;i<q;i++)
+        {
+            while(j<n&&intervals[j][0]<=qv[i][0])
+            {
+                s.insert({intervals[j][1]-intervals[j][0]+1,intervals[j][1]});
+                j++;
+            }
+            while(!s.empty()&&s.begin()->at(1)<qv[i][0])
+                s.erase(s.begin());
+            if(s.empty())
+                continue;
+            ans[qv[i][1]]=s.begin()->at(0);
+        }
+        return ans;
+
+=======
+
+        // sort intervals by left
+        // sort queries by value
+        // iterate queries and find min interval for each query
+        // return min interval
+        sort(intervals.begin(), intervals.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        });
+        sort(queries.begin(), queries.end());
+        vector<int> ans;
+        vector<vector<int>> q;
+        for (int i = 0; i < queries.size(); ++i) {
+            q.push_back({queries[i], i});
+        }
+        sort(q.begin(), q.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[0] < b[0];
+        });
+        int qId = 0;
+        multiset<int> s;
+        for (int i = 0; i < queries.size(); ++i) {
+            while (qId < intervals.size() && intervals[qId][0] <= queries[i]) {
+                s.insert(intervals[qId][1] - intervals[qId][0] + 1);
+                ++qId;
+            }
+            while (!s.empty() && *s.begin() < queries[i]) {
+                s.erase(s.begin());
+            }
+            if (s.empty()) {
+                ans.push_back(-1);
+            } else {
+                ans.push_back(*s.begin());
+            }
+        }
+        return ans;

@@ -1,0 +1,443 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                map.computeIfAbsent(matrix[i][j], k -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        int[] row = new int[m];
+        int[] col = new int[n];
+        int[][] ans = new int[m][n];
+        for (int key : map.keySet()) {
+            List<int[]> list = map.get(key);
+            UnionFind uf = new UnionFind(m + n);
+            for (int[] point : list) {
+                uf.union(point[0], point[1] + m);
+            }
+            Map<Integer, List<Integer>> groups = new HashMap<>();
+            for (int i = 0; i < m + n; i++) {
+                groups.computeIfAbsent(uf.find(i), k -> new ArrayList<>()).add(i);
+            }
+            for (List<Integer> group : groups.values()) {
+                int max = 0;
+                for (int i : group) {
+                    if (i < m) {
+                        max = Math.max(max, row[i]);
+                    } else {
+                        max = Math.max(max, col[i - m]);
+                    }
+                }
+                for (int i : group) {
+                    if (i < m) {
+                        row[i] = max + 1;
+                    } else {
+                        col[i - m] = max + 1;
+                    }
+                }
+            }
+            for (int[] point : list) {
+                ans[point[0]][point[1]] = row[point[0]];
+            }
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[][] res = new int[m][n];
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                map.computeIfAbsent(matrix[i][j], x -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        int[] rowMax = new int[m], colMax = new int[n];
+        for (int val : map.keySet()) {
+            int[] rank = new int[m + n];
+            for (int[] ij : map.get(val)) {
+                int i = ij[0], j = ij[1];
+                rank[i] = Math.max(rank[i], colMax[j]);
+                rank[m + j] = Math.max(rank[m + j], rowMax[i]);
+            }
+            for (int[] ij : map.get(val)) {
+                int i = ij[0], j = ij[1];
+                res[i][j] = rank[i] = rank[m + j] = rowMax[i] = colMax[j] = Math.max(rank[i], rank[m + j]) + 1;
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] res = new int[m][n];
+        int[] rowMax = new int[m];
+        int[] colMax = new int[n];
+        int[] rowMin = new int[m];
+        int[] colMin = new int[n];
+        Arrays.fill(rowMin, Integer.MAX_VALUE);
+        Arrays.fill(colMin, Integer.MAX_VALUE);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = matrix[i][j];
+                rowMax[i] = Math.max(rowMax[i], val);
+                colMax[j] = Math.max(colMax[j], val);
+                rowMin[i] = Math.min(rowMin[i], val);
+                colMin[j] = Math.min(colMin[j], val);
+            }
+        }
+        int[] rowRank = new int[m];
+        int[] colRank = new int[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = matrix[i][j];
+                if (rowMax[i] == val || colMax[j] == val) {
+                    res[i][j] = Math.max(rowRank[i], colRank[j]) + 1;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = matrix[i][j];
+                if (rowMin[i] == val || colMin[j] == val) {
+                    res[i][j] = Math.max(rowRank[i], colRank[j]) + 1;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = matrix[i][j];
+                if (res[i][j] == 0) {
+                    res[i][j] = Math.max(rowRank[i], colRank[j]) + 1;
+                }
+                rowRank[i] = Math.max(rowRank[i], res[i][j]);
+                colRank[j] = Math.max(colRank[j], res[i][j]);
+            }
+        }
+        return res
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] res = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                res[i][j] = 0;
+            }
+        }
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int val = matrix[i][j];
+                if (!map.containsKey(val)) {
+                    map.put(val, new ArrayList<>());
+                }
+                map.get(val).add(new int[]{i, j});
+            }
+        }
+        int[] rank = new int[m + n];
+        for (int val : map.keySet()) {
+            List<int[]> list = map.get(val);
+            int[] parent = new int[m + n];
+            for (int i = 0; i < m + n; i++) {
+                parent[i] = i;
+            }
+            for (int[] pair : list) {
+                int x = pair[0];
+                int y = pair[1];
+                int px = find(parent, x);
+                int py = find(parent, y + m);
+                if (px != py) {
+                    parent[px] = py;
+                }
+            }
+            Map<Integer, Integer> maxRank = new HashMap<>();
+            for (int[] pair : list) {
+                int x = pair[0];
+                int y = pair[1];
+                int px = find(parent, x);
+                int py = find(parent, y + m);
+                int p = px;
+                if (px != py) {
+                    p = Math.min(px, py);
+                }
+                int r = Math.max(rank[x], rank[y + m]) + 1;
+                maxRank.put(p, Math.max(maxRank.getOrDefault(p, 0), r));
+            }
+            for (int[] pair : list) {
+                int x = pair[0];
+                int y = pair[1];
+                int px = find(parent, x);
+                int py = find(parent, y + m);
+                int p = px;
+                if (px != py) {
+                    p = Math.min(px, py);
+                }
+                res[x][y] =
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[][] res = new int[m][n];
+        int[] rank = new int[m + n];
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                map.computeIfAbsent(matrix[i][j], x -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        for (int x : map.keySet()) {
+            int[] parent = new int[m + n];
+            int[] size = new int[m + n];
+            for (int i = 0; i < m + n; ++i) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+            for (int[] ij : map.get(x)) {
+                int i = ij[0], j = ij[1], p = find(parent, i), q = find(parent, j + m);
+                if (p == q) continue;
+                parent[p] = q;
+                size[q] += size[p];
+            }
+            Map<Integer, Integer> group = new HashMap<>();
+            for (int i = 0; i < m; ++i) {
+                int p = find(parent, i);
+                group.put(p, Math.max(group.getOrDefault(p, 0), rank[i]));
+            }
+            for (int j = 0; j < n; ++j) {
+                int p = find(parent, j + m);
+                group.put(p, Math.max(group.getOrDefault(p, 0), rank[m + j]));
+            }
+            for (int[] ij : map.get(x)) {
+                int i = ij[0], j = ij[1];
+                int p = find(parent, i);
+                int val = group.get(p) + 1;
+                res[i][j] = val;
+                rank[i] = rank[m + j] = val;
+            }
+        }
+        return res;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) parent[i] = find(parent, parent[i]);
+        return parent[i];
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] ans = new int[m][n];
+        int[] rank = new int[m + n];
+        Map<Integer, List<int[]>> map = new HashMap();
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                map.computeIfAbsent(matrix[i][j], z-> new ArrayList()).add(new int[]{i, j});
+
+        for (int x: map.keySet()) {
+            DSU dsu = new DSU(m + n);
+            int[] rank2 = rank.clone();
+            for (int[] ij: map.get(x)) {
+                int i = ij[0], j = ij[1], ri = dsu.find(i), rj = dsu.find(j + m);
+                dsu.union(i, j + m);
+                rank2[dsu.find(i)] = Math.max(rank2[ri], rank2[rj]);
+            }
+            for (int[] ij: map.get(x)) {
+                int i = ij[0], j = ij[1];
+                ans[i][j] = rank[i] = rank[j + m] = ans[i][j] = rank[dsu.find(i)] + 1;
+            }
+        }
+        return ans;
+    }
+}
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] rank = new int[m][n];
+        int[] rowMax = new int[m];
+        int[] colMax = new int[n];
+        Map<Integer, List<int[]>> map = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                map.computeIfAbsent(matrix[i][j], k -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        int[] sorted = map.keySet().stream().mapToInt(i -> i).sorted().toArray();
+        for (int val : sorted) {
+            int[] parent = new int[m + n];
+            for (int i = 0; i < m + n; i++) {
+                parent[i] = i;
+            }
+            for (int[] pos : map.get(val)) {
+                int i = pos[0], j = pos[1];
+                int p1 = find(parent, i);
+                int p2 = find(parent, j + m);
+                if (p1 == p2) {
+                    continue;
+                }
+                parent[p1] = p2;
+                rowMax[i] = Math.max(rowMax[i], colMax[j]);
+                colMax[j] = Math.max(rowMax[i], colMax[j]);
+            }
+            for (int[] pos : map.get(val)) {
+                int i = pos[0], j = pos[1];
+                rank[i][j] = rowMax[i] = colMax[j] = Math.max(rowMax[i], colMax[j]) + 1;
+            }
+        }
+        return rank;
+    }
+
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] result = new int[m][n];
+        Map<Integer, List<int[]>> map = new TreeMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                map.computeIfAbsent(matrix[i][j], k -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        int[] row = new int[m];
+        int[] col = new int[n];
+        for (int key : map.keySet()) {
+            List<int[]> list = map.get(key);
+            int[] parent = new int[m + n];
+            for (int i = 0; i < parent.length; i++) {
+                parent[i] = i;
+            }
+            int[] size = new int[m + n];
+            Arrays.fill(size, 1);
+            for (int[] pos : list) {
+                int i = pos[0];
+                int j = pos[1];
+                int p1 = find(parent, i);
+                int p2 = find(parent, j + m);
+                if (p1 != p2) {
+                    parent[p1] = p2;
+                    size[p2] += size[p1];
+                }
+            }
+            Map<Integer, Integer> map2 = new HashMap<>();
+            for (int[] pos : list) {
+                int i = pos[0];
+                int j = pos[1];
+                int p = find(parent, i);
+                if (!map2.containsKey(p)) {
+                    map2.put(p, Math.max(row[i], col[j]) + 1);
+                }
+                result[i][j] = map2.get(p);
+            }
+            for (int[] pos : list) {
+                int i = pos[0];
+                int j = pos[1];
+                int p = find(parent, i);
+                row[i] = col[j] = result[i][j];
+            }
+        }
+        return result;
+    }
+    public int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] res = new int[m][n];
+        int[] rank = new int[m+n];
+        Map<Integer, List<int[]>> map = new TreeMap<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                map.computeIfAbsent(matrix[i][j], x -> new ArrayList<>()).add(new int[]{i, j});
+            }
+        }
+        for (int x : map.keySet()) {
+            DSU dsu = new DSU(m + n);
+            int[] rank2 = rank.clone();
+            for (int[] ij : map.get(x)) {
+                int i = ij[0], j = ij[1], r = dsu.find(i);
+                rank2[r] = Math.max(rank2[r], rank[j + m]);
+                dsu.union(i, j + m);
+                r = dsu.find(i);
+                rank2[r] = Math.max(rank2[r], rank2[j + m] + 1);
+            }
+            for (int[] ij : map.get(x)) {
+                int i = ij[0], j = ij[1];
+                res[i][j] = rank[i] = rank[j + m] = rank[dsu.find(i)];
+            }
+        }
+        return res;
+    }
+}
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] res = new int[m][n];
+        int[][] index = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                index[i][j] = i * n + j;
+            }
+        }
+        int[] rank = new int[m + n];
+        for (int[] row : matrix) {
+            int[] tmp = Arrays.copyOf(row, n);
+            Arrays.sort(tmp);
+            for (int i = 0; i < n; i++) {
+                if (i == 0 || tmp[i] != tmp[i - 1]) {
+                    int[] pos = new int[m];
+                    int cnt = 0;
+                    for (int j = 0; j < m; j++) {
+                        if (matrix[j][i] == tmp[i]) {
+                            pos[cnt++] = j;
+                        }
+                    }
+                    for (int k = 0; k < cnt; k++) {
+                        for (int l = k + 1; l < cnt; l++) {
+                            int x = pos[k];
+                            int y = pos[l];
+                            int rx = find(index, x * n + i);
+                            int ry = find(index, y * n + i);
+                            if (rx != ry) {
+                                if (rx > ry) {
+                                    int t = rx;
+                                    rx = ry;
+                                    ry = t;
+                                }
+                                index[ry / n][ry % n] = rx;
+                                rank[rx / n] = Math.max(rank[rx / n], rank[ry / n]);
+                                rank[rx % n + m] = Math.max(rank[rx % n + m], rank[ry % n + m]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int r = find(index, i * n + j);
+                res[i][j] = Math.max(rank[r / n], rank[r % n + m]) + 1;
+            }
+        }
+        return res;

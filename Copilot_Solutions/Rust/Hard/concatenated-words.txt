@@ -1,0 +1,205 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        let mut words = words;
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut res = Vec::new();
+        let mut set = std::collections::HashSet::new();
+        for word in words {
+            if Self::is_concatenated(&word, &set) {
+                res.push(word.clone());
+            }
+            set.insert(word);
+        }
+        res
+    }
+    fn is_concatenated(word: &str, set: &std::collections::HashSet<String>) -> bool {
+        if word.len() == 0 {
+            return false;
+        }
+        let mut dp = vec![false; word.len() + 1];
+        dp[0] = true;
+        for i in 1..=word.len() {
+            for j in 0..i {
+                if dp[j] && set.contains(&word[j..i]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[word.len()]
+
+=======
+
+        let mut words = words;
+        words.sort_by_key(|s| s.len());
+        let mut res = Vec::new();
+        let mut set = std::collections::HashSet::new();
+        for word in &words {
+            if Solution::can_form(word, &set) {
+                res.push(word.clone());
+            }
+            set.insert(word);
+        }
+        res
+    }
+    fn can_form(word: &String, set: &std::collections::HashSet<&String>) -> bool {
+        if set.is_empty() {
+            return false;
+        }
+        let mut dp = vec![false; word.len() + 1];
+        dp[0] = true;
+        for i in 0..=word.len() {
+            for j in 0..i {
+                if !dp[j] {
+                    continue;
+                }
+                if set.contains(&word[j..i].to_string()) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[word.len()]
+
+=======
+
+        let mut words: Vec<String> = words.into_iter().filter(|s| s.len() > 0).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut ans = vec![];
+        let mut set = HashSet::new();
+        for i in 0..words.len() {
+            if Self::is_concat(&words[i], &set) {
+                ans.push(words[i].clone());
+            }
+            set.insert(words[i].clone());
+        }
+        ans
+    }
+    fn is_concat(s: &String, set: &HashSet<String>) -> bool {
+        if set.contains(s) {
+            return true;
+        }
+        for i in 1..s.len() {
+            if set.contains(&s[..i]) && Self::is_concat(&s[i..].to_string(), set) {
+                return true;
+            }
+        }
+        false
+
+=======
+
+        let mut words: Vec<_> = words.into_iter().map(|s| s.into_bytes()).collect();
+        words.sort_by_key(|s| s.len());
+        let mut res: Vec<String> = vec![];
+        let mut set: HashSet<Vec<u8>> = HashSet::new();
+        for word in words {
+            if word.len() == 0 { continue; }
+            if word.len() == 1 {
+                set.insert(word);
+                continue;
+            }
+            if Self::can_form(&word, &set) {
+                res.push(String::from_utf8(word).unwrap());
+            }
+            set.insert(word);
+        }
+        res
+    }
+    
+    fn can_form(word: &[u8], set: &HashSet<Vec<u8>>) -> bool {
+        if word.len() == 0 { return true; }
+        let mut dp: Vec<bool> = vec![false; word.len()+1];
+        dp[0] = true;
+        for i in 0..word.len() {
+            if !dp[i] { continue; }
+            for j in i+1..word.len()+1 {
+                if set.contains(&word[i..j].to_vec()) {
+                    dp[j] = true;
+                }
+            }
+        }
+        dp[word.len()]
+
+=======
+
+        let mut words: Vec<String> = words.iter().map(|s| s.to_string()).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut word_set: HashSet<String> = HashSet::new();
+        let mut res: Vec<String> = Vec::new();
+        for word in words {
+            if Self::is_concatenated(&word, &word_set) {
+                res.push(word.clone());
+            }
+            word_set.insert(word);
+        }
+        res
+    }
+    fn is_concatenated(word: &String, word_set: &HashSet<String>) -> bool {
+        if word_set.contains(word) {
+            return true;
+        }
+        let mut dp: Vec<bool> = vec![false; word.len() + 1];
+        dp[0] = true;
+        for i in 1..word.len() + 1 {
+            for j in 0..i {
+                if dp[j] && word_set.contains(&word[j..i]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[word.len()]
+
+=======
+
+        let mut words = words.iter().map(|s| s.as_bytes().to_vec()).collect::<Vec<Vec<u8>>>();
+        words.sort_by_key(|x| x.len());
+        let mut res = Vec::new();
+        for i in 0..words.len() {
+            if Solution::is_concatenated(&words[i], &words[0..i]) {
+                res.push(String::from_utf8(words[i].clone()).unwrap());
+            }
+        }
+        res
+    }
+    fn is_concatenated(word: &Vec<u8>, words: &[Vec<u8>]) -> bool {
+        let mut dp = vec![false; word.len() + 1];
+        dp[0] = true;
+        for i in 1..=word.len() {
+            for j in 0..i {
+                if dp[j] && words.binary_search(&word[j..i]).is_ok() {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[word.len()]
+
+=======
+
+        let mut dict = std::collections::HashSet::new();
+        for w in &words {
+            dict.insert(w.as_str());
+        }
+        let mut res = vec![];
+        for w in &words {
+            if Self::is_concatenated(w, &dict) {
+                res.push(w.to_string());
+            }
+        }
+        res
+    }
+    fn is_concatenated(word: &str, dict: &std::collections::HashSet<&str>) -> bool {
+        let mut dp = vec![false; word.len() + 1];
+        dp[0] = true;
+        for i in 1..=word.len() {
+            for j in 0..i {
+                if dp[j] && dict.contains(&word[j..i]) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        dp[word.len()]

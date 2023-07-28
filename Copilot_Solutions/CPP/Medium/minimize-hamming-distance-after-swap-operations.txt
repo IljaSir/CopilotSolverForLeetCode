@@ -1,0 +1,249 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = source.size();
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            return p[x] == x ? x : p[x] = find(p[x]);
+        };
+        for (auto& v : allowedSwaps) {
+            p[find(v[0])] = find(v[1]);
+        }
+        unordered_map<int, unordered_map<int, int>> cnt;
+        for (int i = 0; i < n; ++i) {
+            ++cnt[find(i)][source[i]];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans += --cnt[find(i)][target[i]] < 0;
+        }
+        return ans;
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (auto& p : allowedSwaps) {
+            unionSet(parent, p[0], p[1]);
+        }
+        unordered_map<int, unordered_map<int, int>> count;
+        for (int i = 0; i < n; i++) {
+            count[find(parent, i)][source[i]]++;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (count[find(parent, i)][target[i]]-- == 0) {
+                res++;
+            }
+        }
+        return res;
+    }
+    void unionSet(vector<int>& parent, int i, int j) {
+        parent[find(parent, i)] = find(parent, j);
+    }
+    int find(vector<int>& parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n, 0);
+        vector<int> size(n, 1);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (auto& swap : allowedSwaps) {
+            int p1 = findParent(parent, swap[0]);
+            int p2 = findParent(parent, swap[1]);
+            if (p1 != p2) {
+                if (size[p1] < size[p2]) {
+                    parent[p1] = p2;
+                    size[p2] += size[p1];
+                } else {
+                    parent[p2] = p1;
+                    size[p1] += size[p2];
+                }
+            }
+        }
+        unordered_map<int, unordered_map<int, int>> count;
+        for (int i = 0; i < n; ++i) {
+            int p = findParent(parent, i);
+            count[p][source[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int p = findParent(parent, i);
+            if (count[p][target[i]] > 0) {
+                count[p][target[i]]--;
+            } else {
+                ans++;
+            }
+        }
+        return ans;
+    }
+    
+    int findParent(vector<int>& parent, int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        return parent[i] = findParent(parent, parent[i]);
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (const auto& swap : allowedSwaps) {
+            int x = find(parent, swap[0]);
+            int y = find(parent, swap[1]);
+            if (x != y) {
+                parent[x] = y;
+            }
+        }
+        unordered_map<int, unordered_map<int, int>> count;
+        for (int i = 0; i < n; ++i) {
+            count[find(parent, i)][source[i]]++;
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            if (--count[find(parent, i)][target[i]] < 0) {
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n, 0);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        for (auto& swap : allowedSwaps) {
+            int x = findParent(parent, swap[0]);
+            int y = findParent(parent, swap[1]);
+            parent[x] = y;
+        }
+        unordered_map<int, unordered_map<int, int>> m;
+        for (int i = 0; i < n; ++i) {
+            int p = findParent(parent, i);
+            ++m[p][source[i]];
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int p = findParent(parent, i);
+            if (m[p][target[i]] > 0) {
+                --m[p][target[i]];
+            } else {
+                ++res;
+            }
+        }
+        return res;
+
+=======
+
+        int n = source.size();
+        vector<int> p(n);
+        for (int i = 0; i < n; ++i) {
+            p[i] = i;
+        }
+        auto find = [&](int x) {
+            return x == p[x] ? x : p[x] = find(p[x]);
+        };
+        for (auto& v : allowedSwaps) {
+            p[find(v[0])] = find(v[1]);
+        }
+        unordered_map<int, unordered_map<int, int>> cnt;
+        for (int i = 0; i < n; ++i) {
+            cnt[find(i)][source[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            if (cnt[find(i)][target[i]]-- == 0) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<int>> graph(source.size());
+        for (auto& v : allowedSwaps) {
+            graph[v[0]].push_back(v[1]);
+            graph[v[1]].push_back(v[0]);
+        }
+        vector<bool> visited(source.size(), false);
+        int res = 0;
+        for (int i = 0; i < source.size(); ++i) {
+            if (!visited[i]) {
+                unordered_set<int> s;
+                dfs(graph, i, visited, s);
+                unordered_map<int, int> m;
+                for (int j : s) {
+                    ++m[source[j]];
+                    --m[target[j]];
+                }
+                for (auto& p : m) {
+                    res += abs(p.second);
+                }
+            }
+        }
+        return res / 2;
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        for (auto& p : allowedSwaps) {
+            int a = p[0], b = p[1];
+            int pa = find(parent, a), pb = find(parent, b);
+            if (pa != pb) parent[pa] = pb;
+        }
+        unordered_map<int, unordered_map<int, int>> cnt;
+        for (int i = 0; i < n; ++i) {
+            int p = find(parent, i);
+            cnt[p][source[i]]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int p = find(parent, i);
+            if (cnt[p][target[i]] > 0) {
+                cnt[p][target[i]]--;
+            } else {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = source.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        for (const auto& swap : allowedSwaps) {
+            unionSet(parent, swap[0], swap[1]);
+        }
+        unordered_map<int, unordered_map<int, int>> cnt;
+        for (int i = 0; i < n; ++i) {
+            int p = findSet(parent, i);
+            ++cnt[p][source[i]];
+        }
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int p = findSet(parent, i);
+            if (--cnt[p][target[i]] < 0) {
+                ++res;
+            }
+        }
+        return res;

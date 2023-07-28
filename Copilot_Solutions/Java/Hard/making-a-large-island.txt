@@ -1,0 +1,462 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = grid.length;
+        int[] parent = new int[n * n];
+        int[] area = new int[n * n];
+        for (int i = 0; i < n * n; i++) {
+            parent[i] = i;
+            area[i] = 1;
+        }
+        int[][] dirs = new int[][]{{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) continue;
+                int p = i * n + j;
+                for (int[] dir : dirs) {
+                    int x = i + dir[0];
+                    int y = j + dir[1];
+                    if (x < 0 || x >= n || y < 0 || y >= n || grid[x][y] == 0) continue;
+                    int q = x * n + y;
+                    union(parent, area, p, q);
+                }
+            }
+        }
+        int maxArea = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int[] count = new int[n * n];
+                    for (int[] dir : dirs) {
+                        int x = i + dir[0];
+                        int y = j + dir[1];
+                        if (x < 0 || x >= n || y < 0 || y >= n || grid[x][y] == 0) continue;
+                        int p = x * n + y;
+                        int rootP = find(parent, p);
+                        if (count[rootP] == 0) {
+                            count[rootP] = area[rootP];
+                        }
+                    }
+                    int curArea = 1;
+                    for (int c : count) {
+                        curArea += c;
+                    }
+                    maxArea = Math.max(maxArea, curArea);
+                }
+            }
+        }
+        return maxArea;
+
+=======
+
+        int n = grid.length;
+        int[] area = new int[n*n+2];
+        int index = 2;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(grid[i][j] == 1){
+                    area[index] = dfs(grid, i, j, index);
+                    index++;
+                }
+            }
+        }
+        int res = area[2];
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                if(grid[i][j] == 0){
+                    int cur = 1;
+                    HashSet<Integer> set = new HashSet<>();
+                    if(i-1 >= 0 && grid[i-1][j] != 0) set.add(grid[i-1][j]);
+                    if(i+1 < n && grid[i+1][j] != 0) set.add(grid[i+1][j]);
+                    if(j-1 >= 0 && grid[i][j-1] != 0) set.add(grid[i][j-1]);
+                    if(j+1 < n && grid[i][j+1] != 0) set.add(grid[i][j+1]);
+                    for(int k : set){
+                        cur += area[k];
+                    }
+                    res = Math.max(res, cur);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = grid.length;
+        int[] size = new int[n * n + 2];
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int id = 2;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    size[id] = dfs(grid, i, j, id, dirs);
+                    id++;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 2; i < id; ++i) {
+            res = Math.max(res, size[i]);
+        }
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0) {
+                    int cur = 1;
+                    Set<Integer> seen = new HashSet();
+                    for (int[] dir : dirs) {
+                        int nr = i + dir[0];
+                        int nc = j + dir[1];
+                        if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] > 1) {
+                            int idx = grid[nr][nc];
+                            if (!seen.contains(idx)) {
+                                seen.add(idx);
+                                cur += size[idx];
+                            }
+                        }
+                    }
+                    res = Math.max(res, cur);
+                }
+            }
+        }
+        return res;
+    }
+
+    private int dfs(int[][] grid, int r, int c, int id, int[][] dirs) {
+        int n = grid.length;
+        grid[r][c] = id;
+        int res = 1;
+        for (int[] dir : dirs) {
+            int nr = r + dir[0];
+            int nc = c + dir[1];
+            if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 1) {
+                res += dfs(grid, nr, nc, id, dirs);
+            }
+        }
+        return res;
+
+=======
+
+        int N = grid.length;
+        int[] area = new int[N*N+2];
+        int idx = 2;
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                if (grid[i][j] == 1)
+                    area[idx] = dfs(grid, i, j, idx++);
+
+        int ans = 0;
+        for (int x: area) ans = Math.max(ans, x);
+
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                if (grid[i][j] == 0) {
+                    Set<Integer> seen = new HashSet();
+                    for (int nei: neighbors(grid, i, j)) {
+                        seen.add(nei);
+                        ans = Math.max(ans, 1 + area[nei]);
+                    }
+                }
+
+        return ans;
+    }
+
+    public int dfs(int[][] grid, int r, int c, int idx) {
+        if (0 <= r && r < grid.length && 0 <= c && c < grid.length && grid[r][c] == 1) {
+            grid[r][c] = idx;
+            return 1 + dfs(grid, r+1, c, idx) + dfs(grid, r-1, c, idx) + dfs(grid, r, c+1, idx) + dfs(grid, r, c-1, idx);
+        }
+        return 0;
+
+=======
+
+        int n = grid.length;
+        int[] parent = new int[n*n+1];
+        int[] size = new int[n*n+1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int id = i*n+j+1;
+                    parent[id] = id;
+                    size[id] = 1;
+                }
+            }
+        }
+        int[][] dirs = new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int p1 = find(parent, i*n+j+1);
+                    for (int[] d : dirs) {
+                        int x = i+d[0];
+                        int y = j+d[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                            int p2 = find(parent, x*n+y+1);
+                            if (p1 != p2) {
+                                parent[p2] = p1;
+                                size[p1] += size[p2];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 1; i <= n*n; i++) {
+            if (size[i] > max) {
+                max = size[i];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int[] p = new int[4];
+                    int cnt = 0;
+                    for (int[] d : dirs) {
+                        int x = i+d[0];
+                        int y = j+d[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                            int p1 = find(parent, x*n+y+1);
+                            if (cnt == 0 || p1 != p[0
+
+=======
+
+        int n = grid.length;
+        int[] area = new int[n * n + 2];
+        int index = 2;
+        int[][] dir = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    Queue<int[]> q = new LinkedList<>();
+                    q.offer(new int[]{i, j});
+                    grid[i][j] = index;
+                    while (!q.isEmpty()) {
+                        int[] cur = q.poll();
+                        area[index]++;
+                        for (int[] d : dir) {
+                            int x = cur[0] + d[0];
+                            int y = cur[1] + d[1];
+                            if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                                grid[x][y] = index;
+                                q.offer(new int[]{x, y});
+                            }
+                        }
+                    }
+                    index++;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 2; i < index; i++) {
+            res = Math.max(res, area[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    Set<Integer> set = new HashSet<>();
+                    for (int[] d : dir) {
+                        int x = i + d[0];
+                        int y = j + d[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] > 1) {
+                            set.add(grid[x][y]);
+                        }
+                    }
+                    int cur = 1;
+                    for (int k : set) {
+                        cur += area[k];
+                    }
+                    res = Math.max(res, cur);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = grid.length;
+        int[][] dir = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int[][] id = new int[n][n];
+        int[] size = new int[n * n + 1];
+        int idCount = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1 && id[i][j] == 0) {
+                    int area = dfs(grid, i, j, idCount, id, size, dir);
+                    idCount++;
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int area = 1;
+                    Set<Integer> set = new HashSet<>();
+                    for (int k = 0; k < 4; k++) {
+                        int x = i + dir[k][0];
+                        int y = j + dir[k][1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                            set.add(id[x][y]);
+                        }
+                    }
+                    for (int k : set) {
+                        area += size[k];
+                    }
+                    max = Math.max(max, area);
+                }
+            }
+        }
+        if (max == 0) {
+            max = n * n;
+        }
+        return max;
+
+=======
+
+        int n = grid.length;
+        int[] parent = new int[n*n];
+        int[] size = new int[n*n];
+        int[] dir = new int[]{0, 1, 0, -1, 0};
+        for (int i = 0; i < n*n; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    for (int k = 0; k < 4; k++) {
+                        int x = i + dir[k];
+                        int y = j + dir[k+1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                            union(parent, size, i*n+j, x*n+y);
+                        }
+                    }
+                    max = Math.max(max, size[find(parent, i*n+j)]);
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    Set<Integer> set = new HashSet<>();
+                    for (int k = 0; k < 4; k++) {
+                        int x = i + dir[k];
+                        int y = j + dir[k+1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                            set.add(find(parent, x*n+y));
+                        }
+                    }
+                    int sum = 1;
+                    for (int p : set) {
+                        sum += size[p];
+                    }
+                    max = Math.max(max, sum);
+                }
+            }
+        }
+        return max;
+    }
+    private int find(int[] parent, int i) {
+        if (parent[i] != i) {
+            parent[i] = find(parent, parent[i]);
+        }
+        return parent[i];
+
+=======
+
+        int n = grid.length;
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int[] areas = new int[n * n + 2];
+        int index = 2;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    areas[index] = dfs(grid, i, j, index, dirs);
+                    index++;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int area = 1;
+                    Set<Integer> seen = new HashSet<>();
+                    for (int[] dir : dirs) {
+                        int x = i + dir[0];
+                        int y = j + dir[1];
+                        if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] > 1 && !seen.contains(grid[x][y])) {
+                            area += areas[grid[x][y]];
+                            seen.add(grid[x][y]);
+                        }
+                    }
+                    ans = Math.max(ans, area);
+                }
+            }
+        }
+        return ans == 0 ? n * n : ans;
+    }
+    
+    private int dfs(int[][] grid, int i, int j, int index, int[][] dirs) {
+        grid[i][j] = index;
+        int area = 1;
+        for (int[] dir : dirs) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+            if (x >= 0 && x < grid.length && y >= 0 && y < grid.length && grid[x][y] == 1) {
+                area += dfs(grid, x, y, index, dirs);
+            }
+        }
+        return area;
+
+=======
+
+        int n = grid.length;
+        int[] parent = new int[n*n+2];
+        int[] size = new int[n*n+2];
+        int[] dx = {0, 0, 1, -1};
+        int[] dy = {1, -1, 0, 0};
+        for (int i = 0; i < n*n+2; i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        int count = 1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) continue;
+                int p = i*n+j+1;
+                for (int k = 0; k < 4; k++) {
+                    int x = i+dx[k];
+                    int y = j+dy[k];
+                    if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                        int q = x*n+y+1;
+                        int pRoot = find(parent, p);
+                        int qRoot = find(parent, q);
+                        if (pRoot != qRoot) {
+                            parent[qRoot] = pRoot;
+                            size[pRoot] += size[qRoot];
+                        }
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) continue;
+                int p = i*n+j+1;
+                int pRoot = find(parent, p);
+                Set<Integer> set = new HashSet<>();
+                for (int k = 0; k < 4; k++) {
+                    int x = i+dx[k];
+                    int y = j+dy[k];
+                    if (x >= 0 && x < n && y >= 0 && y < n && grid[x][y] == 1) {
+                        int q = x*n+y+1;
+                        int qRoot = find(parent, q);
+                        if (!set.contains(qRoot)) {
+                            set.add(qRoot);
+                            res = Math.max(res, size[qRoot]);
+                        }
+                    }
+                }

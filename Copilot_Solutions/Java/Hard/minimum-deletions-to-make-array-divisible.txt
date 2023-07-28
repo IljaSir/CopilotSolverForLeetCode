@@ -1,0 +1,252 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int gcd = numsDivide[0];
+        for (int i = 1; i < numsDivide.length; i++) {
+            gcd = gcd(gcd, numsDivide[i]);
+        }
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] % gcd != 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int gcd(int a, int b) {
+        if (a == 0) {
+            return b;
+        }
+        return gcd(b % a, a);
+
+=======
+
+        int gcdOfDivide = numsDivide[0];
+        for (int i = 1; i < numsDivide.length; i++) {
+            gcdOfDivide = gcd(gcdOfDivide, numsDivide[i]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            min = Math.min(min, nums[i] % gcdOfDivide);
+        }
+        if (min == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] % gcdOfDivide == min) {
+                count++;
+            }
+        }
+        return count;
+    }
+    private int gcd(int a, int b) {
+        if (a == 0) {
+            return b;
+        }
+        return gcd(b % a, a);
+
+=======
+
+        int n = nums.length;
+        int m = numsDivide.length;
+        long gcd = numsDivide[0];
+        for (int i = 1; i < m; i++) {
+            gcd = gcd(gcd, numsDivide[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > gcd) {
+                return -1;
+            }
+        }
+        int[] count = new int[1000001];
+        for (int i = 0; i < m; i++) {
+            count[(int) (numsDivide[i] / gcd)]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int g = (int) (gcd(nums[i], gcd));
+            int x = (int) (gcd / g);
+            ans += count[x];
+            for (int j = x; j <= 1000000; j += x) {
+                count[j]--;
+            }
+        }
+        return n - ans;
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            max = Math.max(max, nums[i]);
+        }
+        int[] count = new int[max + 1];
+        for (int i = 0; i < nums.length; i++) {
+            count[nums[i]]++;
+        }
+        for (int i = max; i >= 0; i--) {
+            int sum = 0;
+            for (int j = i; j <= max; j += i) {
+                sum += count[j];
+            }
+            if (sum == numsDivide.length) {
+                return nums.length - sum;
+            }
+        }
+        return -1;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        for (int i : numsDivide) {
+            min = Math.min(min, i);
+        }
+        int count = 0;
+        for (int i : nums) {
+            if (min % i != 0) {
+                count++;
+            }
+        }
+        return count;
+
+=======
+
+        int n = nums.length;
+        int m = numsDivide.length;
+        int gcd = 0;
+        for (int i = 0; i < m; ++i) {
+            gcd = gcd(gcd, numsDivide[i]);
+        }
+        int[] cnt = new int[gcd];
+        for (int i = 0; i < n; ++i) {
+            cnt[nums[i] % gcd]++;
+        }
+        int res = n;
+        for (int i = 0; i < m; ++i) {
+            if (numsDivide[i] % gcd == 0) {
+                res = Math.min(res, n - cnt[0]);
+            }
+        }
+        return res == n ? -1 : res;
+    }
+    private int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for(int i=0;i<nums.length;i++){
+            min = Math.min(min,nums[i]);
+            max = Math.max(max,nums[i]);
+        }
+        int[] freq = new int[max+1];
+        for(int i=0;i<nums.length;i++){
+            freq[nums[i]]++;
+        }
+        int ans = 0;
+        for(int i=0;i<numsDivide.length;i++){
+            if(numsDivide[i]%min != 0){
+                return -1;
+            }
+            int num = numsDivide[i]/min;
+            for(int j=max;j>=1;j--){
+                while(num%j == 0 && freq[j] > 0){
+                    freq[j]--;
+                    num = num/j;
+                }
+            }
+            if(num > 1){
+                return -1;
+            }
+            ans += freq[num];
+            freq[num] = 0;
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int m = numsDivide.length;
+        long lcm = 1;
+        for (int x : numsDivide) {
+            lcm = lcm(lcm, x);
+        }
+        int[] count = new int[100001];
+        for (int x : nums) {
+            count[x]++;
+        }
+        long[] prefix = new long[100001];
+        for (int i = 1; i <= 100000; i++) {
+            prefix[i] = prefix[i - 1] + count[i];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 1; i <= 100000; i++) {
+            if (lcm % i == 0) {
+                int cnt = 0;
+                for (int j = i; j <= 100000; j += i) {
+                    cnt += prefix[j] - prefix[j - i];
+                }
+                ans = Math.min(ans, cnt);
+            }
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+    }
+
+    private long gcd(long a, long b) {
+        return b == 0 ? a : gcd(b, a % b);
+
+=======
+
+        int n = nums.length;
+        int m = numsDivide.length;
+        int[] cnt = new int[1000010];
+        for (int num : numsDivide) {
+            cnt[num]++;
+        }
+        int[] dp = new int[1000010];
+        Arrays.fill(dp, n + 1);
+        dp[0] = 0;
+        for (int i = 1; i <= 1000000; ++i) {
+            if (cnt[i] == 0) {
+                continue;
+            }
+            for (int j = 0; j < n; ++j) {
+                if (nums[j] % i == 0) {
+                    dp[i] = Math.min(dp[i], dp[i - 1] + j);
+                }
+            }
+        }
+        return dp[1000000] <= n ? dp[1000000] : -1;
+
+=======
+
+        int n = nums.length;
+        int m = numsDivide.length;
+        int[] cnt = new int[m];
+        int[] freq = new int[1000001];
+        int ans = 0;
+        for (int i = 0; i < n; i++) freq[nums[i]]++;
+        for (int i = 0; i < m; i++) {
+            cnt[i] = freq[numsDivide[i]];
+            if (cnt[i] == 0) return -1;
+        }
+        int gcd = numsDivide[0];
+        for (int i = 1; i < m; i++) gcd = gcd(gcd, numsDivide[i]);
+        for (int i = 0; i < m; i++) {
+            ans += cnt[i] - 1;
+            numsDivide[i] /= gcd;
+        }
+        int lcm = numsDivide[0];
+        for (int i = 1; i < m; i++) lcm = lcm(lcm, numsDivide[i]);
+        if (lcm == 1) return ans;
+        return -1;
+    }
+    private int gcd(int a, int b) {
+        if (b == 0) return a;
+        return gcd(b, a % b);

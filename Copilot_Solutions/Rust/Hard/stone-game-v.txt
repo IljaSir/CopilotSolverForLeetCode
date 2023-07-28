@@ -1,0 +1,286 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let n = stone_value.len();
+        let mut sum = vec![0; n + 1];
+        for i in 1..=n {
+            sum[i] = sum[i - 1] + stone_value[i - 1];
+        }
+        let mut dp = vec![vec![0; n]; n];
+        for i in 0..n {
+            dp[i][i] = 0;
+        }
+        for l in 2..=n {
+            for i in 0..n - l + 1 {
+                let j = i + l - 1;
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        dp[i][j] = std::cmp::max(dp[i][j], dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = std::cmp::max(dp[i][j], dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = std::cmp::max(dp[i][j], std::cmp::max(dp[i][k], dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        dp[0][n - 1]
+
+=======
+
+        let mut dp = vec![vec![0; stone_value.len()]; stone_value.len()];
+        let mut sum = vec![0; stone_value.len() + 1];
+        for i in 0..stone_value.len() {
+            sum[i + 1] = sum[i] + stone_value[i];
+        }
+        for i in 0..stone_value.len() {
+            for j in (i + 1)..stone_value.len() {
+                let mut max = 0;
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        max = max.max(dp[i][k] + left);
+                    } else if left > right {
+                        max = max.max(dp[k + 1][j] + right);
+                    } else {
+                        max = max.max(dp[i][k] + left);
+                        max = max.max(dp[k + 1][j] + right);
+                    }
+                }
+                dp[i][j] = max;
+            }
+        }
+        dp[0][stone_value.len() - 1]
+
+=======
+
+        let mut dp = vec![vec![0; stone_value.len()]; stone_value.len()];
+        let mut sum = vec![0; stone_value.len() + 1];
+        for i in 0..stone_value.len() {
+            sum[i + 1] = sum[i] + stone_value[i];
+        }
+        for i in (0..stone_value.len()).rev() {
+            for j in i + 1..stone_value.len() {
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left).max(dp[k + 1][j] + right);
+                    }
+                }
+            }
+        }
+        dp[0][stone_value.len() - 1]
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; stone_value.len()]; stone_value.len()];
+        let mut sum = vec![0; stone_value.len() + 1];
+        for i in 0..stone_value.len() {
+            sum[i + 1] = sum[i] + stone_value[i];
+        }
+        for i in (0..stone_value.len()).rev() {
+            for j in i + 1..stone_value.len() {
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k].max(dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        dp[0][stone_value.len() - 1]
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; stone_value.len()]; stone_value.len()];
+        let mut sum = vec![0; stone_value.len()];
+        sum[0] = stone_value[0];
+        for i in 1..stone_value.len() {
+            sum[i] = sum[i - 1] + stone_value[i];
+        }
+        for len in 2..=stone_value.len() {
+            for i in 0..(stone_value.len() - len + 1) {
+                let j = i + len - 1;
+                for k in i..j {
+                    let left = sum[k] - if i > 0 { sum[i - 1] } else { 0 };
+                    let right = sum[j] - sum[k];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    }
+                }
+            }
+        }
+        dp[0][stone_value.len() - 1]
+    }
+}
+
+=======
+
+        let n = stone_value.len();
+        let mut dp = vec![vec![0; n]; n];
+        let mut pre_sum = vec![0; n + 1];
+        for i in 0..n {
+            pre_sum[i + 1] = pre_sum[i] + stone_value[i];
+        }
+        for i in (0..n).rev() {
+            for j in i + 1..n {
+                for k in i..j {
+                    let left = pre_sum[k + 1] - pre_sum[i];
+                    let right = pre_sum[j + 1] - pre_sum[k + 1];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    }
+                }
+            }
+        }
+        dp[0][n - 1]
+
+=======
+
+        let n = stone_value.len();
+        if n == 1 {
+            return 0;
+        }
+        let mut sum = vec![0; n + 1];
+        for i in 0..n {
+            sum[i + 1] = sum[i] + stone_value[i];
+        }
+        let mut dp = vec![vec![0; n]; n];
+        for i in (0..n).rev() {
+            for j in i + 1..n {
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k].max(dp[k + 1][j]) + left);
+                    }
+                }
+            }
+        }
+        dp[0][n - 1]
+
+=======
+
+        let n = stone_value.len();
+        let mut dp: Vec<Vec<i32>> = vec![vec![0; n]; n];
+        let mut sum: Vec<i32> = vec![0; n + 1];
+        for i in 0..n {
+            sum[i + 1] = sum[i] + stone_value[i];
+        }
+        for len in 2..=n {
+            for i in 0..=n - len {
+                let j = i + len - 1;
+                for k in i..j {
+                    let left = sum[k + 1] - sum[i];
+                    let right = sum[j + 1] - sum[k + 1];
+                    if left < right {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                    } else if left > right {
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    } else {
+                        dp[i][j] = dp[i][j].max(dp[i][k] + left);
+                        dp[i][j] = dp[i][j].max(dp[k + 1][j] + right);
+                    }
+                }
+            }
+        }
+        dp[0][n - 1]
+
+=======
+
+        let n = stone_value.len();
+        let mut dp = vec![vec![-1; n]; n];
+        let mut sum = vec![0; n];
+        sum[0] = stone_value[0];
+        for i in 1..n {
+            sum[i] = sum[i - 1] + stone_value[i];
+        }
+        Self::dfs(&stone_value, &mut dp, &sum, 0, n - 1)
+    }
+    fn dfs(stone_value: &Vec<i32>, dp: &mut Vec<Vec<i32>>, sum: &Vec<i32>, start: usize, end: usize) -> i32 {
+        if start == end {
+            return 0;
+        }
+        if dp[start][end] != -1 {
+            return dp[start][end];
+        }
+        let mut ans = 0;
+        let mut left = 0;
+        let mut right = sum[end] - if start == 0 { 0 } else { sum[start - 1] };
+        for i in start..end {
+            left += stone_value[i];
+            right -= stone_value[i];
+            if left < right {
+                ans = ans.max(left + Self::dfs(stone_value, dp, sum, start, i));
+            } else if left > right {
+                ans = ans.max(right + Self::dfs(stone_value, dp, sum, i + 1, end));
+            } else {
+                ans = ans.max(left + Self::dfs(stone_value, dp, sum, start, i));
+                ans = ans.max(right + Self::dfs(stone_value, dp, sum, i + 1, end));
+            }
+        }
+        dp[start][end] = ans;
+        ans
+
+=======
+
+        let mut dp = vec![vec![0; stone_value.len()]; stone_value.len()];
+        let mut prefix_sum = vec![0; stone_value.len() + 1];
+        for i in 1..=stone_value.len() {
+            prefix_sum[i] = prefix_sum[i - 1] + stone_value[i - 1];
+        }
+        for i in 0..stone_value.len() {
+            dp[i][i] = stone_value[i];
+        }
+        for len in 2..=stone_value.len() {
+            for i in 0..=stone_value.len() - len {
+                let j = i + len - 1;
+                let mut max_score = 0;
+                for k in i..j {
+                    let left_sum = prefix_sum[k + 1] - prefix_sum[i];
+                    let right_sum = prefix_sum[j + 1] - prefix_sum[k + 1];
+                    if left_sum < right_sum {
+                        max_score = max_score.max(dp[i][k] + left_sum);
+                    } else if left_sum > right_sum {
+                        max_score = max_score.max(dp[k + 1][j] + right_sum);
+                    } else {
+                        max_score = max_score.max(dp[i][k] + left_sum);
+                        max_score = max_score.max(dp[k + 1][j] + right_sum);
+                    }
+                }
+                dp[i][j] = max_score;
+            }
+        }
+        dp[0][stone_value.len() - 1]

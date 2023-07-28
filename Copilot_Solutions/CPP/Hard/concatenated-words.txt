@@ -1,0 +1,223 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        unordered_set<string> dict(words.begin(), words.end());
+        vector<string> res;
+        for (string& word : words) {
+            int n = word.size();
+            vector<int> dp(n + 1);
+            dp[0] = 1;
+            for (int i = 1; i <= n; ++i) {
+                for (int j = 0; j < i; ++j) {
+                    if (dp[j] && dict.count(word.substr(j, i - j))) {
+                        dp[i] = 1;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(word);
+        }
+        return res;
+
+=======
+
+        unordered_set<string> dict;
+        for (const string& word : words) {
+            dict.insert(word);
+        }
+        vector<string> res;
+        for (const string& word : words) {
+            int n = word.size();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 0; i < n; ++i) {
+                if (!dp[i]) {
+                    continue;
+                }
+                for (int j = i + 1; j <= n; ++j) {
+                    if (dict.count(word.substr(i, j - i)) && j != n) {
+                        dp[j] = true;
+                    }
+                }
+                if (dp[n]) {
+                    res.push_back(word);
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        unordered_set<string> wordSet(words.begin(), words.end());
+        vector<string> res;
+        for (string& word : words) {
+            int n = word.size();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 1; i <= n; i++) {
+                for (int j = 0; j < i; j++) {
+                    if (!dp[j]) continue;
+                    if (wordSet.count(word.substr(j, i - j))) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(word);
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        unordered_set<string> dict(words.begin(), words.end());
+        for (auto word : words) {
+            if (word.empty()) continue;
+            int n = word.size();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 1; i <= n; ++i) {
+                for (int j = 0; j < i; ++j) {
+                    if (dp[j] && dict.find(word.substr(j, i - j)) != dict.end()) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(word);
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        unordered_set<string> dict(words.begin(), words.end());
+        for (auto &w : words) {
+            int n = w.size();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 0; i < n; i++) {
+                if (dp[i]) {
+                    for (int j = i + 1; j <= n; j++) {
+                        if (dict.count(w.substr(i, j - i))) {
+                            dp[j] = true;
+                        }
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(w);
+        }
+        return res;
+
+=======
+
+        set<string> dict(words.begin(), words.end());
+        vector<string> res;
+        for (auto w : words) {
+            if (w.empty()) continue;
+            int n = w.size();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 1; i <= n; i++) {
+                for (int j = i - 1; j >= 0; j--) {
+                    if (dict.count(w.substr(j, i - j)) && dp[j]) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(w);
+        }
+        return res;
+
+=======
+
+        sort(words.begin(), words.end(), [](string &a, string &b) { return a.size() < b.size(); });
+        unordered_set<string> st;
+        vector<string> res;
+        for (string &word : words) {
+            if (wordBreak(word, st)) {
+                res.push_back(word);
+            }
+            st.insert(word);
+        }
+        return res;
+    }
+    bool wordBreak(string s, unordered_set<string> &st) {
+        int n = s.size();
+        vector<bool> dp(n + 1, false);
+        dp[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && st.count(s.substr(j, i - j))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[n];
+
+=======
+
+        vector<string> res;
+        if (words.size() < 2) return res;
+        unordered_set<string> dict(words.begin(), words.end());
+        for (string word : words) {
+            int n = word.size();
+            vector<bool> dp(n+1, false);
+            dp[0] = true;
+            for (int i = 0; i <= n; i++) {
+                for (int j = 0; j < i; j++) {
+                    if (dp[j] && dict.count(word.substr(j, i-j))) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(word);
+        }
+        return res;
+
+=======
+
+        vector<string> res;
+        unordered_set<string> wordSet;
+        for (string word : words) wordSet.insert(word);
+        for (string word : words) {
+            if (word.empty()) continue;
+            int n = word.length();
+            vector<bool> dp(n + 1, false);
+            dp[0] = true;
+            for (int i = 1; i <= n; i++) {
+                for (int j = 0; j < i; j++) {
+                    if (dp[j] && wordSet.count(word.substr(j, i - j))) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) res.push_back(word);
+        }
+        return res;
+
+=======
+
+        vector<string> result;
+        for (auto &word : words) {
+            if (word.empty()) continue;
+            int n = word.size();
+            vector<bool> dp(n+1, false);
+            dp[0] = true;
+            for (int i = 1; i <= n; ++i) {
+                for (int j = i-1; j >= 0; --j) {
+                    if (dp[j] && find(words.begin(), words.end(), word.substr(j, i-j)) != words.end()) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+            }
+            if (dp[n]) result.push_back(word);
+        }
+        return result;

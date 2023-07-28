@@ -1,0 +1,119 @@
+Synthesizing 7/10 solutions
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        def get(n):
+            i = n.find('(')
+            if i >= 0:
+                n = n[:i] + n[i+1:-1] * 20
+            return float(n)
+        return get(s) == get(t)
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        def parse(s):
+            if '(' not in s:
+                return int(s), 0, 0
+            i = s.index('(')
+            return int(s[:i]), int(s[i+1:-1]), len(s) - i - 2
+        a, b, c = parse(s)
+        x, y, z = parse(t)
+        return a * y * z + b * x * z == x * b * c + y * a * c
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        def parse(s):
+            if '(' not in s:
+                return int(s), 1, 0
+            i = s.index('(')
+            return int(s[:i]), 1, int(s[i + 1:-1])
+        def reduce(a, b, c):
+            g = math.gcd(a, b)
+            a //= g
+            b //= g
+            g = math.gcd(b, c)
+            b //= g
+            c //= g
+            return a, b, c
+        def add(a, b, c, d, e):
+            return a * d + b * c, b * d, e
+        def eq(a, b, c, d, e):
+            a, b, c = reduce(a, b, c)
+            d, e, f = reduce(d, e, f)
+            return a == d and b == e and c == f
+        a, b, c = parse(s)
+        d, e, f = parse(t)
+        if c == 0 and f == 0:
+            return a * e == d * b
+        if c == 0:
+            return eq(a, b, c, d * b + a, e * b)
+        if f == 0:
+            return eq(a * e, b * e, c * e, d, e)
+        return eq(a * e * (f + 1), b * e * (f + 1), c * e * (f + 1), d * e * (f + 1), e * (f + 1))
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        
+        def get_num(s):
+            if '(' in s:
+                i = s.index('(')
+                return float(s[:i]) + float(s[i+1:-1]) / (10 ** (len(s) - i - 2))
+            else:
+                return float(s)
+        
+        return get_num(s) == get_num(t)
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        def get_decimal(s):
+            if '(' in s:
+                integer, decimal = s.split('.')
+                decimal, repeat = decimal[:-1].split('(')
+                return integer, decimal, repeat
+            else:
+                integer, decimal = s.split('.')
+                return integer, decimal, ''
+        integer, decimal, repeat = get_decimal(s)
+        integer2, decimal2, repeat2 = get_decimal(t)
+        if integer != integer2:
+            return False
+        if repeat == '' and repeat2 == '':
+            return decimal == decimal2
+        elif repeat == '' or repeat2 == '':
+            return False
+        else:
+            return decimal == decimal2 and repeat == repeat2
+
+=======
+
+def isRationalEqual(self, s: str, t: str) -> bool:
+        # print(s, t)
+        def get_num(s):
+            if '(' in s:
+                a, b = s.split('(')
+                b = b[:-1]
+                return a + b
+            else:
+                return s
+        def get_den(s):
+            if '(' in s:
+                a, b = s.split('(')
+                b = b[:-1]
+                return a[:-1] + b * 20
+            else:
+                return s[:-1]
+        return get_num(s) == get_num(t) and get_den(s) == get_den(t)
+
+=======
+
+        
+        def parse_rational_number(s: str) -> float:
+            if '(' in s:
+                s = s.replace('(', '').replace(')', '')
+            if '.' in s:
+                s = s.replace('.'

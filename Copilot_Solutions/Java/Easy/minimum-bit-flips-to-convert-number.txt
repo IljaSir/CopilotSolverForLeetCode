@@ -1,0 +1,208 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < 32; i++) {
+            int startBit = (start >> i) & 1;
+            int goalBit = (goal >> i) & 1;
+            if (startBit != goalBit) {
+                count++;
+                start ^= 1 << i;
+            }
+        }
+        return start == goal ? count : -1;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < 32; i++) {
+            int bit1 = (start >> i) & 1;
+            int bit2 = (goal >> i) & 1;
+            if (bit1 == bit2) {
+                continue;
+            }
+            if (bit1 == 0) {
+                count++;
+            } else {
+                return -1;
+            }
+        }
+        return count;
+
+=======
+
+        int xor = start ^ goal;
+        int count = 0;
+        while (xor != 0) {
+            if ((xor & 1) == 1) {
+                count++;
+            }
+            xor >>= 1;
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        int i = 0;
+        while (start > 0 || goal > 0) {
+            int s = start & 1;
+            int g = goal & 1;
+            if (s != g) {
+                count++;
+            }
+            start >>= 1;
+            goal >>= 1;
+            i++;
+        }
+        return count;
+
+=======
+
+        int n = 0;
+        int count = 0;
+        while (start > 0 || goal > 0) {
+            int s = start & 1;
+            int g = goal & 1;
+            if (s == g) {
+                n = 0;
+            } else if (n == 0) {
+                n = 1;
+                count++;
+            } else {
+                n = 0;
+            }
+            start >>= 1;
+            goal >>= 1;
+        }
+        return count;
+
+=======
+
+        int[] bits = new int[32];
+        int[] bits2 = new int[32];
+        int i = 0;
+        while (start > 0) {
+            bits[i++] = start % 2;
+            start /= 2;
+        }
+        i = 0;
+        while (goal > 0) {
+            bits2[i++] = goal % 2;
+            goal /= 2;
+        }
+        int ans = 0;
+        for (int j = 0; j < 32; j++) {
+            if (bits[j] == bits2[j]) {
+                continue;
+            }
+            if (bits[j] == 0) {
+                ans++;
+                bits[j] = 1;
+            }
+            if (bits[j] == 1) {
+                ans++;
+                bits[j] = 0;
+            }
+        }
+        return ans;
+
+=======
+
+        int count = 0;
+        int n = 0;
+        for (int i = 0; i < 32; i++) {
+            if (((start & 1) ^ (goal & 1)) == 1) {
+                count++;
+                n = i;
+            }
+            start >>= 1;
+            goal >>= 1;
+        }
+        if (n == 0) {
+            return 0;
+        }
+        return (count + n - 1) / n;
+
+=======
+
+        int count = 0;
+        int bit = 0;
+        while(start > 0 || goal > 0){
+            int s = start & 1;
+            int g = goal & 1;
+            if(s == g){
+                bit = 0;
+            }else{
+                if(bit == 0){
+                    count++;
+                    bit = 1;
+                }else{
+                    bit = 0;
+                }
+            }
+            start >>= 1;
+            goal >>= 1;
+        }
+        return count;
+
+=======
+
+        int len = 32;
+        int ans = 0;
+        for(int i = 0; i < len; i++){
+            int s = start & 1;
+            int g = goal & 1;
+            if(s != g){
+                ans++;
+                start = start ^ 1;
+            }
+            start = start >> 1;
+            goal = goal >> 1;
+        }
+        return ans;
+
+=======
+
+        // 1. get the bit length of start and goal
+        int startBitLen = getBitLength(start);
+        int goalBitLen = getBitLength(goal);
+        int bitLen = Math.max(startBitLen, goalBitLen);
+        // 2. get the bit array of start and goal
+        int[] startBitArr = getBitArr(start, bitLen);
+        int[] goalBitArr = getBitArr(goal, bitLen);
+        // 3. get the flip count
+        int flipCount = 0;
+        for (int i = 0; i < bitLen; i++) {
+            if (startBitArr[i] != goalBitArr[i]) {
+                flipCount++;
+                flipBit(startBitArr, i);
+            }
+        }
+        return flipCount;
+    }
+
+    private int getBitLength(int num) {
+        int bitLen = 0;
+        while (num > 0) {
+            bitLen++;
+            num >>= 1;
+        }
+        return bitLen;
+    }
+
+    private int[] getBitArr(int num, int bitLen) {
+        int[] bitArr = new int[bitLen];
+        for (int i = 0; i < bitLen; i++) {
+            bitArr[i] = num & 1;
+            num >>= 1;
+        }
+        return bitArr;
+    }
+
+    private void flipBit(int[] bitArr, int i) {
+        if (i < 0 || i >= bitArr.length) {
+            return;
+        }
+        bitArr[i] = bitArr[i] == 0 ? 1 : 0;

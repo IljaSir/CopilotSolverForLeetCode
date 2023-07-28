@@ -1,0 +1,279 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        return dfs(g, scores, dp, 0, -1);
+    }
+    
+    int dfs(vector<vector<int>>& g, vector<int>& scores, vector<vector<int>>& dp, int u, int p) {
+        if (dp[u][p + 1] != -1) return dp[u][p + 1];
+        int ans = scores[u];
+        for (int v : g[u]) {
+            if (v == p) continue;
+            int max_val = 0;
+            for (int w : g[v]) {
+                if (w == u) continue;
+                max_val = max(max_val, dfs(g, scores, dp, w, v));
+            }
+            ans += max_val;
+        }
+        return dp[u][p + 1] = ans;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(4));
+        vector<int> visited(n);
+        function<void(int)> dfs = [&](int u) {
+            visited[u] = 1;
+            dp[u][0] = 0;
+            dp[u][1] = scores[u];
+            for (int v : g[u]) {
+                if (visited[v]) continue;
+                dfs(v);
+                vector<int> tmp(4);
+                for (int i = 0; i < 4; ++i) {
+                    tmp[i] = max(tmp[i], dp[u][i]);
+                    for (int j = 1; j <= i; ++j) {
+                        tmp[i] = max(tmp[i], dp[u][i - j] + dp[v][j]);
+                    }
+                }
+                dp[u] = move(tmp);
+            }
+        };
+        dfs(0);
+        return *max_element(dp[0].begin(), dp[0].end());
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> g(n);
+        for (auto& e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n, -1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, dfs(i, -1, g, dp, scores));
+        }
+        return ans;
+    }
+    int dfs(int i, int p, vector<vector<int>>& g, vector<int>& dp, vector<int>& scores) {
+        if (dp[i] != -1) return dp[i];
+        int ans = scores[i];
+        for (int j: g[i]) {
+            if (j == p) continue;
+            ans = max(ans, scores[i] + dfs(j, i, g, dp, scores));
+        }
+        return dp[i] = ans;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        function<int(int, int)> dfs = [&](int x, int y) {
+            if (dp[x][y] != -1) return dp[x][y];
+            int ans = scores[x] + scores[y];
+            for (int i = 0; i < n; ++i) {
+                if (i == x || i == y) continue;
+                bool flag = false;
+                for (int j : graph[i]) {
+                    if (j == x || j == y) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) continue;
+                int t = dfs(i, x);
+                if (t != -1) ans = max(ans, t + scores[y]);
+                t = dfs(i, y);
+                if (t != -1) ans = max(ans, t + scores[x]);
+            }
+            return dp[x][y] = ans;
+        };
+        int ans = -1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                ans = max(ans, dfs(i, j));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> graph(n);
+        for (auto &e : edges) {
+            graph[e[0]].push_back(e[1]);
+            graph[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n, 0);
+        int ans = 0;
+        function<void(int, int)> dfs = [&](int u, int fa) {
+            dp[u] = scores[u];
+            int max1 = 0, max2 = 0;
+            for (auto &v : graph[u]) {
+                if (v == fa) continue;
+                dfs(v, u);
+                if (dp[v] > max1) {
+                    max2 = max1;
+                    max1 = dp[v];
+                } else if (dp[v] > max2) {
+                    max2 = dp[v];
+                }
+            }
+            ans = max(ans, max1 + max2 + scores[u]);
+            dp[u] = max(dp[u], max1 + scores[u]);
+        };
+        dfs(0, -1);
+        return ans;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> adj(n);
+        for (auto &edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(4, -1));
+        return dfs(adj, scores, dp, 0, -1, 0);
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> g(n, vector<int>());
+        for (auto &e: edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        vector<int> dp(n, 0);
+        vector<bool> visited(n, false);
+        int ans = -1;
+        function<void(int)> dfs = [&](int i) {
+            visited[i] = true;
+            for (auto &j: g[i]) {
+                if (!visited[j]) {
+                    dfs(j);
+                    dp[i] = max(dp[i], dp[j]);
+                }
+            }
+            dp[i] += scores[i];
+            if (g[i].size() >= 2) {
+                vector<int> tmp;
+                for (auto &j: g[i]) {
+                    if (j != i) {
+                        tmp.push_back(dp[j]);
+                    }
+                }
+                sort(tmp.begin(), tmp.end());
+                ans = max(ans, dp[i] + tmp[tmp.size() - 1] + tmp[tmp.size() - 2]);
+            }
+        };
+        dfs(0);
+        return ans;
+
+=======
+
+        int n = scores.size();
+        vector<int> adj[n];
+        for (auto& e: edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    for (int l = k + 1; l < n; l++) {
+                        if (find(adj[i].begin(), adj[i].end(), j) != adj[i].end() &&
+                            find(adj[i].begin(), adj[i].end(), k) != adj[i].end() &&
+                            find(adj[i].begin(), adj[i].end(), l) != adj[i].end() &&
+                            find(adj[j].begin(), adj[j].end(), k) != adj[j].end() &&
+                            find(adj[j].begin(), adj[j].end(), l) != adj[j].end() &&
+                            find(adj[k].begin(), adj[k].end(), l) != adj[k].end()) {
+                            res = max(res, scores[i] + scores[j] + scores[k] + scores[l]);
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> graph(n, vector<int>());
+        for(auto& edge: edges) {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        vector<vector<int>> dp(n, vector<int>(n, INT_MIN));
+        int ans = INT_MIN;
+        for(int i = 0; i < n; i++) {
+            dp[i][i] = scores[i];
+            for(int j = 0; j < graph[i].size(); j++) {
+                int k = graph[i][j];
+                if(dp[i][k] == INT_MIN) {
+                    dp[i][k] = dp[k][i] = scores[k];
+                }
+                for(int l = 0; l < graph[k].size(); l++) {
+                    int m = graph[k][l];
+                    if(dp[i][m] == INT_MIN) {
+                        dp[i][m] = dp[m][i] = scores[m];
+                    }
+                    for(int o = 0; o < graph[m].size(); o++) {
+                        int p = graph[m][o];
+                        if(dp[i][p] == INT_MIN) {
+                            dp[i][p] = dp[p][i] = scores[p];
+                        }
+                        for(int q = 0; q < graph[p].size(); q++) {
+                            int r = graph[p][q];
+                            if(dp[i][r] == INT_MIN) {
+                                dp[i][r] = dp[r][i] = scores[r];
+                            }
+                            if(dp[i][k] != INT_MIN && dp[k][m] != INT_MIN && dp[m][p] != INT_MIN && dp[p][r] != INT_MIN) {
+                                ans = max(ans, dp[i][k] + dp[k][m] + dp[m][p] + dp[p][r] - scores[i] - scores[k] - scores[m] - scores[p] - scores[r]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = scores.size();
+        vector<vector<int>> g(n);
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        for (auto& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        int ans = -1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = max(ans, dfs(i, j, scores, g, dp));
+            }
+        }
+        return ans;

@@ -1,0 +1,296 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums1.length;
+        int[] diff = new int[n];
+        for (int i = 0; i < n; i++) {
+            diff[i] = Math.abs(nums1[i] - nums2[i]);
+        }
+        int sum = 0;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            sum = (sum + diff[i]) % 1000000007;
+            max = Math.max(max, diff[i]);
+        }
+        int[] nums1Sorted = nums1.clone();
+        Arrays.sort(nums1Sorted);
+        for (int i = 0; i < n; i++) {
+            int target = nums2[i];
+            int index = Arrays.binarySearch(nums1Sorted, target);
+            if (index < 0) {
+                index = -index - 1;
+            }
+            if (index < n) {
+                max = Math.max(max, diff[i] - (nums1Sorted[index] - target));
+            }
+            if (index > 0) {
+                max = Math.max(max, diff[i] - (target - nums1Sorted[index - 1]));
+            }
+        }
+        return (sum - max + 1000000007) % 1000000007;
+
+=======
+
+        int n = nums1.length;
+        int[] sortedNums1 = new int[n];
+        System.arraycopy(nums1, 0, sortedNums1, 0, n);
+        Arrays.sort(sortedNums1);
+        int total = 0;
+        int maxDiff = 0;
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            total = (total + diff) % 1000000007;
+            int j = Arrays.binarySearch(sortedNums1, nums2[i]);
+            if (j < 0) {
+                j = -j - 1;
+            }
+            if (j < n) {
+                maxDiff = Math.max(maxDiff, diff - (sortedNums1[j] - nums2[i]));
+            }
+            if (j > 0) {
+                maxDiff = Math.max(maxDiff, diff - (nums2[i] - sortedNums1[j - 1]));
+            }
+        }
+        return (total - maxDiff + 1000000007) % 1000000007;
+
+=======
+
+        int mod = 1000000007;
+        int n = nums1.length;
+        int[] diff = new int[n];
+        for (int i = 0; i < n; i++) {
+            diff[i] = Math.abs(nums1[i] - nums2[i]);
+        }
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum = (sum + diff[i]) % mod;
+        }
+        Arrays.sort(nums1);
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int index = binarySearch(nums1, nums2[i]);
+            if (index < n) {
+                max = Math.max(max, diff[i] - (Math.abs(nums1[index] - nums2[i])));
+            }
+            if (index > 0) {
+                max = Math.max(max, diff[i] - (Math.abs(nums1[index - 1] - nums2[i])));
+            }
+        }
+        return (sum - max + mod) % mod;
+    }
+    public int binarySearch(int[] nums, int target) {
+        int low = 0;
+        int high = nums.length - 1;
+        while (low < high) {
+            int mid = (high - low) / 2 + low;
+            if (nums[mid] < target) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return nums[low] >= target ? low : low + 1;
+
+=======
+
+        int n = nums1.length;
+        int[] sortedNums1 = nums1.clone();
+        Arrays.sort(sortedNums1);
+        int maxDiff = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum = (sum + diff) % 1000000007;
+            int j = Arrays.binarySearch(sortedNums1, nums2[i]);
+            if (j < 0) {
+                j = -j - 1;
+            }
+            if (j < n) {
+                maxDiff = Math.max(maxDiff, diff - (sortedNums1[j] - nums2[i]));
+            }
+            if (j > 0) {
+                maxDiff = Math.max(maxDiff, diff - (nums2[i] - sortedNums1[j - 1]));
+            }
+        }
+        return (sum - maxDiff + 1000000007) % 1000000007;
+
+=======
+
+        int n = nums1.length;
+        int[] nums1Sorted = nums1.clone();
+        Arrays.sort(nums1Sorted);
+        int maxDiff = 0;
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum = (sum + diff) % 1000000007;
+            int j = Arrays.binarySearch(nums1Sorted, nums2[i]);
+            if (j < 0) {
+                j = -j - 1;
+            }
+            if (j < n) {
+                maxDiff = Math.max(maxDiff, diff - (nums1Sorted[j] - nums2[i]));
+            }
+            if (j > 0) {
+                maxDiff = Math.max(maxDiff, diff - (nums2[i] - nums1Sorted[j - 1]));
+            }
+        }
+        return (sum - maxDiff + 1000000007) % 1000000007;
+
+=======
+
+        int n = nums1.length;
+        int mod = (int)1e9 + 7;
+        int[] rec = new int[n];
+        System.arraycopy(nums1, 0, rec, 0, n);
+        Arrays.sort(rec);
+        int sum = 0, maxn = 0;
+        for(int i = 0; i < n; i++){
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum = (sum + diff) % mod;
+            int j = binarySearch(rec, nums2[i]);
+            if(j < n){
+                maxn = Math.max(maxn, diff - (rec[j] - nums2[i]));
+            }
+            if(j > 0){
+                maxn = Math.max(maxn, diff - (nums2[i] - rec[j - 1]));
+            }
+        }
+        return (sum - maxn + mod) % mod;
+    }
+    public int binarySearch(int[] nums, int target){
+        int low = 0, high = nums.length - 1;
+        if(nums[high] < target){
+            return high + 1;
+        }
+        while(low < high){
+            int mid = (high - low) / 2 + low;
+            if(nums[mid] < target){
+                low = mid + 1;
+            }else{
+                high = mid;
+            }
+        }
+        return low;
+
+=======
+
+        int n = nums1.length;
+        int[] nums1Sorted = nums1.clone();
+        Arrays.sort(nums1Sorted);
+        int maxDiff = 0;
+        int sum = 0;
+        int mod = 1000000007;
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum = (sum + diff) % mod;
+            int j = Arrays.binarySearch(nums1Sorted, nums2[i]);
+            if (j < 0) {
+                j = -j - 1;
+            }
+            if (j < n) {
+                maxDiff = Math.max(maxDiff, diff - (nums1Sorted[j] - nums2[i]));
+            }
+            if (j > 0) {
+                maxDiff = Math.max(maxDiff, diff - (nums2[i] - nums1Sorted[j - 1]));
+            }
+        }
+        return (sum - maxDiff + mod) % mod;
+
+=======
+
+        int n = nums1.length;
+        int[] diff = new int[n];
+        int sum = 0;
+        int max = 0;
+        int index = 0;
+        for (int i = 0; i < n; i++) {
+            diff[i] = Math.abs(nums1[i] - nums2[i]);
+            sum += diff[i];
+            if (diff[i] > max) {
+                max = diff[i];
+                index = i;
+            }
+        }
+        int ans = sum - max;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (i == index) continue;
+            int temp = Math.abs(nums1[i] - nums2[index]);
+            if (temp < min) {
+                min = temp;
+            }
+        }
+        ans += min;
+        return ans % 1000000007;
+
+=======
+
+        int n = nums1.length;
+        int mod = 1000000007;
+        int sum = 0;
+        int max = 0;
+        int maxIdx = 0;
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum = (sum + diff) % mod;
+            if (max < diff) {
+                max = diff;
+                maxIdx = i;
+            }
+        }
+        int minDiff = max;
+        for (int i = 0; i < n; i++) {
+            minDiff = Math.min(minDiff, Math.abs(nums1[i] - nums2[maxIdx]));
+        }
+        return (sum - max + minDiff) % mod;
+
+=======
+
+        long sum = 0;
+        int mod = 1000000007;
+        int maxDiff = 0;
+        int maxDiffIndex = 0;
+        int n = nums1.length;
+        int[] copy = nums1.clone();
+        Arrays.sort(copy);
+        for (int i = 0; i < n; i++) {
+            int diff = Math.abs(nums1[i] - nums2[i]);
+            sum += diff;
+            int j = binarySearch(copy, nums2[i]);
+            if (j < n) {
+                int newDiff = Math.abs(copy[j] - nums2[i]);
+                if (newDiff < diff) {
+                    if (diff - newDiff > maxDiff) {
+                        maxDiff = diff - newDiff;
+                        maxDiffIndex = i;
+                    }
+                }
+            }
+            if (j > 0) {
+                j--;
+                int newDiff = Math.abs(copy[j] - nums2[i]);
+                if (newDiff < diff) {
+                    if (diff - newDiff > maxDiff) {
+                        maxDiff = diff - newDiff;
+                        maxDiffIndex = i;
+                    }
+                }
+            }
+        }
+        return (int)((sum - maxDiff) % mod);
+    }
+
+    private int binarySearch(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            if (nums[m] < target) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l;

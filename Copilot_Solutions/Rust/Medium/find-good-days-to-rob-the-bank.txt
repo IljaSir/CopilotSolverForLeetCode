@@ -1,0 +1,176 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let time = time as usize;
+        let mut ans = vec![];
+        let mut stack = vec![];
+        for i in 0..security.len() {
+            while !stack.is_empty() && security[*stack.last().unwrap()] <= security[i] {
+                stack.pop();
+            }
+            stack.push(i);
+            if i >= time && stack[0] == i - time {
+                stack.remove(0);
+            }
+            if i >= time - 1 && stack[0] <= i - time + 1 {
+                ans.push(i as i32 - time as i32 + 1);
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let time = time as usize;
+        let mut res = vec![];
+        let n = security.len();
+        for i in time..n-time {
+            let mut good = true;
+            for j in 1..=time {
+                if security[i-j] < security[i-j+1] {
+                    good = false;
+                    break;
+                }
+            }
+            if !good { continue; }
+            for j in 1..=time {
+                if security[i+j-1] > security[i+j] {
+                    good = false;
+                    break;
+                }
+            }
+            if good { res.push(i as i32); }
+        }
+        res
+
+=======
+
+        let mut res = vec![];
+        let mut len = security.len();
+        let mut i = time as usize;
+        while i < len - time as usize {
+            let mut j = i - 1;
+            let mut k = i + 1;
+            let mut flag = true;
+            while j >= i - time as usize {
+                if security[j] < security[j + 1] {
+                    flag = false;
+                    break;
+                }
+                j -= 1;
+            }
+            if !flag {
+                i += 1;
+                continue;
+            }
+            while k <= i + time as usize {
+                if security[k] < security[k - 1] {
+                    flag = false;
+                    break;
+                }
+                k += 1;
+            }
+            if !flag {
+                i += 1;
+                continue;
+            }
+            res.push(i as i32);
+            i += 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        let mut i = 0;
+        let mut j = time as usize;
+        while j < security.len() {
+            let mut k = i;
+            let mut is_good = true;
+            while k < i + time as usize {
+                if security[k] > security[k + 1] {
+                    is_good = false;
+                    break;
+                }
+                k += 1;
+            }
+            if is_good {
+                k = j;
+                while k > j - time as usize {
+                    if security[k] > security[k - 1] {
+                        is_good = false;
+                        break;
+                    }
+                    k -= 1;
+                }
+            }
+            if is_good {
+                result.push(i as i32);
+            }
+            i += 1;
+            j += 1;
+        }
+        result
+
+=======
+
+        let mut result = Vec::new();
+        let mut max = -1;
+        let mut min = -1;
+        let mut max_index = -1;
+        let mut min_index = -1;
+        let time = time as usize;
+        for i in 0..security.len() {
+            if i >= time {
+                if security[i - time] > max {
+                    max = security[i - time];
+                    max_index = i as i32 - time as i32;
+                }
+                if security[i - time] < min {
+                    min = security[i - time];
+                    min_index = i as i32 - time as i32;
+                }
+            }
+            if i >= time * 2 {
+                if max_index == i as i32 - time as i32 * 2 {
+                    max = -1;
+                    max_index = -1;
+                }
+                if min_index == i as i32 - time as i32 * 2 {
+                    min = -1;
+                    min_index = -1;
+                }
+            }
+            if i >= time - 1 {
+                if max == -1 {
+                    for j in i - time + 1..i + 1 {
+                        if security[j] > max {
+                            max = security[j];
+                        }
+                    }
+                }
+                if min == -1 {
+                    for j in i - time + 1..i + 1 {
+                        if security[j] < min {
+                            min = security[j];
+                        }
+                    }
+                }
+                if security[i] >= max && security[i] <= min {
+                    result.push(i as i32);
+                }
+            }
+        }
+        result
+    }
+}

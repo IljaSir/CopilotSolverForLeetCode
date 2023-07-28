@@ -1,0 +1,398 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = dp[i - 1][j] + 1;
+                if (j > 0) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - 1]);
+                }
+                int cnt = 1;
+                for (int l = i - 1; l >= 0 && j + l >= i - 1; l--) {
+                    if (s.charAt(l) == s.charAt(i - 1)) {
+                        cnt++;
+                    } else {
+                        break;
+                    }
+                    if (cnt > 2) {
+                        dp[i][j] = Math.min(dp[i][j], dp[l][j + l - i + 1] + getLength(cnt));
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+    }
+    public int getLength(int cnt) {
+        if (cnt <= 2) {
+            return cnt;
+        } else if (cnt <= 9) {
+            return 2;
+        } else if (cnt <= 99) {
+            return 3;
+        } else {
+            return 4;
+        }
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= k; j++) {
+                int c = s.charAt(i) - 'a';
+                for (int l = 0; l < 26; l++) {
+                    int cost = c == l ? 0 : 1;
+                    int nk = j + (c == l ? 0 : 1);
+                    if (nk <= k) {
+                        dp[i + 1][nk] = Math.min(dp[i + 1][nk], dp[i][j] + cost);
+                    }
+                }
+                int l = 1;
+                while (i + l < n && s.charAt(i + l) == s.charAt(i)) {
+                    l++;
+                    int nk = j + l - 1;
+                    if (nk <= k) {
+                        dp[i + l][nk] = Math.min(dp[i + l][nk], dp[i][j] + getCost(l));
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int j = 0; j <= k; j++) {
+            ans = Math.min(ans, dp[n][j]);
+        }
+        return ans;
+    }
+    private int getCost(int l) {
+        if (l <= 2) {
+            return l;
+        } else if (l <= 9) {
+            return 3;
+        } else if (l <= 99) {
+            return 4;
+        } else {
+            return 5;
+        }
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            int[] count = new int[26];
+            for (int j = i; j < n; j++) {
+                int idx = s.charAt(j) - 'a';
+                count[idx]++;
+                int maxCount = 0;
+                int maxCountChar = 0;
+                for (int l = 0; l < 26; l++) {
+                    if (count[l] > maxCount) {
+                        maxCount = count[l];
+                        maxCountChar = l;
+                    }
+                }
+                int diff = j - i + 1 - maxCount;
+                for (int l = 0; l <= k; l++) {
+                    if (l + diff <= k) {
+                        dp[j + 1][l + diff] = Math.min(dp[j + 1][l + diff], dp[i][l] + getLength(maxCount) + (maxCountChar == idx ? 0 : 1));
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i <= k; i++) {
+            ans = Math.min(ans, dp[n][i]);
+        }
+        return ans;
+    }
+
+    private int getLength(int n) {
+        if (n == 1) {
+            return 0;
+        }
+        if (n < 10) {
+            return 1;
+        }
+        if (n < 100) {
+            return 2;
+        }
+        return 3;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                if (j >= i) {
+                    dp[i][j] = 0;
+                    continue;
+                }
+                dp[i][j] = dp[i - 1][j] + 1;
+                int cnt = 0;
+                for (int p = i - 1; p >= 0; p--) {
+                    if (s.charAt(p) != s.charAt(i - 1)) {
+                        break;
+                    }
+                    cnt++;
+                    if (j + cnt >= i) {
+                        break;
+                    }
+                    int len = getLength(cnt);
+                    dp[i][j] = Math.min(dp[i][j], dp[p][j + cnt] + len);
+                }
+            }
+        }
+        return dp[n][k];
+    }
+
+    public int getLength(int cnt) {
+        if (cnt == 1) {
+            return 1;
+        }
+        if (cnt < 10) {
+            return 2;
+        }
+        if (cnt < 100) {
+            return 3;
+        }
+        return 4;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                int len = 0, cnt = 0;
+                for (int p = i; p > 0; p--) {
+                    if (s.charAt(p - 1) == s.charAt(i - 1)) {
+                        cnt++;
+                    } else {
+                        len++;
+                    }
+                    if (cnt > 1) {
+                        len++;
+                    }
+                    if (cnt > 9) {
+                        len++;
+                    }
+                    if (cnt > 99) {
+                        len++;
+                    }
+                    if (j >= i - p) {
+                        if (dp[p - 1][j - (i - p)] != Integer.MAX_VALUE) {
+                            dp[i][j] = Math.min(dp[i][j], dp[p - 1][j - (i - p)] + len);
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            int same = 0;
+            int diff = 0;
+            for (int j = i; j < n; j++) {
+                if (s.charAt(j) == s.charAt(i)) {
+                    same++;
+                } else {
+                    diff++;
+                }
+                for (int l = 0; l <= k; l++) {
+                    if (l >= diff) {
+                        int cur = dp[i][l - diff];
+                        if (same == 1) {
+                            cur++;
+                        } else if (same < 10) {
+                            cur += 2;
+                        } else if (same < 100) {
+                            cur += 3;
+                        } else {
+                            cur += 4;
+                        }
+                        dp[j + 1][l] = Math.min(dp[j + 1][l], cur);
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n+1][k+1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            int same = 0;
+            for (int j = i; j < n; j++) {
+                if (s.charAt(j) == s.charAt(i)) {
+                    same++;
+                }
+                for (int l = 0; l <= k; l++) {
+                    if (dp[i][l] == Integer.MAX_VALUE) {
+                        continue;
+                    }
+                    int cur = dp[i][l];
+                    if (l + j - i - same >= k) {
+                        continue;
+                    }
+                    if (j - i + 1 == same) {
+                        dp[j+1][l + j - i - same] = Math.min(dp[j+1][l + j - i - same], cur + 1);
+                    } else if (same < 10) {
+                        dp[j+1][l + j - i - same] = Math.min(dp[j+1][l + j - i - same], cur + 2);
+                    } else if (same < 100) {
+                        dp[j+1][l + j - i - same] = Math.min(dp[j+1][l + j - i - same], cur + 3);
+                    } else {
+                        dp[j+1][l + j - i - same] = Math.min(dp[j+1][l + j - i - same], cur + 4);
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i <= k; i++) {
+            ans = Math.min(ans, dp[n][i]);
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        dp[0][0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= k; j++) {
+                if (dp[i][j] == Integer.MAX_VALUE / 2) continue;
+                int cnt = 0;
+                for (int l = i; l < n; l++) {
+                    if (s.charAt(l) == s.charAt(i)) cnt++;
+                    if (j + l - i + 1 > k) break;
+                    dp[l + 1][j + l - i + 1] = Math.min(dp[l + 1][j + l - i + 1], dp[i][j] + cnt + (cnt < 10 ? 1 : cnt < 100 ? 2 : 3));
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE / 2;
+        for (int i = 0; i <= k; i++) res = Math.min(res, dp[n][i]);
+        return res;
+
+=======
+
+        int n = s.length();
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], 10000);
+        }
+        dp[0][0] = 0;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = dp[i - 1][j];
+                int count = 1;
+                int del = 0;
+                for (int p = i - 1; p >= 0; p--) {
+                    if (s.charAt(p) == s.charAt(i - 1)) {
+                        count++;
+                    } else {
+                        del++;
+                    }
+                    if (del > j) {
+                        break;
+                    }
+                    int len = 0;
+                    if (count >= 100) {
+                        len = 3;
+                    } else if (count >= 10) {
+                        len = 2;
+                    } else {
+                        len = 1;
+                    }
+                    if (count == 1) {
+                        len = 0;
+                    }
+                    dp[i][j] = Math.min(dp[i][j], dp[p][j - del] + len + 1);
+                }
+            }
+        }
+        return dp[n][k];
+
+=======
+
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        int len = s.length();
+        int[][] dp = new int[len + 1][k + 1];
+        for (int i = 0; i <= len; i++) {
+            for (int j = 0; j <= k; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j <= k; j++) {
+                if (dp[i][j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                int count = 0;
+                for (int m = i; m < len; m++) {
+                    if (s.charAt(m) != s.charAt(i)) {
+                        break;
+                    }
+                    count++;
+                    if (count + j <= k) {
+                        dp[m + 1][j + count] = Math.min(dp[m + 1][j + count], dp[i][j] + getLength(count));
+                    }
+                }
+            }
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i <= k; i++) {
+            res = Math.min(res, dp[len][i]);
+        }
+        return res;
+    }
+    private int getLength(int count) {
+        if (count == 1) {
+            return 1;
+        }
+        if (count < 10) {
+            return 2;
+        }
+        if (count < 100) {
+            return 3;
+        }
+        return 4;

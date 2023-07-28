@@ -1,0 +1,24 @@
+impl Solution {
+    pub fn successful_pairs(spells: Vec<i32>, potions: Vec<i32>, success: i64) -> Vec<i32> {
+        
+        let mut spells = spells;
+        let mut potions = potions;
+        spells.sort_unstable();
+        potions.sort_unstable();
+        let mut res = vec![0; spells.len()];
+        for i in 0..spells.len() {
+            let mut l = 0;
+            let mut r = potions.len();
+            while l < r {
+                let m = (l + r) / 2;
+                if spells[i] as i64 * potions[m] as i64 >= success {
+                    r = m;
+                } else {
+                    l = m + 1;
+                }
+            }
+            res[i] = potions.len() as i32 - l as i32;
+        }
+        res
+    }
+}

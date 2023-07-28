@@ -1,0 +1,259 @@
+Synthesizing 9/10 solutions
+
+=======
+Suggestion 1
+
+        let mut grid = grid;
+        let mut max_area = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 {
+                    let area = Self::dfs(&mut grid, i, j);
+                    max_area = std::cmp::max(max_area, area);
+                }
+            }
+        }
+        max_area
+    }
+
+    fn dfs(grid: &mut Vec<Vec<i32>>, i: usize, j: usize) -> i32 {
+        if i >= grid.len() || j >= grid[i].len() || grid[i][j] == 0 {
+            return 0;
+        }
+        grid[i][j] = 0;
+        let mut area = 1;
+        area += Self::dfs(grid, i, j + 1);
+        area += Self::dfs(grid, i + 1, j);
+        area += Self::dfs(grid, i, if j > 0 { j - 1 } else { 0 });
+        area += Self::dfs(grid, if i > 0 { i - 1 } else { 0 }, j);
+        area
+    }
+}
+
+=======
+Suggestion 2
+
+        let mut grid = grid;
+        let mut max_area = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 {
+                    let area = Solution::area_of_island(&mut grid, i, j);
+                    if area > max_area {
+                        max_area = area;
+                    }
+                }
+            }
+        }
+        max_area
+    }
+    
+    fn area_of_island(grid: &mut Vec<Vec<i32>>, i: usize, j: usize) -> i32 {
+        if i < 0 || i >= grid.len() || j < 0 || j >= grid[i].len() || grid[i][j] != 1 {
+            return 0;
+        }
+        grid[i][j] = 0;
+        1 + Solution::area_of_island(grid, i - 1, j) + Solution::area_of_island(grid, i + 1, j) + Solution::area_of_island(grid, i, j - 1) + Solution::area_of_island(grid, i, j + 1)
+
+=======
+Suggestion 3
+
+        let mut grid = grid;
+        let mut max = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 {
+                    let mut area = 0;
+                    let mut stack = vec![(i, j)];
+                    while let Some((x, y)) = stack.pop() {
+                        if x >= grid.len() || y >= grid[x].len() || grid[x][y] == 0 {
+                            continue;
+                        }
+                        area += 1;
+                        grid[x][y] = 0;
+                        stack.push((x + 1, y));
+                        stack.push((x, y + 1));
+                        stack.push((x, y.wrapping_sub(1)));
+                        stack.push((x.wrapping_sub(1), y));
+                    }
+                    max = max.max(area);
+                }
+            }
+        }
+        max
+
+=======
+Suggestion 4
+
+        let mut max_area = 0;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 && !visited[i][j] {
+                    let mut area = 0;
+                    let mut stack = vec![(i, j)];
+                    while !stack.is_empty() {
+                        let (i, j) = stack.pop().unwrap();
+                        if grid[i][j] == 1 && !visited[i][j] {
+                            area += 1;
+                            visited[i][j] = true;
+                            if i > 0 {
+                                stack.push((i - 1, j));
+                            }
+                            if i < grid.len() - 1 {
+                                stack.push((i + 1, j));
+                            }
+                            if j > 0 {
+                                stack.push((i, j - 1));
+                            }
+                            if j < grid[i].len() - 1 {
+                                stack.push((i, j + 1));
+                            }
+                        }
+                    }
+                    if area > max_area {
+                        max_area = area;
+                    }
+                }
+            }
+        }
+        max_area
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut max_area = 0;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] == 1 && !visited[i][j] {
+                    let mut area = 0;
+                    Self::dfs(&grid, &mut visited, i, j, &mut area);
+                    max_area = max_area.max(area);
+                }
+            }
+        }
+        max_area
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, i: usize, j: usize, area: &mut i32) {
+        if i >= grid.len() || j >= grid[0].len() || i < 0 || j < 0 || visited[i][j] || grid[i][j] == 0 {
+            return;
+        }
+        visited[i][j] = true;
+        *area += 1;
+        Self::dfs(grid, visited, i + 1, j, area);
+        Self::dfs(grid, visited, i - 1, j, area);
+        Self::dfs(grid, visited, i, j + 1, area);
+        Self::dfs(grid, visited, i, j - 1, area);
+
+=======
+Suggestion 6
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut max_area = 0;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    let mut area = 0;
+                    Self::dfs(&grid, &mut visited, m, n, i, j, &mut area);
+                    max_area = max_area.max(area);
+                }
+            }
+        }
+        max_area
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, m: usize, n: usize, i: usize, j: usize, area: &mut i32) {
+        if i >= m || j >= n || i == 0 || j == 0 {
+            return;
+        }
+        if visited[i][j] || grid[i][j] == 0 {
+            return;
+        }
+        visited[i][j] = true;
+        *area += 1;
+        Self::dfs(grid, visited, m, n, i + 1, j, area);
+        Self::dfs(grid, visited, m, n, i - 1, j, area);
+        Self::dfs(grid, visited, m, n, i, j + 1, area);
+        Self::dfs(grid, visited, m, n, i, j - 1, area);
+
+=======
+Suggestion 7
+
+        let (m, n) = (grid.len(), grid[0].len());
+        let mut grid = grid;
+        let mut ans = 0;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] == 1 {
+                    ans = ans.max(Solution::dfs(&mut grid, i, j, m, n));
+                }
+            }
+        }
+        ans
+    }
+    fn dfs(grid: &mut Vec<Vec<i32>>, x: usize, y: usize, m: usize, n: usize) -> i32 {
+        if x >= m || y >= n || grid[x][y] == 0 {
+            return 0;
+        }
+        grid[x][y] = 0;
+        1 + Solution::dfs(grid, x + 1, y, m, n)
+            + Solution::dfs(grid, x, y + 1, m, n)
+            + Solution::dfs(grid, x, y.saturating_sub(1), m, n)
+            + Solution::dfs(grid, x.saturating_sub(1), y, m, n)
+
+=======
+Suggestion 8
+
+        let mut max_area = 0;
+        let mut grid = grid;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == 1 {
+                    let area = Self::dfs(&mut grid, i, j);
+                    if area > max_area {
+                        max_area = area;
+                    }
+                }
+            }
+        }
+        max_area
+    }
+    fn dfs(grid: &mut Vec<Vec<i32>>, i: usize, j: usize) -> i32 {
+        if i < 0 || i >= grid.len() || j < 0 || j >= grid[i].len() || grid[i][j] != 1 {
+            return 0;
+        }
+        grid[i][j] = 2;
+        1 + Self::dfs(grid, i - 1, j) + Self::dfs(grid, i + 1, j) + Self::dfs(grid, i, j - 1) + Self::dfs(grid, i, j + 1)
+
+=======
+Suggestion 9
+
+        let mut grid = grid;
+        let mut max_area = 0;
+        let mut cur_area = 0;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] == 1 && !visited[i][j] {
+                    cur_area = 0;
+                    Solution::dfs(&mut grid, i, j, &mut visited, &mut cur_area);
+                    max_area = max_area.max(cur_area);
+                }
+            }
+        }
+        max_area
+    }
+    fn dfs(grid: &mut Vec<Vec<i32>>, i: usize, j: usize, visited: &mut Vec<Vec<bool>>, cur_area: &mut i32) {
+        if i >= grid.len() || j >= grid[0].len() || grid[i][j] == 0 || visited[i][j] {
+            return;
+        }
+        visited[i][j] = true;
+        *cur_area += 1;
+        Solution::dfs(grid, i+1, j, visited, cur_area);
+        Solution::dfs(grid, i, j+1, visited, cur_area);
+        Solution::dfs(grid, i.saturating_sub(1), j, visited, cur_area);
+        Solution::dfs(grid, i, j.saturating_sub(1), visited, cur_area);

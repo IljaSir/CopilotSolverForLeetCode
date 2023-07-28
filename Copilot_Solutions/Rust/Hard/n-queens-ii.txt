@@ -1,0 +1,483 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut board = vec![vec![false; n as usize]; n as usize];
+        let mut result = 0;
+        Self::solve(&mut board, 0, &mut result);
+        result
+    }
+    
+    fn solve(board: &mut Vec<Vec<bool>>, row: usize, result: &mut i32) {
+        let n = board.len();
+        if row == n {
+            *result += 1;
+            return;
+        }
+        for col in 0..n {
+            if Self::is_valid(board, row, col) {
+                board[row][col] = true;
+                Self::solve(board, row + 1, result);
+                board[row][col] = false;
+            }
+        }
+    }
+    
+    fn is_valid(board: &Vec<Vec<bool>>, row: usize, col: usize) -> bool {
+        let n = board.len();
+        for i in 0..row {
+            if board[i][col] {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut board = vec![vec![false; n as usize]; n as usize];
+        let mut result = 0;
+        Self::dfs(&mut board, 0, &mut result);
+        result
+    }
+    
+    fn dfs(board: &mut Vec<Vec<bool>>, row: usize, result: &mut i32) {
+        if row == board.len() {
+            *result += 1;
+        } else {
+            for col in 0..board.len() {
+                if !board[row][col] {
+                    Self::mark(board, row, col, true);
+                    Self::dfs(board, row + 1, result);
+                    Self::mark(board, row, col, false);
+                }
+            }
+        }
+    }
+    
+    fn mark(board: &mut Vec<Vec<bool>>, row: usize, col: usize, is_mark: bool) {
+        for i in 0..board.len() {
+            board[i][col] = is_mark;
+            if row + i < board.len() {
+                if col + i < board.len() {
+                    board[row + i][col + i] = is_mark;
+                }
+                if col >= i {
+                    board[row + i][col - i] = is_mark;
+                }
+            }
+            if row >= i {
+                if col + i < board.len() {
+                    board[row - i][col + i] = is_mark;
+                }
+                if col >= i {
+                    board[row - i][col - i] = is_mark;
+                }
+            }
+        }
+
+=======
+
+        let mut board = vec![vec![false; n as usize]; n as usize];
+        let mut count = 0;
+        Self::solve(n as usize, 0, &mut board, &mut count);
+        count
+    }
+    fn solve(n: usize, row: usize, board: &mut Vec<Vec<bool>>, count: &mut i32) {
+        if row == n {
+            *count += 1;
+            return;
+        }
+        for col in 0..n {
+            if !Self::is_valid(board, row, col, n) {
+                continue;
+            }
+            board[row][col] = true;
+            Self::solve(n, row + 1, board, count);
+            board[row][col] = false;
+        }
+    }
+    fn is_valid(board: &Vec<Vec<bool>>, row: usize, col: usize, n: usize) -> bool {
+        // same col
+        for i in 0..row {
+            if board[i][col] {
+                return false;
+            }
+        }
+        // left up
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        // right up
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut board = vec![vec![0; n as usize]; n as usize];
+        let mut count = 0;
+        Self::dfs(&mut board, 0, &mut count);
+        count
+    }
+    fn dfs(board: &mut Vec<Vec<i32>>, row: usize, count: &mut i32) {
+        let n = board.len();
+        if row == n {
+            *count += 1;
+            return;
+        }
+        for col in 0..n {
+            if !Self::is_valid(board, row, col) {
+                continue;
+            }
+            board[row][col] = 1;
+            Self::dfs(board, row + 1, count);
+            board[row][col] = 0;
+        }
+    }
+    fn is_valid(board: &mut Vec<Vec<i32>>, row: usize, col: usize) -> bool {
+        let n = board.len();
+        for i in 0..row {
+            if board[i][col] == 1 {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] == 1 {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] == 1 {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut ans = 0;
+        let n = n as usize;
+        let mut board = vec![vec!['.'; n]; n];
+        Self::dfs(0, n, &mut board, &mut ans);
+        ans
+    }
+    fn dfs(row: usize, n: usize, board: &mut Vec<Vec<char>>, ans: &mut i32) {
+        if row == n {
+            *ans += 1;
+            return;
+        }
+        for col in 0..n {
+            if !Self::is_valid(row, col, n, board) {
+                continue;
+            }
+            board[row][col] = 'Q';
+            Self::dfs(row + 1, n, board, ans);
+            board[row][col] = '.';
+        }
+    }
+    fn is_valid(row: usize, col: usize, n: usize, board: &mut Vec<Vec<char>>) -> bool {
+        for i in 0..row {
+            if board[i][col] == 'Q' {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] == 'Q' {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] == 'Q' {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut queens = vec![0; n as usize];
+        let mut count = 0;
+        let mut i = 0;
+        let mut j = 0;
+        while i < n {
+            while j < n {
+                if Solution::is_valid(&queens, i, j) {
+                    queens[i as usize] = j;
+                    if i == n - 1 {
+                        count += 1;
+                    } else {
+                        i += 1;
+                        j = 0;
+                        continue;
+                    }
+                }
+                j += 1;
+            }
+            i -= 1;
+            if i < 0 {
+                break;
+            }
+            j = queens[i as usize] + 1;
+        }
+        return count;
+    }
+
+    fn is_valid(queens: &Vec<i32>, row: i32, col: i32) -> bool {
+        for i in 0..row {
+            if queens[i as usize] == col || (row - i).abs() == (col - queens[i as usize]).abs() {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        let mut result = 0;
+        let mut board = vec![vec!['.'; n as usize]; n as usize];
+        Self::backtrack(&mut result, &mut board, 0);
+        return result;
+    }
+    fn backtrack(result: &mut i32, board: &mut Vec<Vec<char>>, row: usize) {
+        if row == board.len() {
+            *result += 1;
+            return;
+        }
+        for col in 0..board.len() {
+            if !Self::is_valid(board, row, col) {
+                continue;
+            }
+            board[row][col] = 'Q';
+            Self::backtrack(result, board, row + 1);
+            board[row][col] = '.';
+        }
+    }
+    fn is_valid(board: &Vec<Vec<char>>, row: usize, col: usize) -> bool {
+        for i in 0..row {
+            if board[i][col] == 'Q' {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] == 'Q' {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < board.len() as i32 {
+            if board[i as usize][j as usize] == 'Q' {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        return true;
+
+=======
+
+        let mut res = 0;
+        let mut board = vec![vec![0; n as usize]; n as usize];
+        Self::helper(&mut board, 0, &mut res);
+        res
+    }
+    fn helper(board: &mut Vec<Vec<i32>>, row: usize, res: &mut i32) {
+        let n = board.len();
+        if row == n {
+            *res += 1;
+            return;
+        }
+        for col in 0..n {
+            if !Self::is_valid(board, row, col) {
+                continue;
+            }
+            board[row][col] = 1;
+            Self::helper(board, row + 1, res);
+            board[row][col] = 0;
+        }
+    }
+    fn is_valid(board: &Vec<Vec<i32>>, row: usize, col: usize) -> bool {
+        let n = board.len();
+        for i in 0..n {
+            if board[i][col] == 1 {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] == 1 {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] == 1 {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut result = 0;
+        let mut board = vec![vec![false; n as usize]; n as usize];
+        Self::solve(&mut board, &mut result, 0);
+        result
+    }
+    
+    fn solve(board: &mut Vec<Vec<bool>>, result: &mut i32, row: usize) {
+        let n = board.len();
+        if row == n {
+            *result += 1;
+            return;
+        }
+        
+        for col in 0..n {
+            if !Self::is_valid(board, row, col) {
+                continue;
+            }
+            board[row][col] = true;
+            Self::solve(board, result, row + 1);
+            board[row][col] = false;
+        }
+    }
+    
+    fn is_valid(board: &Vec<Vec<bool>>, row: usize, col: usize) -> bool {
+        let n = board.len();
+        for i in 0..row {
+            if board[i][col] {
+                return false;
+            }
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 - 1;
+        while i >= 0 && j >= 0 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32 - 1;
+        let mut j = col as i32 + 1;
+        while i >= 0 && j < n as i32 {
+            if board[i as usize][j as usize] {
+                return false;
+            }
+            i -= 1;
+            j += 1;
+        }
+        true
+
+=======
+
+        let mut chessboard = vec![vec![false; n as usize]; n as usize];
+        let mut counter = 0;
+        Self::dfs(&mut chessboard, 0, &mut counter);
+        counter
+    }
+
+    fn dfs(chessboard: &mut Vec<Vec<bool>>, row: usize, counter: &mut i32) {
+        if row == chessboard.len() {
+            *counter += 1;
+            return;
+        }
+        for col in 0..chessboard.len() {
+            if !chessboard[row][col] {
+                Self::mark(chessboard, row, col, true);
+                Self::dfs(chessboard, row + 1, counter);
+                Self::mark(chessboard, row, col, false);
+            }
+        }
+    }
+
+    fn mark(chessboard: &mut Vec<Vec<bool>>, row: usize, col: usize, value: bool) {
+        for i in 0..chessboard.len() {
+            chessboard[row][i] = value;
+            chessboard[i][col] = value;
+        }
+        let mut i = row as i32;
+        let mut j = col as i32;
+        while i >= 0 && j >= 0 {
+            chessboard[i as usize][j as usize] = value;
+            i -= 1;
+            j -= 1;
+        }
+        let mut i = row as i32;
+        let mut j = col as i32;
+        while i >= 0 && j < chessboard.len() as i32 {
+            chessboard[i as usize][j as usize] = value;
+            i -= 1;
+            j += 1;
+        }
+        let mut i = row as i32;
+        let mut j = col as i32;
+        while i < chessboard.len() as i32 && j >= 0 {
+            chessboard[i as usize][j as usize] = value;
+            i += 1;
+            j -= 1;
+        }
+        let mut i = row as i32;
+        let mut j = col as i32;
+        while i < chessboard.len() as i32 && j < chessboard.len() as i32 {
+            chessboard[i as usize][j as usize] = value;
+            i += 1;
+            j += 1;
+        }
+        chessboard[row][col] = !value

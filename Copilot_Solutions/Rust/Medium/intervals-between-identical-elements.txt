@@ -1,0 +1,264 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for i in 0..arr.len() {
+            map.entry(arr[i]).or_insert(vec![]).push(i as i64);
+        }
+        let mut res = vec![0; arr.len()];
+        for (k, v) in map {
+            let mut sum = 0;
+            let mut prev = 0;
+            for i in 0..v.len() {
+                let curr = v[i];
+                sum += curr * (i as i64) - prev;
+                prev += curr;
+            }
+            prev = 0;
+            for i in (0..v.len()).rev() {
+                let curr = v[i];
+                sum += prev - curr * (i as i64 + 1);
+                prev += curr;
+            }
+            for i in 0..v.len() {
+                res[v[i] as usize] = sum;
+            }
+        }
+        res
+
+=======
+
+        let mut map: std::collections::HashMap<i32, Vec<usize>> = std::collections::HashMap::new();
+        for (i, v) in arr.iter().enumerate() {
+            map.entry(*v).or_insert(Vec::new()).push(i);
+        }
+        let mut result: Vec<i64> = Vec::new();
+        for (i, v) in arr.iter().enumerate() {
+            let mut sum: i64 = 0;
+            for j in map.get(v).unwrap() {
+                sum += (i as i64 - *j as i64).abs();
+            }
+            result.push(sum);
+        }
+        result
+    }
+}
+
+=======
+
+        let mut map = std::collections::HashMap::new();
+        for (i, v) in arr.iter().enumerate() {
+            map.entry(v).or_insert_with(|| vec![]).push(i as i64);
+        }
+        let mut res = vec![0; arr.len()];
+        for v in map.values() {
+            for i in 0..v.len() {
+                for j in i + 1..v.len() {
+                    res[v[i] as usize] += v[j] - v[i];
+                    res[v[j] as usize] += v[j] - v[i];
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut indexes: Vec<Vec<i32>> = vec![vec![]; 100001];
+        for (i, &x) in arr.iter().enumerate() {
+            indexes[x as usize].push(i as i32);
+        }
+        let mut distances: Vec<i64> = vec![0; arr.len()];
+        for i in 0..indexes.len() {
+            let mut sum = 0;
+            let mut count = 0;
+            for j in 0..indexes[i].len() {
+                let index = indexes[i][j] as usize;
+                sum += count * (index as i64) - distances[index];
+                count += 1;
+                distances[index] = sum;
+            }
+            sum = 0;
+            count = 0;
+            for j in (0..indexes[i].len()).rev() {
+                let index = indexes[i][j] as usize;
+                sum += count * (arr.len() as i64 - index as i64 - 1) - distances[index];
+                count += 1;
+                distances[index] += sum;
+            }
+        }
+        distances
+    }
+}
+
+=======
+
+        let mut distances: Vec<i64> = vec![0; arr.len()];
+        let mut last_seen: Vec<Option<usize>> = vec![None; 100001];
+        for i in 0..arr.len() {
+            if let Some(j) = last_seen[arr[i] as usize] {
+                distances[i] = distances[i] + (i - j) as i64;
+                distances[j] = distances[j] + (i - j) as i64;
+            }
+            last_seen[arr[i] as usize] = Some(i);
+        }
+        distances
+    }
+    pub fn sum_of_distances_in_array(arr: Vec<i32>) -> Vec<i32> {
+        let distances = Solution::get_distances(arr.clone());
+        let mut sums: Vec<i64> = vec![0; arr.len()];
+        let mut counts: Vec<i64> = vec![0; arr.len()];
+        for i in 0..arr.len() {
+            sums[arr[i] as usize] += distances[i];
+            counts[arr[i] as usize] += 1;
+        }
+        let mut result: Vec<i32> = vec![0; arr.len()];
+        for i in 0..arr.len() {
+            result[i] = (sums[arr[i] as usize] - distances[i]) as i32 / (counts[arr[i] as usize] - 1) as i32;
+        }
+        result
+
+=======
+
+        let mut res = vec![0; arr.len()];
+        let mut map = std::collections::HashMap::new();
+        for (i, &v) in arr.iter().enumerate() {
+            if let Some(&j) = map.get(&v) {
+                res[i] = res[i-1] + (i as i64 - j as i64);
+            } else {
+                res[i] = res[i-1];
+            }
+            map.insert(v, i);
+        }
+        res
+    }
+    pub fn get_sum_of_intervals(arr: Vec<i32>) -> Vec<i64> {
+        let mut res = vec![0; arr.len()];
+        let mut map = std::collections::HashMap::new();
+        for (i, &v) in arr.iter().enumerate() {
+            if let Some(&j) = map.get(&v) {
+                res[i] = res[i-1] + (i as i64 - j as i64) - (j as i64 - map.get(&v).unwrap_or(&0) as i64);
+            } else {
+                res[i] = res[i-1];
+            }
+            map.insert(v, i);
+        }
+        res
+    }
+    pub fn sum_of_distances_in_array(arr: Vec<i32>) -> Vec<i32> {
+        let mut forward = Self::get_distances(arr.clone());
+        let mut backward = Self::get_distances(arr.iter().rev().cloned().collect());
+        backward.reverse();
+        let mut res = vec![0; arr.len()];
+        for (i, &v) in arr.iter().enumerate() {
+            res[i] = (forward[i] + backward[i]) as i32;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut counts = vec![0; 100001];
+        let mut sums = vec![0; 100001];
+        let mut distances = vec![0; arr.len()];
+        for i in 0..arr.len() {
+            let v = arr[i] as usize;
+            distances[i] = sums[v];
+            sums[v] += counts[v] * i as i64 - distances[i];
+            counts[v] += 1;
+        }
+        distances
+    }
+    pub fn sum_of_distances_in_array(arr: Vec<i32>) -> Vec<i32> {
+        let mut distances = Solution::get_distances(arr.clone());
+        let mut distances_rev = Solution::get_distances(arr.into_iter().rev().collect());
+        distances_rev.reverse();
+        for i in 0..distances.len() {
+            distances[i] += distances_rev[i];
+        }
+        distances.into_iter().map(|v| v as i32).collect()
+
+=======
+
+        let mut result = vec![0; arr.len()];
+        let mut last_index = vec![0; 100001];
+        for i in 0..arr.len() {
+            let index = arr[i] as usize;
+            result[i] = (i as i64 - last_index[index]) * (last_index[index] - (i as i64 - last_index[index]));
+            last_index[index] = i as i64 + 1;
+        }
+        result
+    }
+    pub fn sum_of_aliqot(arr: Vec<i32>) -> Vec<i64> {
+        let mut result = vec![0; arr.len()];
+        let mut last_index = vec![0; 100001];
+        for i in 0..arr.len() {
+            let index = arr[i] as usize;
+            result[i] = (i as i64 - last_index[index]) * (last_index[index] - (i as i64 - last_index[index]));
+            last_index[index] = i as i64 + 1;
+        }
+        result
+    }
+    pub fn sum_of_aliqot(arr: Vec<i32>) -> Vec<i64> {
+        let mut result = vec![0; arr.len()];
+        let mut last_index = vec![0; 100001];
+        for i in 0..arr.len() {
+            let index = arr[i] as usize;
+            result[i] = (i as i64 - last_index[index]) * (last_index[index] - (i as i64 - last_index[index]));
+            last_index[index] = i as i64 + 1;
+        }
+        result
+    }
+    pub fn sum_of_aliqot(arr: Vec<i32>) -> Vec<i64> {
+        let mut result = vec![0; arr.len()];
+        let mut last_index = vec![0; 100001];
+        for i in 0..arr.len() {
+            let index = arr[i] as usize;
+            result[i] = (i as i64 - last_index[index]) * (last_index[index] - (i as i64 - last_index[index]));
+            last_index[index] = i as i64 + 1;
+        }
+        result
+
+=======
+
+        let mut distances = vec![0; arr.len()];
+        let mut last_index = vec![None; 100_001];
+        for (i, &v) in arr.iter().enumerate() {
+            if let Some(last) = last_index[v as usize] {
+                distances[i] = distances[last] + i as i64 - last as i64;
+            }
+            last_index[v as usize] = Some(i);
+        }
+        distances
+    }
+    pub fn sum_of_distances_in_array(arr: Vec<i32>) -> Vec<i32> {
+        let mut distances = Solution::get_distances(arr.clone());
+        let mut rev_distances = Solution::get_distances(arr.into_iter().rev().collect());
+        rev_distances.reverse();
+        distances
+            .into_iter()
+            .zip(rev_distances.into_iter())
+            .map(|x| (x.0 + x.1) as i32)
+            .collect()
+    }
+}
+
+=======
+
+        let mut index_map = std::collections::HashMap::new();
+        let mut result = vec![0; arr.len()];
+        for (i, &n) in arr.iter().enumerate() {
+            let mut count = 0;
+            if let Some(v) = index_map.get(&n) {
+                for j in v.iter() {
+                    result[i] += (i as i64 - *j as i64).abs();
+                    result[*j as usize] += (i as i64 - *j as i64).abs();
+                    count += 1;
+                }
+            }
+            index_map.entry(n).or_insert(vec![]).push(i as i32);
+        }
+        result
+    }
+}

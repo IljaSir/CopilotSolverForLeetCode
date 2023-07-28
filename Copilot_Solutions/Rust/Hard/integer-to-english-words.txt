@@ -1,0 +1,534 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut res = String::new();
+        let mut num = num;
+        let mut i = 0;
+        while num > 0 {
+            if num % 1000 != 0 {
+                let mut tmp = Self::helper(num % 1000);
+                if i > 0 {
+                    tmp.push_str(" ");
+                    tmp.push_str(Self::unit(i));
+                }
+                if !res.is_empty() {
+                    tmp.push_str(" ");
+                }
+                res = tmp + &res;
+            }
+            num /= 1000;
+            i += 1;
+        }
+        res
+    }
+
+    fn helper(num: i32) -> String {
+        let mut res = String::new();
+        let mut num = num;
+        let mut i = 0;
+        while num > 0 {
+            if num % 10 != 0 {
+                let mut tmp = Self::digit(num % 10);
+                if i > 0 {
+                    tmp.push_str(" ");
+                    tmp.push_str(Self::tens(i));
+                }
+                if !res.is_empty() {
+                    tmp.push_str(" ");
+                }
+                res = tmp + &res;
+            }
+            num /= 10;
+            i += 1;
+        }
+        res
+    }
+
+    fn digit(num: i32) -> &'static str {
+        match num {
+            1 => "One",
+            2 => "Two",
+            3 => "Three",
+            4 => "Four",
+            5 => "Five",
+            6 => "Six",
+            7 => "Seven",
+            8 => "Eight",
+            9 => "Nine",
+            _ => "",
+        }
+    }
+
+    fn tens(num: i32) -> &'static str {
+        match num {
+            1 => "Ten",
+            2 => "Twenty",
+            3 => "Thirty",
+            4 => "Forty",
+            5 => "Fifty",
+            6 => "Sixty",
+            7 => "Seventy",
+            8 => "Eighty",
+            9 => "Ninety",
+            _ => "",
+        }
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut result = String::new();
+        let mut n = num;
+        let mut i = 0;
+        while n > 0 {
+            let mut t = n % 1000;
+            n /= 1000;
+            if t > 0 {
+                let mut s = String::new();
+                let h = t / 100;
+                t %= 100;
+                if h > 0 {
+                    s += Self::to_english(h);
+                    s += " Hundred";
+                }
+                if t > 0 {
+                    if h > 0 {
+                        s += " ";
+                    }
+                    if t < 20 {
+                        s += Self::to_english(t);
+                    } else {
+                        let d = t / 10;
+                        t %= 10;
+                        s += Self::to_english(d * 10);
+                        if t > 0 {
+                            s += " ";
+                            s += Self::to_english(t);
+                        }
+                    }
+                }
+                if i > 0 {
+                    s += " ";
+                    s += Self::to_english(1000_i32.pow(i));
+                }
+                if result.len() > 0 {
+                    s += " ";
+                }
+                s += &result;
+                result = s;
+            }
+            i += 1;
+        }
+        result
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut res = vec![];
+        let mut num = num;
+        let mut i = 0;
+        while num > 0 {
+            let v = num % 1000;
+            if v > 0 {
+                let s = Self::helper(v, i);
+                res.push(s);
+            }
+            num /= 1000;
+            i += 1;
+        }
+        res.reverse();
+        res.join(" ")
+    }
+    
+    fn helper(num: i32, i: i32) -> String {
+        let mut res = vec![];
+        let mut num = num;
+        let mut i = i;
+        let units = vec!["", "Thousand", "Million", "Billion"];
+        let tens = vec!["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+        let teens = vec!["", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+        let ones = vec!["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+        while num > 0 {
+            let v = num % 10;
+            if i == 0 {
+                res.push(ones[v as usize].to_string());
+            } else if i == 1 {
+                if v == 1 {
+                    res.push(teens[res.pop().unwrap().parse::<usize>().unwrap()].to_string());
+                } else {
+                    res.push(tens[v as usize].to_string());
+                }
+            } else {
+                res.push(ones[v as usize].to_string());
+                res.push("Hundred".to_string());
+            }
+            num /= 10;
+            i += 1;
+        }
+        res.reverse();
+        res.retain(|x| !x.is_empty());
+        res.push(units[i as usize].to_string());
+        res.join(" ")
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut num = num;
+        let mut res = "".to_string();
+        let mut idx = 0;
+        let units = vec!["", "Thousand", "Million", "Billion"];
+        while num > 0 {
+            let n = num % 1000;
+            if n > 0 {
+                res = format!("{} {} {}", Solution::helper(n), units[idx], res);
+            }
+            idx += 1;
+            num /= 1000;
+        }
+        res.trim().to_string()
+    }
+
+    fn helper(num: i32) -> String {
+        let mut num = num;
+        let mut res = "".to_string();
+        let mut idx = 0;
+        let tens = vec!["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+        let below_20 = vec!["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+        while num > 0 {
+            let n = num % 10;
+            if idx == 0 {
+                res = format!("{} {}", below_20[n as usize], res);
+            } else if idx == 1 {
+                if n == 1 {
+                    res = format!("{} {}", below_20[num as usize], res);
+                    break;
+                } else {
+                    res = format!("{} {}", tens[n as usize], res);
+                }
+            } else {
+                res = format!("{} Hundred {}", below_20[n as usize], res);
+            }
+            idx += 1;
+            num /= 10;
+        }
+        res.trim().to_string()
+    }
+}
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut num = num;
+        let mut result = String::new();
+        let mut tmp = String::new();
+        let mut i = 0;
+        let units = ["", "Thousand", "Million", "Billion"];
+        while num > 0 {
+            let mut n = num % 1000;
+            num /= 1000;
+            tmp.clear();
+            if n > 99 {
+                tmp.push_str(Self::under_20(n / 100));
+                tmp.push_str(" Hundred");
+                n %= 100;
+            }
+            if n > 19 {
+                tmp.push_str(Self::tens(n / 10));
+                n %= 10;
+            }
+            if n > 0 {
+                tmp.push_str(Self::under_20(n));
+            }
+            if !tmp.is_empty() {
+                if !result.is_empty() {
+                    result.insert_str(0, " ");
+                }
+                result.insert_str(0, tmp.as_str());
+                if i > 0 {
+                    result.insert_str(0, " ");
+                    result.insert_str(0, units[i]);
+                }
+            }
+            i += 1;
+        }
+        result
+    }
+    fn under_20(n: i32) -> &'static str {
+        match n {
+            1 => "One",
+            2 => "Two",
+            3 => "Three",
+            4 => "Four",
+            5 => "Five",
+            6 => "Six",
+            7 => "Seven",
+            8 => "Eight",
+            9 => "Nine",
+            10 => "Ten",
+            11 => "Eleven",
+            12 => "Twelve",
+            13 => "Thirteen",
+            14 => "Fourteen",
+            15 => "Fifteen",
+            16 => "Sixteen",
+            17 => "Seventeen",
+            18 => "Eighteen",
+            19 => "Nineteen",
+            _ => "",
+        }
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut res = String::new();
+        let mut num = num;
+        let mut idx = 0;
+        let units = ["", " Thousand", " Million", " Billion"];
+        while num > 0 {
+            let mut part = Self::part_to_words(num % 1000);
+            if !part.is_empty() {
+                part.push_str(units[idx]);
+                if !res.is_empty() {
+                    part.push(' ');
+                }
+                res = part + &res;
+            }
+            num /= 1000;
+            idx += 1;
+        }
+        res
+    }
+    
+    fn part_to_words(num: i32) -> String {
+        let mut res = String::new();
+        let ones = ["", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        let tens = ["", " Ten", " Twenty", " Thirty", " Forty", " Fifty", " Sixty", " Seventy", " Eighty", " Ninety"];
+        let teens = [" Ten", " Eleven", " Twelve", " Thirteen", " Fourteen", " Fifteen", " Sixteen", " Seventeen", " Eighteen", " Nineteen"];
+        let mut num = num;
+        let mut idx = 0;
+        while num > 0 {
+            match idx {
+                0 => {
+                    res = ones[num % 10].to_string() + &res;
+                },
+                1 => {
+                    if num % 10 == 1 {
+                        res = teens[(num % 10) as usize].to_string() + &res;
+                    } else {
+                        res = tens[num % 10].to_string() + &res;
+                    }
+                },
+                2 => {
+                    res = ones[num % 10].to_string() + " Hundred" + &res;
+                },
+                _ => {},
+            }
+            num /= 10;
+            idx += 1;
+        }
+        res
+
+=======
+
+        if num == 0 {
+            return "Zero".to_string();
+        }
+        let mut num = num as u32;
+        let mut res = String::new();
+        let mut unit = 0;
+        let units = ["", " Thousand", " Million", " Billion"];
+        while num > 0 {
+            let mut tmp = String::new();
+            let mut n = num % 1000;
+            num /= 1000;
+            if n >= 100 {
+                tmp.push_str(Self::digit_to_words((n / 100) as u8));
+                tmp.push_str(" Hundred");
+                n %= 100;
+            }
+            if n >= 20 {
+                tmp.push_str(Self::tens_to_words((n / 10) as u8));
+                n %= 10;
+            }
+            if n > 0 {
+                tmp.push_str(Self::digit_to_words(n as u8));
+            }
+            if !tmp.is_empty() {
+                if unit > 0 {
+                    tmp.push_str(units[unit]);
+                }
+                if !res.is_empty() {
+                    tmp.push(' ');
+                }
+                res = tmp + &res;
+            }
+            unit += 1;
+        }
+        res
+    }
+    fn digit_to_words(d: u8) -> &'static str {
+        match d {
+            1 => "One",
+            2 => "Two",
+            3 => "Three",
+            4 => "Four",
+            5 => "Five",
+            6 => "Six",
+            7 => "Seven",
+            8 => "Eight",
+            9 => "Nine",
+            _ => "",
+        }
+    }
+    fn tens_to_words(t: u8) -> &'static str {
+        match t {
+            2 => "Twenty",
+            3 => "Thirty",
+            4 => "Forty",
+            5 => "Fifty",
+            6 => "Sixty",
+            7 => "Seventy",
+            8 => "Eighty",
+            9 => "Ninety",
+            _ => "",
+        }
+
+=======
+
+        let mut n = num;
+        let mut words = vec![];
+        let mut i = 0;
+        while n > 0 {
+            let r = n % 1000;
+            if r > 0 {
+                let mut s = Self::number_to_words_3(r);
+                if i > 0 {
+                    s.push_str(Self::unit(i).as_str());
+                }
+                words.push(s);
+            }
+            n /= 1000;
+            i += 1;
+        }
+        if words.is_empty() {
+            return "Zero".to_string();
+        }
+        words.reverse();
+        words.join(" ")
+    }
+    fn number_to_words_3(n: i32) -> String {
+        let mut n = n;
+        let mut words = vec![];
+        let mut i = 0;
+        while n > 0 {
+            let r = n % 10;
+            if r > 0 {
+                let mut s = Self::digit(r);
+                if i > 0 {
+                    s.push_str(Self::ten(i).as_str());
+                }
+                words.push(s);
+            }
+            n /= 10;
+            i += 1;
+        }
+        if words.is_empty() {
+            return "".to_string();
+        }
+        words.reverse();
+        words.join(" ")
+    }
+    fn digit(n: i32) -> String {
+        match n {
+            1 => "One",
+            2 => "Two",
+            3 => "Three",
+            4 => "Four",
+            5 => "Five",
+            6 => "Six",
+            7 => "Seven",
+            8 => "Eight",
+            9 => "Nine",
+            _ => "",
+        }.to_string()
+    }
+    fn ten(n: i32) -> String {
+        match n {
+            1 => "Ten",
+            2 => "Twenty",
+            3 => "Thirty",
+            4 => "Forty",
+            5 => "Fifty",
+            6 => "Sixty",
+            7 => "Seventy",
+            8 => "Eighty",
+            9 => "Ninety",
+            _ => "",
+        }.to_string()
+
+=======
+
+        let mut num = num;
+        let mut result = String::new();
+        let mut idx = 0;
+        let mut buf = String::new();
+        let mut tmp = String::new();
+        let mut tmp2 = String::new();
+        let mut tmp3 = String::new();
+        let mut tmp4 = String::new();
+        let mut tmp5 = String::new();
+        let mut tmp6 = String::new();
+        let mut tmp7 = String::new();
+        let mut tmp8 = String::new();
+        let mut tmp9 = String::new();
+        let mut tmp10 = String::new();
+        let mut tmp11 = String::new();
+        let mut tmp12 = String::new();
+        let mut tmp13 = String::new();
+        let mut tmp14 = String::new();
+        let mut tmp15 = String::new();
+        let mut tmp16 = String::new();
+        let mut tmp17 = String::new();
+        let mut tmp18 = String::new();
+        let mut tmp19 = String::new();
+        let mut tmp20 = String::new();
+        let mut tmp21 = String::new();
+        let mut tmp22 = String::new();
+        let mut tmp23 = String::new();
+        let mut tmp24 = String::new();
+        let mut tmp25 = String::new();
+        let mut tmp26 = String::new();
+        let mut tmp27 = String::new();
+        let mut tmp28 = String::new();
+        let mut tmp29 = String::new();
+        let mut tmp30 = String::new();
+        let mut tmp31 = String::new();
+        let mut tmp32 = String::new();
+        let mut tmp33 = String::new();
+        let mut tmp34 = String::new();
+        let mut tmp35 = String::new();
+        let mut tmp36 = String::new();
+        let mut tmp37 = String::new();
+        let mut tmp38 = String::new();
+        let mut tmp39 = String::new();
+        let mut tmp40 = String::new();
+        let mut tmp41 = String::new();
+        let mut tmp42 = String::new();
+        let mut tmp43 = String::new();
+        let mut tmp44 = String::new();
+        let mut tmp45 = String::new();
+        let mut tmp46 = String::new();
+        let mut tmp47 = String

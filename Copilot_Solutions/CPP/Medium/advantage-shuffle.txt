@@ -1,0 +1,212 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        multiset<int> s(nums1.begin(), nums1.end());
+        for (int i = 0; i < nums2.size(); ++i) {
+            auto it = s.upper_bound(nums2[i]);
+            if (it == s.end()) {
+                nums1[i] = *s.begin();
+                s.erase(s.begin());
+            } else {
+                nums1[i] = *it;
+                s.erase(it);
+            }
+        }
+        return nums1;
+
+=======
+
+        sort(nums1.begin(), nums1.end());
+        vector<int> ans;
+        for (int i = 0; i < nums2.size(); i++) {
+            auto it = upper_bound(nums1.begin(), nums1.end(), nums2[i]);
+            if (it == nums1.end()) {
+                ans.push_back(nums1[0]);
+                nums1.erase(nums1.begin());
+            } else {
+                ans.push_back(*it);
+                nums1.erase(it);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> res(nums1.size(), 0);
+        sort(nums1.begin(), nums1.end());
+        for (int i = 0; i < nums2.size(); i++) {
+            auto it = upper_bound(nums1.begin(), nums1.end(), nums2[i]);
+            if (it == nums1.end()) {
+                res[i] = nums1[0];
+                nums1.erase(nums1.begin());
+            } else {
+                res[i] = *it;
+                nums1.erase(it);
+            }
+        }
+        return res;
+
+=======
+
+        multiset<int> s1(nums1.begin(), nums1.end());
+        vector<int> res(nums1.size());
+        for (int i = 0; i < nums2.size(); i++) {
+            auto it = s1.upper_bound(nums2[i]);
+            if (it != s1.end()) {
+                res[i] = *it;
+                s1.erase(it);
+            } else {
+                res[i] = *s1.begin();
+                s1.erase(s1.begin());
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        sort(nums1.begin(), nums1.end());
+        for (auto i : nums2) {
+            auto it = upper_bound(nums1.begin(), nums1.end(), i);
+            if (it == nums1.end()) {
+                ans.push_back(nums1[0]);
+                nums1.erase(nums1.begin());
+            } else {
+                ans.push_back(*it);
+                nums1.erase(it);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans(nums1.size());
+        sort(nums1.begin(), nums1.end());
+        for (int i = 0; i < nums2.size(); ++i) {
+            int j = 0;
+            while (j < nums1.size() && nums1[j] <= nums2[i]) {
+                ++j;
+            }
+            if (j == nums1.size()) {
+                j = 0;
+                while (j < nums1.size() && nums1[j] <= nums2[i]) {
+                    ++j;
+                }
+            }
+            ans[i] = nums1[j];
+            nums1.erase(nums1.begin() + j);
+        }
+        return ans;
+
+=======
+
+        vector<int> res;
+        vector<int> sortedNums1 = nums1;
+        sort(sortedNums1.begin(), sortedNums1.end());
+        for (int i = 0; i < nums2.size(); i++) {
+            auto it = lower_bound(sortedNums1.begin(), sortedNums1.end(), nums2[i] + 1);
+            if (it == sortedNums1.end()) {
+                res.push_back(sortedNums1[0]);
+                sortedNums1.erase(sortedNums1.begin());
+            } else {
+                res.push_back(*it);
+                sortedNums1.erase(it);
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        vector<pair<int,int>> v;
+        for(int i=0;i<nums2.size();i++)
+        {
+            v.push_back(make_pair(nums2[i],i));
+        }
+        sort(nums1.begin(),nums1.end());
+        sort(v.begin(),v.end());
+        int i=0,j=0;
+        while(i<nums1.size()&&j<v.size())
+        {
+            if(nums1[i]>v[j].first)
+            {
+                res.push_back(nums1[i]);
+                i++;
+                j++;
+            }
+            else
+            {
+                i++;
+            }
+        }
+        i=0;
+        while(res.size()<nums1.size())
+        {
+            if(nums1[i]>v[j].first)
+            {
+                res.push_back(nums1[i]);
+                i++;
+                j++;
+            }
+            else
+            {
+                i++;
+            }
+        }
+        vector<int> ans(nums1.size());
+        for(int i=0;i<res.size();i++)
+        {
+            ans[v[i].second]=res[i];
+        }
+        return ans;
+
+=======
+
+        std::sort(nums1.begin(), nums1.end());
+        std::vector<int> results;
+        for (auto num : nums2) {
+            auto it = std::upper_bound(nums1.begin(), nums1.end(), num);
+            if (it != nums1.end()) {
+                results.push_back(*it);
+                nums1.erase(it);
+            } else {
+                results.push_back(nums1[0]);
+                nums1.erase(nums1.begin());
+            }
+        }
+        return results;
+
+=======
+
+        vector<int> res(nums1.size(), -1);
+        vector<int> used(nums1.size(), 0);
+        int i, j;
+        for (i = 0; i < nums2.size(); i++) {
+            int max = -1;
+            for (j = 0; j < nums1.size(); j++) {
+                if (nums1[j] > nums2[i] && used[j] == 0) {
+                    if (max == -1) {
+                        max = j;
+                    } else if (nums1[j] < nums1[max]) {
+                        max = j;
+                    }
+                }
+            }
+            if (max != -1) {
+                res[i] = nums1[max];
+                used[max] = 1;
+            }
+        }
+        for (i = 0; i < nums2.size(); i++) {
+            if (res[i] == -1) {
+                for (j = 0; j < nums1.size(); j++) {
+                    if (used[j] == 0) {
+                        res[i] = nums1[j];
+                        used[j] = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        return res;

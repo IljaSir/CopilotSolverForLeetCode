@@ -1,0 +1,183 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<int> sum(m, 0);
+        for (int i = 0; i < m; ++i) {
+            sum[i] = mat[i][0];
+        }
+        set<int> sums;
+        sums.insert(accumulate(sum.begin(), sum.end(), 0));
+        for (int i = 0; i < n; ++i) {
+            vector<int> nextSum = sum;
+            for (int j = 0; j < m; ++j) {
+                nextSum[j] = sum[j] + mat[j][i] - mat[j][0];
+            }
+            sums.insert(accumulate(nextSum.begin(), nextSum.end(), 0));
+            sum = nextSum;
+        }
+        auto it = sums.begin();
+        for (int i = 1; i < k; ++i) {
+            ++it;
+        }
+        return *it;
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<int> sum(m, 0);
+        for (int i = 0; i < m; i++) {
+            sum[i] = mat[i][0];
+        }
+        while (--k) {
+            int minSum = INT_MAX;
+            int minIdx = -1;
+            for (int i = 0; i < m; i++) {
+                if (sum[i] + mat[i][1] < minSum) {
+                    minSum = sum[i] + mat[i][1];
+                    minIdx = i;
+                }
+            }
+            sum[minIdx] += mat[minIdx][1];
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            res += sum[i];
+        }
+        return res;
+
+=======
+
+        int m = mat.size(), n = mat[0].size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < m; ++i) {
+            vector<int> tmp(n * m, INT_MAX);
+            for (int j = 0; j < n; ++j) {
+                for (int l = 0; l < n; ++l) {
+                    tmp[j * n + l] = min(tmp[j * n + l], dp[l] + mat[i][j]);
+                }
+            }
+            sort(tmp.begin(), tmp.end());
+            dp.assign(tmp.begin(), tmp.begin() + n);
+        }
+        return dp[k - 1];
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < m; ++i) {
+            vector<int> tmp(n * m, 0);
+            for (int j = 0; j < n; ++j) {
+                for (int k = 0; k < n; ++k) {
+                    tmp[j * n + k] = dp[k] + mat[i][j];
+                }
+            }
+            sort(tmp.begin(), tmp.end());
+            for (int j = 0; j < n; ++j) {
+                dp[j] = tmp[j];
+            }
+        }
+        return dp[k - 1];
+
+=======
+
+        int n = mat.size();
+        int m = mat[0].size();
+        vector<int> sums(n, 0);
+        for (int i = 0; i < n; i++) {
+            sums[i] = mat[i][0];
+        }
+        priority_queue<int> pq(sums.begin(), sums.end());
+        while (k-- > 1) {
+            int sum = pq.top();
+            pq.pop();
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    if (mat[i][j] > sum - sums[i]) {
+                        break;
+                    }
+                    pq.push(sum - sums[i] + mat[i][j]);
+                }
+                sums[i] = mat[i][0];
+            }
+        }
+        return pq.top();
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<int> dp(n);
+        for (int i = 0; i < m; i++) {
+            vector<int> tmp(n * m);
+            int index = 0;
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < n; k++) {
+                    tmp[index++] = dp[k] + mat[i][j];
+                }
+            }
+            sort(tmp.begin(), tmp.end());
+            for (int j = 0; j < n; j++) {
+                dp[j] = tmp[j];
+            }
+        }
+        return dp[k - 1];
+
+=======
+
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<int> prev;
+        vector<int> cur;
+        prev.push_back(0);
+        for (int i = 0; i < m; i++) {
+            cur.clear();
+            for (int j = 0; j < n; j++) {
+                for (int k = 0; k < prev.size(); k++) {
+                    cur.push_back(prev[k] + mat[i][j]);
+                }
+            }
+            sort(cur.begin(), cur.end());
+            prev.clear();
+            for (int j = 0; j < k && j < cur.size(); j++) {
+                prev.push_back(cur[j]);
+            }
+        }
+        return prev[k-1];
+
+=======
+
+        int m = mat.size(), n = mat[0].size();
+        vector<int> dp(n, 0);
+        for(int i = 0; i < m; i++){
+            vector<int> tmp(n * m + 1, INT_MAX);
+            for(int j = 0; j < n; j++){
+                for(int t = 0; t < n * m + 1; t++){
+                    if(dp[j] != INT_MAX && t - dp[j] < n * m + 1) tmp[t] = min(tmp[t], mat[i][j] + t - dp[j]);
+                }
+            }
+            dp = tmp;
+        }
+        return dp[k];
+
+=======
+
+        int m = mat.size(), n = mat[0].size();
+        vector<int> v;
+        for (int i = 0; i < m; ++i) {
+            vector<int> u;
+            for (int x : v) {
+                for (int y : mat[i]) {
+                    u.push_back(x + y);
+                }
+            }
+            sort(u.begin(), u.end());
+            v.resize(min(k, (int)u.size()));
+            copy(u.begin(), v.end(), v.begin());
+        }
+        return v[k - 1];

@@ -1,0 +1,191 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        heap = [(grid[0][0], 0, 0)]
+        visited = set()
+        while heap:
+            t, x, y = heapq.heappop(heap)
+            if (x, y) == (n-1, n-1):
+                return t
+            visited.add((x, y))
+            for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < n and 0 <= ny < n and (nx, ny) not in visited:
+                    heapq.heappush(heap, (max(t, grid[nx][ny]), nx, ny))
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        q = [(grid[0][0], 0, 0)]
+        visited = set([(0, 0)])
+        ans = 0
+        while q:
+            h, i, j = heapq.heappop(q)
+            ans = max(ans, h)
+            if i == j == n - 1:
+                return ans
+            for x, y in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+                if 0 <= x < n and 0 <= y < n and (x, y) not in visited:
+                    visited.add((x, y))
+                    heapq.heappush(q, (grid[x][y], x, y))
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        def check(t):
+            seen = set()
+            def dfs(x, y):
+                if not 0 <= x < n or not 0 <= y < n or grid[x][y] > t or (x, y) in seen:
+                    return False
+                if x == y == n - 1:
+                    return True
+                seen.add((x, y))
+                return dfs(x + 1, y) or dfs(x - 1, y) or dfs(x, y + 1) or dfs(x, y - 1)
+            return dfs(0, 0)
+        l, r = grid[0][0], n * n
+        while l < r:
+            mid = (l + r) // 2
+            if check(mid):
+                r = mid
+            else:
+                l = mid + 1
+        return l
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        
+        pass
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        def check(t):
+            seen = set()
+            def dfs(x,y):
+                if x == n-1 and y == n-1:
+                    return True
+                seen.add((x,y))
+                for x2,y2 in (x+1,y),(x-1,y),(x,y+1),(x,y-1):
+                    if 0 <= x2 < n and 0 <= y2 < n and (x2,y2) not in seen and grid[x2][y2] <= t:
+                        if dfs(x2,y2):
+                            return True
+                return False
+            return dfs(0,0)
+        lo,hi = grid[0][0],n*n-1
+        while lo < hi:
+            mi = (lo+hi)//2
+            if check(mi):
+                hi = mi
+            else:
+                lo = mi+1
+        return lo
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        def check(t):
+            visited = [[False]*n for _ in range(n)]
+            def dfs(x, y):
+                if x==n-1 and y==n-1:
+                    return True
+                visited[x][y] = True
+                for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    nx, ny = x+dx, y+dy
+                    if 0<=nx<n and 0<=ny<n and not visited[nx][ny] and grid[nx][ny]<=t:
+                        if dfs(nx, ny):
+                            return True
+                return False
+            return dfs(0, 0)
+        l, r = grid[0][0], n**2-1
+        while l<r:
+            mid = (l+r)//2
+            if check(mid):
+                r = mid
+            else:
+                l = mid+1
+        return l
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        def bfs(t):
+            q = [(0,0)]
+            seen = set()
+            while q:
+                i,j = q.pop()
+                if (i,j) in seen:
+                    continue
+                seen.add((i,j))
+                for di,dj in [(0,1),(1,0),(0,-1),(-1,0)]:
+                    ni,nj = i+di,j+dj
+                    if 0<=ni<n and 0<=nj<n and grid[ni][nj]<=t:
+                        q.append((ni,nj))
+            return (n-1,n-1) in seen
+        l,r = grid[0][0],n*n-1
+        while l<r:
+            m = (l+r)//2
+            if bfs(m):
+                r = m
+            else:
+                l = m+1
+        return l
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        def canReach(grid, t):
+            seen = set()
+            n = len(grid)
+            @lru_cache(None)
+            def dfs(r, c):
+                if r == n-1 and c == n-1:
+                    return True
+                if r < 0 or r >= n or c < 0 or c >= n or (r, c) in seen or grid[r][c] > t:
+                    return False
+                seen.add((r, c))
+                return any(dfs(r+dr, c+dc) for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)])
+            return dfs(0, 0)
+        n = len(grid)
+        lo, hi = grid[0][0], n*n-1
+        while lo < hi:
+            mi = (lo + hi) // 2
+            if canReach(grid, mi):
+                hi = mi
+            else:
+                lo = mi + 1
+        return lo
+
+=======
+
+def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        # print(n)
+        def check(t):
+            queue = [(0,0)]
+            visited = set()
+            while queue:
+                x,y = queue.pop(0)
+                if (x,y) == (n-1,n-1):
+                    return True
+                for i,j in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+                    if 0 <= i < n and 0 <= j < n and grid[i][j] <= t and (i,j) not in visited:
+                        queue.append((i,j))
+                        visited.add((i,j))
+            return False
+        l,r = 0,n*n
+        while l < r:
+            mid = (l+r) // 2
+            if check(mid):
+                r = mid
+            else:
+                l = mid + 1
+        return l

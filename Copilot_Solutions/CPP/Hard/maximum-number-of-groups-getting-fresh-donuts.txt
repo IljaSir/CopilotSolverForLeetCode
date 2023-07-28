@@ -1,0 +1,260 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = groups.size();
+        vector<int> cnt(batchSize, 0);
+        for (int i = 0; i < n; i++) {
+            cnt[groups[i] % batchSize]++;
+        }
+        int ans = cnt[0];
+        cnt[0] = 0;
+        vector<int> dp(1 << n, -1);
+        dp[0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            if (dp[i] == -1) {
+                continue;
+            }
+            int remain = 0;
+            for (int j = 0; j < n; j++) {
+                if (i & (1 << j)) {
+                    remain += groups[j];
+                }
+            }
+            remain %= batchSize;
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    int next = i | (1 << j);
+                    int nRemain = (remain + groups[j]) % batchSize;
+                    int nCnt = dp[i] + (nRemain == 0);
+                    if (dp[next] == -1 || dp[next] < nCnt) {
+                        dp[next] = nCnt;
+                    }
+                }
+            }
+        }
+        return ans + dp[(1 << n) - 1];
+
+=======
+
+        vector<int> cnt(batchSize);
+        int ans = 0;
+        for (int g : groups) {
+            if (g % batchSize == 0) {
+                ans++;
+            } else {
+                cnt[g % batchSize]++;
+            }
+        }
+        vector<vector<int>> dp(1 << groups.size(), vector<int>(batchSize));
+        dp[0][0] = ans;
+        for (int mask = 0; mask < (1 << groups.size()); mask++) {
+            for (int i = 0; i < batchSize; i++) {
+                for (int j = 0; j < groups.size(); j++) {
+                    if (mask & (1 << j)) continue;
+                    int nmask = mask | (1 << j);
+                    int nrem = (i + groups[j]) % batchSize;
+                    dp[nmask][nrem] = max(dp[nmask][nrem], dp[mask][i] + (nrem == 0 ? 1 : 0));
+                }
+            }
+        }
+        return dp[(1 << groups.size()) - 1][0];
+
+=======
+
+        int n = groups.size();
+        int mod[batchSize];
+        memset(mod, 0, sizeof(mod));
+        for (int i = 0; i < n; i++) {
+            mod[groups[i] % batchSize]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (groups[i] % batchSize == 0) {
+                groups[i] = -1;
+                ans++;
+            }
+        }
+        int dp[batchSize][1 << n];
+        memset(dp, 0, sizeof(dp));
+        for (int i = 0; i < batchSize; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                if (i == 0) {
+                    int cnt = 0;
+                    for (int k = 0; k < n; k++) {
+                        if ((j & (1 << k)) && groups[k] == -1) {
+                            cnt++;
+                        }
+                    }
+                    dp[i][j] = cnt;
+                    continue;
+                }
+                for (int k = 0; k < n; k++) {
+                    if (groups[k] == -1) {
+                        continue;
+                    }
+                    if (j & (1 << k)) {
+                        dp[i][j] = max(dp[i][j], dp[(i + groups[k]) % batchSize][j ^ (1 << k)] + 1);
+                    }
+                }
+            }
+        }
+        return ans + dp[0][(1 << n) - 1];
+
+=======
+
+        int n = groups.size();
+        vector<int> cnt(batchSize, 0);
+        for (int g : groups) {
+            cnt[g % batchSize]++;
+        }
+        vector<vector<int>> dp(batchSize, vector<int>(1 << n, -1));
+        return cnt[0] + dfs(cnt, dp, 0, 0, n, batchSize);
+    }
+    
+    int dfs(vector<int>& cnt, vector<vector<int>>& dp, int mask, int mod, int n, int batchSize) {
+        if (mask == (1 << n) - 1) {
+            return 0;
+        }
+        if (dp[mod][mask] != -1) {
+            return dp[mod][mask];
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i) || cnt[(mod + groups[i]) % batchSize] == 0) {
+                continue;
+            }
+            cnt[(mod + groups[i]) % batchSize]--;
+            res = max(res, dfs(cnt, dp, mask | (1 << i), (mod + groups[i]) % batchSize, n, batchSize) + ((mod + groups[i]) % batchSize == 0));
+            cnt[(mod + groups[i]) % batchSize]++;
+        }
+        return dp[mod][mask] = res;
+
+=======
+
+        int n = groups.size();
+        vector<int> cnt(batchSize);
+        int ans = 0;
+        for (int g : groups) {
+            if (g % batchSize == 0) {
+                ans++;
+            } else {
+                cnt[g % batchSize]++;
+            }
+        }
+        vector<vector<int>> dp(batchSize, vector<int>(1 << n, -1));
+        dp[0][0] = 0;
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < batchSize; j++) {
+                if (dp[j][i] == -1) continue;
+                for (int k = 0; k < n; k++) {
+                    if (i & (1 << k)) continue;
+                    int nxt = (j + groups[k]) % batchSize;
+                    dp[nxt][i | (1 << k)] = max(dp[nxt][i | (1 << k)], dp[j][i] + (nxt == 0));
+                }
+            }
+        }
+        return ans + dp[0][(1 << n) - 1];
+
+=======
+
+        int n = groups.size();
+        vector<int> cnt(batchSize);
+        int res = 0;
+        for (auto g : groups) {
+            if (g % batchSize == 0) {
+                ++res;
+            } else {
+                ++cnt[g % batchSize];
+            }
+        }
+        vector<vector<int>> dp(batchSize, vector<int>(1 << n, -1));
+        dp[0][0] = 0;
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            for (int i = 0; i < batchSize; ++i) {
+                if (dp[i][mask] == -1) continue;
+                for (int j = 0; j < n; ++j) {
+                    if ((mask >> j) & 1) continue;
+                    int ni = (i + groups[j]) % batchSize;
+                    int nmask = mask | (1 << j);
+                    dp[ni][nmask] = max(dp[ni][nmask], dp[i][mask] + (ni == 0));
+                }
+            }
+        }
+        int ans = res;
+        for (int i = 1; i < batchSize; ++i) {
+            ans = max(ans, res + dp[i][(1 << n) - 1]);
+        }
+        return ans;
+
+=======
+
+        int n = groups.size();
+        vector<int> cnt(batchSize);
+        for (auto& g : groups) {
+            cnt[g % batchSize]++;
+        }
+        vector<vector<int>> dp(1 << n, vector<int>(batchSize, -1));
+        dp[0][0] = 0;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            for (int r = 0; r < batchSize; r++) {
+                if (dp[mask][r] == -1) continue;
+                for (int i = 0; i < n; i++) {
+                    if (mask & (1 << i)) continue;
+                    int nmask = mask | (1 << i);
+                    int nr = (r + groups[i]) % batchSize;
+                    dp[nmask][nr] = max(dp[nmask][nr], dp[mask][r] + (nr == 0 ? 1 : 0));
+                }
+            }
+        }
+        return dp[(1 << n) - 1][0] + cnt[0];
+
+=======
+
+        int n = groups.size();
+        vector<int> dp(batchSize, 0);
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = groups[i] % batchSize;
+            if (x == 0) ans++;
+            else {
+                dp[x]++;
+            }
+        }
+        for (int i = 1; i < batchSize; ++i) {
+            int j = batchSize - i;
+            if (i > j) break;
+            if (i == j) {
+                ans += dp[i] / 2;
+            } else {
+                ans += min(dp[i], dp[j]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = groups.size();
+        int b = batchSize;
+        int mod[b];
+        memset(mod, 0, sizeof(mod));
+        for (int i = 0; i < n; i++) {
+            mod[groups[i] % b]++;
+        }
+        int dp[1 << n][b];
+        memset(dp, -1, sizeof(dp));
+        dp[0][0] = 0;
+        for (int m = 0; m < (1 << n); m++) {
+            for (int i = 0; i < b; i++) {
+                if (dp[m][i] == -1) {
+                    continue;
+                }
+                for (int j = 0; j < n; j++) {
+                    if ((m & (1 << j)) == 0) {
+                        int x = (i + groups[j]) % b;
+                        dp[m | (1 << j)][x] = max(dp[m | (1 << j)][x], dp[m][i] + (x == 0));
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1][0] + mod[0];

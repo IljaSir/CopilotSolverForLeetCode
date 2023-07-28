@@ -1,0 +1,129 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut target = target;
+        let n = target.len();
+        let mut sum: i64 = target.iter().map(|x| *x as i64).sum();
+        let mut max = target.iter().max().unwrap();
+        while sum > n as i64 {
+            let max = max.clone();
+            let x = sum - max.clone() as i64;
+            if x == 1 {
+                return true;
+            }
+            sum -= max.clone() as i64;
+            max = (max - x) as i32;
+            if max < 1 {
+                return false;
+            }
+            sum += max.clone() as i64;
+            let mut i = 0;
+            while i < n {
+                if target[i] == max {
+                    break;
+                }
+                i += 1;
+            }
+            if i == n {
+                return false;
+            }
+            target[i] = max;
+        }
+        true
+    }
+}
+
+=======
+
+        let mut heap = std::collections::BinaryHeap::from(target);
+        let mut sum = heap.iter().sum::<i32>();
+        while let Some(&n) = heap.peek() {
+            if n == 1 { return true; }
+            let m = heap.pop().unwrap();
+            let k = m - (sum - m);
+            if k <= 0 || k == m { return false; }
+            heap.push(k);
+            sum = sum - m + k;
+        }
+        false
+    }
+}
+
+=======
+
+        let mut target = target;
+        let mut sum: i64 = target.iter().map(|x| *x as i64).sum();
+        let mut max = *target.iter().max().unwrap();
+        let mut max_i = target.iter().position(|x| *x == max).unwrap();
+        while max > 1 {
+            let rest = sum - max;
+            if rest == 1 {
+                return true;
+            }
+            let new = max % rest;
+            if new == 0 || new == max {
+                return false;
+            }
+            sum = sum - max + new;
+            max = new;
+            target[max_i] = new;
+            max_i = target.iter().position(|x| *x == max).unwrap();
+        }
+        true
+
+=======
+
+        let mut target = target;
+        let mut sum = target.iter().sum();
+        for _ in 0..target.len() {
+            let mut max = 0;
+            let mut max_index = 0;
+            for (i, &v) in target.iter().enumerate() {
+                if v > max {
+                    max = v;
+                    max_index = i;
+                }
+            }
+            sum -= max;
+            if max == 1 || sum == 1 {
+                return true;
+            }
+            if max < sum || sum == 0 || max % sum == 0 {
+                return false;
+            }
+            target[max_index] %= sum;
+            sum += target[max_index];
+        }
+        false
+    }
+}
+
+=======
+
+        let mut v = target;
+        let mut sum = v.iter().sum::<i32>();
+        let n = v.len();
+        while v.iter().any(|x| *x != 1) {
+            let mut max = 0;
+            let mut index = 0;
+            for i in 0..n {
+                if v[i] > max {
+                    max = v[i];
+                    index = i;
+                }
+            }
+            let prev = v[index];
+            v[index] = sum - v[index];
+            sum -= prev - v[index];
+            if v[index] < 1 || sum < v[index] {
+                return false;
+            }
+        }
+        true

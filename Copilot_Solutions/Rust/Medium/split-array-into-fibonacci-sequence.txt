@@ -1,0 +1,129 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let num = num.as_bytes();
+        let n = num.len();
+        let mut res: Vec<i32> = Vec::new();
+        for i in 0..n-2 {
+            if i > 0 && num[0] == b'0' { break; }
+            let a = i32::from_str_radix(std::str::from_utf8(&num[0..=i]).unwrap(), 10).unwrap();
+            for j in i+1..n-1 {
+                if j > i+1 && num[i+1] == b'0' { break; }
+                let b = i32::from_str_radix(std::str::from_utf8(&num[i+1..=j]).unwrap(), 10).unwrap();
+                res.clear();
+                res.push(a);
+                res.push(b);
+                let mut k = j+1;
+                loop {
+                    let c = res[res.len()-2] + res[res.len()-1];
+                    let c = c.to_string().into_bytes();
+                    if k + c.len() > n { break; }
+                    if c == &num[k..k+c.len()] {
+                        k += c.len();
+                        res.push(i32::from_str_radix(std::str::from_utf8(&c).unwrap(), 10).unwrap());
+                        if k == n { return res; }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut result = Vec::new();
+        let mut n = num.as_bytes();
+        let mut i = 0;
+        while i < n.len() {
+            let mut j = i + 1;
+            while j < n.len() {
+                if n[i] == b'0' && j > i + 1 {
+                    break;
+                }
+                let mut k = j + 1;
+                let mut a = String::from_utf8(n[i..j].to_vec()).unwrap().parse::<i32>().unwrap();
+                let mut b = String::from_utf8(n[j..k].to_vec()).unwrap().parse::<i32>().unwrap();
+                result.push(a);
+                result.push(b);
+                while k < n.len() {
+                    let c = a + b;
+                    let c = c.to_string();
+                    let c = c.as_bytes();
+                    if k + c.len() > n.len() || n[k..k+c.len()] != c {
+                        break;
+                    }
+                    k += c.len();
+                    a = b;
+                    b = String::from_utf8(c.to_vec()).unwrap().parse::<i32>().unwrap();
+                    result.push(b);
+                }
+                if k == n.len() && result.len() >= 3 {
+                    return result;
+                }
+                result.clear();
+                j += 1;
+            }
+            i += 1;
+        }
+        result
+    }
+}
+
+=======
+
+        let mut res = vec![];
+        let mut num = num.as_bytes();
+        let n = num.len();
+        let mut first = 0;
+        let mut second = 1;
+        while first < n {
+            second = first + 1;
+            while second < n {
+                let mut third = second + 1;
+                let mut a = 0;
+                let mut b = 0;
+                let mut c = 0;
+                let mut ok = true;
+                while third < n {
+                    if num[third] == b'0' && (c > 0 || third == second + 1) {
+                        ok = false;
+                        break;
+                    }
+                    c = c * 10 + (num[third] - b'0') as i32;
+                    if c > a + b {
+                        ok = false;
+                        break;
+                    }
+                    if c == a + b {
+                        if third == n - 1 {
+                            res.push(a);
+                            res.push(b);
+                            res.push(c);
+                            return res;
+                        }
+                        a = b;
+                        b = c;
+                        c = 0;
+                    }
+                    third += 1;
+                }
+                if !ok {
+                    break;
+                }
+                second += 1;
+            }
+            first += 1;
+        }
+        res
+    }
+}

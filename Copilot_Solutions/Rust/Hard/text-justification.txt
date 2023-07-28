@@ -1,0 +1,358 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let max_width = max_width as usize;
+        let mut result = vec![];
+        let mut line = vec![];
+        let mut line_len = 0;
+        for word in words {
+            let word_len = word.len();
+            if line_len + word_len + line.len() > max_width {
+                result.push(Solution::justify(line, line_len, max_width));
+                line = vec![];
+                line_len = 0;
+            }
+            line.push(word);
+            line_len += word_len;
+        }
+        if !line.is_empty() {
+            result.push(Solution::justify_last(line, line_len, max_width));
+        }
+        result
+    }
+    fn justify(line: Vec<String>, line_len: usize, max_width: usize) -> String {
+        let mut result = String::new();
+        let mut spaces = max_width - line_len;
+        if line.len() > 1 {
+            let mut spaces_per_word = spaces / (line.len() - 1);
+            let mut extra_spaces = spaces % (line.len() - 1);
+            for word in line {
+                result.push_str(&word);
+                if spaces > 0 {
+                    let mut count = spaces_per_word;
+                    if extra_spaces > 0 {
+                        count += 1;
+                        extra_spaces -= 1;
+                    }
+                    for _ in 0..count {
+                        result.push(' ');
+                        spaces -= 1;
+                    }
+                }
+            }
+        } else {
+            result.push_str(&line[0]);
+            for _ in 0..spaces {
+                result.push(' ');
+            }
+        }
+        result
+    }
+    fn justify_last(line: Vec<String>, line_len: usize, max_width: usize) -> String {
+        let mut result = String::new();
+        let mut spaces = max_width - line_len;
+        for word in line {
+            result.push_str(&word);
+            if spaces > 0 {
+                result.push(' ');
+                spaces -= 1;
+            }
+        }
+        for _ in 0..spaces {
+            result.push(' ');
+        }
+        result
+
+=======
+
+        let mut lines = Vec::new();
+        let mut line = Vec::new();
+        let mut line_len = 0;
+        for word in words {
+            let word_len = word.len();
+            if line_len + word_len + line.len() <= max_width as usize {
+                line.push(word);
+                line_len += word_len;
+            } else {
+                lines.push(line);
+                line = vec![word];
+                line_len = word_len;
+            }
+        }
+        lines.push(line);
+        let mut result = Vec::new();
+        for i in 0..lines.len() - 1 {
+            let mut line = lines[i].join(" ");
+            let mut spaces = max_width - line.len() as i32;
+            if lines[i].len() > 1 {
+                let mut j = 0;
+                while spaces > 0 {
+                    if line[j..].starts_with(" ") {
+                        line.insert(j, ' ');
+                        spaces -= 1;
+                    }
+                    j += 1;
+                }
+            } else {
+                line.push_str(&" ".repeat(spaces as usize));
+            }
+            result.push(line);
+        }
+        let mut line = lines[lines.len() - 1].join(" ");
+        line.push_str(&" ".repeat((max_width - line.len() as i32) as usize));
+        result.push(line);
+        result
+
+=======
+
+        let mut result = Vec::new();
+        let mut line = Vec::new();
+        let mut line_width = 0;
+        for word in words {
+            if line_width + line.len() + word.len() > max_width as usize {
+                result.push(Self::format_line(line, line_width, max_width));
+                line = Vec::new();
+                line_width = 0;
+            }
+            line.push(word);
+            line_width += word.len();
+        }
+        if !line.is_empty() {
+            result.push(Self::format_last_line(line, max_width));
+        }
+        result
+    }
+    fn format_line(line: Vec<String>, line_width: usize, max_width: i32) -> String {
+        let spaces = max_width as usize - line_width;
+        let mut result = String::new();
+        if line.len() == 1 {
+            result.push_str(&line[0]);
+            result.push_str(&" ".repeat(spaces));
+            return result;
+        }
+        let base_spaces = spaces / (line.len() - 1);
+        let mut extra_spaces = spaces % (line.len() - 1);
+        for word in line {
+            result.push_str(&word);
+            result.push_str(&" ".repeat(base_spaces));
+            if extra_spaces > 0 {
+                result.push(' ');
+                extra_spaces -= 1;
+            }
+        }
+        result
+    }
+    fn format_last_line(line: Vec<String>, max_width: i32) -> String {
+        let mut result = String::new();
+        for word in line {
+            result.push_str(&word);
+            result.push(' ');
+        }
+        result.pop();
+        result.push_str(&" ".repeat((max_width - result.len() as i32) as usize));
+        result
+
+=======
+
+        let mut result = vec![];
+        let mut line = vec![];
+        let mut line_len = 0;
+        for word in words {
+            let word_len = word.len();
+            if line_len + word_len + line.len() > max_width as usize {
+                let mut line_str = String::new();
+                if line.len() == 1 {
+                    line_str.push_str(&line[0]);
+                    line_str.push_str(&" ".repeat(max_width as usize - line_len));
+                } else {
+                    let spaces = (max_width - line_len as i32) as usize;
+                    let base = spaces / (line.len() - 1);
+                    let extra = spaces % (line.len() - 1);
+                    let mut extra_count = 0;
+                    for i in 0..line.len() {
+                        line_str.push_str(&line[i]);
+                        if i < line.len() - 1 {
+                            line_str.push_str(&" ".repeat(base));
+                            if extra_count < extra {
+                                line_str.push(' ');
+                                extra_count += 1;
+                            }
+                        }
+                    }
+                }
+                result.push(line_str);
+                line = vec![word];
+                line_len = word_len;
+            } else {
+                line.push(word);
+                line_len += word_len;
+            }
+        }
+        if line.len() > 0 {
+            let mut line_str = String::new();
+            for i in 0..line.len() {
+                line_str.push_str(&line[i]);
+                if i < line.len() - 1 {
+                    line_str.push(' ');
+                }
+            }
+            line_str.push_str(&" ".repeat(max_width as usize - line_str.len()));
+            result.push(line_str);
+        }
+        result
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut result = vec![];
+        let mut line = vec![];
+        let mut line_length = 0;
+        for word in words {
+            let word_length = word.len();
+            if line_length + word_length + line.len() > max_width as usize {
+                let mut line_string = String::new();
+                let mut spaces = max_width as usize - line_length;
+                if line.len() == 1 {
+                    line_string.push_str(&line[0]);
+                    line_string.push_str(&" ".repeat(spaces));
+                } else {
+                    let spaces_between = spaces / (line.len() - 1);
+                    let extra_spaces = spaces % (line.len() - 1);
+                    for (i, word) in line.iter().enumerate() {
+                        line_string.push_str(word);
+                        if i < line.len() - 1 {
+                            line_string.push_str(&" ".repeat(spaces_between));
+                            if i < extra_spaces {
+                                line_string.push(' ');
+                            }
+                        }
+                    }
+                }
+                result.push(line_string);
+                line_length = 0;
+                line.clear();
+            }
+            line.push(word);
+            line_length += word_length;
+        }
+        if !line.is_empty() {
+            let mut line_string = String::new();
+            for (i, word) in line.iter().enumerate() {
+                line_string.push_str(word);
+                if i < line.len() - 1 {
+                    line_string.push(' ');
+                }
+            }
+            line_string.push_str(&" ".repeat(max_width as usize - line_string.len()));
+            result.push(line_string);
+        }
+        result
+    }
+}
+
+=======
+
+        let mut ans = Vec::new();
+        let mut i = 0;
+        let mut n = words.len();
+        while i < n {
+            let mut j = i + 1;
+            let mut len = words[i].len();
+            while j < n && len + words[j].len() + 1 <= max_width as usize {
+                len += words[j].len() + 1;
+                j += 1;
+            }
+            let mut line = words[i].clone();
+            let is_last = j == n;
+            let mut space = max_width as usize - len;
+            let mut space_num = j - i - 1;
+            if is_last || space_num == 0 {
+                for k in i + 1..j {
+                    line.push(' ');
+                    line.push_str(&words[k]);
+                }
+                for _ in 0..space {
+                    line.push(' ');
+                }
+            } else {
+                let mut avg_space = space / space_num;
+                let mut left = space % space_num;
+                for k in i + 1..j {
+                    for _ in 0..avg_space {
+                        line.push(' ');
+                    }
+                    if left > 0 {
+                        line.push(' ');
+                        left -= 1;
+                    }
+                    line.push_str(&words[k]);
+                }
+            }
+            ans.push(line);
+            i = j;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut lines = Vec::new();
+        let mut line = Vec::new();
+        let mut line_width = 0;
+        let mut word_width = 0;
+        for word in words {
+            word_width = word.len();
+            if line_width + word_width + line.len() <= max_width as usize {
+                line_width += word_width;
+                line.push(word);
+            } else {
+                lines.push(line);
+                line = vec![word];
+                line_width = word_width;
+            }
+        }
+        if line.len() > 0 {
+            lines.push(line);
+        }
+        let mut result = Vec::new();
+        for line in lines {
+            let mut line_width = 0;
+            for word in line.iter() {
+                line_width += word.len();
+            }
+            let mut line_str = String::new();
+            let mut space_count = max_width as usize - line_width;
+            let mut space_between = 0;
+            let mut space_left = 0;
+            if line.len() > 1 {
+                space_between = space_count / (line.len() - 1);
+                space_left = space_count % (line.len() - 1);
+            }
+            for i in 0..line.len() {
+                line_str.push_str(&line[i]);
+                if i < line.len() - 1 {
+                    for _ in 0..space_between {
+                        line_str.push(' ');
+                    }
+                    if space_left > 0 {
+                        line_str.push(' ');
+                        space_left -= 1;
+                    }
+                } else {
+                    for _ in 0..space_count {
+                        line_str.push(' ');
+                    }
+                }
+            }
+            result.push(line_str);
+        }
+        result
+    }
+}

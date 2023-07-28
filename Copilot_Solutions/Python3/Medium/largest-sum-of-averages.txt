@@ -1,0 +1,129 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        N = len(nums)
+        dp = [0] * N
+        dp[0] = nums[0]
+        for i in range(1, N):
+            dp[i] = dp[i-1] + nums[i]
+        for i in range(1, k):
+            for j in range(N-1, i-1, -1):
+                for m in range(i-1, j):
+                    dp[j] = max(dp[j], (dp[j]-dp[m])/(j-m) + dp[m]/(m-i+2))
+        return dp[N-1]/k
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        @lru_cache(None)
+        def dp(i, k):
+            if k == 1:
+                return sum(nums[i:]) / (len(nums) - i)
+            res = 0
+            for j in range(i, len(nums) - k + 1):
+                res = max(res, sum(nums[i:j + 1]) / (j - i + 1) + dp(j + 1, k - 1))
+            return res
+        return dp(0, k)
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        N = len(nums)
+        A = [0] * (N+1)
+        for i in range(N):
+            A[i+1] = A[i] + nums[i]
+        def average(i, j):
+            return (A[j] - A[i]) / (j - i)
+        dp = [average(i, N) for i in range(N)]
+        for _ in range(k-1):
+            for i in range(N):
+                for j in range(i+1, N):
+                    dp[i] = max(dp[i], average(i, j) + dp[j])
+        return dp[0]
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        n = len(nums)
+        dp = [[0] * n for _ in range(k)]
+        dp[0] = [sum(nums[:i+1])/(i+1) for i in range(n)]
+        for i in range(1, k):
+            for j in range(i, n):
+                for l in range(i-1, j):
+                    dp[i][j] = max(dp[i][j], dp[i-1][l] + sum(nums[l+1:j+1])/(j-l))
+        return dp[-1][-1]
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        @lru_cache(None)
+        def dp(i, k):
+            if k == 1:
+                return sum(nums[i:]) / (len(nums) - i)
+            if i == len(nums) - 1:
+                return nums[i]
+            return max(dp(j, k - 1) + sum(nums[i:j]) / (j - i) for j in range(i + 1, len(nums)))
+        return dp(0, k)
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        @lru_cache(maxsize=None)
+        def dfs(i, k):
+            if k == 1:
+                return sum(nums[i:]) / len(nums[i:])
+            res = 0
+            for j in range(i, len(nums) - k + 1):
+                res = max(res, sum(nums[i:j+1]) / (j - i + 1) + dfs(j+1, k-1))
+            return res
+        return dfs(0, k)
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        n = len(nums)
+        pre_sum = [0]
+        for num in nums:
+            pre_sum.append(pre_sum[-1] + num)
+        dp = [pre_sum[n]/n]
+        for _ in range(k-1):
+            dp_next = [0]*n
+            for i in range(n):
+                for j in range(i+1, n+1):
+                    dp_next[i] = max(dp_next[i], dp[j-1] + (pre_sum[j]-pre_sum[i])/(j-i))
+            dp = dp_next
+        return dp[0]
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        def sumAve(i, j):
+            return (s[j] - s[i]) / (j - i)
+        n = len(nums)
+        s = [0] * (n + 1)
+        for i in range(n):
+            s[i + 1] = s[i] + nums[i]
+        dp = [[0] * (n + 1) for _ in range(k + 1)]
+        for i in range(1, n + 1):
+            dp[1][i] = sumAve(0, i)
+        for i in range(2, k + 1):
+            for j in range(i, n + 1):
+                for m in range(i - 1, j):
+                    dp[i][j] = max(dp[i][j], dp[i - 1][m] + sumAve(m, j))
+        return dp[k][n]
+
+=======
+
+def largestSumOfAverages(self, nums: List[int], k: int) -> float:
+        def average(nums):
+            return sum(nums) / len(nums)
+        def helper(nums, k):
+            if k == 1:
+                return average(nums)
+            res = 0
+            for i in range(len(nums)):
+                res = max(res, average(nums[:i+1]) + helper(nums[i+1:], k-1))
+            return res
+        return helper(nums, k)

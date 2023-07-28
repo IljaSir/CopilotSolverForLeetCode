@@ -1,0 +1,198 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut arr = arr;
+        arr.sort();
+        let mut res = 0;
+        for i in 0..arr.len() {
+            let mut j = i + 1;
+            let mut k = arr.len() - 1;
+            while j < k {
+                if arr[i] + arr[j] + arr[k] < target {
+                    j += 1;
+                } else if arr[i] + arr[j] + arr[k] > target {
+                    k -= 1;
+                } else {
+                    if arr[j] != arr[k] {
+                        let mut left = 1;
+                        let mut right = 1;
+                        while j + 1 < k && arr[j] == arr[j + 1] {
+                            left += 1;
+                            j += 1;
+                        }
+                        while k - 1 > j && arr[k] == arr[k - 1] {
+                            right += 1;
+                            k -= 1;
+                        }
+                        res += left * right;
+                        res %= 1000000007;
+                        j += 1;
+                        k -= 1;
+                    } else {
+                        res += (k - j + 1) * (k - j) / 2;
+                        res %= 1000000007;
+                        break;
+                    }
+                }
+            }
+        }
+        res as i32
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut cnt = vec![0; 101];
+        for &x in &arr {
+            cnt[x as usize] += 1;
+        }
+        let mut ans = 0;
+        for i in 0..101 {
+            for j in i..101 {
+                let k = target - i - j;
+                if k < 0 || k > 100 {
+                    continue;
+                }
+                if i == j && j == k {
+                    ans += cnt[i] * (cnt[i] - 1) * (cnt[i] - 2) / 6;
+                } else if i == j && j != k {
+                    ans += cnt[i] * (cnt[i] - 1) / 2 * cnt[k];
+                } else if i < j && j < k {
+                    ans += cnt[i] * cnt[j] * cnt[k];
+                }
+            }
+        }
+        (ans % 1000000007) as i32
+
+=======
+
+        let mut count = 0;
+        let mut arr = arr;
+        arr.sort();
+        for i in 0..arr.len() {
+            let mut left = i + 1;
+            let mut right = arr.len() - 1;
+            while left < right {
+                let sum = arr[i] + arr[left] + arr[right];
+                if sum == target {
+                    count += 1;
+                    left += 1;
+                    right -= 1;
+                } else if sum < target {
+                    left += 1;
+                } else {
+                    right -= 1;
+                }
+            }
+        }
+        count
+
+=======
+
+        let mut dp = vec![vec![0; 101]; 101];
+        let mut res = 0;
+        for i in 0..arr.len() {
+            for j in i+1..arr.len() {
+                let t = target - arr[i] - arr[j];
+                if t >= 0 {
+                    res = (res + dp[t as usize][arr[i] as usize]) % 1000000007;
+                }
+            }
+            for j in 0..=arr[i] {
+                dp[arr[i] as usize][j as usize] += 1;
+            }
+        }
+        res
+
+=======
+
+        let mut count = 0;
+        let mut arr = arr;
+        arr.sort();
+        let n = arr.len();
+        let mut i = 0;
+        while i < n - 2 {
+            let mut j = i + 1;
+            let mut k = n - 1;
+            while j < k {
+                let sum = arr[i] + arr[j] + arr[k];
+                if sum == target {
+                    if arr[j] == arr[k] {
+                        let diff = k - j + 1;
+                        count = (count + diff * (diff - 1) / 2) % 1000000007;
+                        break;
+                    } else {
+                        let mut left = 1;
+                        while j + 1 < k && arr[j] == arr[j + 1] {
+                            left += 1;
+                            j += 1;
+                        }
+                        let mut right = 1;
+                        while k - 1 > j && arr[k] == arr[k - 1] {
+                            right += 1;
+                            k -= 1;
+                        }
+                        count = (count + left * right) % 1000000007;
+                        j += 1;
+                        k -= 1;
+                    }
+                } else if sum < target {
+                    j += 1;
+                } else {
+                    k -= 1;
+                }
+            }
+            i += 1;
+            while i < n - 2 && arr[i] == arr[i - 1] {
+                i += 1;
+            }
+        }
+        count
+
+=======
+
+        let mut count = 0;
+        let mut arr = arr;
+        arr.sort();
+        let n = arr.len();
+        let modulo = 1_000_000_007;
+        for i in 0..n - 2 {
+            let mut left = i + 1;
+            let mut right = n - 1;
+            while left < right {
+                let sum = arr[i] + arr[left] + arr[right];
+                if sum > target {
+                    right -= 1;
+                } else if sum < target {
+                    left += 1;
+                } else {
+                    if arr[left] != arr[right] {
+                        let mut left_count = 1;
+                        let mut right_count = 1;
+                        while left + 1 < right && arr[left] == arr[left + 1] {
+                            left_count += 1;
+                            left += 1;
+                        }
+                        while right - 1 > left && arr[right] == arr[right - 1] {
+                            right_count += 1;
+                            right -= 1;
+                        }
+                        count += left_count * right_count;
+                        count %= modulo;
+                        left += 1;
+                        right -= 1;
+                    } else {
+                        let left_count = right - left + 1;
+                        count += left_count * (left_count - 1) / 2;
+                        count %= modulo;
+                        break;
+                    }
+                }
+            }
+        }
+        count

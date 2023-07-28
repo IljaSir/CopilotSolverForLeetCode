@@ -1,0 +1,191 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        int[][][] dp = new int[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= m; i++) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    dp[i][j][l] = (int) ((dp[i][j - 1][l] + (long) dp[i - 1][j - 1][l - 1] * j) % mod);
+                    dp[i][j][l] = (dp[i][j][l] + (int) ((long) dp[i - 1][j][l] * (j - 1) % mod)) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            ans = (ans + dp[n][i][k]) % mod;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        long[][][] dp = new long[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= m; i++) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    for (int p = 1; p <= j; p++) {
+                        if (p < j) {
+                            dp[i][j][l] += dp[i - 1][p][l];
+                        } else {
+                            dp[i][j][l] += dp[i - 1][p][l - 1];
+                        }
+                        dp[i][j][l] %= mod;
+                    }
+                }
+            }
+        }
+        long res = 0;
+        for (int i = 1; i <= m; i++) {
+            res += dp[n][i][k];
+            res %= mod;
+        }
+        return (int)res;
+
+=======
+
+        long[][][] dp = new long[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (i == 1) {
+                    dp[i][j][1] = 1;
+                } else {
+                    for (int l = 1; l <= j; l++) {
+                        for (int p = 1; p < i; p++) {
+                            for (int q = 1; q < k; q++) {
+                                dp[i][j][k] += dp[p][l][q];
+                                dp[i][j][k] %= 1000000007;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        long res = 0;
+        for (int i = 1; i <= m; i++) {
+            res += dp[n][i][k];
+            res %= 1000000007;
+        }
+        return (int)res;
+
+=======
+
+        int MOD = 1000000007;
+        int[][][] dp = new int[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= m; i++) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    for (int p = 1; p <= m; p++) {
+                        if (p < j) {
+                            dp[i][j][l] = (dp[i][j][l] + dp[i - 1][p][l - 1]) % MOD;
+                        } else {
+                            dp[i][j][l] = (dp[i][j][l] + dp[i - 1][p][l]) % MOD;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            ans = (ans + dp[n][i][k]) % MOD;
+        }
+        return ans;
+
+=======
+
+        int mod = (int) 1e9 + 7;
+        long[][][] dp = new long[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= m; i++) {
+            dp[1][i][1] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    for (int p = 1; p < j; p++) {
+                        dp[i][j][l] += dp[i - 1][p][l - 1];
+                        dp[i][j][l] %= mod;
+                    }
+                    dp[i][j][l] += dp[i - 1][j][l] * j;
+                    dp[i][j][l] %= mod;
+                }
+            }
+        }
+        long ans = 0;
+        for (int i = 1; i <= m; i++) {
+            ans += dp[n][i][k];
+            ans %= mod;
+        }
+        return (int) ans;
+
+=======
+
+        int mod = 1000000007;
+        int[][][] dp = new int[n][m + 1][k + 1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    if (i == 0) {
+                        if (l == 1) {
+                            dp[i][j][l] = 1;
+                        }
+                    } else {
+                        for (int p = 1; p <= m; p++) {
+                            if (p < j) {
+                                dp[i][j][l] += dp[i - 1][p][l];
+                            } else if (p == j) {
+                                dp[i][j][l] += dp[i - 1][p][l];
+                            } else {
+                                dp[i][j][l] += dp[i - 1][p][l - 1];
+                            }
+                            dp[i][j][l] %= mod;
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= m; i++) {
+            ans += dp[n - 1][i][k];
+            ans %= mod;
+        }
+        return ans;
+
+=======
+
+        if (k > n || k > m) {
+            return 0;
+        }
+        if (k == 1) {
+            return (int) Math.pow(m, n);
+        }
+        long[][][] dp = new long[n + 1][m + 1][k + 1];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int l = 1; l <= k; l++) {
+                    if (l == 1) {
+                        dp[i][j][l] = j;
+                    } else {
+                        for (int p = 1; p <= j; p++) {
+                            dp[i][j][l] += (dp[i - 1][p][l - 1] * j) % 1000000007;
+                            dp[i][j][l] %= 1000000007;
+                        }
+                    }
+                }
+            }
+        }
+        long sum = 0;
+        for (int i = 1; i <= m; i++) {
+            sum += dp[n][i][k];
+            sum %= 1000000007;
+        }
+        return (int) sum;

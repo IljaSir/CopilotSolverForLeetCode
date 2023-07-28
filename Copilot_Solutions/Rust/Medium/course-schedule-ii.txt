@@ -1,0 +1,321 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for p in prerequisites {
+            graph[p[1] as usize].push(p[0]);
+            indegree[p[0] as usize] += 1;
+        }
+        let mut ans = Vec::with_capacity(num_courses as usize);
+        let mut stack = Vec::with_capacity(num_courses as usize);
+        for i in 0..num_courses {
+            if indegree[i as usize] == 0 {
+                stack.push(i);
+            }
+        }
+        while let Some(node) = stack.pop() {
+            ans.push(node);
+            for &v in &graph[node as usize] {
+                indegree[v as usize] -= 1;
+                if indegree[v as usize] == 0 {
+                    stack.push(v);
+                }
+            }
+        }
+        if ans.len() == num_courses as usize {
+            ans
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 2
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut in_degree = vec![0; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0] as usize);
+            in_degree[edge[0] as usize] += 1;
+        }
+        let mut queue = Vec::new();
+        for i in 0..num_courses {
+            if in_degree[i as usize] == 0 {
+                queue.push(i);
+            }
+        }
+        let mut res = Vec::new();
+        while !queue.is_empty() {
+            let node = queue.remove(0);
+            res.push(node);
+            for &i in &graph[node as usize] {
+                in_degree[i] -= 1;
+                if in_degree[i] == 0 {
+                    queue.push(i as i32);
+                }
+            }
+        }
+        if res.len() == num_courses as usize {
+            res
+        } else {
+            vec![]
+        }
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut in_degree = vec![0; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0]);
+            in_degree[edge[0] as usize] += 1;
+        }
+        let mut queue = vec![];
+        for i in 0..in_degree.len() {
+            if in_degree[i] == 0 {
+                queue.push(i as i32);
+            }
+        }
+        let mut res = vec![];
+        while !queue.is_empty() {
+            let v = queue.pop().unwrap();
+            res.push(v);
+            for &w in &graph[v as usize] {
+                in_degree[w as usize] -= 1;
+                if in_degree[w as usize] == 0 {
+                    queue.push(w);
+                }
+            }
+        }
+        if res.len() == num_courses as usize {
+            res
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 4
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0]);
+            indegree[edge[0] as usize] += 1;
+        }
+        let mut queue = vec![];
+        for i in 0..num_courses {
+            if indegree[i as usize] == 0 {
+                queue.push(i);
+            }
+        }
+        let mut order = vec![];
+        while !queue.is_empty() {
+            let node = queue.remove(0);
+            order.push(node);
+            for next in &graph[node as usize] {
+                indegree[*next as usize] -= 1;
+                if indegree[*next as usize] == 0 {
+                    queue.push(*next);
+                }
+            }
+        }
+        if order.len() == num_courses as usize {
+            order
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 5
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for edge in prerequisites {
+            graph[edge[1] as usize].push(edge[0]);
+            indegree[edge[0] as usize] += 1;
+        }
+        let mut queue: Vec<i32> = (0..num_courses).filter(|i| indegree[*i as usize] == 0).collect();
+        let mut order: Vec<i32> = Vec::new();
+        while let Some(node) = queue.pop() {
+            order.push(node);
+            for &child in &graph[node as usize] {
+                indegree[child as usize] -= 1;
+                if indegree[child as usize] == 0 {
+                    queue.push(child);
+                }
+            }
+        }
+        if order.len() == num_courses as usize {
+            order
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 6
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for edge in &prerequisites {
+            graph[edge[1] as usize].push(edge[0] as usize);
+            indegree[edge[0] as usize] += 1;
+        }
+        let mut queue = indegree
+            .iter()
+            .enumerate()
+            .filter(|(_, &x)| x == 0)
+            .map(|(i, _)| i)
+            .collect::<Vec<_>>();
+        let mut order = vec![];
+        while !queue.is_empty() {
+            let node = queue.remove(0);
+            order.push(node as i32);
+            for &next in &graph[node] {
+                indegree[next] -= 1;
+                if indegree[next] == 0 {
+                    queue.push(next);
+                }
+            }
+        }
+        if order.len() == num_courses as usize {
+            order
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 7
+
+        if prerequisites.is_empty() {
+            return (0..num_courses).collect();
+        }
+        let mut adj = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for p in prerequisites {
+            adj[p[1] as usize].push(p[0] as usize);
+            indegree[p[0] as usize] += 1;
+        }
+        let mut q = std::collections::VecDeque::new();
+        for (i, &v) in indegree.iter().enumerate() {
+            if v == 0 {
+                q.push_back(i);
+            }
+        }
+        let mut res = vec![];
+        while let Some(v) = q.pop_front() {
+            res.push(v as i32);
+            for &w in adj[v].iter() {
+                indegree[w] -= 1;
+                if indegree[w] == 0 {
+                    q.push_back(w);
+                }
+            }
+        }
+        if res.len() == num_courses as usize {
+            res
+        } else {
+            vec![]
+        }
+    }
+}
+
+=======
+Suggestion 8
+
+        let mut graph = vec![vec![]; num_courses as usize];
+        let mut indegree = vec![0; num_courses as usize];
+        for pre in prerequisites {
+            let (a, b) = (pre[0] as usize, pre[1] as usize);
+            graph[b].push(a);
+            indegree[a] += 1;
+        }
+        let mut q = std::collections::VecDeque::new();
+        for i in 0..num_courses {
+            if indegree[i as usize] == 0 {
+                q.push_back(i);
+            }
+        }
+        let mut order = Vec::new();
+        while let Some(node) = q.pop_front() {
+            order.push(node);
+            for &n in &graph[node as usize] {
+                indegree[n] -= 1;
+                if indegree[n] == 0 {
+                    q.push_back(n as i32);
+                }
+            }
+        }
+        if order.len() == num_courses as usize {
+            order
+        } else {
+            Vec::new()
+        }
+
+=======
+Suggestion 9
+
+        let mut in_degree = vec![0; num_courses as usize];
+        let mut neighbors = vec![vec![]; num_courses as usize];
+        for pair in prerequisites {
+            in_degree[pair[0] as usize] += 1;
+            neighbors[pair[1] as usize].push(pair[0]);
+        }
+        let mut res = Vec::new();
+        let mut queue = std::collections::VecDeque::new();
+        for i in 0..num_courses {
+            if in_degree[i as usize] == 0 {
+                queue.push_back(i);
+            }
+        }
+        while let Some(course) = queue.pop_front() {
+            res.push(course);
+            for &n in &neighbors[course as usize] {
+                in_degree[n as usize] -= 1;
+                if in_degree[n as usize] == 0 {
+                    queue.push_back(n);
+                }
+            }
+        }
+        if res.len() == num_courses as usize {
+            res
+        } else {
+            vec![]
+        }
+
+=======
+Suggestion 10
+
+        let mut pre_count = vec![0; num_courses as usize];
+        let mut edges = vec![vec![]; num_courses as usize];
+        for pre in &prerequisites {
+            pre_count[pre[0] as usize] += 1;
+            edges[pre[1] as usize].push(pre[0]);
+        }
+        let mut q = Vec::new();
+        for i in 0..num_courses {
+            if pre_count[i as usize] == 0 {
+                q.push(i);
+            }
+        }
+        let mut ans = Vec::new();
+        while !q.is_empty() {
+            let i = q.remove(0);
+            ans.push(i);
+            for &j in &edges[i as usize] {
+                pre_count[j as usize] -= 1;
+                if pre_count[j as usize] == 0 {
+                    q.push(j);
+                }
+            }
+        }
+        if ans.len() == num_courses as usize {
+            ans
+        } else {
+            vec![]
+        }
+    }
+}

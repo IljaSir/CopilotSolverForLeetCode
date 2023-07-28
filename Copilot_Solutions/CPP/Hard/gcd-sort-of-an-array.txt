@@ -1,0 +1,234 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> sorted(nums);
+        sort(sorted.begin(), sorted.end());
+        vector<vector<int>> g(n);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (gcd(nums[i], nums[j]) > 1) {
+                    g[i].push_back(j);
+                    g[j].push_back(i);
+                }
+            }
+        }
+        vector<bool> visited(n, false);
+        for (int i = 0; i < n; ++i) {
+            if (!visited[i]) {
+                dfs(i, g, visited);
+                vector<int> cur;
+                for (int j = 0; j < n; ++j) {
+                    if (visited[j]) {
+                        cur.push_back(nums[j]);
+                    }
+                }
+                sort(cur.begin(), cur.end());
+                for (int j = 0; j < n; ++j) {
+                    if (visited[j]) {
+                        nums[j] = cur[j];
+                    }
+                }
+            }
+        }
+        return nums == sorted;
+
+=======
+
+        int n = nums.size();
+        vector<int> a = nums;
+        sort(a.begin(), a.end());
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) {
+            if (p[x] != x) {
+                p[x] = find(p[x]);
+            }
+            return p[x];
+        };
+        auto unite = [&](int x, int y) {
+            x = find(x);
+            y = find(y);
+            p[x] = y;
+        };
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (__gcd(nums[i], nums[j]) > 1) {
+                    unite(i, j);
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (find(i) != find(lower_bound(a.begin(), a.end(), nums[i]) - a.begin())) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+        auto find = [&](int x) {
+            if (parent[x] != x) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        };
+        auto merge = [&](int x, int y) {
+            parent[find(x)] = parent[find(y)];
+        };
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (__gcd(nums[i], nums[j]) > 1) {
+                    merge(i, j);
+                }
+            }
+        }
+        vector<int> sortedNums = nums;
+        sort(sortedNums.begin(), sortedNums.end());
+        for (int i = 0; i < n; i++) {
+            if (find(i) != find(lower_bound(sortedNums.begin(), sortedNums.end(), nums[i]) - sortedNums.begin())) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.size();
+        vector<int> sorted(nums);
+        sort(sorted.begin(), sorted.end());
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        function<int(int)> find = [&](int x) { return p[x] == x ? x : p[x] = find(p[x]); };
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (__gcd(nums[i], nums[j]) > 1) {
+                    p[find(i)] = find(j);
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (find(i) != find(0)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.size();
+        vector<int> sorted(nums);
+        sort(sorted.begin(), sorted.end());
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        for (int i = 2; i <= 100000; ++i) {
+            int x = -1;
+            for (int j = 0; j < n; ++j) {
+                if (nums[j] % i == 0) {
+                    if (x == -1) {
+                        x = j;
+                    } else {
+                        x = find(p, x);
+                        j = find(p, j);
+                        if (x != j) {
+                            p[x] = j;
+                            x = -1;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (find(p, i) != find(p, sorted[i] - 1)) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int n = nums.size();
+        vector<int> sorted = nums;
+        sort(sorted.begin(), sorted.end());
+        vector<vector<int>> graph(n);
+        vector<int> inDegree(n, 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (gcd(nums[i], nums[j]) > 1) {
+                    graph[i].push_back(j);
+                    ++inDegree[j];
+                }
+                if (gcd(nums[j], nums[i]) > 1) {
+                    graph[j].push_back(i);
+                    ++inDegree[i];
+                }
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<int> res;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            res.push_back(nums[node]);
+            for (int next : graph[node]) {
+                --inDegree[next];
+                if (inDegree[next] == 0) {
+                    q.push(next);
+                }
+            }
+        }
+        return res == sorted;
+
+=======
+
+        int n = nums.size();
+        vector<int> temp = nums;
+        sort(temp.begin(), temp.end());
+        vector<int> parent(n);
+        vector<int> size(n);
+        iota(parent.begin(), parent.end(), 0);
+        fill(size.begin(), size.end(), 1);
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (gcd(nums[i], nums[j]) != 1) {
+                    merge(parent, size, i, j);
+                }
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            if (find(parent, i) != find(parent, lower_bound(temp.begin(), temp.end(), nums[i]) - temp.begin())) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int len = nums.size();
+        vector<int> v = nums;
+        sort(v.begin(), v.end());
+        
+        vector<int> idx(len);
+        for(int i = 0; i < len; ++i) {
+            idx[i] = i;
+        }
+        
+        sort(idx.begin(), idx.end(), [&](int i, int j) {
+            return gcd(nums[i], nums[j]) > 1;
+        });
+        
+        for(int i = 0; i < len; ++i) {
+            if(nums[idx[i]] != v[i]) {
+                return false;
+            }
+        }
+        return true;

@@ -1,0 +1,319 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut ret = vec![];
+        let s = s.as_bytes();
+        for a in 1..4 {
+            for b in 1..4 {
+                for c in 1..4 {
+                    for d in 1..4 {
+                        if a + b + c + d == s.len() {
+                            let mut n1 = 0;
+                            for i in 0..a {
+                                n1 = n1 * 10 + (s[i] - b'0') as i32;
+                            }
+                            let mut n2 = 0;
+                            for i in a..a + b {
+                                n2 = n2 * 10 + (s[i] - b'0') as i32;
+                            }
+                            let mut n3 = 0;
+                            for i in a + b..a + b + c {
+                                n3 = n3 * 10 + (s[i] - b'0') as i32;
+                            }
+                            let mut n4 = 0;
+                            for i in a + b + c..a + b + c + d {
+                                n4 = n4 * 10 + (s[i] - b'0') as i32;
+                            }
+                            if n1 <= 255 && n2 <= 255 && n3 <= 255 && n4 <= 255 {
+                                let mut ip = vec![n1, n2, n3, n4];
+                                let mut ip_str = vec![];
+                                for i in 0..ip.len() {
+                                    ip_str.push(ip[i].to_string());
+                                }
+                                let ip_str = ip_str.join(".");
+                                if ip_str.len() == s.len() + 3 {
+                                    ret.push(ip_str);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ret
+
+=======
+Suggestion 2
+
+        let mut res = Vec::new();
+        let s = s.as_bytes();
+        for i in 1..4 {
+            for j in 1..4 {
+                for k in 1..4 {
+                    for l in 1..4 {
+                        if i + j + k + l == s.len() {
+                            if let (Ok(a), Ok(b), Ok(c), Ok(d)) = (std::str::from_utf8(&s[..i]).unwrap().parse::<u8>(), std::str::from_utf8(&s[i..i+j]).unwrap().parse::<u8>(), std::str::from_utf8(&s[i+j..i+j+k]).unwrap().parse::<u8>(), std::str::from_utf8(&s[i+j+k..]).unwrap().parse::<u8>()) {
+                                if a <= 255 && b <= 255 && c <= 255 && d <= 255 {
+                                    let ip = format!("{}.{}.{}.{}", a, b, c, d);
+                                    if ip.len() == s.len() + 3 {
+                                        res.push(ip);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        res
+
+=======
+Suggestion 3
+
+        let mut res = vec![];
+        let s = s.into_bytes();
+        let n = s.len();
+        if n < 4 || n > 12 {
+            return res;
+        }
+        for i in 1..4 {
+            for j in i+1..i+4 {
+                for k in j+1..j+4 {
+                    if k >= n {
+                        continue;
+                    }
+                    let a = &s[..i];
+                    let b = &s[i..j];
+                    let c = &s[j..k];
+                    let d = &s[k..];
+                    if a.len() > 1 && a[0] == b'0' {
+                        continue;
+                    }
+                    if b.len() > 1 && b[0] == b'0' {
+                        continue;
+                    }
+                    if c.len() > 1 && c[0] == b'0' {
+                        continue;
+                    }
+                    if d.len() > 1 && d[0] == b'0' {
+                        continue;
+                    }
+                    let a: u8 = a.iter().fold(0, |sum, &x| sum * 10 + x - b'0');
+                    let b: u8 = b.iter().fold(0, |sum, &x| sum * 10 + x - b'0');
+                    let c: u8 = c.iter().fold(0, |sum, &x| sum * 10 + x - b'0');
+                    let d: u8 = d.iter().fold(0, |sum, &x| sum * 10 + x - b'0');
+                    if a > 255 || b > 255 || c > 255 || d > 255 {
+                        continue;
+                    }
+                    let ip = format!("{}.{}.{}.{}", a, b, c, d);
+                    res.push(ip);
+                }
+            }
+        }
+        res
+
+=======
+Suggestion 4
+
+        let mut res = Vec::new();
+        let mut path = Vec::new();
+        let chars: Vec<char> = s.chars().collect();
+        Self::backtrack(&chars, 0, &mut path, &mut res);
+        res
+    }
+
+    fn backtrack(chars: &[char], start: usize, path: &mut Vec<String>, res: &mut Vec<String>) {
+        if path.len() == 4 {
+            if start == chars.len() {
+                res.push(path.join("."));
+            }
+            return;
+        }
+        for i in start..chars.len() {
+            if i > start && chars[start] == '0' {
+                break;
+            }
+            let str = chars[start..=i].iter().collect::<String>();
+            let num = str.parse::<i32>().unwrap();
+            if num <= 255 {
+                path.push(str);
+                Self::backtrack(chars, i + 1, path, res);
+                path.pop();
+            }
+        }
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut result = vec![];
+        let mut path = vec![];
+        Self::dfs(&mut result, &mut path, &s, 0);
+        result
+    }
+    
+    fn dfs(result: &mut Vec<String>, path: &mut Vec<String>, s: &str, start: usize) {
+        if path.len() == 4 {
+            if start == s.len() {
+                result.push(path.join("."));
+            }
+            return;
+        }
+        
+        for i in 1..=3 {
+            if start + i > s.len() {
+                break;
+            }
+            let part = &s[start..start+i];
+            if (part.starts_with('0') && part.len() > 1) || part.parse::<i32>().unwrap() > 255 {
+                continue;
+            }
+            path.push(part.to_string());
+            Self::dfs(result, path, s, start+i);
+            path.pop();
+        }
+
+=======
+Suggestion 6
+
+        let mut res = Vec::new();
+        let mut path = Vec::new();
+        let s = s.as_bytes();
+        Self::backtrack(s, 0, &mut path, &mut res);
+        res
+    }
+    
+    fn backtrack(s: &[u8], start: usize, path: &mut Vec<String>, res: &mut Vec<String>) {
+        if path.len() == 4 {
+            if start == s.len() {
+                res.push(path.join("."));
+            }
+            return;
+        }
+        
+        for i in 1..=3 {
+            if start + i > s.len() {
+                break;
+            }
+            if s[start] == b'0' && i > 1 {
+                break;
+            }
+            let num = std::str::from_utf8(&s[start..start+i]).unwrap().parse::<i32>().unwrap();
+            if num > 255 {
+                break;
+            }
+            path.push(num.to_string());
+            Self::backtrack(s, start + i, path, res);
+            path.pop();
+        }
+
+=======
+Suggestion 7
+
+        
+    }
+}
+
+=======
+Suggestion 8
+
+        let mut result = Vec::new();
+        let mut address = String::new();
+        Self::dfs(&s, 0, 0, &mut address, &mut result);
+        result
+    }
+
+    fn dfs(s: &str, start: usize, depth: usize, address: &mut String, result: &mut Vec<String>) {
+        if depth == 4 {
+            if start == s.len() {
+                result.push(address.to_string());
+            }
+            return;
+        }
+        for i in 1..=3 {
+            if start + i > s.len() {
+                break;
+            }
+            let ip = &s[start..start + i];
+            if ip.len() > 1 && ip.starts_with('0') {
+                continue;
+            }
+            if ip.parse::<i32>().unwrap() > 255 {
+                continue;
+            }
+            let len = address.len();
+            if depth != 0 {
+                address.push('.');
+            }
+            address.push_str(ip);
+            Self::dfs(s, start + i, depth + 1, address, result);
+            address.truncate(len);
+        }
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut result = Vec::new();
+        let mut path = Vec::new();
+        let s = s.as_bytes();
+        Solution::dfs(&mut result, &mut path, s, 0);
+        result
+    }
+    fn dfs(result: &mut Vec<String>, path: &mut Vec<String>, s: &[u8], start: usize) {
+        if path.len() == 4 {
+            if start == s.len() {
+                result.push(path.join("."));
+            }
+            return;
+        }
+        let mut num = 0;
+        for i in start..s.len() {
+            if s[i] == b'0' && i > start {
+                break;
+            }
+            num = num * 10 + (s[i] - b'0') as usize;
+            if num > 255 {
+                break;
+            }
+            path.push(num.to_string());
+            Solution::dfs(result, path, s, i + 1);
+            path.pop();
+        }
+
+=======
+Suggestion 10
+
+        let mut res = vec![];
+        let bytes = s.into_bytes();
+        let mut stack = vec![];
+        Self::backtrack(&bytes, 0, &mut stack, &mut res);
+        res
+    }
+    fn backtrack(s: &[u8], start: usize, stack: &mut Vec<String>, res: &mut Vec<String>) {
+        if stack.len() == 4 {
+            if start == s.len() {
+                res.push(stack.join("."));
+            }
+            return;
+        }
+        for i in start..start+3 {
+            if i >= s.len() {
+                break;
+            }
+            if i > start && s[start] == b'0' {
+                break;
+            }
+            let ip = unsafe { std::str::from_utf8_unchecked(&s[start..=i]) };
+            let ip = ip.parse::<i32>().unwrap();
+            if ip > 255 {
+                break;
+            }
+            stack.push(ip.to_string());
+            Self::backtrack(s, i+1, stack, res);
+            stack.pop();
+        }

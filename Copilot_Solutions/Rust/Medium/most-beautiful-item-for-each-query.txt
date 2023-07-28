@@ -1,0 +1,147 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut items = items;
+        let mut queries = queries;
+        items.sort_by(|a, b| a[0].cmp(&b[0]));
+        queries.sort();
+        let mut i = 0;
+        let mut j = 0;
+        let mut max = 0;
+        let mut res = vec![];
+        while j < queries.len() {
+            while i < items.len() && items[i][0] <= queries[j] {
+                max = max.max(items[i][1]);
+                i += 1;
+            }
+            res.push(max);
+            j += 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut items = items;
+        items.sort_unstable_by(|a, b| a[0].cmp(&b[0]));
+        let mut max_beauty = vec![0; items.len()];
+        max_beauty[0] = items[0][1];
+        for i in 1..items.len() {
+            max_beauty[i] = max_beauty[i - 1].max(items[i][1]);
+        }
+        let mut ret = Vec::new();
+        for query in queries {
+            if let Some(pos) = items.binary_search_by(|a| a[0].cmp(&query)) {
+                ret.push(max_beauty[pos]);
+            } else {
+                let pos = pos.max(1) - 1;
+                ret.push(max_beauty[pos]);
+            }
+        }
+        ret
+    }
+}
+
+=======
+
+        let mut items = items;
+        let mut queries = queries;
+        items.sort_by(|a, b| a[0].cmp(&b[0]));
+        queries.sort();
+        let mut ans = vec![];
+        let mut max = 0;
+        let mut j = 0;
+        for i in 0..queries.len() {
+            while j < items.len() && items[j][0] <= queries[i] {
+                max = max.max(items[j][1]);
+                j += 1;
+            }
+            ans.push(max);
+        }
+        ans
+
+=======
+
+        let mut items = items;
+        let mut queries = queries;
+        items.sort_by_key(|v| v[0]);
+        queries.sort_by_key(|v| *v);
+        let mut ans = vec![0; queries.len()];
+        let mut i = 0;
+        let mut j = 0;
+        let mut max = 0;
+        while i < items.len() {
+            max = max.max(items[i][1]);
+            while j < queries.len() && queries[j] < items[i][0] {
+                ans[j] = max;
+                j += 1;
+            }
+            i += 1;
+        }
+        while j < queries.len() {
+            ans[j] = max;
+            j += 1;
+        }
+        ans
+
+=======
+
+        let mut items = items;
+        items.sort_by(|a, b| a[0].cmp(&b[0]));
+        let mut result = Vec::new();
+        let mut max_beauty = 0;
+        let mut index = 0;
+        for query in queries {
+            while index < items.len() && items[index][0] <= query {
+                max_beauty = max_beauty.max(items[index][1]);
+                index += 1;
+            }
+            result.push(max_beauty);
+        }
+        result
+
+=======
+
+        let mut items = items;
+        items.sort_by_key(|x| x[0]);
+        let mut ans = Vec::new();
+        let mut cur = 0;
+        for q in queries {
+            while cur < items.len() && items[cur][0] <= q {
+                cur += 1;
+            }
+            ans.push(items[..cur].iter().map(|x| x[1]).max().unwrap_or(0));
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut items = items;
+        items.sort_unstable_by_key(|a| a[0]);
+        let mut items = items.into_iter().map(|a| a[1]).collect::<Vec<i32>>();
+        let mut prefix_sum = vec![0i64; items.len() + 1];
+        for i in 0..items.len() {
+            prefix_sum[i + 1] = prefix_sum[i] + items[i] as i64;
+        }
+        let mut res = vec![];
+        for query in queries {
+            let idx = items.binary_search(&query).unwrap_or_else(|x| x);
+            if idx == 0 {
+                res.push(0);
+            } else {
+                res.push((prefix_sum[idx] - prefix_sum[0]) as i32);
+            }
+        }
+        res
+    }
+}

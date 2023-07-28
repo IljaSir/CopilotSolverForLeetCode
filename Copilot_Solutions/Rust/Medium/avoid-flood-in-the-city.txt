@@ -1,0 +1,198 @@
+Synthesizing 7/10 solutions
+
+=======
+
+        let mut res = vec![-1; rains.len()];
+        let mut lake = std::collections::HashMap::new();
+        let mut dry = std::collections::BinaryHeap::new();
+        for i in 0..rains.len() {
+            if rains[i] > 0 {
+                if lake.contains_key(&rains[i]) {
+                    if dry.is_empty() {
+                        return vec![];
+                    }
+                    let mut j = dry.pop().unwrap();
+                    while j < i as i32 {
+                        j = dry.pop().unwrap();
+                    }
+                    res[j as usize] = rains[i];
+                }
+                lake.insert(rains[i], i as i32);
+                res[i] = -1;
+            } else {
+                dry.push(i as i32);
+                res[i] = 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+
+        let mut ans = vec![-1; rains.len()];
+        let mut lake = std::collections::HashMap::new();
+        let mut dry = std::collections::BinaryHeap::new();
+        for (i, &r) in rains.iter().enumerate() {
+            if r > 0 {
+                if let Some(&prev) = lake.get(&r) {
+                    if let Some(&d) = dry.peek() {
+                        if d < prev {
+                            return vec![];
+                        }
+                        ans[dry.pop().unwrap()] = r;
+                    } else {
+                        return vec![];
+                    }
+                }
+                lake.insert(r, i);
+                ans[i] = -1;
+            } else {
+                dry.push(i);
+            }
+        }
+        ans
+
+=======
+
+        let mut ans = vec![-1; rains.len()];
+        let mut lakes = std::collections::HashMap::new();
+        let mut dry_lakes = std::collections::BTreeSet::new();
+        for (i, &lake) in rains.iter().enumerate() {
+            if lake == 0 {
+                dry_lakes.insert(i);
+            } else {
+                if let Some(&j) = lakes.get(&lake) {
+                    if let Some(&k) = dry_lakes.range(j..).next() {
+                        ans[k] = lake;
+                        dry_lakes.remove(&k);
+                    } else {
+                        return vec![];
+                    }
+                }
+                ans[i] = -1;
+                lakes.insert(lake, i);
+            }
+        }
+        ans
+
+=======
+
+        let mut ret = vec![-1; rains.len()];
+        let mut lakes = std::collections::HashMap::new();
+        let mut dry = std::collections::BinaryHeap::new();
+        for (i, &r) in rains.iter().enumerate() {
+            if r == 0 {
+                dry.push(std::cmp::Reverse(i));
+            } else {
+                ret[i] = -1;
+                if let Some(&p) = lakes.get(&r) {
+                    if let Some(std::cmp::Reverse(j)) = dry.pop() {
+                        if j < p {
+                            return Vec::new();
+                        }
+                        ret[j] = r;
+                    } else {
+                        return Vec::new();
+                    }
+                }
+                lakes.insert(r, i);
+            }
+        }
+        for i in dry {
+            ret[i.0] = 1;
+        }
+        ret
+
+=======
+
+        let mut dry = vec![];
+        let mut res = vec![-1; rains.len()];
+        let mut lakes = std::collections::BTreeMap::new();
+        for (i, &x) in rains.iter().enumerate() {
+            if x > 0 {
+                if let Some(&p) = lakes.get(&x) {
+                    if let Some(&j) = dry.iter().find(|&&j| j > p) {
+                        res[j] = x;
+                        dry.remove(dry.iter().position(|&y| y == j).unwrap());
+                    } else {
+                        return vec![];
+                    }
+                }
+                res[i] = -1;
+                lakes.insert(x, i);
+            } else {
+                dry.push(i);
+            }
+        }
+        for &i in dry.iter() {
+            res[i] = 1;
+        }
+        res
+    }
+}
+
+=======
+
+        let mut dry: Vec<usize> = Vec::new();
+        let mut lakes: Vec<i32> = vec![-1; 10_000];
+        let mut ans: Vec<i32> = vec![-1; rains.len()];
+        for i in 0..rains.len() {
+            let lake = rains[i];
+            if lake == 0 {
+                dry.push(i);
+            } else {
+                if lakes[lake as usize - 1] != -1 {
+                    let mut index = 0;
+                    while index < dry.len() && dry[index] < lakes[lake as usize - 1] as usize {
+                        index += 1;
+                    }
+                    if index == dry.len() {
+                        return Vec::new();
+                    } else {
+                        ans[dry[index]] = lake;
+                        dry.remove(index);
+                    }
+                }
+                ans[i] = -1;
+                lakes[lake as usize - 1] = i as i32;
+            }
+        }
+        for i in dry {
+            ans[i] = 1;
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut lake: Vec<i32> = vec![-1; 100000];
+        let mut res: Vec<i32> = vec![];
+        let mut dry: Vec<i32> = vec![];
+        for (i, &r) in rains.iter().enumerate() {
+            if r == 0 {
+                res.push(1);
+                dry.push(i as i32);
+            } else {
+                if lake[r as usize - 1] != -1 {
+                    let mut flag = false;
+                    for j in 0..dry.len() {
+                        if dry[j] > lake[r as usize - 1] {
+                            res[dry[j] as usize] = r;
+                            dry.remove(j);
+                            lake[r as usize - 1] = i as i32;
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if !flag {
+                        return vec![];
+                    }
+                } else {
+                    lake[r as usize - 1] = i as i32;
+                }
+                res.push(-1);
+            }
+        }
+        res

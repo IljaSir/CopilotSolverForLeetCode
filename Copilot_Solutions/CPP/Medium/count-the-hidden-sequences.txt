@@ -1,0 +1,128 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = differences.size();
+        int mod = 1e9 + 7;
+        vector<long long> dp(n + 1, 0);
+        dp[0] = 1;
+        long long sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += differences[i];
+            dp[i + 1] = sum - upper;
+            dp[i + 1] = max(dp[i + 1], 0LL);
+            if (sum >= lower) {
+                dp[i + 1] = (dp[i + 1] + min(sum, (long long)upper) - lower + 1) % mod;
+            }
+            if (i > 0) {
+                dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = differences.size();
+        int64_t mod = 1e9 + 7;
+        vector<int64_t> dp(n + 1);
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            if (differences[i] > 0) {
+                dp[i + 1] = (dp[i] * (upper - lower + 1) + mod) % mod;
+            } else if (differences[i] == 0) {
+                dp[i + 1] = dp[i];
+            } else {
+                dp[i + 1] = (dp[i] * (lower - upper + 1) + mod) % mod;
+            }
+            if (differences[i] > 0) {
+                lower -= differences[i];
+                upper -= differences[i];
+            } else if (differences[i] < 0) {
+                lower -= differences[i];
+                upper -= differences[i];
+            }
+            lower = max(lower, 1);
+            upper = min(upper, 100000);
+            if (lower > upper) {
+                return 0;
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = differences.size();
+        vector<long long> dp(n + 1, 0);
+        long long mod = 1e9 + 7;
+        dp[0] = 1;
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += differences[i];
+            dp[i + 1] = (dp[i + 1] + dp[i]) % mod;
+            long long l = max(lower - sum, 1LL);
+            long long r = upper - sum;
+            if (l <= r) {
+                dp[i + 1] = (dp[i + 1] + (r - l + 1) % mod) % mod;
+                if (i + 1 < n) {
+                    dp[i + 2] = (dp[i + 2] - (r - l + 1) % mod + mod) % mod;
+                }
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = differences.size();
+        int mod = 1e9 + 7;
+        long long dp[n + 1][2];
+        memset(dp, 0, sizeof(dp));
+        dp[0][0] = 1;
+        dp[0][1] = 0;
+        for (int i = 1; i <= n; i++) {
+            long long l = dp[i - 1][0] * (lower - 1) + dp[i - 1][1];
+            long long r = dp[i - 1][0] * (upper + 1) + dp[i - 1][1];
+            l = max(l, (long long)0);
+            r = max(r, (long long)0);
+            dp[i][0] = (r - l) % mod;
+            dp[i][1] = (r - dp[i - 1][0] * differences[i - 1]) % mod;
+        }
+        return dp[n][0];
+
+=======
+
+        int n = differences.size();
+        vector<long> dp(n + 1);
+        dp[0] = 1;
+        long mod = 1e9 + 7;
+        for (int i = 1; i <= n; ++i) {
+            dp[i] = (dp[i - 1] * (upper - lower + 1)) % mod;
+            if (i > 1) {
+                int diff = differences[i - 2];
+                if (diff > 0) {
+                    dp[i] = (dp[i] - (dp[i - 2] * max(0, upper - diff - lower + 1)) % mod + mod) % mod;
+                } else {
+                    dp[i] = (dp[i] - (dp[i - 2] * max(0, upper + diff - lower + 1)) % mod + mod) % mod;
+                }
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = differences.size();
+        vector<int> f(n+1, 0);
+        f[0] = 1;
+        int mod = 1e9 + 7;
+        int sum = 0;
+        for(int i = 0; i < n; i++){
+            sum += differences[i];
+            f[i+1] = (f[i+1] + f[i]) % mod;
+            if(sum >= lower){
+                int l = max(0, lower - sum + differences[i]);
+                int r = min(upper - sum, differences[i]);
+                if(l <= r){
+                    f[i+1] = (f[i+1] + f[i] * (r - l + 1)) % mod;
+                }
+            }
+        }
+        return f[n];

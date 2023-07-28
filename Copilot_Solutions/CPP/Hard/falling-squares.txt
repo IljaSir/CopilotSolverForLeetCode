@@ -1,0 +1,215 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = positions.size();
+        vector<int> ans(n, 0);
+        vector<int> h(n, 0);
+        for (int i = 0; i < n; ++i) {
+            int l = positions[i][0];
+            int r = l + positions[i][1];
+            int cur = positions[i][1];
+            for (int j = i - 1; j >= 0; --j) {
+                int l1 = positions[j][0];
+                int r1 = l1 + positions[j][1];
+                if (l1 >= r || r1 <= l) {
+                    continue;
+                }
+                cur = max(cur, h[j] + positions[i][1]);
+            }
+            h[i] = cur;
+            ans[i] = i == 0 ? h[0] : max(cur, ans[i - 1]);
+        }
+        return ans;
+
+=======
+
+        int n = positions.size();
+        vector<int> ans(n, 0);
+        vector<pair<int, int>> segments;
+        for (int i = 0; i < n; ++i) {
+            int left = positions[i][0];
+            int right = positions[i][0] + positions[i][1] - 1;
+            int height = positions[i][1];
+            for (auto& seg : segments) {
+                if (seg.first <= left && right <= seg.second) {
+                    height = max(height, seg.second - seg.first + 1);
+                }
+            }
+            segments.push_back({left, left + height - 1});
+            ans[i] = max(ans[i], height);
+            for (int j = i + 1; j < n; ++j) {
+                ans[j] = max(ans[j], ans[j - 1]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = positions.size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; i++) {
+            int left = positions[i][0];
+            int right = left + positions[i][1];
+            int height = positions[i][1];
+            dp[i] = height;
+            for (int j = 0; j < i; j++) {
+                int l = positions[j][0];
+                int r = l + positions[j][1];
+                if (left >= r || right <= l) continue;
+                dp[i] = max(dp[i], dp[j] + height);
+            }
+            if (i == 0) {
+                ans.push_back(height);
+            } else {
+                ans.push_back(max(ans[i - 1], dp[i]));
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        vector<int> height(positions.size(), 0);
+        int h = 0;
+        for (int i = 0; i < positions.size(); i++) {
+            int left = positions[i][0];
+            int size = positions[i][1];
+            int right = left + size;
+            height[i] = size;
+            for (int j = 0; j < i; j++) {
+                int jleft = positions[j][0];
+                int jsize = positions[j][1];
+                int jright = jleft + jsize;
+                if (jleft < right && jright > left) {
+                    height[i] = max(height[i], size + height[j]);
+                }
+            }
+            h = max(h, height[i]);
+            ans.push_back(h);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = positions.size();
+        vector<int> ends(n, 0);
+        vector<int> heights(n, 0);
+        for (int i = 0; i < n; ++i) {
+            int l = positions[i][0];
+            int r = l + positions[i][1];
+            int h = positions[i][1];
+            ends[i] = r;
+            heights[i] = h;
+            for (int j = 0; j < i; ++j) {
+                if (ends[j] > l && ends[j] > r) {
+                    heights[i] = max(heights[i], h + heights[j]);
+                }
+            }
+            ans.push_back(*max_element(heights.begin(), heights.end()));
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        map<int, int> m;
+        int cur = 0;
+        for (auto& p : positions) {
+            int left = p[0], side = p[1], right = left + side;
+            auto it = m.lower_bound(left);
+            int h1 = (it == m.begin()) ? 0 : prev(it)->second;
+            int h2 = (it == m.end()) ? 0 : it->second;
+            int h = max(h1, h2);
+            m[left] = h + side;
+            m[right] = h2;
+            cur = max(cur, h + side);
+            ans.push_back(cur);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int cur = 0;
+        for (auto& pos : positions) {
+            int left = pos[0], size = pos[1], right = left + size;
+            int h = 0;
+            for (auto& p : positions) {
+                int l = p[0], s = p[1], r = l + s;
+                if (l < right && r > left) {
+                    h = max(h, p[2]);
+                }
+            }
+            pos.push_back(h + size);
+            cur = max(cur, h + size);
+            ans.push_back(cur);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = positions.size();
+        int h = 0;
+        vector<int> heights(n, 0);
+        for (int i = 0; i < n; i++) {
+            int l = positions[i][0], r = l + positions[i][1];
+            int cur = heights[i] = positions[i][1];
+            for (int j = i + 1; j < n; j++) {
+                int l1 = positions[j][0], r1 = l1 + positions[j][1];
+                if (r > l1 && l < r1) {
+                    cur = max(cur, heights[j] + positions[i][1]);
+                }
+            }
+            h = max(h, cur);
+            ans.push_back(h);
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int n = positions.size();
+        int maxh = 0;
+        vector<int> heights(n, 0);
+        for(int i = 0; i < n; i++) {
+            int l = positions[i][0], r = l + positions[i][1];
+            int h = 0;
+            for(int j = 0; j < i; j++) {
+                int l1 = positions[j][0], r1 = l1 + positions[j][1];
+                if(l < r1 && r > l1) {
+                    h = max(h, heights[j]);
+                }
+            }
+            h += positions[i][1];
+            maxh = max(maxh, h);
+            ans.push_back(maxh);
+            heights[i] = h;
+        }
+        return ans;
+
+=======
+
+        vector<int> ans;
+        int max_height = 0;
+        set<int> pos;
+        map<int, int> h;
+        for (auto& position : positions) {
+            int left = position[0], side = position[1];
+            int right = left + side;
+            auto l = pos.lower_bound(left);
+            auto r = pos.upper_bound(right);
+            int height = 0;
+            for (auto it = l; it != r; ++it) {
+                height = max(height, h[*it]);
+            }
+            height += side;
+            max_height = max(max_height, height);
+            ans.push_back(max_height);
+            pos.insert(l, right);
+            h[left] = h[right] = height;
+        }
+        return ans;

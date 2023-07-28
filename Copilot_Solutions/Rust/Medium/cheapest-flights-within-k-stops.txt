@@ -1,0 +1,289 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut graph: Vec<Vec<(i32, i32)>> = vec![vec![]; n as usize];
+        for flight in flights {
+            graph[flight[0] as usize].push((flight[1], flight[2]));
+        }
+        let mut dp = vec![std::i32::MAX; n as usize];
+        let mut q = std::collections::BinaryHeap::new();
+        dp[src as usize] = 0;
+        q.push((0, src, k + 1));
+        while let Some((cost, city, stops)) = q.pop() {
+            let cost = -cost;
+            if city == dst {
+                return cost;
+            }
+            if stops > 0 {
+                for (next, price) in &graph[city as usize] {
+                    let next_cost = cost + price;
+                    if next_cost < dp[*next as usize] {
+                        dp[*next as usize] = next_cost;
+                        q.push((-next_cost, *next, stops - 1));
+                    }
+                }
+            }
+        }
+        -1
+
+=======
+
+        let n = n as usize;
+        let src = src as usize;
+        let dst = dst as usize;
+        let k = k as usize;
+        let mut dp = vec![vec![std::i32::MAX; n]; k + 2];
+        dp[0][src] = 0;
+        for i in 1..k + 2 {
+            dp[i][src] = 0;
+            for flight in &flights {
+                let from = flight[0] as usize;
+                let to = flight[1] as usize;
+                let price = flight[2];
+                if dp[i - 1][from] != std::i32::MAX {
+                    dp[i][to] = dp[i][to].min(dp[i - 1][from] + price);
+                }
+            }
+        }
+        if dp[k + 1][dst] == std::i32::MAX {
+            -1
+        } else {
+            dp[k + 1][dst]
+        }
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let src = src as usize;
+        let dst = dst as usize;
+        let k = k as usize;
+        let mut graph = vec![vec![]; n];
+        for f in flights {
+            graph[f[0] as usize].push((f[1] as usize, f[2]));
+        }
+        let mut dist = vec![std::i32::MAX; n];
+        dist[src] = 0;
+        let mut q = std::collections::BinaryHeap::new();
+        q.push(std::cmp::Reverse((0, src, k + 1)));
+        while let Some(std::cmp::Reverse((price, u, k))) = q.pop() {
+            if u == dst {
+                return price;
+            }
+            if k > 0 {
+                for &(v, w) in &graph[u] {
+                    let new_price = price + w;
+                    if new_price < dist[v] {
+                        dist[v] = new_price;
+                        q.push(std::cmp::Reverse((new_price, v, k - 1)));
+                    }
+                }
+            }
+        }
+        -1
+
+=======
+
+        let n = n as usize;
+        let src = src as usize;
+        let dst = dst as usize;
+        let k = k as usize;
+        let mut adj = vec![vec![]; n];
+        for flight in flights {
+            let from = flight[0] as usize;
+            let to = flight[1] as usize;
+            let cost = flight[2] as usize;
+            adj[from].push((to, cost));
+        }
+        let mut q = std::collections::BinaryHeap::new();
+        let mut dist = vec![std::usize::MAX; n];
+        q.push((0, src, k + 1));
+        while let Some((cost, node, stops)) = q.pop() {
+            if node == dst {
+                return cost as i32;
+            }
+            if stops > 0 {
+                for (to, cost) in &adj[node] {
+                    let cost = cost + cost;
+                    if cost < dist[*to] {
+                        dist[*to] = cost;
+                        q.push((cost, *to, stops - 1));
+                    }
+                }
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut g = vec![vec![]; n];
+        for f in flights {
+            g[f[0] as usize].push((f[1] as usize, f[2]));
+        }
+        let mut q = std::collections::BinaryHeap::new();
+        q.push((0, src as usize, k + 1));
+        let mut dist = vec![std::i32::MAX; n];
+        dist[src as usize] = 0;
+        while let Some((w, u, k)) = q.pop() {
+            if u == dst as usize {
+                return -w;
+            }
+            if k > 0 {
+                for &(v, w) in &g[u] {
+                    let w = w - w;
+                    if dist[v] > w {
+                        dist[v] = w;
+                        q.push((w, v, k - 1));
+                    }
+                }
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let n = n as usize;
+        let mut graph = vec![vec![]; n];
+        for flight in flights {
+            let from = flight[0] as usize;
+            let to = flight[1] as usize;
+            let cost = flight[2];
+            graph[from].push((to, cost));
+        }
+        let mut cost = vec![i32::max_value(); n];
+        cost[src as usize] = 0;
+        let mut queue = std::collections::VecDeque::new();
+        queue.push_back((src, 0));
+        while let Some((city, stop)) = queue.pop_front() {
+            if stop > k + 1 {
+                continue;
+            }
+            for (to, price) in &graph[city as usize] {
+                let new_cost = cost[city as usize] + price;
+                if new_cost < cost[*to] {
+                    cost[*to] = new_cost;
+                    queue.push_back((*to, stop + 1));
+                }
+            }
+        }
+        if cost[dst as usize] == i32::max_value() {
+            -1
+        } else {
+            cost[dst as usize]
+        }
+    }
+}
+
+=======
+
+        let mut g = vec![vec![]; n as usize];
+        for f in flights {
+            g[f[0] as usize].push((f[1], f[2]));
+        }
+        let mut q = std::collections::BinaryHeap::new();
+        q.push((0, src, k + 1));
+        let mut visited = std::collections::HashSet::new();
+        while let Some((cost, city, remain)) = q.pop() {
+            if city == dst {
+                return -cost;
+            }
+            if remain > 0 {
+                for (n, c) in &g[city as usize] {
+                    if !visited.contains(&(*n, remain - 1)) {
+                        visited.insert((*n, remain - 1));
+                        q.push((cost - c, *n, remain - 1));
+                    }
+                }
+            }
+        }
+        -1
+    }
+}
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for flight in &flights {
+            graph[flight[0] as usize].push((flight[1], flight[2]));
+        }
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push((0, src, k + 1));
+        let mut min = std::i32::MAX;
+        while let Some((price, city, stops)) = heap.pop() {
+            if city == dst {
+                min = min.min(price);
+            }
+            if stops > 0 {
+                for (next, cost) in &graph[city as usize] {
+                    if price + cost > min {
+                        continue;
+                    }
+                    heap.push((price + cost, *next, stops - 1));
+                }
+            }
+        }
+        if min == std::i32::MAX {
+            -1
+        } else {
+            min
+        }
+    }
+}
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        for flight in flights {
+            graph[flight[0] as usize].push((flight[1], flight[2]));
+        }
+        let mut dist = vec![std::i32::MAX; n as usize];
+        dist[src as usize] = 0;
+        let mut heap = std::collections::BinaryHeap::new();
+        heap.push(std::cmp::Reverse((0, src, k + 1)));
+        while let Some(std::cmp::Reverse((cost, city, stops))) = heap.pop() {
+            if city == dst {
+                return cost;
+            }
+            if stops > 0 {
+                for (next, price) in &graph[city as usize] {
+                    let new_cost = cost + price;
+                    if new_cost < dist[*next as usize] {
+                        dist[*next as usize] = new_cost;
+                        heap.push(std::cmp::Reverse((new_cost, *next, stops - 1)));
+                    }
+                }
+            }
+        }
+        -1
+
+=======
+
+        let mut graph = vec![vec![]; n as usize];
+        let mut dist = vec![vec![std::i32::MAX; k as usize + 2]; n as usize];
+        for flight in flights {
+            graph[flight[0] as usize].push((flight[1], flight[2]));
+        }
+        let mut q = std::collections::BinaryHeap::new();
+        q.push((0, src, k + 1));
+        while let Some((cost, cur, k)) = q.pop() {
+            let cost = -cost;
+            if cur == dst {
+                return cost;
+            }
+            if k > 0 {
+                for (next, price) in &graph[cur as usize] {
+                    if cost + price < dist[*next as usize][k as usize - 1] {
+                        dist[*next as usize][k as usize - 1] = cost + price;
+                        q.push((-(cost + price), *next, k - 1));
+                    }
+                }
+            }
+        }
+        -1

@@ -1,0 +1,209 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = garbage.size();
+        vector<vector<int>> dp(n, vector<int>(3, INT_MAX));
+        dp[0][0] = dp[0][1] = dp[0][2] = 0;
+        for (int i = 0; i < n - 1; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if (dp[i][j] == INT_MAX) continue;
+                for (int k = 0; k < 3; ++k) {
+                    if (j == k) continue;
+                    dp[i + 1][k] = min(dp[i + 1][k], dp[i][j] + travel[i] + count(garbage[i + 1].begin(), garbage[i + 1].end(), "MPG"[k]));
+                }
+            }
+        }
+        return *min_element(dp[n - 1].begin(), dp[n - 1].end());
+
+=======
+
+        int n = garbage.size();
+        vector<vector<int>> dp(n, vector<int>(3, INT_MAX));
+        dp[0][0] = dp[0][1] = dp[0][2] = 0;
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    if (garbage[i - 1][j] == 'M') {
+                        dp[i][j] = min(dp[i][j], dp[i - 1][k] + travel[i - 1]);
+                    } else if (garbage[i - 1][j] == 'P') {
+                        dp[i][j] = min(dp[i][j], dp[i - 1][k] + travel[i - 1]);
+                    } else if (garbage[i - 1][j] == 'G') {
+                        dp[i][j] = min(dp[i][j], dp[i - 1][k] + travel[i - 1]);
+                    }
+                }
+            }
+        }
+        return min({dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]});
+
+=======
+
+        int n = garbage.size();
+        vector<int> metal(n), paper(n), glass(n);
+        for (int i = 0; i < n; ++i) {
+            metal[i] = paper[i] = glass[i] = 1e9;
+            for (char c : garbage[i]) {
+                if (c == 'M') metal[i] = 0;
+                else if (c == 'P') paper[i] = 0;
+                else glass[i] = 0;
+            }
+        }
+        for (int i = 1; i < n; ++i) {
+            metal[i] = min(metal[i], metal[i - 1] + travel[i - 1]);
+            paper[i] = min(paper[i], paper[i - 1] + travel[i - 1]);
+            glass[i] = min(glass[i], glass[i - 1] + travel[i - 1]);
+            metal[i] = min(metal[i], paper[i - 1] + travel[i - 1]);
+            metal[i] = min(metal[i], glass[i - 1] + travel[i - 1]);
+            paper[i] = min(paper[i], metal[i - 1] + travel[i - 1]);
+            paper[i] = min(paper[i], glass[i - 1] + travel[i - 1]);
+            glass[i] = min(glass[i], metal[i - 1] + travel[i - 1]);
+            glass[i] = min(glass[i], paper[i - 1] + travel[i - 1]);
+        }
+        return min({metal[n - 1], paper[n - 1], glass[n - 1]});
+
+=======
+
+        int n = garbage.size();
+        vector<vector<int>> dp(n, vector<int>(3, 0));
+        for (int i = 1; i < n; ++i) {
+            dp[i][0] = dp[i-1][0] + travel[i-1];
+            dp[i][1] = dp[i-1][1] + travel[i-1];
+            dp[i][2] = dp[i-1][2] + travel[i-1];
+            for (int j = 0; j < 3; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    if (j == k) continue;
+                    int cost = 0;
+                    for (char c : garbage[i]) {
+                        if (c == 'M' && j == 0) ++cost;
+                        if (c == 'P' && j == 1) ++cost;
+                        if (c == 'G' && j == 2) ++cost;
+                    }
+                    dp[i][j] = min(dp[i][j], dp[i-1][k] + cost);
+                }
+            }
+        }
+        return min({dp[n-1][0], dp[n-1][1], dp[n-1][2]});
+
+=======
+
+        int n = garbage.size();
+        vector<int> mp(n, 0);
+        vector<int> pg(n, 0);
+        vector<int> mg(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (char ch : garbage[i]) {
+                if (ch == 'M') {
+                    mp[i]++;
+                } else if (ch == 'P') {
+                    pg[i]++;
+                } else {
+                    mg[i]++;
+                }
+            }
+        }
+        vector<int> dp(n, INT_MAX);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > 0) {
+                dp[i] = min(dp[i], dp[i - 1] + travel[i - 1]);
+            }
+            if (mp[i]) {
+                dp[i] = min(dp[i], dp[i] + mp[i]);
+            }
+            if (pg[i]) {
+                dp[i] = min(dp[i], dp[i] + pg[i]);
+            }
+            if (mg[i]) {
+                dp[i] = min(dp[i], dp[i] + mg[i]);
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = garbage.size();
+        vector<vector<int>> dp(n, vector<int>(3, 1e9));
+        dp[0][0] = (garbage[0].find('M') != string::npos) * 1;
+        dp[0][1] = (garbage[0].find('P') != string::npos) * 1;
+        dp[0][2] = (garbage[0].find('G') != string::npos) * 1;
+        for (int i = 1; i < n; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    if (k != j) {
+                        dp[i][j] = min(dp[i][j], dp[i - 1][k] + (garbage[i].find('M' + j) != string::npos) * 1 + travel[i - 1]);
+                    }
+                }
+            }
+        }
+        return min({dp[n - 1][0], dp[n - 1][1], dp[n - 1][2]});
+
+=======
+
+        int n = garbage.size();
+        int m = garbage[0].size();
+        vector<vector<int>> dp(n, vector<int>(3, INT_MAX));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (garbage[i][j] == 'M') {
+                    if (i == 0) {
+                        dp[i][0] = 0;
+                    } else {
+                        dp[i][0] = min(dp[i][0], dp[i - 1][0]);
+                        dp[i][0] = min(dp[i][0], dp[i - 1][1] + travel[i - 1]);
+                        dp[i][0] = min(dp[i][0], dp[i - 1][2] + travel[i - 1]);
+                    }
+                } else if (garbage[i][j] == 'P') {
+                    if (i == 0) {
+                        dp[i][1] = 0;
+                    } else {
+                        dp[i][1] = min(dp[i][1], dp[i - 1][0] + travel[i - 1]);
+                        dp[i][1] = min(dp[i][1], dp[i - 1][1]);
+                        dp[i][1] = min(dp[i][1], dp[i - 1][2] + travel[i - 1]);
+                    }
+                } else {
+                    if (i == 0) {
+                        dp[i][2] = 0;
+                    } else {
+                        dp[i][2] = min(dp[i][2], dp[i - 1][0] + travel[i - 1]);
+                        dp[i][2] = min(dp[i][2], dp[i - 1][1] + travel[i - 1]);
+                        dp[i][2] = min(dp[i][2], dp[i - 1][2]);
+                    }
+                }
+            }
+        }
+        int ans = INT_MAX;
+        for (int i = 0; i < 3; i++) {
+            ans = min(ans, dp[n - 1][i]);
+        }
+        return ans;
+
+=======
+
+        int n = garbage.size();
+        int m = garbage[0].length();
+        
+        vector<vector<int>> dp(n, vector<int>(m, INT_MAX));
+        dp[0][0] = 0;
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(garbage[i-1][j] == 'M'){
+                    dp[i][j] = min(dp[i][j], dp[i-1][j] + travel[i-1]);
+                }
+            }
+            for(int j = 0; j < m; j++){
+                if(garbage[i-1][j] == 'P'){
+                    dp[i][j] = min(dp[i][j], dp[i-1][j] + travel[i-1]);
+                }
+            }
+            for(int j = 0; j < m; j++){
+                if(garbage[i-1][j] == 'G'){
+                    dp[i][j] = min(dp[i][j], dp[i-1][j] + travel[i-1]);
+                }
+            }
+        }
+        
+        int ans = INT_MAX;
+        for(int j = 0; j < m; j++){
+            ans = min(ans, dp[n-1][j]);
+        }
+        return ans;

@@ -1,0 +1,240 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < cards.length; i++) {
+            min = Math.min(min, cards[i]);
+            max = Math.max(max, cards[i]);
+        }
+        int[] count = new int[max - min + 1];
+        for (int i = 0; i < cards.length; i++) {
+            count[cards[i] - min]++;
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] >= 2) {
+                ans = 0;
+            }
+        }
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] >= 1) {
+                int j = i + 1;
+                while (j < count.length && count[j] == 0) {
+                    j++;
+                }
+                if (j < count.length) {
+                    ans = Math.min(ans, j - i);
+                }
+            }
+        }
+        return ans == Integer.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int[] count = new int[1000001];
+        for (int i = 0; i < cards.length; i++) {
+            count[cards[i]]++;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] >= 2) {
+                int start = 0;
+                int end = cards.length - 1;
+                int c = 0;
+                while (cards[start] != i) {
+                    start++;
+                    c++;
+                }
+                while (cards[end] != i) {
+                    end--;
+                    c++;
+                }
+                min = Math.min(min, c);
+            }
+        }
+        if (min == Integer.MAX_VALUE) {
+            return -1;
+        }
+        return min;
+
+=======
+
+        int[] count = new int[1000001];
+        int max = 0;
+        for (int card : cards) {
+            count[card]++;
+            max = Math.max(max, count[card]);
+        }
+        if (max >= cards.length / 2 + 1) {
+            return -1;
+        }
+        int[] dp = new int[max + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int card : cards) {
+            for (int i = max; i > 0; i--) {
+                if (dp[i - 1] != Integer.MAX_VALUE) {
+                    dp[i] = Math.min(dp[i], dp[i - 1] + 1);
+                }
+            }
+        }
+        return dp[max];
+
+=======
+
+        int[] count = new int[1000001];
+        for (int card : cards) {
+            count[card]++;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 1000001; i++) {
+            if (count[i] > 1) {
+                int j = 0;
+                while (j < cards.length && cards[j] != i) {
+                    j++;
+                }
+                int k = cards.length - 1;
+                while (k >= 0 && cards[k] != i) {
+                    k--;
+                }
+                min = Math.min(min, k - j + 1);
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+
+=======
+
+        int[] count = new int[1000001];
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int card : cards) {
+            count[card]++;
+            min = Math.min(min, card);
+            max = Math.max(max, card);
+        }
+        int result = Integer.MAX_VALUE;
+        for (int i = min; i <= max; i++) {
+            if (count[i] > 1) {
+                result = 0;
+            } else if (count[i] == 1) {
+                result = Math.min(result, 1);
+            } else {
+                result = Math.min(result, 2);
+            }
+        }
+        return result == Integer.MAX_VALUE ? -1 : result;
+
+=======
+
+        int[] count = new int[1000001];
+        for(int card : cards) {
+            count[card]++;
+        }
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < count.length; i++) {
+            if(count[i] > 1) {
+                min = 1;
+                break;
+            }
+            if(count[i] == 1) {
+                min = Math.min(min, 2);
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+
+=======
+
+        int[] cardCount = new int[1000000];
+        for (int i = 0; i < cards.length; i++) {
+            cardCount[cards[i]]++;
+        }
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < cardCount.length; i++) {
+            if (cardCount[i] > 0) {
+                min = Math.min(min, i);
+                max = Math.max(max, i);
+            }
+        }
+        int count = 0;
+        for (int i = min; i <= max; i++) {
+            if (cardCount[i] == 0) {
+                count++;
+            } else {
+                count = 0;
+            }
+        }
+        return count == 0 ? -1 : count;
+
+=======
+
+        int[] count = new int[1000001];
+        int min = Integer.MAX_VALUE;
+        for (int card : cards) {
+            count[card]++;
+            if (count[card] >= 2) {
+                min = 0;
+            }
+        }
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] > 0) {
+                int j = i + 1;
+                while (j < count.length && count[j] == 0) {
+                    j++;
+                }
+                if (j < count.length) {
+                    min = Math.min(min, j - i);
+                }
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+
+=======
+
+        int n = cards.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Map<Integer, Integer> first = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            if (!first.containsKey(cards[i])) first.put(cards[i], i);
+            left[i] = first.get(cards[i]);
+        }
+        Map<Integer, Integer> last = new HashMap<>();
+        for (int i = n - 1; i >= 0; i--) {
+            if (!last.containsKey(cards[i])) last.put(cards[i], i);
+            right[i] = last.get(cards[i]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int l = left[i];
+            int r = right[i];
+            if (l < i && r > i) {
+                min = Math.min(min, r - l + 1);
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;
+
+=======
+
+        if (cards.length < 2) {
+            return -1;
+        }
+        int min = Integer.MAX_VALUE;
+        int[] count = new int[1000001];
+        int[] first = new int[1000001];
+        int[] last = new int[1000001];
+        for (int i = 0; i < cards.length; i++) {
+            count[cards[i]]++;
+            if (count[cards[i]] == 1) {
+                first[cards[i]] = i;
+            }
+            last[cards[i]] = i;
+        }
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] > 1) {
+                min = Math.min(min, last[i] - first[i] + 1);
+            }
+        }
+        return min == Integer.MAX_VALUE ? -1 : min;

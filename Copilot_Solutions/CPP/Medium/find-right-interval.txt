@@ -1,0 +1,194 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = intervals.size();
+        map<int, int> mp;
+        for (int i = 0; i < n; ++i) {
+            mp[intervals[i][0]] = i;
+        }
+        vector<int> ans;
+        for (int i = 0; i < n; ++i) {
+            auto it = mp.lower_bound(intervals[i][1]);
+            if (it == mp.end()) {
+                ans.push_back(-1);
+            } else {
+                ans.push_back(it->second);
+            }
+        }
+        return ans;
+
+=======
+
+        map<int, int> m;
+        for (int i = 0; i < intervals.size(); ++i) {
+            m[intervals[i][0]] = i;
+        }
+        vector<int> res;
+        for (auto& i: intervals) {
+            auto it = m.lower_bound(i[1]);
+            if (it == m.end()) {
+                res.push_back(-1);
+            } else {
+                res.push_back(it->second);
+            }
+        }
+        return res;
+
+=======
+
+        map<int, int> m;
+        for (int i = 0; i < intervals.size(); i++)
+            m[intervals[i][0]] = i;
+        vector<int> res;
+        for (int i = 0; i < intervals.size(); i++) {
+            auto it = m.lower_bound(intervals[i][1]);
+            if (it == m.end())
+                res.push_back(-1);
+            else
+                res.push_back(it->second);
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        map<int, int> m;
+        for(int i = 0; i < intervals.size(); i++) {
+            m[intervals[i][0]] = i;
+        }
+        for(int i = 0; i < intervals.size(); i++) {
+            auto it = m.lower_bound(intervals[i][1]);
+            if(it == m.end()) {
+                res.push_back(-1);
+            } else {
+                res.push_back(it->second);
+            }
+        }
+        return res;
+
+=======
+
+        int n = intervals.size();
+        vector<int> res(n, -1);
+        vector<pair<int, int>> starts;
+        for (int i = 0; i < n; i++) {
+            starts.push_back({intervals[i][0], i});
+        }
+        sort(starts.begin(), starts.end());
+        for (int i = 0; i < n; i++) {
+            int start = intervals[i][1];
+            int lo = 0, hi = n - 1;
+            while (lo <= hi) {
+                int mid = lo + (hi - lo) / 2;
+                if (starts[mid].first < start) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            if (lo < n) {
+                res[i] = starts[lo].second;
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        int n = intervals.size();
+        if (n == 1) {
+            ans.push_back(-1);
+            return ans;
+        }
+        vector<pair<int, int>> v;
+        for (int i = 0; i < n; ++i) {
+            v.push_back(make_pair(intervals[i][0], i));
+        }
+        sort(v.begin(), v.end());
+        for (int i = 0; i < n; ++i) {
+            int l = 0, r = n - 1;
+            while (l < r) {
+                int mid = (l + r) >> 1;
+                if (v[mid].first >= intervals[i][1]) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if (v[r].first >= intervals[i][1]) {
+                ans.push_back(v[r].second);
+            } else {
+                ans.push_back(-1);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<pair<int, int>> start;
+        vector<int> ans(intervals.size(), -1);
+        for(int i = 0; i < intervals.size(); i++) {
+            start.push_back({intervals[i][0], i});
+        }
+        sort(start.begin(), start.end());
+        for(int i = 0; i < intervals.size(); i++) {
+            int lo = 0;
+            int hi = start.size() - 1;
+            while(lo < hi) {
+                int mid = (lo + hi) / 2;
+                if(start[mid].first < intervals[i][1]) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            if(start[lo].first >= intervals[i][1]) {
+                ans[i] = start[lo].second;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = intervals.size();
+        vector<int> res(n, -1);
+        map<int, int> start2index;
+        vector<int> starts;
+        for (int i = 0; i < n; ++i) {
+            start2index[intervals[i][0]] = i;
+            starts.push_back(intervals[i][0]);
+        }
+        sort(starts.begin(), starts.end());
+        for (int i = 0; i < n; ++i) {
+            int target = intervals[i][1];
+            auto it = lower_bound(starts.begin(), starts.end(), target);
+            if (it != starts.end()) {
+                res[i] = start2index[*it];
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> result;
+        if (intervals.empty()) {
+            return result;
+        }
+        int n = intervals.size();
+        vector<int> start(n);
+        vector<int> end(n);
+        for (int i = 0; i < n; ++i) {
+            start[i] = intervals[i][0];
+            end[i] = intervals[i][1];
+        }
+        sort(start.begin(), start.end());
+        for (int i = 0; i < n; ++i) {
+            auto it = lower_bound(start.begin(), start.end(), end[i]);
+            if (it == start.end()) {
+                result.push_back(-1);
+            } else {
+                result.push_back(it - start.begin());
+            }
+        }
+        return result;

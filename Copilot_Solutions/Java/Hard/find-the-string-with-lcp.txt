@@ -1,0 +1,262 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = lcp.length;
+        char[] res = new char[n];
+        res[0] = 'a';
+        for (int i = 1; i < n; i++) {
+            res[i] = (char) (res[i - 1] + lcp[i - 1][i]);
+        }
+        return new String(res);
+
+=======
+
+        int n = lcp.length;
+        int[] cnt = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cnt[i] = Math.max(cnt[i], lcp[i][j]);
+            }
+        }
+        int[] pos = new int[n];
+        for (int i = 0; i < n; i++) {
+            pos[i] = i;
+        }
+        Arrays.sort(pos, (a, b) -> cnt[b] - cnt[a]);
+        int[] p = new int[n];
+        for (int i = 0; i < n; i++) {
+            p[pos[i]] = i;
+        }
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            int j = p[i];
+            if (j == 0) {
+                ans[i] = cnt[0];
+            } else {
+                ans[i] = Math.max(lcp[pos[j - 1]][i], cnt[j]);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            sb.append((char) (ans[i] + 'a'));
+        }
+        return sb.toString();
+
+=======
+
+        int n = lcp.length;
+        char[] res = new char[n];
+        for (int i = 0; i < n; i++) {
+            res[i] = 'a';
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                if (lcp[i][j] == n) {
+                    return "";
+                }
+                res[j] = (char) Math.max(res[j], res[i] + lcp[i][j]);
+            }
+        }
+        return new String(res);
+
+=======
+
+        int n = lcp.length;
+        int[] cnt = new int[n+1];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cnt[lcp[i][j]]++;
+            }
+        }
+        for (int i = n; i >= 0; i--) {
+            if (cnt[i] == i * i) {
+                return build(n, i, lcp);
+            }
+        }
+        return "";
+    }
+    String build(int n, int len, int[][] lcp) {
+        char[] ans = new char[n];
+        for (int i = 0; i < n; i++) {
+            for (char c = 'a'; c <= 'z'; c++) {
+                ans[i] = c;
+                if (check(len, ans, lcp)) {
+                    break;
+                }
+            }
+        }
+        return new String(ans);
+    }
+    boolean check(int len, char[] ans, int[][] lcp) {
+        int n = ans.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (lcp[i][j] == len) {
+                    if (ans[i] != ans[j]) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+
+=======
+
+        int n = lcp.length;
+        char[] chars = new char[n];
+        for (int i = 0; i < n; i++) {
+            chars[i] = 'a';
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (lcp[i][j] == 0) {
+                    continue;
+                }
+                int len = lcp[i][j];
+                if (chars[i] == chars[j]) {
+                    if (chars[i] == 'z') {
+                        return "";
+                    }
+                    chars[i] = (char)(chars[i] + 1);
+                    chars[j] = chars[i];
+                    for (int k = i + 1; k < j; k++) {
+                        chars[k] = chars[j];
+                    }
+                } else {
+                    for (int k = i + len; k < j; k++) {
+                        chars[k] = chars[j];
+                    }
+                }
+            }
+        }
+        return new String(chars);
+
+=======
+
+        int n = lcp.length;
+        char[] word = new char[n];
+        for (int i = 0; i < n; ++i) {
+            word[i] = 'a';
+        }
+        for (int i = n - 2; i >= 0; --i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (lcp[i][j] + i == j) {
+                    word[i] = (char) (word[j] + 1);
+                } else if (lcp[i][j] + i > j) {
+                    word[i] = (char) Math.min(word[i], word[j]);
+                }
+            }
+        }
+        int i = 0;
+        while (i < n && word[i] == 'a') {
+            ++i;
+        }
+        return i == n ? "" : new String(word, i, n - i);
+
+=======
+
+        int n = lcp.length;
+        int[] max = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                max[i] = Math.max(max[i], lcp[i][j]);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            int cur = max[i];
+            if (cur == 0) {
+                sb.append('a');
+            } else {
+                char ch = sb.charAt(i - cur);
+                if (ch == 'z') {
+                    return "";
+                } else {
+                    sb.append((char) (ch + 1));
+                }
+            }
+        }
+        return sb.toString();
+
+=======
+
+        int n = lcp.length;
+        int[] lcp2 = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                lcp2[i] = Math.max(lcp2[i], lcp[i][j]);
+            }
+        }
+        int[] lcp3 = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                lcp3[i] = Math.max(lcp3[i], lcp[j][i]);
+            }
+        }
+        int[] lcp4 = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                lcp4[i] = Math.max(lcp4[i], lcp[j][n - 1 - i]);
+            }
+        }
+        int[] lcp5 = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                lcp5[i] = Math.max(lcp5[i], lcp[n - 1 - i][j]);
+            }
+        }
+        char[] ans = new char[n];
+        for (int i = 0; i < n; i++) {
+            char c = 'a';
+            for (int j = 0; j < n; j++) {
+                if (lcp2[i] == n - i - 1 && lcp3[j] == i && lcp4[j] == n - i - 1 && lcp5[i] == j) {
+                    c = (char) Math.max(c, j + 'a');
+                }
+            }
+            ans[i] = c;
+        }
+        for (int i = 0; i < n; i++) {
+            if (ans[i] == 'a' + n) {
+                return "";
+            }
+        }
+        return new String(ans);
+
+=======
+
+        int n = lcp.length;
+        if (n == 1) {
+            return "a";
+        }
+        char[] ans = new char[n];
+        ans[0] = 'a';
+        ans[1] = (char) ('a' + lcp[0][1]);
+        for (int i = 2; i < n; i++) {
+            ans[i] = (char) (ans[i - 1] + lcp[i - 1][i] - lcp[i - 2][i]);
+        }
+        return new String(ans);
+
+=======
+
+        int n = lcp.length;
+        char[] res = new char[n];
+        int[] count = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                count[lcp[i][j]]++;
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            if (count[i] == 0) {
+                res[i] = 'a';
+            } else {
+                int j = 0;
+                while (count[j] > 0) {
+                    j++;
+                }
+                res[i] = (char) ('a' + j);
+                count[j] = -1;
+            }
+        }
+        return new String(res);

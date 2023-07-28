@@ -1,0 +1,284 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<long long> ans(n, 0);
+        vector<long long> pre(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            pre[i] = pre[i - 1] + nums[i - 1];
+        }
+        set<int> s = {0, n};
+        for (int i = n - 1; i >= 0; --i) {
+            int idx = removeQueries[i];
+            auto it = s.lower_bound(idx);
+            int r = *it;
+            --it;
+            int l = *it;
+            ans[i] = pre[r] - pre[l];
+            s.insert(idx);
+        }
+        for (int i = 1; i < n; ++i) {
+            ans[i] = max(ans[i], ans[i - 1]);
+        }
+        return ans;
+
+=======
+
+        vector<long long> ans;
+        vector<int> removed(nums.size(), 0);
+        for (int i = 0; i < removeQueries.size(); i++) {
+            removed[removeQueries[i]] = 1;
+        }
+        long long sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (removed[i] == 0) {
+                sum += nums[i];
+            }
+        }
+        ans.push_back(sum);
+        for (int i = removeQueries.size() - 1; i >= 0; i--) {
+            int idx = removeQueries[i];
+            long long left = 0;
+            long long right = 0;
+            int j = idx - 1;
+            while (j >= 0) {
+                if (removed[j] == 0) {
+                    left += nums[j];
+                }
+                j--;
+            }
+            j = idx + 1;
+            while (j < nums.size()) {
+                if (removed[j] == 0) {
+                    right += nums[j];
+                }
+                j++;
+            }
+            long long maxSum = max(left, right);
+            if (maxSum > 0) {
+                sum += maxSum;
+            }
+            ans.push_back(sum);
+            removed[idx] = 0;
+        }
+        reverse(ans.begin(), ans.end());
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<long long> ans(n);
+        set<int> st;
+        st.insert(0);
+        st.insert(n);
+        long long sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            auto it = st.lower_bound(removeQueries[i]);
+            int r = *it;
+            it--;
+            int l = *it;
+            ans[i] = sum;
+            sum -= nums[removeQueries[i]];
+            if (l < removeQueries[i]) {
+                st.insert(removeQueries[i]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<long long> res(removeQueries.size());
+        int n = nums.size();
+        set<int> s;
+        s.insert(-1);
+        s.insert(n);
+        long long sum = 0;
+        for(int i = 0; i < n; i++) {
+            sum += nums[i];
+        }
+        for(int i = 0; i < removeQueries.size(); i++) {
+            int idx = removeQueries[i];
+            auto it = s.upper_bound(idx);
+            int right = *it;
+            it--;
+            int left = *it;
+            sum -= nums[idx];
+            s.insert(idx);
+            if(left + 1 < idx) {
+                res[i] = max(res[i], sum);
+            }
+            if(idx + 1 < right) {
+                res[i] = max(res[i], sum);
+            }
+        }
+        for(int i = removeQueries.size() - 2; i >= 0; i--) {
+            res[i] = max(res[i], res[i + 1]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<long long> res(n, 0);
+        vector<long long> pre(n, 0);
+        vector<long long> suf(n, 0);
+        vector<long long> dp(n, 0);
+        set<int> st;
+        for (int i = 0; i < n; ++i) {
+            st.insert(i);
+        }
+        for (int i = 0; i < n; ++i) {
+            pre[i] = nums[i];
+            if (i > 0) {
+                pre[i] += pre[i - 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            suf[i] = nums[i];
+            if (i < n - 1) {
+                suf[i] += suf[i + 1];
+            }
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            int x = removeQueries[i];
+            auto it = st.find(x);
+            int l = 0, r = 0;
+            if (it != st.begin()) {
+                auto it2 = it;
+                --it2;
+                l = *it2;
+            }
+            ++it;
+            if (it != st.end()) {
+                r = *it;
+            }
+            --it;
+            st.erase(it);
+            dp[i] = pre[r] - pre[l] + suf[l] + suf[r];
+            if (i < n - 1) {
+                dp[i] = max(dp[i], dp[i + 1]);
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            res[i] = dp[i];
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<long long> ans(n);
+        vector<bool> deleted(n, false);
+        vector<long long> prefix(n + 1);
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + nums[i];
+        }
+        vector<long long> suffix(n + 1);
+        for (int i = n - 1; i >= 0; --i) {
+            suffix[i] = suffix[i + 1] + nums[i];
+        }
+        vector<int> q(n);
+        iota(q.begin(), q.end(), 0);
+        sort(q.begin(), q.end(), [&](int i, int j) {
+            return removeQueries[i] > removeQueries[j];
+        });
+        int i = 0;
+        int j = 0;
+        long long max = 0;
+        while (i < n) {
+            while (j < n && removeQueries[q[j]] == removeQueries[q[i]]) {
+                deleted[removeQueries[q[j]]] = true;
+                ++j;
+            }
+            long long sum = 0;
+            int l = -1;
+            int r = -1;
+            for (int k = 0; k < n; ++k) {
+                if (deleted[k]) {
+                    if (l != -1) {
+                        sum += suffix[l] - suffix[r + 1];
+                        if (sum > max) {
+                            max = sum;
+                        }
+                    }
+                    l = -1;
+                    r = -1;
+                    sum = 0;
+                } else {
+                    if (l == -1) {
+                        l = k;
+                    }
+                    r = k;
+                }
+            }
+            if (l != -1) {
+                sum += suffix[l] - suffix[r + 1];
+                if (sum > max) {
+                    max = sum;
+                }
+            }
+            while (i < j) {
+                ans[q[i]] = max;
+                ++i;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<long long> ans(n);
+        vector<long long> pre(n + 1);
+        vector<bool> rm(n);
+        for (int i = 0; i < n; ++i) {
+            pre[i + 1] = pre[i] + nums[i];
+        }
+        for (int i = n - 1; i >= 0; --i) {
+            int idx = removeQueries[i];
+            rm[idx] = true;
+            long long sum = 0;
+            if (idx > 0 && !rm[idx - 1]) {
+                sum += pre[idx] - pre[0];
+            }
+            if (idx < n - 1 && !rm[idx + 1]) {
+                sum += pre[n] - pre[idx + 1];
+            }
+            ans[i] = sum;
+        }
+        return ans;
+
+=======
+
+        vector<long long> ans;
+        unordered_map<int, int> removed;
+        int n = nums.size();
+        vector<long long> presum(n + 1, 0);
+        for (int i = 0; i < n; ++i) {
+            presum[i + 1] = presum[i] + nums[i];
+        }
+        vector<int> removedIdx;
+        for (int i = 0; i < n; ++i) {
+            removedIdx.push_back(removeQueries[i]);
+            removed[removeQueries[i]] = 1;
+            long long maxSum = presum[n];
+            for (int j = 0; j < removedIdx.size(); ++j) {
+                if (removedIdx[j] == 0) {
+                    maxSum = max(maxSum, presum[removedIdx[j + 1] + 1]);
+                } else if (removedIdx[j] == n - 1) {
+                    maxSum = max(maxSum, presum[n] - presum[removedIdx[j]]);
+                } else {
+                    maxSum = max(maxSum, presum[removedIdx[j + 1] + 1] - presum[removedIdx[j]]);
+                }
+            }
+            ans.push_back(maxSum);
+        }
+        return ans;
+
+=======
+
+        vector<long long> result;
+        return result;

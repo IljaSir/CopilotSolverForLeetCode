@@ -1,0 +1,261 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << numSlots];
+        Arrays.fill(dp, -1);
+        dp[0] = 0;
+        for (int i = 0; i < n; i++) {
+            for (int mask = (1 << numSlots) - 1; mask >= 0; mask--) {
+                if (dp[mask] == -1) continue;
+                dp[mask | (1 << i)] = Math.max(dp[mask | (1 << i)], dp[mask] + (nums[i] & mask));
+            }
+        }
+        return dp[(1 << numSlots) - 1];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[numSlots + 1][1 << n];
+        for (int i = 0; i < n; i++) {
+            dp[1][1 << i] = nums[i];
+        }
+        for (int i = 2; i <= numSlots; i++) {
+            for (int j = 1; j < (1 << n); j++) {
+                int t = j;
+                while (t > 0) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i - 1][j - t] + dp[1][t]);
+                    t = (t - 1) & j;
+                }
+            }
+        }
+        return dp[numSlots][(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << numSlots];
+        for (int i = 0; i < n; i++) {
+            int[] temp = new int[1 << numSlots];
+            for (int j = 0; j < (1 << numSlots); j++) {
+                temp[j] = dp[j];
+                if (j < (1 << (numSlots - 1))) {
+                    temp[j] = Math.max(temp[j], dp[j | (1 << (numSlots - 1))] + (nums[i] & j));
+                }
+            }
+            dp = temp;
+        }
+        return dp[0];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[1 << numSlots][numSlots + 1];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[i].length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return dfs(nums, 0, 0, numSlots, dp);
+    }
+    
+    private int dfs(int[] nums, int mask, int i, int numSlots, int[][] dp) {
+        if (i == nums.length) {
+            return 0;
+        }
+        if (dp[mask][numSlots] != -1) {
+            return dp[mask][numSlots];
+        }
+        int res = 0;
+        if (numSlots > 0) {
+            res = Math.max(res, dfs(nums, mask | (1 << i), i + 1, numSlots - 1, dp) + (nums[i] & (1 << i)));
+        }
+        res = Math.max(res, dfs(nums, mask, i + 1, numSlots, dp));
+        return dp[mask][numSlots] = res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << numSlots];
+        int[] cnt = new int[1 << numSlots];
+        for (int i = 0; i < n; i++) {
+            cnt[nums[i]]++;
+        }
+        for (int i = 1; i < (1 << numSlots); i++) {
+            int j = i & (-i);
+            dp[i] = dp[i - j] + cnt[j];
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            int j = nums[i];
+            int k = (1 << numSlots) - 1 - j;
+            for (int l = k; l > 0; l = (l - 1) & k) {
+                if (dp[l] >= 2) {
+                    res = Math.max(res, l & j);
+                }
+            }
+            res = Math.max(res, j & k);
+        }
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << numSlots];
+        for (int i = 0; i < n; i++) {
+            int[] next = dp.clone();
+            for (int mask = 0; mask < (1 << numSlots); mask++) {
+                next[mask & nums[i]] = Math.max(dp[mask & nums[i]], dp[mask] + (nums[i] & mask));
+            }
+            dp = next;
+        }
+        return dp[0];
+
+=======
+
+        int n = nums.length;
+        int[] dp = new int[1 << n];
+        for (int mask = 0; mask < (1 << n); mask++) {
+            int cnt = Integer.bitCount(mask);
+            if (cnt > numSlots || cnt > n - numSlots) continue;
+            int sum = 0;
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) {
+                    sum += nums[i] & (i + 1);
+                }
+            }
+            dp[mask] = sum;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int mask = 0; mask < (1 << n); mask++) {
+                if ((mask & (1 << i)) != 0) {
+                    dp[mask] = Math.max(dp[mask], dp[mask ^ (1 << i)]);
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+
+=======
+
+        int n = nums.length;
+        int m = n - 2 * numSlots;
+        int[] dp = new int[1 << numSlots];
+        for (int i = 0; i < n; i++) {
+            int[] next = new int[1 << numSlots];
+            for (int j = 0; j < (1 << numSlots); j++) {
+                int idx = Integer.bitCount(j);
+                if (i - idx >= m) {
+                    next[j] = Math.max(next[j], dp[j] + (nums[i] & idx));
+                }
+                if (idx > 0) {
+                    next[j] = Math.max(next[j], dp[j ^ (1 << (idx - 1))] + (nums[i] & idx));
+                }
+            }
+            dp = next;
+        }
+        int ans = 0;
+        for (int i = 0; i < (1 << numSlots); i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int[] slots = new int[numSlots];
+        int[] slots2 = new int[numSlots];
+        int[] slots3 = new int[numSlots];
+        int[] slots4 = new int[numSlots];
+        int[] slots5 = new int[numSlots];
+        int[] slots6 = new int[numSlots];
+        int[] slots7 = new int[numSlots];
+        int[] slots8 = new int[numSlots];
+        int[] slots9 = new int[numSlots];
+        int[] slots10 = new int[numSlots];
+        int[] slots11 = new int[numSlots];
+        int[] slots12 = new int[numSlots];
+        int[] slots13 = new int[numSlots];
+        int[] slots14 = new int[numSlots];
+        int[] slots15 = new int[numSlots];
+        int[] slots16 = new int[numSlots];
+        int[] slots17 = new int[numSlots];
+        int[] slots18 = new int[numSlots];
+        int[] slots19 = new int[numSlots];
+        int[] slots20 = new int[numSlots];
+        int[] slots21 = new int[numSlots];
+        int[] slots22 = new int[numSlots];
+        int[] slots23 = new int[numSlots];
+        int[] slots24 = new int[numSlots];
+        int[] slots25 = new int[numSlots];
+        int[] slots26 = new int[numSlots];
+        int[] slots27 = new int[numSlots];
+        int[] slots28 = new int[numSlots];
+        int[] slots29 = new int[numSlots];
+        int[] slots30 = new int[numSlots];
+        int[] slots31 = new int[numSlots];
+        int[] slots32 = new int[numSlots];
+        int[] slots33 = new int[numSlots];
+        int[] slots34 = new int[numSlots];
+        int[] slots35 = new int[numSlots];
+        int[] slots36 = new int[numSlots];
+        int[] slots37 = new int[numSlots];
+        int[] slots38 = new int[numSlots];
+        int[] slots39 = new int[numSlots];
+        int[] slots40 = new int[numSlots];
+        int[] slots41 = new int[numSlots];
+        int[] slots42 = new int[numSlots];
+        int[] slots43 = new int[numSlots];
+        int[] slots44 = new int[numSlots];
+        int[] slots45 = new int[numSlots];
+        int[] slots46
+
+=======
+
+        int n = nums.length;
+        int m = numSlots;
+        int[] dp = new int[1 << m];
+        int[] pre = new int[1 << m];
+        int[] suf = new int[1 << m];
+        int[] cnt = new int[1 << m];
+        int[] sum = new int[1 << m];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < (1 << m); ++j) {
+                if ((i & j) == 0) {
+                    cnt[j]++;
+                    sum[j] += nums[i];
+                }
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < (1 << m); ++j) {
+                if ((j >> i & 1) == 1) {
+                    cnt[j] += cnt[j ^ (1 << i)];
+                    sum[j] += sum[j ^ (1 << i)];
+                }
+            }
+        }
+        for (int i = 0; i < (1 << m); ++i) {
+            if (cnt[i] == m) {
+                dp[i] = sum[i];
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < (1 << m); ++j) {
+                if ((j >> i & 1) == 1) {
+                    dp[j] = Math.max(dp[j], dp[j ^ (1 << i)]);
+                }
+            }
+        }
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = 0; j < (1 << m); ++j) {
+                if ((j >> i & 1) == 1) {
+                    pre[j] = Math.max(pre[j], pre[j ^ (1 << i)]);
+                    suf[j] = Math.max(suf[j], suf[j ^ (1 << i)]);
+                } else {
+                    pre[j] = Math.max(pre[j], dp[j ^ (1 << i)]);
+                    suf[j] = Math.max(suf[j], dp[j ^ (1 << i)]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i

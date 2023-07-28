@@ -1,0 +1,247 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        vector<string> words;
+        string word;
+        for (char c : s) {
+            if (c == ' ') {
+                words.push_back(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+        words.push_back(word);
+        
+        unordered_map<char, string> mp;
+        unordered_set<string> st;
+        if (words.size() != pattern.size()) return false;
+        for (int i = 0; i < pattern.size(); ++i) {
+            if (mp.find(pattern[i]) != mp.end()) {
+                if (mp[pattern[i]] != words[i]) return false;
+            } else {
+                if (st.find(words[i]) != st.end()) return false;
+                mp[pattern[i]] = words[i];
+                st.insert(words[i]);
+            }
+        }
+        return true;
+
+=======
+
+        istringstream iss(s);
+        vector<string> words;
+        for (string word; iss >> word; ) {
+            words.push_back(word);
+        }
+        if (words.size() != pattern.size()) {
+            return false;
+        }
+        unordered_map<char, string> p2w;
+        unordered_map<string, char> w2p;
+        for (int i = 0; i < pattern.size(); ++i) {
+            if (p2w.count(pattern[i]) && p2w[pattern[i]] != words[i]) {
+                return false;
+            }
+            if (w2p.count(words[i]) && w2p[words[i]] != pattern[i]) {
+                return false;
+            }
+            p2w[pattern[i]] = words[i];
+            w2p[words[i]] = pattern[i];
+        }
+        return true;
+
+=======
+
+        unordered_map<char, string> m1;
+        unordered_map<string, char> m2;
+        int i = 0;
+        for (int j = 0; j <= s.size(); j++) {
+            if (j == s.size() || s[j] == ' ') {
+                if (m1.find(pattern[i]) != m1.end()) {
+                    if (m1[pattern[i]] != s.substr(i, j-i)) return false;
+                } else {
+                    m1[pattern[i]] = s.substr(i, j-i);
+                }
+                if (m2.find(s.substr(i, j-i)) != m2.end()) {
+                    if (m2[s.substr(i, j-i)] != pattern[i]) return false;
+                } else {
+                    m2[s.substr(i, j-i)] = pattern[i];
+                }
+                i = j+1;
+            }
+        }
+        return i == s.size()+1;
+
+=======
+
+        unordered_map<char, string> m;
+        unordered_map<string, char> m2;
+        int i = 0;
+        int j = 0;
+        while (i < pattern.size() && j < s.size()) {
+            char c = pattern[i];
+            string t = "";
+            while (j < s.size() && s[j] != ' ') {
+                t += s[j++];
+            }
+            if (m.find(c) == m.end()) {
+                m[c] = t;
+            } else {
+                if (m[c] != t) {
+                    return false;
+                }
+            }
+            if (m2.find(t) == m2.end()) {
+                m2[t] = c;
+            } else {
+                if (m2[t] != c) {
+                    return false;
+                }
+            }
+            i++;
+            j++;
+        }
+        return i == pattern.size() && j == s.size();
+
+=======
+
+        vector<string> words;
+        int n = s.size();
+        string word;
+        for(int i = 0; i < n; i++) {
+            if(s[i] == ' ') {
+                words.push_back(word);
+                word.clear();
+            } else {
+                word += s[i];
+            }
+        }
+        if(word.size()) {
+            words.push_back(word);
+        }
+        if(words.size() != pattern.size()) {
+            return false;
+        }
+        unordered_map<string, char> mp;
+        unordered_map<char, string> mp2;
+        for(int i = 0; i < pattern.size(); i++) {
+            if(mp.find(words[i]) == mp.end() && mp2.find(pattern[i]) == mp2.end()) {
+                mp[words[i]] = pattern[i];
+                mp2[pattern[i]] = words[i];
+            } else {
+                if(mp.find(words[i]) == mp.end() || mp2.find(pattern[i]) == mp2.end()) {
+                    return false;
+                }
+                if(mp[words[i]] != pattern[i] || mp2[pattern[i]] != words[i]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+=======
+
+        map<char, string> p2s;
+        map<string, char> s2p;
+        int i = 0, j = 0;
+        while (i < pattern.length() && j < s.length()) {
+            int k = j;
+            while (k < s.length() && s[k] != ' ') k++;
+            string word = s.substr(j, k - j);
+            if (p2s.find(pattern[i]) == p2s.end() && s2p.find(word) == s2p.end()) {
+                p2s[pattern[i]] = word;
+                s2p[word] = pattern[i];
+            } else if (p2s.find(pattern[i]) != p2s.end() && s2p.find(word) != s2p.end()) {
+                if (p2s[pattern[i]] != word || s2p[word] != pattern[i]) return false;
+            } else return false;
+            i++;
+            j = k + 1;
+        }
+        return i == pattern.length() && j >= s.length();
+
+=======
+
+        unordered_map<char, string> pattern2word;
+        unordered_map<string, char> word2pattern;
+        int i = 0;
+        int j = 0;
+        while (i < pattern.size() && j < s.size()) {
+            int k = j;
+            while (k < s.size() && s[k] != ' ') {
+                ++k;
+            }
+            string word = s.substr(j, k - j);
+            if (pattern2word.count(pattern[i]) == 0) {
+                pattern2word[pattern[i]] = word;
+            } else {
+                if (pattern2word[pattern[i]] != word) {
+                    return false;
+                }
+            }
+            if (word2pattern.count(word) == 0) {
+                word2pattern[word] = pattern[i];
+            } else {
+                if (word2pattern[word] != pattern[i]) {
+                    return false;
+                }
+            }
+            ++i;
+            j = k + 1;
+        }
+        if (i < pattern.size() || j < s.size()) {
+            return false;
+        }
+        return true;
+
+=======
+
+        vector<string> strs;
+        istringstream iss(s);
+        string str;
+        while (iss >> str) {
+            strs.push_back(str);
+        }
+        if (pattern.length() != strs.size()) return false;
+        unordered_map<char, string> m;
+        for (int i = 0; i < pattern.length(); i++) {
+            if (m.find(pattern[i]) == m.end()) {
+                m[pattern[i]] = strs[i];
+            } else {
+                if (m[pattern[i]] != strs[i]) return false;
+            }
+        }
+        unordered_map<string, char> m2;
+        for (int i = 0; i < pattern.length(); i++) {
+            if (m2.find(strs[i]) == m2.end()) {
+                m2[strs[i]] = pattern[i];
+            } else {
+                if (m2[strs[i]] != pattern[i]) return false;
+            }
+        }
+        return true;
+
+=======
+
+        unordered_map<char, string> m;
+        unordered_map<string, char> m2;
+        int i = 0;
+        int j = 0;
+        for (int k = 0; k < pattern.size(); k++) {
+            while (s[j] != ' ' && j < s.size()) {
+                j++;
+            }
+            string str = s.substr(i, j - i);
+            if (m.find(pattern[k]) != m.end() && m[pattern[k]] != str) {
+                return false;
+            }
+            if (m2.find(str) != m2.end() && m2[str] != pattern[k]) {
+                return false;
+            }
+            m[pattern[k]] = str;
+            m2[str] = pattern[k];
+            i = j + 1;
+            j = i;
+        }
+        return true;

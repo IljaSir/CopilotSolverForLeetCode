@@ -1,0 +1,256 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = s.length();
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = s.charAt(i) - '0';
+        }
+        int[] b = new int[n];
+        int[] c = new int[n];
+        int[] d = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                b[i] = 0;
+                c[i] = 1;
+                d[i] = 1;
+            } else {
+                b[i] = 1;
+                c[i] = 0;
+                d[i] = 1;
+            }
+        }
+        int[] e = new int[n];
+        int[] f = new int[n];
+        int[] g = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                e[i] = 1;
+                f[i] = 1;
+                g[i] = 0;
+            } else {
+                e[i] = 0;
+                f[i] = 1;
+                g[i] = 1;
+            }
+        }
+        return Math.min(Math.min(minFlips(a, b), minFlips(a, c)), Math.min(minFlips(a, d), Math.min(minFlips(a, e), Math.min(minFlips(a, f), minFlips(a, g)))));
+    }
+    private int minFlips(int[] a, int[] b) {
+        int n = a.length;
+        int[] c = new int[n];
+        for (int i = 0; i < n; i++) {
+            c[i] = a[i] == b[i] ? 0 : 1;
+        }
+        int[] d = new int[n];
+        d[0] = c[0];
+        for (int i = 1; i < n; i++) {
+            d[i] = d[i - 1] + c[i];
+        }
+        int[] e = new int[n];
+        e[0] = 0;
+        for (int i = 1; i < n; i++) {
+            e[i] = e[i - 1] + d[i - 1];
+        }
+
+=======
+
+        int n = s.length();
+        int[] a = new int[n * 2];
+        for (int i = 0; i < n * 2; i++) {
+            a[i] = s.charAt(i % n) - '0';
+        }
+        int[] f = new int[n * 2];
+        f[0] = a[0];
+        for (int i = 1; i < n * 2; i++) {
+            f[i] = f[i - 1] + a[i];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int c = f[i + n - 1] - f[i];
+            ans = Math.min(ans, Math.min(c, n - c));
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] a = new int[2 * n];
+        for (int i = 0; i < 2 * n; i++) {
+            a[i] = s.charAt(i % n) - '0';
+        }
+        int[] b = new int[2 * n];
+        for (int i = 0; i < 2 * n; i++) {
+            b[i] = a[i] ^ (i % 2);
+        }
+        int ans = n;
+        for (int i = 0; i < 2 * n; i++) {
+            int c = 0;
+            for (int j = i; j < i + n; j++) {
+                if (a[j] != b[j]) {
+                    c++;
+                }
+            }
+            ans = Math.min(ans, c);
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] a = new int[n * 2];
+        for (int i = 0; i < n; i++) {
+            a[i] = a[i + n] = s.charAt(i) - '0';
+        }
+        int[] b = new int[n * 2];
+        for (int i = 0; i < n * 2; i++) {
+            b[i] = i % 2;
+        }
+        int[] c = new int[n * 2];
+        for (int i = 0; i < n * 2; i++) {
+            c[i] = 1 - i % 2;
+        }
+        int ans = Integer.MAX_VALUE;
+        int x = 0, y = 0;
+        for (int i = 0; i < n; i++) {
+            if (a[i] != b[i]) {
+                x++;
+            }
+            if (a[i] != c[i]) {
+                y++;
+            }
+        }
+        ans = Math.min(ans, x);
+        ans = Math.min(ans, y);
+        for (int i = n; i < n * 2; i++) {
+            if (a[i - n] != b[i - n]) {
+                x--;
+            }
+            if (a[i - n] != c[i - n]) {
+                y--;
+            }
+            if (a[i] != b[i]) {
+                x++;
+            }
+            if (a[i] != c[i]) {
+                y++;
+            }
+            ans = Math.min(ans, x);
+            ans = Math.min(ans, y);
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] a = new int[2 * n];
+        for (int i = 0; i < 2 * n; i++) {
+            a[i] = s.charAt(i % n) - '0';
+        }
+        int[] dp = new int[2 * n];
+        for (int i = 1; i < 2 * n; i++) {
+            dp[i] = dp[i - 1] + (a[i] == a[i - 1] ? 1 : 0);
+        }
+        int ans = n;
+        for (int i = 0; i < n; i++) {
+            int l = i, r = i + n - 1;
+            int cnt = dp[r] - dp[l];
+            ans = Math.min(ans, cnt);
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] a = new int[n*2];
+        for (int i = 0; i < n; i++) {
+            a[i] = a[i+n] = s.charAt(i) - '0';
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i < 2; i++) {
+            int cur = 0;
+            for (int j = 0; j < n; j++) {
+                if (a[i+j] != cur) {
+                    cur ^= 1;
+                    res = Math.min(res, j+1);
+                }
+            }
+            if (res == 1) return 1;
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 2; i++) {
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                if (s.charAt(j) - '0' != i) {
+                    count++;
+                }
+                i = 1 - i;
+            }
+            min = Math.min(min, count);
+        }
+        return min;
+
+=======
+
+        int n = s.length();
+        s += s;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int cnt = 0;
+            for (int j = i; j < i + n; j++) {
+                if (s.charAt(j) != (j - i) % 2 == 0 ? '0' : '1') {
+                    cnt++;
+                }
+            }
+            min = Math.min(min, cnt);
+        }
+        return min;
+
+=======
+
+        int n = s.length();
+        int[] a = new int[n + n];
+        int[] b = new int[n + n];
+        for (int i = 0; i < n; i++) {
+            a[i] = a[i + n] = s.charAt(i) - '0';
+            b[i] = b[i + n] = s.charAt(i) - '0';
+        }
+        for (int i = 1; i < n + n; i++) {
+            a[i] ^= a[i - 1];
+        }
+        for (int i = 1; i < n + n; i++) {
+            b[i] ^= 1 - b[i - 1];
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int x = a[i + n - 1] - a[i];
+            int y = b[i + n - 1] - b[i];
+            ans = Math.min(ans, Math.min(x, y));
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int flip = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; ++i) {
+            if (s.charAt(i) != (i % 2 == 0 ? '0' : '1')) {
+                ++flip;
+            }
+        }
+        min = Math.min(min, flip);
+        flip = 0;
+        for (int i = 0; i < n; ++i) {
+            if (s.charAt(i) != (i % 2 == 0 ? '1' : '0')) {
+                ++flip;
+            }
+        }
+        min = Math.min(min, flip);
+        return min;

@@ -1,0 +1,344 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (x < y) {
+            swap(x, y);
+            for (auto &c : s) {
+                if (c == 'a') c = 'b';
+                else if (c == 'b') c = 'a';
+            }
+        }
+        int a = 0, b = 0, ans = 0;
+        for (auto &c : s) {
+            if (c == 'a') {
+                a++;
+            } else if (c == 'b') {
+                if (a > 0) {
+                    ans += x;
+                    a--;
+                } else {
+                    b++;
+                }
+            } else {
+                ans += min(a, b) * y;
+                a = b = 0;
+            }
+        }
+        ans += min(a, b) * y;
+        return ans;
+
+=======
+
+        int ans = 0;
+        if (x < y) {
+            swap(x, y);
+            for (auto& c : s) {
+                if (c == 'a') c = 'b';
+                else if (c == 'b') c = 'a';
+            }
+        }
+        int a = 0, b = 0;
+        for (auto c : s) {
+            if (c == 'a') ++a;
+            else if (c == 'b') {
+                if (a > 0) {
+                    --a;
+                    ans += x;
+                } else ++b;
+            } else {
+                ans += min(a, b) * y;
+                a = b = 0;
+            }
+        }
+        ans += min(a, b) * y;
+        return ans;
+
+=======
+
+        int ans = 0;
+        if(x > y) {
+            ans += solve(s, 'a', 'b', x, y);
+            ans += solve(s, 'b', 'a', y, x);
+        } else {
+            ans += solve(s, 'b', 'a', y, x);
+            ans += solve(s, 'a', 'b', x, y);
+        }
+        return ans;
+    }
+    
+    int solve(string& s, char a, char b, int x, int y) {
+        int ans = 0;
+        stack<char> st;
+        for(int i = 0; i < s.size(); i++) {
+            if(s[i] == b) {
+                if(!st.empty() && st.top() == a) {
+                    ans += x;
+                    st.pop();
+                } else {
+                    st.push(b);
+                }
+            } else {
+                st.push(s[i]);
+            }
+        }
+        string res;
+        while(!st.empty()) {
+            res += st.top();
+            st.pop();
+        }
+        reverse(res.begin(), res.end());
+        s = res;
+        return ans;
+
+=======
+
+        int res = 0;
+        int a = 0, b = 0;
+        if (x > y) {
+            for (int i = 0; i < s.size(); i++) {
+                if (s[i] == 'a') a++;
+                else if (s[i] == 'b') {
+                    if (a > 0) {
+                        a--;
+                        res += x;
+                    } else b++;
+                } else {
+                    res += min(a, b) * y;
+                    a = 0;
+                    b = 0;
+                }
+            }
+            res += min(a, b) * y;
+        } else {
+            for (int i = 0; i < s.size(); i++) {
+                if (s[i] == 'b') b++;
+                else if (s[i] == 'a') {
+                    if (b > 0) {
+                        b--;
+                        res += y;
+                    } else a++;
+                } else {
+                    res += min(a, b) * x;
+                    a = 0;
+                    b = 0;
+                }
+            }
+            res += min(a, b) * x;
+        }
+        return res;
+
+=======
+
+        int res = 0;
+        string ab = "ab", ba = "ba";
+        if (y > x) {
+            swap(ab, ba);
+            swap(x, y);
+        }
+        for (int i = 0; i < 2; i++) {
+            int cnt = 0;
+            for (char c : s) {
+                if (c == ab[cnt]) cnt++;
+                else if (c == ab[0]) cnt = 1;
+                else cnt = 0;
+                if (cnt == 2) {
+                    res += x;
+                    cnt = 0;
+                }
+            }
+            swap(ab, ba);
+        }
+        return res;
+
+=======
+
+        string s1 = "ab", s2 = "ba";
+        if (x < y) {
+            swap(x, y);
+            swap(s1, s2);
+        }
+        int n = s.size();
+        int res = 0;
+        int i = 0, j = 0;
+        while (i < n) {
+            if (s[i] == s1[0]) {
+                j = i + 1;
+                while (j < n && s[j] != s1[1]) j++;
+                if (j < n) {
+                    res += x;
+                    s.erase(i, 2);
+                    n -= 2;
+                } else {
+                    i++;
+                }
+            } else if (s[i] == s2[0]) {
+                j = i + 1;
+                while (j < n && s[j] != s2[1]) j++;
+                if (j < n) {
+                    res += y;
+                    s.erase(i, 2);
+                    n -= 2;
+                } else {
+                    i++;
+                }
+            } else {
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        int a = 0;
+        int b = 0;
+        if (x > y) {
+            swap(x, y);
+            for (auto c: s) {
+                if (c == 'a') {
+                    a++;
+                } else if (c == 'b') {
+                    if (a > 0) {
+                        ans += x;
+                        a--;
+                    } else {
+                        b++;
+                    }
+                } else {
+                    ans += min(a, b) * y;
+                    a = 0;
+                    b = 0;
+                }
+            }
+            ans += min(a, b) * y;
+        } else {
+            for (auto c: s) {
+                if (c == 'b') {
+                    b++;
+                } else if (c == 'a') {
+                    if (b > 0) {
+                        ans += y;
+                        b--;
+                    } else {
+                        a++;
+                    }
+                } else {
+                    ans += min(a, b) * x;
+                    a = 0;
+                    b = 0;
+                }
+            }
+            ans += min(a, b) * x;
+        }
+        return ans;
+
+=======
+
+        int score = 0;
+        string str;
+        for (int i = 0; i < s.length(); i++) {
+            if (s[i] == 'a' || s[i] == 'b') {
+                str.push_back(s[i]);
+            }
+            if (s[i] == 'a' && str.length() > 0 && str.back() == 'b') {
+                str.pop_back();
+                score += x;
+            }
+            if (s[i] == 'b' && str.length() > 0 && str.back() == 'a') {
+                str.pop_back();
+                score += y;
+            }
+        }
+        return score;
+
+=======
+
+        int ans = 0;
+        int n = s.size();
+        string t = "ab";
+        if (y > x) {
+            swap(x, y);
+            swap(t[0], t[1]);
+        }
+        // t[0] < t[1]
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        while (i < n) {
+            if (s[i] == t[0]) {
+                j++;
+            } else if (s[i] == t[1]) {
+                if (j > 0) {
+                    ans += x;
+                    j--;
+                } else {
+                    s[k++] = t[1];
+                }
+            } else {
+                while (j > 0) {
+                    s[k++] = t[0];
+                    j--;
+                }
+                s[k++] = s[i];
+            }
+            i++;
+        }
+        while (j > 0) {
+            s[k++] = t[0];
+            j--;
+        }
+        s.resize(k);
+        // cout << s << endl;
+        i = 0;
+        j = 0;
+        k = 0;
+        while (i < n) {
+            if (s[i] == t[0]) {
+                j++;
+            } else if (s[i] == t[1]) {
+                if (j > 0) {
+                    ans += y;
+                    j--;
+                } else {
+                    s[k++] = t[1];
+                }
+            } else {
+                while (j > 0) {
+                    s[k++] = t[0];
+                    j--;
+                }
+                s[k++] = s[i];
+            }
+            i++;
+        }
+        while (j > 0) {
+            s[k++] = t[0];
+            j--;
+        }
+        s.resize(k);
+        // cout << s << endl;
+        return ans;
+
+=======
+
+        int maxScore = 0;
+        if (x < y) {
+            maxScore += remove(s, "ba", x);
+            maxScore += remove(s, "ab", y);
+        } else {
+            maxScore += remove(s, "ab", y);
+            maxScore += remove(s, "ba", x);
+        }
+        return maxScore;
+    }
+    
+    int remove(string& s, string pattern, int score) {
+        int maxScore = 0;
+        int pos = s.find(pattern);
+        while (pos != string::npos) {
+            maxScore += score;
+            s.erase(pos, pattern.size());
+            pos = s.find(pattern);
+        }
+        return maxScore;

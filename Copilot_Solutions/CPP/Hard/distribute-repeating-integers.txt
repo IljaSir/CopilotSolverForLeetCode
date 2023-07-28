@@ -1,0 +1,98 @@
+Synthesizing 3/10 solutions
+
+=======
+
+        unordered_map<int, int> count;
+        for (int num : nums) {
+            count[num]++;
+        }
+        vector<int> freq;
+        for (auto& [k, v] : count) {
+            freq.push_back(v);
+        }
+        sort(freq.begin(), freq.end());
+        sort(quantity.begin(), quantity.end(), greater<int>());
+        return dfs(freq, quantity, 0, 0);
+    }
+    bool dfs(vector<int>& freq, vector<int>& quantity, int i, int used) {
+        if (i == quantity.size()) {
+            return true;
+        }
+        for (int j = 0; j < freq.size(); j++) {
+            if (freq[j] >= quantity[i] && (used & (1 << j)) == 0) {
+                freq[j] -= quantity[i];
+                if (dfs(freq, quantity, i + 1, used | (1 << j))) {
+                    return true;
+                }
+                freq[j] += quantity[i];
+            }
+        }
+        return false;
+
+=======
+
+        unordered_map<int, int> count;
+        for (int num : nums) {
+            count[num]++;
+        }
+        vector<int> freq;
+        for (auto& [num, c] : count) {
+            freq.push_back(c);
+        }
+        sort(freq.begin(), freq.end(), greater<int>());
+        sort(quantity.begin(), quantity.end(), greater<int>());
+        int n = freq.size(), m = quantity.size();
+        vector<vector<bool>> dp(n + 1, vector<bool>(1 << m));
+        dp[0][0] = true;
+        for (int i = 0; i < n; i++) {
+            for (int mask = 0; mask < (1 << m); mask++) {
+                if (!dp[i][mask]) {
+                    continue;
+                }
+                dp[i + 1][mask] = true;
+                int left = freq[i];
+                for (int j = 0; j < m; j++) {
+                    if (mask & (1 << j)) {
+                        continue;
+                    }
+                    if (left >= quantity[j]) {
+                        left -= quantity[j];
+                        dp[i + 1][mask | (1 << j)] = true;
+                    }
+                }
+            }
+        }
+        return dp[n][(1 << m) - 1];
+
+=======
+
+        unordered_map<int, int> mp;
+        for (auto& n: nums) ++mp[n];
+        vector<int> cnt;
+        for (auto& [k, v]: mp) cnt.push_back(v);
+        sort(cnt.begin(), cnt.end());
+        int n = cnt.size();
+        int m = quantity.size();
+        vector<vector<int>> dp(n+1, vector<int>(1<<m, 0));
+        dp[n][0] = 1;
+        for (int i=n-1; i>=0; --i) {
+            for (int j=0; j<(1<<m); ++j) {
+                if (dp[i+1][j] == 0) continue;
+                dp[i][j] = 1;
+                int k = 0;
+                int t = j;
+                while (t) {
+                    if (t & 1) {
+                        if (cnt[i] >= quantity[k]) {
+                            dp[i][j | (1<<k)] = 1;
+                        }
+                    }
+                    ++k;
+                    t >>= 1;
+                }
+                if (cnt[i] >= quantity[k]) {
+                    dp[i][j | (1<<k)] = 1;
+                }
+            }
+        }
+        return dp[0][(1<<m)-1] == 1;

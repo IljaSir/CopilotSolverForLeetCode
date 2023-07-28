@@ -1,0 +1,215 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = queries.size();
+        vector<int> ans(n, 0);
+        for (int i = 0; i < n; ++i) {
+            int ni = queries[i][0], ki = queries[i][1];
+            vector<int> dp(ki + 1, 0);
+            for (int j = 1; j <= ki; ++j) {
+                dp[j] = 1;
+            }
+            for (int j = 2; j <= ni; ++j) {
+                for (int k = 1; k <= ki; ++k) {
+                    for (int l = 1; l * k <= ki; ++l) {
+                        dp[l * k] += dp[k];
+                        dp[l * k] %= 1000000007;
+                    }
+                }
+            }
+            ans[i] = dp[ki];
+        }
+        return ans;
+
+=======
+
+        int n = queries.size();
+        vector<int> res(n, 0);
+        for (int i = 0; i < n; i++) {
+            int ni = queries[i][0], ki = queries[i][1];
+            vector<int> dp(ni + 1, 0);
+            for (int j = 1; j <= ni; j++) {
+                if (ki % j == 0) {
+                    dp[j] = 1;
+                    for (int k = 1; k * j <= ni; k++) {
+                        if (k * j == ni) {
+                            dp[ni] += dp[j];
+                        } else {
+                            dp[k * j] += dp[j];
+                        }
+                    }
+                }
+            }
+            res[i] = dp[ni];
+        }
+        return res;
+
+=======
+
+        int n = queries.size();
+        vector<int> ans(n, 0);
+        for(int i = 0; i < n; i++){
+            int ni = queries[i][0];
+            int ki = queries[i][1];
+            vector<int> dp(ki + 1, 0);
+            for(int j = 1; j <= ki; j++){
+                dp[j] = 1;
+            }
+            for(int j = 2; j <= ni; j++){
+                for(int k = ki; k >= 1; k--){
+                    for(int l = k; l >= 1; l--){
+                        if(k % l == 0){
+                            dp[k] += dp[l];
+                            dp[k] %= 1000000007;
+                        }
+                    }
+                }
+            }
+            ans[i] = dp[ki];
+        }
+        return ans;
+
+=======
+
+        int n = 10001;
+        vector<int> dp(n, 1);
+        for (int i = 2; i < n; ++i) {
+            for (int j = i; j < n; j += i) {
+                dp[j]++;
+            }
+        }
+        vector<int> ans;
+        for (auto& q : queries) {
+            int n = q[0];
+            int k = q[1];
+            int res = 1;
+            for (int i = 2; i <= k; ++i) {
+                int cnt = 0;
+                while (k % i == 0) {
+                    cnt++;
+                    k /= i;
+                }
+                res = (long long)res * dp[i] % 1000000007;
+                res = (long long)res * pow(i, cnt * n - 1) % 1000000007;
+            }
+            ans.push_back(res);
+        }
+        return ans;
+    }
+    int pow(int a, int n) {
+        int res = 1;
+        while (n) {
+            if (n & 1) {
+                res = (long long)res * a % 1000000007;
+            }
+            a = (long long)a * a % 1000000007;
+            n >>= 1;
+        }
+        return res;
+
+=======
+
+        int mod = 1e9+7;
+        vector<int> res;
+        for (auto& q: queries) {
+            int n = q[0], k = q[1];
+            vector<int> dp(k+1);
+            for (int i = 1; i <= k; ++i) {
+                dp[i] = i;
+                for (int j = 2; j <= n; ++j) {
+                    dp[i] = (dp[i] + dp[i/j]) % mod;
+                }
+            }
+            res.push_back(dp[k]);
+        }
+        return res;
+
+=======
+
+        vector<int> res;
+        for (auto& q : queries) {
+            int n = q[0], k = q[1];
+            long long ans = 1;
+            for (int i = 2; i * i <= k; ++i) {
+                if (k % i == 0) {
+                    int e = 0;
+                    while (k % i == 0) {
+                        ++e;
+                        k /= i;
+                    }
+                    long long cur = 1;
+                    for (int j = 0; j < e; ++j) {
+                        cur = cur * (n + j) % 1000000007;
+                    }
+                    for (int j = 2; j <= e; ++j) {
+                        cur = cur * inv[j] % 1000000007;
+                    }
+                    ans = ans * cur % 1000000007;
+                }
+            }
+            if (k > 1) {
+                ans = ans * n % 1000000007;
+            }
+            res.push_back(ans);
+        }
+        return res;
+
+=======
+
+        vector<int> ans;
+        for (auto& q : queries) {
+            int n = q[0], k = q[1];
+            ans.push_back(numWays(n, k));
+        }
+        return ans;
+
+=======
+
+        int mod = 1e9 + 7;
+        int maxn = 1e4 + 1;
+        vector<int> primes;
+        vector<int> is_prime(maxn, true);
+        for (int i = 2; i < maxn; i++) {
+            if (is_prime[i]) {
+                primes.push_back(i);
+                for (int j = i * i; j < maxn; j += i) {
+                    is_prime[j] = false;
+                }
+            }
+        }
+        vector<int> ways(maxn, 1);
+        for (int i = 0; i < primes.size(); i++) {
+            int p = primes[i];
+            for (int j = p; j < maxn; j += p) {
+                int e = 0, t = j;
+                while (t % p == 0) {
+                    t /= p;
+                    e++;
+                }
+                ways[j] = (long long)ways[j] * (e + 1) % mod;
+            }
+        }
+        vector<int> ans;
+        for (auto& query: queries) {
+            ans.push_back(ways[query[1]]);
+        }
+        return ans;
+
+=======
+
+        int n = 10001;
+        vector<int> dp(n, 0);
+        vector<int> res;
+        for(int i=1; i<n; i++){
+            dp[i] = 1;
+            for(int j=2*i; j<n; j+=i){
+                dp[j] = (dp[j] + dp[i]) % 1000000007;
+            }
+        }
+        for(auto q : queries){
+            int a = q[0];
+            int b = q[1];
+            res.push_back((dp[b]*a)%1000000007);
+        }
+        return res;

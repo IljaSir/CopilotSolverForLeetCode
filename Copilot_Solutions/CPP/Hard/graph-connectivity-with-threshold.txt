@@ -1,0 +1,107 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        vector<int> parent(n + 1, 0);
+        vector<int> rank(n + 1, 0);
+        for (int i = 1; i <= n; ++i) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+        for (int i = threshold + 1; i <= n; ++i) {
+            for (int j = 2; j * i <= n; ++j) {
+                unionSet(parent, rank, i, i * j);
+            }
+        }
+        vector<bool> res;
+        for (auto& q : queries) {
+            res.push_back(findSet(parent, q[0]) == findSet(parent, q[1]));
+        }
+        return res;
+
+=======
+
+        vector<bool> result;
+        vector<int> parent(n + 1, 0);
+        for (int i = 1; i <= n; ++i) parent[i] = i;
+        for (int i = threshold + 1; i <= n; ++i) {
+            for (int j = i + i; j <= n; j += i) {
+                int p1 = find(parent, i);
+                int p2 = find(parent, j);
+                if (p1 != p2) parent[p1] = p2;
+            }
+        }
+        for (auto& q : queries) {
+            result.push_back(find(parent, q[0]) == find(parent, q[1]));
+        }
+        return result;
+
+=======
+
+        vector<bool> result(queries.size(), false);
+        vector<int> parent(n + 1, 0);
+        for (int i = 0; i < parent.size(); ++i) {
+            parent[i] = i;
+        }
+        for (int i = threshold + 1; i <= n; ++i) {
+            for (int j = i; j <= n; j += i) {
+                unionSet(parent, i, j);
+            }
+        }
+        for (int i = 0; i < queries.size(); ++i) {
+            result[i] = findSet(parent, queries[i][0]) == findSet(parent, queries[i][1]);
+        }
+        return result;
+    }
+    
+    int findSet(vector<int>& parent, int x) {
+        if (parent[x] != x) {
+            parent[x] = findSet(parent, parent[x]);
+        }
+        return parent[x];
+    }
+    
+    void unionSet(vector<int>& parent, int x, int y) {
+        int px = findSet(parent, x);
+        int py = findSet(parent, y);
+        if (px != py) {
+            parent[py] = px;
+        }
+
+=======
+
+        vector<bool> ans;
+        for(auto &q : queries){
+            int a = q[0], b = q[1];
+            if(a > b) swap(a, b);
+            ans.push_back(a == b || (a > threshold && b % a == 0));
+        }
+        return ans;
+
+=======
+
+        vector<bool> res;
+        if(threshold==0) {
+            for(auto q:queries) res.push_back(true);
+            return res;
+        }
+        vector<bool> isPrime(n+1,true);
+        isPrime[0] = isPrime[1] = false;
+        for(int i=2;i<=n;i++) {
+            if(isPrime[i]) {
+                for(int j=i+i;j<=n;j+=i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+        for(auto q:queries) {
+            bool found = false;
+            for(int i=threshold+1;i<=n;i++) {
+                if(isPrime[i] && q[0]%i==0 && q[1]%i==0) {
+                    found = true;
+                    break;
+                }
+            }
+            res.push_back(found);
+        }
+        return res;

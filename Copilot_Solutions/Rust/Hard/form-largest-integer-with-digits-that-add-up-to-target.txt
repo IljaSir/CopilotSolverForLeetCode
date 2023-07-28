@@ -1,0 +1,131 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        let mut dp: Vec<i32> = vec![-1; target as usize + 1];
+        dp[0] = 0;
+        for i in 1..=target {
+            for j in 0..9 {
+                let prev = i - cost[j];
+                if prev >= 0 && dp[prev as usize] >= 0 {
+                    dp[i as usize] = std::cmp::max(dp[i as usize], dp[prev as usize] + 1);
+                }
+            }
+        }
+        if dp[target as usize] < 0 {
+            return "0".to_string();
+        }
+        let mut ans: Vec<char> = vec![];
+        let mut i = target;
+        while i > 0 {
+            for j in (0..9).rev() {
+                let prev = i - cost[j];
+                if prev >= 0 && dp[prev as usize] == dp[i as usize] - 1 {
+                    ans.push((j + 1) as u8 as char);
+                    i = prev;
+                    break;
+                }
+            }
+        }
+        ans.iter().rev().collect()
+    }
+}
+
+=======
+
+        let mut dp = vec![vec![0; target as usize + 1]; cost.len() + 1];
+        for i in 1..=cost.len() {
+            for j in 1..=target as usize {
+                dp[i][j] = dp[i - 1][j];
+                if j >= cost[i - 1] as usize {
+                    dp[i][j] = dp[i][j].max(dp[i][j - cost[i - 1] as usize] + 1);
+                }
+            }
+        }
+        if dp[cost.len()][target as usize] == 0 {
+            return "0".to_string();
+        }
+        let mut res = String::new();
+        let mut i = cost.len();
+        let mut j = target as usize;
+        while i > 0 && j > 0 {
+            if dp[i][j] == dp[i - 1][j] {
+                i -= 1;
+            } else {
+                res.push((i as u8 + '0' as u8) as char);
+                j -= cost[i - 1] as usize;
+            }
+        }
+        res
+
+=======
+
+        let mut dp = vec![i32::MIN; target as usize + 1];
+        dp[0] = 0;
+        for t in 1..=target as usize {
+            for i in 0..9 {
+                if t >= cost[i] as usize {
+                    dp[t] = dp[t].max(dp[t - cost[i] as usize] + 1);
+                }
+            }
+        }
+        if dp[target as usize] < 0 {
+            "0".to_string()
+        } else {
+            let mut ans = String::new();
+            for i in (0..9).rev() {
+                while target >= cost[i] && dp[target as usize] == dp[(target - cost[i]) as usize] + 1 {
+                    ans.push((i + 1) as u8 + '0' as u8);
+                    target -= cost[i];
+                }
+            }
+            ans
+        }
+
+=======
+
+        let mut dp = vec![0; target as usize + 1];
+        for i in 0..target as usize {
+            if dp[i] == 0 && i != 0 {
+                continue;
+            }
+            for j in 0..9 {
+                let c = cost[j];
+                if i + c as usize > target as usize {
+                    continue;
+                }
+                dp[i + c as usize] = std::cmp::max(dp[i + c as usize], dp[i] * 10 + j as i32 + 1);
+            }
+        }
+        if dp[target as usize] == 0 {
+            return "0".to_string();
+        }
+        dp[target as usize].to_string()
+
+=======
+
+        let mut dp = vec![0; target as usize + 1];
+        dp[0] = 1;
+        for i in 1..=target as usize {
+            for j in 0..9 {
+                if i as i32 >= cost[j] && dp[i - cost[j] as usize] != 0 {
+                    dp[i] = dp[i - cost[j] as usize].max(j as i32 + 1);
+                }
+            }
+        }
+        if dp[target as usize] == 0 {
+            return "0".to_string();
+        }
+        let mut ans = String::new();
+        let mut i = target as usize;
+        while i > 0 {
+            ans.push((dp[i] - 1 + b'1') as char);
+            i -= cost[dp[i] as usize - 1] as usize;
+        }
+        ans
+
+=======
+
+        
+    }
+}

@@ -1,0 +1,446 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int MOD = 1_000_000_007;
+        int OPEN = 1, CLOSE = -1;
+        int[][] events = new int[rectangles.length * 2][];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            events[t++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[t++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+        Arrays.sort(events, (a, b) -> Integer.compare(a[0], b[0]));
+        // Sweep line: active set of x-coordinates
+        // TreeMap: x, count
+        TreeMap<Integer, Integer> map = new TreeMap();
+        map.put(0, 1);
+        long cur_x_sum = 0;
+        long ans = 0;
+        int cur_y = events[0][0];
+
+        for (int[] event: events) {
+            // Calculate answer from (cur_y, event_y)
+            ans += cur_x_sum * (event[0] - cur_y);
+            ans %= MOD;
+            cur_y = event[0];
+
+            if (event[1] == OPEN) {
+                // Add interval
+                map.put(event[2], map.getOrDefault(event[2], 0) + 1);
+                map.put(event[3], map.getOrDefault(event[3], 0) + 1);
+            } else {
+                // Remove interval
+                map.put(event[2], map.get(event[2]) - 1);
+                if (map.get(event[2]) == 0)
+                    map.remove(event[2]);
+                map.put(event[3], map.get(event[3]) - 1);
+                if (map.get(event[3]) == 0)
+                    map.remove(event[3]);
+            }
+
+            // Update x-coord sum
+            cur_x_sum = 0;
+            int prev = -1;
+            for (int x: map.keySet()) {
+                if (prev >= 0)
+                    cur_x_sum += Math.max(x - prev, 0);
+                prev = x;
+            }
+        }
+
+        return (int) ans;
+
+=======
+
+        int MOD = 1_000_000_007;
+        int OPEN = 1, CLOSE = -1;
+        int[][] events = new int[rectangles.length * 2][];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            events[t++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[t++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+        Arrays.sort(events, (a, b) -> Integer.compare(a[0], b[0]));
+
+        //Active (open) intervals of x-coordinates
+        TreeMap<Integer, Integer> active = new TreeMap();
+        active.put(0, 1);
+        int cur_x_sum = 0;
+        long ans = 0;
+        int cur_y = events[0][0];
+
+        for (int[] event: events) {
+            int y = event[0], typ = event[1], x1 = event[2], x2 = event[3];
+            ans += cur_x_sum * 1L * (y - cur_y);
+
+            if (typ == OPEN) {
+                active.put(x1, active.getOrDefault(x1, 0) + 1);
+                active.put(x2, active.getOrDefault(x2, 0) + 1);
+            } else {
+                active.put(x1, active.get(x1) - 1);
+                if (active.get(x1) == 0) active.remove(x1);
+                active.put(x2, active.get(x2) - 1);
+                if (active.get(x2) == 0) active.remove(x2);
+            }
+
+            cur_x_sum = 0;
+            int prev = -1;
+            for (int x: active.keySet()) {
+                if (prev >= 0)
+                    cur_x_sum += Math.max(x - prev, 0);
+                prev = x;
+            }
+
+            cur_y = y;
+        }
+
+        return (int) (ans % MOD);
+
+=======
+
+        int MOD = 1000000007;
+        int OPEN = 1, CLOSE = -1;
+        int[][] events = new int[rectangles.length * 2][];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            events[t++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[t++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        // sort by x1, x2
+        TreeMap<Integer, Integer> map = new TreeMap();
+        long cur_y = 0, cur_x_sum = 0;
+        long ans = 0;
+        for (int[] event: events) {
+            int y = event[0], typ = event[1], x1 = event[2], x2 = event[3];
+            long dy = y - cur_y;
+            ans = (ans + cur_x_sum * dy) % MOD;
+            cur_y = y;
+            if (typ == OPEN) {
+                map.put(x1, map.getOrDefault(x1, 0) + 1);
+                map.put(x2, map.getOrDefault(x2, 0) + 1);
+            } else {
+                map.put(x1, map.get(x1) - 1);
+                map.put(x2, map.get(x2) - 1);
+                if (map.get(x1) == 0) map.remove(x1);
+                if (map.get(x2) == 0) map.remove(x2);
+            }
+
+            cur_x_sum = 0;
+            int prev = -1;
+            for (int x: map.keySet()) {
+                if (prev >= 0)
+                    cur_x_sum += x - prev;
+                prev = x;
+            }
+        }
+
+        return (int) ans;
+
+=======
+
+        int MOD = 1000000007;
+        int OPEN = 0, CLOSE = 1;
+        int[][] events = new int[rectangles.length * 2][];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            events[t++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[t++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+        Arrays.sort(events, (a, b) -> Integer.compare(a[0], b[0]));
+        // Sort by x position
+        TreeMap<Integer, Integer> map = new TreeMap();
+        map.put(0, 1);
+        long cur_y = events[0][0], cur_x_sum = 0, ans = 0;
+        for (int[] event: events) {
+            int y = event[0], typ = event[1], x1 = event[2], x2 = event[3];
+            // Calculate answer with (y - cur_y) * cur_x_sum
+            ans = (ans + (long) (y - cur_y) * cur_x_sum) % MOD;
+            cur_y = y;
+
+            if (typ == OPEN) {
+                map.put(x1, map.getOrDefault(x1, 0) + 1);
+                map.put(x2, map.getOrDefault(x2, 0) + 1);
+            } else {
+                map.put(x1, map.get(x1) - 1);
+                map.put(x2, map.get(x2) - 1);
+                if (map.get(x1) == 0) map.remove(x1);
+                if (map.get(x2) == 0) map.remove(x2);
+            }
+
+            // Update x sum
+            cur_x_sum = 0;
+            int prev = -1;
+            for (int x: map.keySet()) {
+                if (prev >= 0)
+                    cur_x_sum += Math.max(x - prev, 0);
+                prev = x;
+            }
+        }
+
+        return (int) ans;
+
+=======
+
+        int MOD = 1_000_000_007;
+        int OPEN = 1, CLOSE = -1;
+        int N = rectangles.length;
+
+        int[][] events = new int[N*2][];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            events[t++] = new int[]{rec[1], OPEN, rec[0], rec[2]};
+            events[t++] = new int[]{rec[3], CLOSE, rec[0], rec[2]};
+        }
+
+        // Sort by y coordinate, then by event type
+        // (OPEN before CLOSE events), and finally by x1.
+        Arrays.sort(events, (a, b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            if (a[1] != b[1]) return a[1] - b[1];
+            return a[2] - b[2];
+        });
+
+        // Sweep line: active = set of rectangles that are active
+        // at this point of sweep line.
+        // TreeMap: x-coordinate -> count
+        TreeMap<Integer, Integer> active = new TreeMap();
+        long ans = 0;
+        int cur_y = events[0][0], cur_x_sum = 0;
+
+        // Sweep over all events
+        for (int[] event: events) {
+            int y = event[0], typ = event[1], x1 = event[2], x2 = event[3];
+            int x1i = active.floorKey(x1), x2i = active.floorKey(x2);
+
+            // Update answer
+            ans += (long) cur_x_sum * (y - cur_y);
+
+            if (typ == OPEN) {
+                // For OPEN events, we need to add the rectangle to "active".
+                if (x1i != null && active.get(x1i) > 0)
+                    // The rectangle starts from the left of some existing
+                    // rectangle. We need to split the existing rectangle
+                    // to two parts.
+                    active.put(x1i, active.get(x1i) - 1);
+                else
+                    // The rectangle starts from the middle of nowhere.
+                    // We need to add a new rectangle.
+                    active.put(x1, active.getOrDefault(x1, 0) + 1);
+
+                if (x2i !=
+
+=======
+
+        int MOD = 1_000_000_007;
+        long ans = 0;
+        int N = rectangles.length;
+        int[] xs = new int[N * 2];
+        int t = 0;
+        for (int[] rec: rectangles) {
+            xs[t++] = rec[0];
+            xs[t++] = rec[2];
+        }
+        Arrays.sort(xs);
+        // System.out.println(Arrays.toString(xs));
+        SegmentTree st = new SegmentTree(xs);
+        // System.out.println(Arrays.toString(st.xs));
+        // System.out.println(Arrays.toString(st.tree));
+        Arrays.sort(rectangles, new Comparator<int[]>() {
+            public int compare(int[] rec1, int[] rec2) {
+                return rec1[1] - rec2[1];
+            }
+        });
+        for (int i = 0; i < N; i++) {
+            int x1 = rectangles[i][0], y1 = rectangles[i][1];
+            int x2 = rectangles[i][2], y2 = rectangles[i][3];
+            st.update(x1, x2, 1);
+            ans += (long) st.query() * (y2 - y1);
+            ans %= MOD;
+            for (int j = i + 1; j < N; j++) {
+                if (rectangles[j][1] >= y2) break;
+                x1 = Math.max(x1, rectangles[j][0]);
+                x2 = Math.min(x2, rectangles[j][2]);
+                if (x1 < x2) {
+                    st.update(x1, x2, 1);
+                    ans += (long) st.query() * (Math.min(rectangles[j][3], y2) - y2);
+                    ans %= MOD;
+                }
+            }
+            st.update(x1, x2, -1);
+        }
+        return (int) ans;
+    }
+}
+
+=======
+
+        long res = 0, mod = (long)1e9 + 7;
+        List<int[]> events = new ArrayList();
+        for (int[] rec: rectangles) {
+            events.add(new int[]{rec[1], rec[0], rec[2], 1});
+            events.add(new int[]{rec[3], rec[0], rec[2], -1});
+        }
+        Collections.sort(events, (a, b) -> a[0] - b[0] != 0 ? a[0] - b[0] : a[3] - b[3]);
+        TreeMap<Integer, Integer> map = new TreeMap();
+        int preY = events.get(0)[0], preXSum = 0;
+        for (int[] event: events) {
+            int y = event[0], x1 = event[1], x2 = event[2], sig = event[3];
+            res = (res + (long)preXSum * (y - preY)) % mod;
+            preY = y;
+            map.put(x1, map.getOrDefault(x1, 0) + sig);
+            if (x2 != x1) map.put(x2, map.getOrDefault(x2, 0) - sig);
+            if (sig == 1) preXSum += x2 - x1;
+            while (map.lastEntry().getValue() == 0) {
+                map.remove(map.lastKey());
+                preXSum -= map.lastKey() - map.lowerKey(map.lastKey());
+            }
+        }
+        return (int)res;
+
+=======
+
+        int mod = 1000000007;
+        long res = 0;
+        List<int[]> events = new ArrayList<>();
+        for (int[] rec: rectangles) {
+            events.add(new int[]{rec[1], rec[0], rec[2], 1});
+            events.add(new int[]{rec[3], rec[0], rec[2], -1});
+        }
+        Collections.sort(events, (a,b) -> a[0] - b[0]);
+        List<int[]> active = new ArrayList<>();
+        int cur_y = events.get(0)[0];
+        for (int[] e: events) {
+            int y = e[0], x1 = e[1], x2 = e[2], sig = e[3];
+            res = (res + (long) (y - cur_y) * getWidth(active)) % mod;
+            cur_y = y;
+            if (sig == 1) {
+                active.add(new int[]{x1, x2});
+                active.sort((a,b) -> a[0] - b[0]);
+                merge(active);
+            } else {
+                for (int i = 0; i < active.size(); ++i) {
+                    if (active.get(i)[0] == x1 && active.get(i)[1] == x2) {
+                        active.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        return (int) res;
+    }
+    public int getWidth(List<int[]> active) {
+        int res = 0, cur_x = -1;
+        for (int[] seg: active) {
+            res += Math.max(0, seg[1] - Math.max(cur_x, seg[0]));
+            cur_x = Math.max(cur_x, seg[1]);
+        }
+        return res;
+    }
+    public void merge(List<int[]> active) {
+        for (int i = active.size() - 1; i > 0; --i) {
+            int[] cur = active.get(i), pre = active.get(i - 1);
+            if (pre[1] >= cur[0]) {
+                pre[1] = Math.max(pre[1], cur[1]);
+                active.remove(i);
+            }
+        }
+
+=======
+
+        int mod = 1000000007;
+        int n = rectangles.length;
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        for (int[] rect : rectangles) {
+            map.put(rect[0], 0);
+            map.put(rect[2], 0);
+        }
+        int t = 0;
+        for (int x : map.keySet()) {
+            map.put(x, t++);
+        }
+        SegmentTree tree = new SegmentTree(t);
+        long ans = 0;
+        Arrays.sort(rectangles, Comparator.comparingInt(a -> a[1]));
+        for (int[] rect : rectangles) {
+            tree.update(map.get(rect[0]), map.get(rect[2]), 1, 0, t - 1, rect[3] - rect[1]);
+            ans = (ans + tree.sum) % mod;
+        }
+        return (int) ans;
+    }
+
+    class SegmentTree {
+        int[] tag;
+        long[] sum;
+        int n;
+
+        public SegmentTree(int n) {
+            this.n = n;
+            tag = new int[n << 2];
+            sum = new long[n << 2];
+        }
+
+        private void pushUp(int rt) {
+            sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
+        }
+
+        private void pushDown(int rt, int ln, int rn) {
+            if (tag[rt] != 0) {
+                tag[rt << 1] += tag[rt];
+                tag[rt << 1 | 1] += tag[rt];
+                sum[rt << 1] += (long) tag[rt] * ln;
+                sum[rt << 1 | 1] += (long) tag[rt] * rn;
+                tag[rt] = 0;
+            }
+        }
+
+        public void update(int L, int R, int v, int l, int r, int len) {
+            if (L <= l && r <= R) {
+                tag[1] += v;
+                sum[1] += (long) v * len;
+                return;
+            }
+            int m = (l + r) >> 1;
+            pushDown(1, m - l + 1, r - m);
+            if (L <= m) {
+                update(L, R, v, l, m, len
+
+=======
+
+        int mod = (int)1e9+7;
+        int n = rectangles.length;
+        long ans = 0;
+        int[] x = new int[2 * n];
+        int[] y = new int[2 * n];
+        for (int i = 0; i < n; i++) {
+            x[2 * i] = rectangles[i][0];
+            x[2 * i + 1] = rectangles[i][2];
+            y[2 * i] = rectangles[i][1];
+            y[2 * i + 1] = rectangles[i][3];
+        }
+        Arrays.sort(x);
+        Arrays.sort(y);
+        for (int i = 0; i < n; i++) {
+            int x1 = Arrays.binarySearch(x, rectangles[i][0]);
+            int x2 = Arrays.binarySearch(x, rectangles[i][2]);
+            int y1 = Arrays.binarySearch(y, rectangles[i][1]);
+            int y2 = Arrays.binarySearch(y, rectangles[i][3]);
+            ans = (ans + (long)(x2 - x1) * (y2 - y1)) % mod;
+        }
+        for (int i = 1; i < 2 * n; i++) {
+            int width = x[i] - x[i - 1];
+            for (int j = 1; j < 2 * n; j++) {
+                int height = y[j] - y[j - 1];
+                int cnt = 0;
+                for (int k = 0; k < n; k++) {
+                    if (x[i - 1] >= rectangles[k][0] && x[i - 1] < rectangles[k][2] && y[j - 1] >= rectangles[k][1] && y[j - 1] < rectangles[k][3]) {
+                        cnt++;
+                    }
+                }
+                if (cnt > 1) {
+                    ans = (ans - (long)width * height % mod + mod) % mod;
+                }
+            }
+        }
+        return (int)ans;

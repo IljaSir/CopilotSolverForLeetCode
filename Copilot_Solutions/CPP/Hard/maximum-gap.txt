@@ -1,0 +1,263 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = nums.size();
+        if (n < 2) return 0;
+        int minVal = *min_element(nums.begin(), nums.end());
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int d = max(1, (maxVal - minVal) / (n - 1));
+        int bucketSize = (maxVal - minVal) / d + 1;
+        vector<pair<int, int>> bucket(bucketSize, {-1, -1});
+        for (int i = 0; i < n; i++) {
+            int idx = (nums[i] - minVal) / d;
+            if (bucket[idx].first == -1) {
+                bucket[idx].first = bucket[idx].second = nums[i];
+            } else {
+                bucket[idx].first = min(bucket[idx].first, nums[i]);
+                bucket[idx].second = max(bucket[idx].second, nums[i]);
+            }
+        }
+        int ret = 0, prev = -1;
+        for (int i = 0; i < bucketSize; i++) {
+            if (bucket[i].first == -1) continue;
+            if (prev != -1) ret = max(ret, bucket[i].first - bucket[prev].second);
+            prev = i;
+        }
+        return ret;
+
+=======
+
+        int n = nums.size();
+        if (n < 2) return 0;
+        int minVal = *min_element(nums.begin(), nums.end());
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int d = max(1, (maxVal - minVal) / (n - 1));
+        int bucketSize = (maxVal - minVal) / d + 1;
+        vector<vector<int>> buckets(bucketSize);
+        for (int num : nums) {
+            int idx = (num - minVal) / d;
+            if (buckets[idx].empty()) {
+                buckets[idx].push_back(num);
+                buckets[idx].push_back(num);
+            } else {
+                buckets[idx][0] = min(buckets[idx][0], num);
+                buckets[idx][1] = max(buckets[idx][1], num);
+            }
+        }
+        int ret = 0, prev = 0;
+        for (int i = 1; i < bucketSize; i++) {
+            if (buckets[i].empty()) continue;
+            ret = max(ret, buckets[i][0] - buckets[prev][1]);
+            prev = i;
+        }
+        return ret;
+
+=======
+
+        int n = nums.size();
+        if (n < 2) return 0;
+        int minNum = *min_element(nums.begin(), nums.end());
+        int maxNum = *max_element(nums.begin(), nums.end());
+        int d = max(1, (maxNum - minNum) / (n - 1));
+        int bucketSize = (maxNum - minNum) / d + 1;
+        vector<vector<int>> buckets(bucketSize);
+        for (int i = 0; i < n; ++i) {
+            int idx = (nums[i] - minNum) / d;
+            if (buckets[idx].empty()) {
+                buckets[idx].push_back(nums[i]);
+                buckets[idx].push_back(nums[i]);
+            } else {
+                buckets[idx][0] = min(buckets[idx][0], nums[i]);
+                buckets[idx][1] = max(buckets[idx][1], nums[i]);
+            }
+        }
+        int ret = 0, prev = -1;
+        for (int i = 0; i < bucketSize; ++i) {
+            if (buckets[i].empty()) continue;
+            if (prev != -1) {
+                ret = max(ret, buckets[i][0] - buckets[prev][1]);
+            }
+            prev = i;
+        }
+        return ret;
+
+=======
+
+        if (nums.size() < 2) {
+            return 0;
+        }
+        int maxVal = *max_element(nums.begin(), nums.end());
+        int minVal = *min_element(nums.begin(), nums.end());
+        int d = max(1, (maxVal - minVal) / ((int)nums.size() - 1));
+        int bucketSize = (maxVal - minVal) / d + 1;
+        vector<vector<int>> bucket(bucketSize, vector<int>());
+        for (int i = 0; i < nums.size(); i++) {
+            int idx = (nums[i] - minVal) / d;
+            if (bucket[idx].empty()) {
+                bucket[idx].push_back(nums[i]);
+                bucket[idx].push_back(nums[i]);
+            } else {
+                bucket[idx][0] = min(bucket[idx][0], nums[i]);
+                bucket[idx][1] = max(bucket[idx][1], nums[i]);
+            }
+        }
+        int ret = 0;
+        int prev = -1;
+        for (int i = 0; i < bucket.size(); i++) {
+            if (bucket[i].empty()) {
+                continue;
+            }
+            if (prev != -1) {
+                ret = max(ret, bucket[i][0] - bucket[prev][1]);
+            }
+            prev = i;
+        }
+        return ret;
+
+=======
+
+        if (nums.size() < 2) {
+            return 0;
+        }
+        int min = nums[0];
+        int max = nums[0];
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] < min) {
+                min = nums[i];
+            }
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+        }
+        int bucketSize = max(nums.size(), (max - min) / (nums.size() - 1));
+        int bucketNum = (max - min) / bucketSize + 1;
+        vector<int> bucketMin(bucketNum, INT_MAX);
+        vector<int> bucketMax(bucketNum, INT_MIN);
+        for (int i = 0; i < nums.size(); i++) {
+            int bucketIndex = (nums[i] - min) / bucketSize;
+            if (nums[i] < bucketMin[bucketIndex]) {
+                bucketMin[bucketIndex] = nums[i];
+            }
+            if (nums[i] > bucketMax[bucketIndex]) {
+                bucketMax[bucketIndex] = nums[i];
+            }
+        }
+        int maxGap = 0;
+        int prevMax = bucketMax[0];
+        for (int i = 1; i < bucketNum; i++) {
+            if (bucketMin[i] == INT_MAX) {
+                continue;
+            }
+            maxGap = max(maxGap, bucketMin[i] - prevMax);
+            prevMax = bucketMax[i];
+        }
+        return maxGap;
+
+=======
+
+        if (nums.size() < 2) return 0;
+        int max = *max_element(nums.begin(), nums.end());
+        int min = *min_element(nums.begin(), nums.end());
+        int gap = (max - min) / nums.size() + 1;
+        int bucketSize = (max - min) / gap + 1;
+        vector<int> bucketMin(bucketSize, INT_MAX);
+        vector<int> bucketMax(bucketSize, INT_MIN);
+        for (int i = 0; i < nums.size(); i++) {
+            int index = (nums[i] - min) / gap;
+            bucketMin[index] = min(bucketMin[index], nums[i]);
+            bucketMax[index] = max(bucketMax[index], nums[i]);
+        }
+        int maxGap = 0;
+        int preMax = bucketMax[0];
+        for (int i = 1; i < bucketSize; i++) {
+            if (bucketMin[i] == INT_MAX && bucketMax[i] == INT_MIN) continue;
+            maxGap = max(maxGap, bucketMin[i] - preMax);
+            preMax = bucketMax[i];
+        }
+        return maxGap;
+
+=======
+
+        if (nums.size() < 2) return 0;
+        int min = *min_element(nums.begin(), nums.end());
+        int max = *max_element(nums.begin(), nums.end());
+        int bucketSize = (max - min) / (nums.size() - 1);
+        if (bucketSize == 0) bucketSize = 1;
+        int bucketNum = (max - min) / bucketSize + 1;
+        vector<int> minBucket(bucketNum, INT_MAX);
+        vector<int> maxBucket(bucketNum, INT_MIN);
+        for (int i = 0; i < nums.size(); i++) {
+            int index = (nums[i] - min) / bucketSize;
+            minBucket[index] = min(minBucket[index], nums[i]);
+            maxBucket[index] = max(maxBucket[index], nums[i]);
+        }
+        int maxGap = 0;
+        int preMax = min;
+        for (int i = 0; i < bucketNum; i++) {
+            if (minBucket[i] == INT_MAX && maxBucket[i] == INT_MIN) continue;
+            maxGap = max(maxGap, minBucket[i] - preMax);
+            preMax = maxBucket[i];
+        }
+        return maxGap;
+
+=======
+
+        if (nums.size() < 2) return 0;
+        int min_value = *min_element(nums.begin(), nums.end());
+        int max_value = *max_element(nums.begin(), nums.end());
+        int bucket_size = max(1, (max_value - min_value) / (int)(nums.size() - 1));
+        int bucket_num = (max_value - min_value) / bucket_size + 1;
+        vector<pair<int, int>> buckets(bucket_num, {-1, -1});
+        for (int& num : nums) {
+            int idx = (num - min_value) / bucket_size;
+            if (buckets[idx].first == -1) {
+                buckets[idx].first = num;
+                buckets[idx].second = num;
+            } else {
+                buckets[idx].first = min(buckets[idx].first, num);
+                buckets[idx].second = max(buckets[idx].second, num);
+            }
+        }
+        int prev = -1;
+        int max_gap = 0;
+        for (int i = 0; i < bucket_num; i++) {
+            if (buckets[i].first == -1) continue;
+            if (prev != -1) {
+                max_gap = max(max_gap, buckets[i].first - buckets[prev].second);
+            }
+            prev = i;
+        }
+        return max_gap;
+
+=======
+
+        int n = nums.size();
+        if (n < 2) return 0;
+        
+        int maxNum = *max_element(nums.begin(), nums.end());
+        int exp = 1, radix = 10;
+        vector<int> buf(n);
+        while (maxNum / exp > 0) {
+            vector<int> cnt(radix);
+            for (int i = 0; i < n; i++) {
+                int digit = (nums[i] / exp) % radix;
+                cnt[digit]++;
+            }
+            for (int i = 1; i < radix; i++) {
+                cnt[i] += cnt[i - 1];
+            }
+            for (int i = n - 1; i >= 0; i--) {
+                int digit = (nums[i] / exp) % radix;
+                buf[cnt[digit] - 1] = nums[i];
+                cnt[digit]--;
+            }
+            copy(buf.begin(), buf.end(), nums.begin());
+            exp *= 10;
+        }
+        
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            ans = max(ans, nums[i] - nums[i - 1]);
+        }
+        return ans;

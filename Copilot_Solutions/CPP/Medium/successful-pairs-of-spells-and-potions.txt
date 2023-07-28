@@ -1,0 +1,97 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        int n = spells.size(), m = potions.size();
+        vector<int> ret(n, 0);
+        sort(potions.begin(), potions.end());
+        for (int i = 0; i < n; ++i) {
+            int cnt = 0;
+            for (int j = 0; j < m; ++j) {
+                if (1LL * spells[i] * potions[j] >= success) {
+                    cnt = m - j;
+                    break;
+                }
+            }
+            ret[i] = cnt;
+        }
+        return ret;
+
+=======
+
+        vector<int> ans(spells.size(), 0);
+        sort(potions.begin(), potions.end());
+        for (int i = 0; i < spells.size(); ++i) {
+            auto it = upper_bound(potions.begin(), potions.end(), success / spells[i]);
+            ans[i] = potions.end() - it;
+        }
+        return ans;
+
+=======
+
+        sort(spells.begin(), spells.end());
+        sort(potions.begin(), potions.end());
+        int N = spells.size(), M = potions.size();
+        vector<int> res(N, 0);
+        for (int i = 0; i < N; i++) {
+            int lo = 0, hi = M;
+            while (lo < hi) {
+                int mid = (lo + hi) / 2;
+                if (spells[i] * 1LL * potions[mid] < success) {
+                    lo = mid + 1;
+                } else {
+                    hi = mid;
+                }
+            }
+            res[i] = M - lo;
+        }
+        return res;
+
+=======
+
+        vector<int> res(spells.size(), 0);
+        sort(potions.begin(), potions.end());
+        for (int i = 0; i < spells.size(); ++i) {
+            int j = 0, k = potions.size() - 1;
+            while (j <= k) {
+                int mid = (j + k) / 2;
+                if ((long long)spells[i] * potions[mid] >= success) {
+                    k = mid - 1;
+                } else {
+                    j = mid + 1;
+                }
+            }
+            res[i] = potions.size() - j;
+        }
+        return res;
+
+=======
+
+        vector<int> result(spells.size(), 0);
+        sort(spells.begin(), spells.end());
+        sort(potions.begin(), potions.end());
+        int i = 0, j = 0;
+        while (i < spells.size() && j < potions.size()) {
+            if (static_cast<long long>(spells[i]) * potions[j] >= success) {
+                result[i] += potions.size() - j;
+                ++i;
+            } else {
+                ++j;
+            }
+        }
+        return result;
+
+=======
+
+        vector<int> pairs(spells.size());
+        sort(potions.begin(), potions.end());
+        for (int i = 0; i < spells.size(); i++) {
+            int j = 0;
+            for (; j < potions.size(); j++) {
+                if (spells[i] * potions[j] >= success) {
+                    break;
+                }
+            }
+            pairs[i] = potions.size() - j;
+        }
+        return pairs;

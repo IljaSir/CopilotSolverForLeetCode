@@ -1,0 +1,247 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<int> masks;
+        for (string s : arr) {
+            int mask = 0;
+            for (char c : s) {
+                int bit = c - 'a';
+                if ((mask >> bit) & 1) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask > 0) {
+                masks.push_back(mask);
+            }
+        }
+        int ans = 0;
+        function<void(int, int)> backtrack = [&](int pos, int mask) {
+            if (pos == masks.size()) {
+                ans = max(ans, __builtin_popcount(mask));
+                return;
+            }
+            if ((mask & masks[pos]) == 0) {
+                backtrack(pos + 1, mask | masks[pos]);
+            }
+            backtrack(pos + 1, mask);
+        };
+        backtrack(0, 0);
+        return ans;
+
+=======
+
+        int n = arr.size();
+        vector<int> mask(n);
+        for (int i = 0; i < n; i++) {
+            for (char c : arr[i]) {
+                int bit = c - 'a';
+                if (mask[i] & (1 << bit)) {
+                    mask[i] = 0;
+                    break;
+                }
+                mask[i] |= 1 << bit;
+            }
+        }
+        int ans = 0;
+        function<void(int, int)> backtrack = [&](int pos, int cur) {
+            if (pos == n) {
+                ans = max(ans, __builtin_popcount(cur));
+                return;
+            }
+            if ((cur & mask[pos]) == 0) {
+                backtrack(pos + 1, cur | mask[pos]);
+            }
+            backtrack(pos + 1, cur);
+        };
+        backtrack(0, 0);
+        return ans;
+
+=======
+
+        int res = 0;
+        vector<int> dp = {0};
+        for (string &s : arr) {
+            int mask = 0, dup = 0;
+            for (char c : s) {
+                int bit = 1 << (c - 'a');
+                if (mask & bit) {
+                    dup = 1;
+                    break;
+                }
+                mask |= bit;
+            }
+            if (dup) continue;
+            for (int i = dp.size() - 1; i >= 0; --i) {
+                if ((dp[i] & mask) == 0) {
+                    dp.push_back(dp[i] | mask);
+                    res = max(res, __builtin_popcount(dp.back()));
+                }
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> dp(1, 0);
+        int res = 0;
+        for (auto& s : arr) {
+            int mask = 0, dup = 0;
+            for (auto& c : s) {
+                mask |= 1 << (c - 'a');
+                if (mask & (1 << (c - 'a')) & dup) break;
+                dup |= 1 << (c - 'a');
+            }
+            if (mask != dup) continue;
+            for (int i = dp.size() - 1; i >= 0; --i) {
+                if (dp[i] & mask) continue;
+                dp.push_back(dp[i] | mask);
+                res = max(res, __builtin_popcount(dp.back()));
+            }
+        }
+        return res;
+
+=======
+
+        vector<int> mask;
+        for (auto& s : arr) {
+            int m = 0;
+            for (auto c : s) {
+                int bit = 1 << (c - 'a');
+                if (m & bit) { // Duplicate char
+                    m = 0;
+                    break;
+                }
+                m |= bit;
+            }
+            if (m > 0) mask.push_back(m);
+        }
+        int ans = 0;
+        function<void(int, int)> backtrack = [&](int pos, int m) {
+            if (pos == mask.size()) {
+                ans = max(ans, __builtin_popcount(m));
+                return;
+            }
+            if ((m & mask[pos]) == 0) backtrack(pos + 1, m | mask[pos]);
+            backtrack(pos + 1, m);
+        };
+        backtrack(0, 0);
+        return ans;
+
+=======
+
+        vector<int> masks;
+        for (const string &s : arr) {
+            int mask = 0;
+            for (char ch : s) {
+                int bit = ch - 'a';
+                if ((mask >> bit) & 1) {
+                    mask = 0;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (mask > 0) {
+                masks.push_back(mask);
+            }
+        }
+        int ans = 0;
+        function<void(int, int)> backtrack = [&](int pos, int mask) {
+            if (pos == masks.size()) {
+                ans = max(ans, __builtin_popcount(mask));
+                return;
+            }
+            if ((mask & masks[pos]) == 0) {
+                backtrack(pos + 1, mask | masks[pos]);
+            }
+            backtrack(pos + 1, mask);
+        };
+        backtrack(0, 0);
+        return ans;
+
+=======
+
+        int n = arr.size();
+        vector<int> dp(1, 0);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int mask = 0, dup = 0;
+            for (char ch : arr[i]) {
+                int bit = ch - 'a';
+                if (mask >> bit & 1) {
+                    dup = 1;
+                    break;
+                }
+                mask |= 1 << bit;
+            }
+            if (dup) continue;
+            int m = dp.size();
+            for (int j = 0; j < m; j++) {
+                if (dp[j] & mask) continue;
+                dp.push_back(dp[j] | mask);
+                ans = max(ans, __builtin_popcount(dp.back()));
+            }
+        }
+        return ans;
+
+=======
+
+        vector<int> dp{0};
+        int ans = 0;
+        for (auto &s : arr) {
+            int mask = 0;
+            for (auto &c : s) {
+                int bit = 1 << (c - 'a');
+                if (mask & bit) {
+                    mask = 0;
+                    break;
+                }
+                mask |= bit;
+            }
+            if (mask == 0) continue;
+            for (int i = dp.size() - 1; i >= 0; --i) {
+                if (dp[i] & mask) continue;
+                dp.push_back(dp[i] | mask);
+                ans = max(ans, __builtin_popcount(dp.back()));
+            }
+        }
+        return ans;
+
+=======
+
+        int ans = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            int len = arr[i].length();
+            int mask = 0;
+            for (int j = 0; j < len; j++) {
+                int bit = 1 << (arr[i][j] - 'a');
+                if (mask & bit) {
+                    mask = 0;
+                    break;
+                }
+                mask |= bit;
+            }
+            if (mask == 0) continue;
+            for (int j = i + 1; j < arr.size(); j++) {
+                int len2 = arr[j].length();
+                int mask2 = 0;
+                for (int k = 0; k < len2; k++) {
+                    int bit = 1 << (arr[j][k] - 'a');
+                    if (mask & bit || mask2 & bit) {
+                        mask2 = 0;
+                        break;
+                    }
+                    mask2 |= bit;
+                }
+                if (mask2 == 0) continue;
+                ans = max(ans, __builtin_popcount(mask) + __builtin_popcount(mask2));
+            }
+            ans = max(ans, __builtin_popcount(mask));
+        }
+        return ans;
+
+=======
+
+        return dfs(arr, 0, 0);

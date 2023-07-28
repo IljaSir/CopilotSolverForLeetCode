@@ -1,0 +1,305 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int MOD = 1000000007;
+        int n = s.length();
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            fact[i] = (int) ((long) fact[i - 1] * i % MOD);
+        }
+        int[] count = new int[26];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == ' ') {
+                int total = 1;
+                for (int j = 0; j < 26; j++) {
+                    total = (int) ((long) total * fact[count[j]] % MOD);
+                }
+                res = (res + total) % MOD;
+                count = new int[26];
+            } else {
+                count[s.charAt(i) - 'a']++;
+            }
+        }
+        int total = 1;
+        for (int j = 0; j < 26; j++) {
+            total = (int) ((long) total * fact[count[j]] % MOD);
+        }
+        res = (res + total) % MOD;
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        long[] fac = new long[s.length() + 1];
+        long[] inv = new long[s.length() + 1];
+        fac[0] = 1;
+        inv[0] = 1;
+        for (int i = 1; i <= s.length(); i++) {
+            fac[i] = fac[i - 1] * i % mod;
+            inv[i] = pow(fac[i], mod - 2, mod);
+        }
+        long ans = 1;
+        int start = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ' ') {
+                ans = ans * fac[i - start] % mod;
+                start = i + 1;
+            }
+        }
+        ans = ans * fac[s.length() - start] % mod;
+        return (int) ans;
+    }
+    private long pow(long a, int b, int mod) {
+        long ans = 1;
+        while (b > 0) {
+            if ((b & 1) == 1) {
+                ans = ans * a % mod;
+            }
+            a = a * a % mod;
+            b >>= 1;
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int[] count = new int[26];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == ' ') {
+                res += countAnagrams(count);
+                count = new int[26];
+            } else {
+                count[s.charAt(i) - 'a']++;
+            }
+        }
+        res += countAnagrams(count);
+        return res;
+    }
+    
+    private int countAnagrams(int[] count) {
+        int res = 1;
+        int n = 0;
+        for (int c : count) {
+            if (c > 0) {
+                n++;
+                res *= factorial(c);
+                res %= 1000000007;
+            }
+        }
+        res *= factorial(n);
+        res %= 1000000007;
+        return res;
+    }
+    
+    private int factorial(int n) {
+        int res = 1;
+        for (int i = 1; i <= n; i++) {
+            res *= i;
+            res %= 1000000007;
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int[] fact = new int[100001];
+        fact[0] = 1;
+        for(int i = 1; i <= 100000; i++) {
+            fact[i] = (int)(((long)fact[i-1] * (long)i) % mod);
+        }
+        int n = s.length();
+        int[] cnt = new int[26];
+        int ans = 1;
+        for(int i = 0; i < n; i++) {
+            if(s.charAt(i) == ' ') {
+                int ncnt = 0;
+                for(int j = 0; j < 26; j++) {
+                    ncnt += cnt[j];
+                    cnt[j] = 0;
+                }
+                ans = (int)(((long)ans * (long)fact[ncnt]) % mod);
+            } else {
+                cnt[s.charAt(i)-'a']++;
+            }
+        }
+        int ncnt = 0;
+        for(int j = 0; j < 26; j++) {
+            ncnt += cnt[j];
+            cnt[j] = 0;
+        }
+        ans = (int)(((long)ans * (long)fact[ncnt]) % mod);
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = s.length();
+        int[] f = new int[26];
+        int res = 1;
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == ' ') {
+                int cnt = 0;
+                for (int j = 0; j < 26; j++) {
+                    if (f[j] > 0) {
+                        cnt += f[j];
+                        f[j] = 0;
+                    }
+                }
+                res = (int) ((long) res * factorial(cnt) % mod);
+            } else {
+                f[s.charAt(i) - 'a']++;
+            }
+        }
+        int cnt = 0;
+        for (int j = 0; j < 26; j++) {
+            if (f[j] > 0) {
+                cnt += f[j];
+                f[j] = 0;
+            }
+        }
+        res = (int) ((long) res * factorial(cnt) % mod);
+        return res;
+    }
+
+    int factorial(int n) {
+        int res = 1;
+        for (int i = 1; i <= n; i++) {
+            res = (int) ((long) res * i % 1000000007);
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        int n = s.length();
+        int mod = 1000000007;
+        int[] fact = new int[n + 1];
+        fact[0] = 1;
+        for (int i = 1; i <= n; ++i) {
+            fact[i] = (int) ((long) fact[i - 1] * i % mod);
+        }
+        int[] cnt = new int[26];
+        int p = 1;
+        for (int i = 0; i < n; ++i) {
+            if (s.charAt(i) == ' ') {
+                ans = (int) ((long) ans + p * fact[n - i - 1] % mod);
+                p = 1;
+                cnt = new int[26];
+            } else {
+                ++cnt[s.charAt(i) - 'a'];
+                int sum = 0;
+                for (int j = 0; j < 26; ++j) {
+                    sum += cnt[j];
+                }
+                p = (int) ((long) p * fact[sum - 1] % mod);
+                for (int j = 0; j < 26; ++j) {
+                    p = (int) ((long) p * fact[cnt[j]] % mod);
+                }
+            }
+        }
+        ans = (int) ((long) ans + p * fact[n - n] % mod);
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int n = s.length();
+        int[] f = new int[26];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) != ' ') {
+                f[s.charAt(i) - 'a']++;
+            } else {
+                int cnt = 1;
+                for (int j = 0; j < 26; j++) {
+                    cnt = (int)((long)cnt * factorial[f[j]] % mod);
+                    f[j] = 0;
+                }
+                ans = (ans + cnt) % mod;
+            }
+        }
+        int cnt = 1;
+        for (int i = 0; i < 26; i++) {
+            cnt = (int)((long)cnt * factorial[f[i]] % mod);
+        }
+        ans = (ans + cnt) % mod;
+        return ans;
+    }
+    
+    int[] factorial = new int[100001];
+    
+    {
+        int mod = 1000000007;
+        factorial[0] = 1;
+        for (int i = 1; i <= 100000; i++) {
+            factorial[i] = (int)((long)factorial[i - 1] * i % mod);
+        }
+
+=======
+
+        int ans = 0;
+        int n = s.length();
+        long mod = 1000000007;
+        long[] p = new long[n+1];
+        p[0] = 1;
+        for(int i=1;i<=n;i++){
+            p[i] = (p[i-1]*31)%mod;
+        }
+        HashMap<Long,Integer> map = new HashMap<>();
+        long[] hash = new long[n+1];
+        for(int i=0;i<n;i++){
+            hash[i+1] = (hash[i]+(s.charAt(i)-'a'+1)*p[i])%mod;
+        }
+        for(int i=0;i<n;i++){
+            if(s.charAt(i)==' ') continue;
+            int j = i;
+            while(j<n && s.charAt(j)!=' ') j++;
+            long hs = hash[j] - hash[i];
+            if(hs<0) hs+=mod;
+            hs = (hs*p[n-j])%mod;
+            map.put(hs,map.getOrDefault(hs,0)+1);
+            i = j;
+        }
+        for(long key : map.keySet()){
+            int val = map.get(key);
+            ans = (ans+(int)(((long)val*(val-1))/2)%mod)%mod;
+        }
+        return ans;
+
+=======
+
+        int MOD = 1000000007;
+        int n = s.length();
+        int ans = 1;
+        int[] cnt = new int[26];
+        int[] cnt2 = new int[26];
+        for (int i = 0; i < n; ++i) {
+            if (s.charAt(i) == ' ') {
+                int sum = 0;
+                for (int j = 0; j < 26; ++j) {
+                    sum += cnt[j];
+                    cnt[j] = 0;
+                }
+                ans = (int)((long)ans * fact(sum) % MOD);
+            } else {
+                ++cnt[s.charAt(i) - 'a'];
+            }
+        }
+        int sum = 0;
+        for (int j = 0; j < 26; ++j) {
+            sum += cnt[j];
+            cnt[j] = 0;
+        }
+        ans = (int)((long)ans * fact(sum) % MOD);
+        return ans;
+    }
+    int fact(int x) {
+        int ans = 1;
+        for (int i = 1; i <= x; ++i) {
+            ans = (int)((long)ans * i % 1000000007);
+        }
+        return ans;

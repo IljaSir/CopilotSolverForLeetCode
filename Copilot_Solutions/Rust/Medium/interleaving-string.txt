@@ -1,0 +1,198 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+Suggestion 1
+
+        let (s1, s2, s3) = (s1.as_bytes(), s2.as_bytes(), s3.as_bytes());
+        if s1.len() + s2.len() != s3.len() {
+            return false;
+        }
+        let mut dp = vec![vec![false; s2.len() + 1]; s1.len() + 1];
+        dp[0][0] = true;
+        for i in 0..=s1.len() {
+            for j in 0..=s2.len() {
+                if i > 0 && dp[i - 1][j] && s1[i - 1] == s3[i + j - 1] {
+                    dp[i][j] = true;
+                }
+                if j > 0 && dp[i][j - 1] && s2[j - 1] == s3[i + j - 1] {
+                    dp[i][j] = true;
+                }
+            }
+        }
+        dp[s1.len()][s2.len()]
+
+=======
+Suggestion 2
+
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        let s3 = s3.as_bytes();
+        let n1 = s1.len();
+        let n2 = s2.len();
+        let n3 = s3.len();
+        if n1 + n2 != n3 {
+            return false;
+        }
+        let mut dp = vec![vec![false; n2 + 1]; n1 + 1];
+        dp[0][0] = true;
+        for i in 0..=n1 {
+            for j in 0..=n2 {
+                let p = i + j - 1;
+                if i > 0 {
+                    dp[i][j] = dp[i][j] || (dp[i - 1][j] && s1[i - 1] == s3[p]);
+                }
+                if j > 0 {
+                    dp[i][j] = dp[i][j] || (dp[i][j - 1] && s2[j - 1] == s3[p]);
+                }
+            }
+        }
+        dp[n1][n2]
+
+=======
+Suggestion 3
+
+        let (m, n) = (s1.len(), s2.len());
+        if m + n != s3.len() {
+            return false;
+        }
+        let (s1, s2, s3) = (s1.into_bytes(), s2.into_bytes(), s3.into_bytes());
+        let mut dp = vec![false; n + 1];
+        dp[0] = true;
+        for i in 1..=n {
+            dp[i] = dp[i - 1] && s2[i - 1] == s3[i - 1];
+        }
+        for i in 1..=m {
+            dp[0] = dp[0] && s1[i - 1] == s3[i - 1];
+            for j in 1..=n {
+                dp[j] = (dp[j] && s1[i - 1] == s3[i + j - 1])
+                    || (dp[j - 1] && s2[j - 1] == s3[i + j - 1]);
+            }
+        }
+        dp[n]
+
+=======
+Suggestion 4
+
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        let s3 = s3.as_bytes();
+        let n = s1.len();
+        let m = s2.len();
+        let k = s3.len();
+        if n + m != k { return false; }
+        let mut dp = vec![vec![false; m + 1]; n + 1];
+        dp[0][0] = true;
+        for i in 1..=n {
+            dp[i][0] = dp[i - 1][0] && s1[i - 1] == s3[i - 1];
+        }
+        for j in 1..=m {
+            dp[0][j] = dp[0][j - 1] && s2[j - 1] == s3[j - 1];
+        }
+        for i in 1..=n {
+            for j in 1..=m {
+                dp[i][j] = (dp[i - 1][j] && s1[i - 1] == s3[i + j - 1]) || (dp[i][j - 1] && s2[j - 1] == s3[i + j - 1]);
+            }
+        }
+        dp[n][m]
+
+=======
+Suggestion 5
+
+        let (s1, s2, s3) = (s1.as_bytes(), s2.as_bytes(), s3.as_bytes());
+        if s3.len() != s1.len() + s2.len() {
+            return false;
+        }
+        let mut dp = vec![false; s2.len() + 1];
+        dp[0] = true;
+        for j in 1..=s2.len() {
+            dp[j] = dp[j - 1] && s2[j - 1] == s3[j - 1];
+        }
+        for i in 1..=s1.len() {
+            dp[0] = dp[0] && s1[i - 1] == s3[i - 1];
+            for j in 1..=s2.len() {
+                dp[j] = (s1[i - 1] == s3[i + j - 1] && dp[j])
+                    || (s2[j - 1] == s3[i + j - 1] && dp[j - 1]);
+            }
+        }
+        dp[s2.len()]
+
+=======
+Suggestion 6
+
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        let s3 = s3.as_bytes();
+        let (m, n) = (s1.len(), s2.len());
+        if m + n != s3.len() {
+            return false;
+        }
+        let mut dp = vec![vec![false; n + 1]; m + 1];
+        dp[0][0] = true;
+        for i in 0..m {
+            dp[i + 1][0] = dp[i][0] && s1[i] == s3[i];
+        }
+        for j in 0..n {
+            dp[0][j + 1] = dp[0][j] && s2[j] == s3[j];
+        }
+        for i in 0..m {
+            for j in 0..n {
+                dp[i + 1][j + 1] = (dp[i][j + 1] && s1[i] == s3[i + j + 1])
+                    || (dp[i + 1][j] && s2[j] == s3[i + j + 1]);
+            }
+        }
+        dp[m][n]
+
+=======
+Suggestion 7
+
+        let (s1, s2, s3) = (s1.as_bytes(), s2.as_bytes(), s3.as_bytes());
+        let (m, n) = (s1.len(), s2.len());
+        if m + n != s3.len() {
+            return false;
+        }
+        let mut dp = vec![vec![false; n + 1]; m + 1];
+        dp[0][0] = true;
+        for i in 0..=m {
+            for j in 0..=n {
+                let p = i + j - 1;
+                if i > 0 {
+                    dp[i][j] |= dp[i - 1][j] && s1[i - 1] == s3[p];
+                }
+                if j > 0 {
+                    dp[i][j] |= dp[i][j - 1] && s2[j - 1] == s3[p];
+                }
+            }
+        }
+        dp[m][n]
+
+=======
+Suggestion 8
+
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        let s3 = s3.as_bytes();
+        let (n, m, l) = (s1.len(), s2.len(), s3.len());
+        if n + m != l {
+            return false;
+        }
+        let mut dp = vec![vec![false; m + 1]; n + 1];
+        dp[0][0] = true;
+        for i in 0..=n {
+            for j in 0..=m {
+                let p = i + j - 1;
+                if i > 0 {
+                    dp[i][j] = dp[i][j] || (dp[i - 1][j] && s1[i - 1] == s3[p]);
+                }
+                if j > 0 {
+                    dp[i][j] = dp[i][j] || (dp[i][j - 1] && s2[j - 1] == s3[p]);
+                }
+            }
+        }
+        dp[n][m]
+
+=======
+Suggestion 9
+
+        
+    }
+}

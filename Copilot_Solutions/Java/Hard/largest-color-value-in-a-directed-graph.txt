@@ -1,0 +1,402 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = colors.length();
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        int[] indegree = new int[n];
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            graph[u].add(v);
+            indegree[v]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int[] colorCount = new int[26];
+        int[] maxColorCount = new int[n];
+        int[] dist = new int[n];
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            colorCount[colors.charAt(u) - 'a']++;
+            for (int v : graph[u]) {
+                if (--indegree[v] == 0) {
+                    queue.offer(v);
+                }
+                int max = 0;
+                for (int i = 0; i < 26; i++) {
+                    max = Math.max(max, colorCount[i]);
+                }
+                maxColorCount[v] = Math.max(maxColorCount[v], max);
+            }
+            colorCount[colors.charAt(u) - 'a']--;
+        }
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] > 0) {
+                return -1;
+            }
+            res = Math.max(res, maxColorCount[i]);
+        }
+        return res;
+
+=======
+
+        int n = colors.length();
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        int[] indegree = new int[n];
+        for (int[] e : edges) {
+            graph[e[0]].add(e[1]);
+            indegree[e[1]]++;
+        }
+        int[] colorCount = new int[26];
+        int[] maxColorCount = new int[n];
+        int[] pathCount = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+                maxColorCount[i] = 1;
+                pathCount[i] = 1;
+                colorCount[colors.charAt(i) - 'a']++;
+            }
+        }
+        while (!queue.isEmpty()) {
+            int node = queue.poll();
+            for (int next : graph[node]) {
+                indegree[next]--;
+                if (indegree[next] == 0) {
+                    queue.add(next);
+                }
+                if (maxColorCount[node] > maxColorCount[next]) {
+                    maxColorCount[next] = maxColorCount[node];
+                    pathCount[next] = pathCount[node];
+                    colorCount = new int[26];
+                    colorCount[colors.charAt(next) - 'a'] = pathCount[next];
+                } else if (maxColorCount[node] == maxColorCount[next]) {
+                    pathCount[next] = (pathCount[next] + pathCount[node]) % 1000000007;
+                    colorCount[colors.charAt(next) - 'a'] += pathCount[node];
+                    maxColorCount[next] = Math.max(maxColorCount[next], colorCount[colors.charAt(next) - 'a']);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] > 0) {
+                return -1;
+            }
+            ans = Math.max(ans, maxColorCount[i]);
+        }
+        return ans;
+
+=======
+
+        int n = colors.length();
+        int[] color = new int[n];
+        for (int i = 0; i < n; i++) {
+            color[i] = colors.charAt(i) - 'a';
+        }
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        int[] indegree = new int[n];
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph[u].add(v);
+            indegree[v]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        int[][] count = new int[n][26];
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            while (size > 0) {
+                int u = queue.poll();
+                int c = color[u];
+                count[u][c]++;
+                res = Math.max(res, count[u][c]);
+                for (int v : graph[u]) {
+                    indegree[v]--;
+                    if (indegree[v] == 0) {
+                        queue.add(v);
+                    }
+                    for (int i = 0; i < 26; i++) {
+                        count[v][i] = Math.max(count[v][i], count[u][i]);
+                    }
+                }
+                size--;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] > 0) {
+                return -1;
+            }
+        }
+        return res;
+
+=======
+
+        int n = colors.length();
+        int[] inDegree = new int[n];
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            inDegree[edge[1]]++;
+        }
+        int[] maxCount = new int[26];
+        int[] currentCount = new int[26];
+        int[] visited = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                if (!dfs(i, colors, graph, inDegree, maxCount, currentCount, visited)) {
+                    return -1;
+                }
+            }
+        }
+        return Arrays.stream(maxCount).max().getAsInt();
+    }
+
+    private boolean dfs(int node, String colors, List<Integer>[] graph, int[] inDegree, int[] maxCount, int[] currentCount, int[] visited) {
+        visited[node] = 1;
+        currentCount[colors.charAt(node) - 'a']++;
+        maxCount[colors.charAt(node) - 'a'] = Math.max(maxCount[colors.charAt(node) - 'a'], currentCount[colors.charAt(node) - 'a']);
+        for (int next : graph[node]) {
+            inDegree[next]--;
+            if (inDegree[next] == 0) {
+                if (!dfs(next, colors, graph, inDegree, maxCount, currentCount, visited)) {
+                    return false;
+                }
+            } else if (visited[next] == 1) {
+                return false;
+            }
+        }
+        currentCount[colors.charAt(node) - 'a']--;
+        visited[node] = 2;
+        return true;
+
+=======
+
+        int n = colors.length();
+        int[] inDegree = new int[n];
+        List<Integer>[] adjList = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adjList[i] = new ArrayList<>();
+        }
+        for (int[] e : edges) {
+            adjList[e[0]].add(e[1]);
+            inDegree[e[1]]++;
+        }
+        int[] colorCount = new int[26];
+        int[] maxColorCount = new int[n];
+        int[] maxColor = new int[n];
+        int[] visited = new int[n];
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            colorCount[colors.charAt(cur) - 'a']++;
+            for (int i = 0; i < 26; i++) {
+                if (colorCount[i] > maxColorCount[cur]) {
+                    maxColorCount[cur] = colorCount[i];
+                    maxColor[cur] = i;
+                }
+            }
+            for (int nei : adjList[cur]) {
+                inDegree[nei]--;
+                if (inDegree[nei] == 0) {
+                    q.offer(nei);
+                }
+                if (maxColor[cur] == maxColor[nei]) {
+                    maxColorCount[nei] = Math.max(maxColorCount[nei], maxColorCount[cur]);
+                } else {
+                    maxColorCount[nei] = Math.max(maxColorCount[nei], maxColorCount[cur] + 1);
+                }
+            }
+            colorCount[colors.charAt(cur) - 'a']--;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] != 0) {
+                return -1;
+            }
+            res = Math.max(res, maxColorCount[i]);
+        }
+        return res;
+
+=======
+
+        int n = colors.length();
+        int[] inDegree = new int[n];
+        List<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1];
+            adj[u].add(v);
+            inDegree[v]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int[] dp = new int[n];
+        int[] freq = new int[26];
+        int max = 0;
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            freq[colors.charAt(u) - 'a']++;
+            for (int v : adj[u]) {
+                inDegree[v]--;
+                if (inDegree[v] == 0) {
+                    queue.offer(v);
+                }
+                for (int i = 0; i < 26; i++) {
+                    dp[v] = Math.max(dp[v], dp[u] + freq[i]);
+                }
+                max = Math.max(max, dp[v]);
+            }
+            freq[colors.charAt(u) - 'a']--;
+        }
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] > 0) {
+                return -1;
+            }
+        }
+        return max;
+
+=======
+
+        int n = colors.length();
+        int m = edges.length();
+        int[] indegree = new int[n];
+        List<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            int from = edge[0];
+            int to = edge[1];
+            adj[from].add(to);
+            indegree[to]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int[] colorCount = new int[26];
+        int[][] dp = new int[n][26];
+        int[] visited = new int[n];
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            visited[u] = 1;
+            colorCount[colors.charAt(u) - 'a']++;
+            for (int i = 0; i < 26; i++) {
+                dp[u][i] = colorCount[i];
+            }
+            for (int v : adj[u]) {
+                for (int i = 0; i < 26; i++) {
+                    dp[v][i] = Math.max(dp[v][i], dp[u][i]);
+                }
+                indegree[v]--;
+                if (indegree[v] == 0) {
+                    queue.offer(v);
+                }
+            }
+            colorCount[colors.charAt(u) - 'a']--;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                return -1;
+            }
+            for (int j = 0; j < 26; j++) {
+                ans = Math.max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = colors.length();
+        int[] inDegree = new int[n];
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int[] edge: edges) {
+            int from = edge[0];
+            int to = edge[1];
+            inDegree[to]++;
+            List<Integer> list = graph.getOrDefault(from, new ArrayList<>());
+            list.add(to);
+            graph.put(from, list);
+        }
+        int[] colorCount = new int[26];
+        int[] colorCountCopy = new int[26];
+        int maxCount = 0;
+        int[] colorCountMax = new int[26];
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < 26; i++) {
+                colorCountCopy[i] = colorCount[i];
+            }
+            for (int i = 0; i < size; i++) {
+                int node = queue.poll();
+                int color = colors.charAt(node) - 'a';
+                colorCount[color]++;
+                if (colorCount[color] > maxCount) {
+                    maxCount = colorCount[color];
+                    for (int j = 0; j < 26; j++) {
+                        colorCountMax[j] = colorCount[j];
+                    }
+                }
+                if (graph.containsKey(node)) {
+                    for (int next: graph.get(node)) {
+                        inDegree[next]--;
+                        if (inDegree[next] == 0) {
+                            queue.offer(next);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < 26; i++) {
+                colorCount[i] = colorCountCopy[i];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] > 0) {
+                return -1;
+            }
+        }
+        return maxCount;

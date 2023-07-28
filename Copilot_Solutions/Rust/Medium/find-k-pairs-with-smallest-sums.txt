@@ -1,0 +1,245 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut pairs = Vec::new();
+        let mut i = 0;
+        while i < nums1.len() {
+            let mut j = 0;
+            while j < nums2.len() {
+                pairs.push(vec![nums1[i], nums2[j]]);
+                j += 1;
+            }
+            i += 1;
+        }
+        pairs.sort_by(|a, b| (a[0] + a[1]).cmp(&(b[0] + b[1])));
+        pairs.truncate(k as usize);
+        pairs
+
+=======
+Suggestion 2
+
+        let mut ret = vec![];
+        let mut i = 0;
+        let mut j = 0;
+        while i < nums1.len() && j < nums2.len() && ret.len() < k as usize {
+            if nums1[i] + nums2[j] < nums1[i] + nums2[j + 1] {
+                ret.push(vec![nums1[i], nums2[j]]);
+                i += 1;
+            } else {
+                ret.push(vec![nums1[i], nums2[j + 1]]);
+                j += 1;
+            }
+        }
+        ret
+    }
+}
+
+=======
+Suggestion 3
+
+        let mut res: Vec<Vec<i32>> = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        while i < nums1.len() && j < nums2.len() && res.len() < k as usize {
+            res.push(vec![nums1[i], nums2[j]]);
+            if i == nums1.len() - 1 {
+                j += 1;
+            } else if j == nums2.len() - 1 {
+                i += 1;
+            } else if nums1[i + 1] + nums2[j] < nums1[i] + nums2[j + 1] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 4
+
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut res = vec![];
+        let (n1, n2) = (nums1.len(), nums2.len());
+        if n1 == 0 || n2 == 0 {
+            return res;
+        }
+        for i in 0..n1 {
+            heap.push(std::cmp::Reverse((nums1[i] + nums2[0], i, 0)));
+        }
+        while res.len() < k as usize && !heap.is_empty() {
+            let (s, i, j) = heap.pop().unwrap().0;
+            res.push(vec![nums1[i], nums2[j]]);
+            if j + 1 < n2 {
+                heap.push(std::cmp::Reverse((nums1[i] + nums2[j + 1], i, j + 1)));
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 5
+
+        let mut res = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        while (i < nums1.len() && j < nums2.len()) && res.len() < k as usize {
+            res.push(vec![nums1[i], nums2[j]]);
+            if i == nums1.len() - 1 {
+                j += 1;
+            } else if j == nums2.len() - 1 {
+                i += 1;
+            } else if nums1[i + 1] + nums2[j] < nums1[i] + nums2[j + 1] {
+                i += 1;
+            } else {
+                j += 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 6
+
+        let mut ans = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        while ans.len() < k as usize {
+            if i >= nums1.len() {
+                ans.push(vec![nums1[i - 1], nums2[j]]);
+                j += 1;
+                continue;
+            }
+            if j >= nums2.len() {
+                ans.push(vec![nums1[i], nums2[j - 1]]);
+                i += 1;
+                continue;
+            }
+            if nums1[i] <= nums2[j] {
+                ans.push(vec![nums1[i], nums2[j]]);
+                i += 1;
+            } else {
+                ans.push(vec![nums1[i], nums2[j]]);
+                j += 1;
+            }
+        }
+        ans
+    }
+}
+
+=======
+Suggestion 7
+
+        let mut res: Vec<Vec<i32>> = Vec::new();
+        let (mut i, mut j) = (0, 0);
+        let (mut p1, mut p2) = (0, 0);
+        let (mut k, mut count) = (k, 0);
+        while k > 0 {
+            let (mut v1, mut v2) = (0, 0);
+            if i < nums1.len() {
+                v1 = nums1[i];
+            }
+            if j < nums2.len() {
+                v2 = nums2[j];
+            }
+            if v1 + v2 < nums1[p1] + nums2[p2] {
+                p1 = i;
+                p2 = j;
+            }
+            if j + 1 < nums2.len() {
+                j += 1;
+            } else {
+                i += 1;
+                j = 0;
+            }
+            count += 1;
+            if count == k {
+                res.push(vec![nums1[p1], nums2[p2]]);
+                count = 0;
+                k -= 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 8
+
+        let mut res = Vec::new();
+        let mut heap = std::collections::BinaryHeap::new();
+        let mut index = vec![0; nums1.len()];
+        for i in 0..nums1.len() {
+            heap.push((-(nums1[i] + nums2[0]), i));
+        }
+        for _ in 0..k.min(nums1.len() as i32 * nums2.len() as i32) {
+            let (sum, i) = heap.pop().unwrap();
+            let j = index[i];
+            res.push(vec![nums1[i], nums2[j]]);
+            if j + 1 < nums2.len() {
+                heap.push((-(nums1[i] + nums2[j + 1]), i));
+                index[i] += 1;
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut ans = Vec::new();
+        let mut v = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        for i1 in nums1.iter() {
+            for i2 in nums2.iter() {
+                v.push((*i1, *i2));
+            }
+        }
+        v.sort_by(|a, b| (a.0 + a.1).cmp(&(b.0 + b.1)));
+        let mut k = k as usize;
+        if k > v.len() {
+            k = v.len();
+        }
+        for i in 0..k {
+            ans.push(vec![v[i].0, v[i].1]);
+        }
+        ans
+    }
+}
+
+=======
+Suggestion 10
+
+        let mut res = Vec::new();
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = k;
+        let mut sum = Vec::new();
+        while k > 0 && i < nums1.len() && j < nums2.len() {
+            let s = nums1[i] + nums2[j];
+            let mut pos = sum.len();
+            while pos > 0 && sum[pos - 1] > s {
+                pos -= 1;
+            }
+            sum.insert(pos, s);
+            res.insert(pos, vec![nums1[i], nums2[j]]);
+            if i + 1 < nums1.len() && nums1[i + 1] + nums2[j] <= s {
+                i += 1;
+            } else if j + 1 < nums2.len() && nums1[i] + nums2[j + 1] <= s {
+                j += 1;
+            } else {
+                i += 1;
+                j += 1;
+            }
+            k -= 1;
+        }
+        res
+    }
+}

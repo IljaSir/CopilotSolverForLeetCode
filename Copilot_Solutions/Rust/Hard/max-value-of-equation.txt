@@ -1,0 +1,62 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut max = std::i32::MIN;
+        for p in points {
+            while !q.is_empty() && p[0] - q.front().unwrap()[1] > k {
+                q.pop_front();
+            }
+            if !q.is_empty() {
+                max = max.max(q.front().unwrap()[0] + p[0] + p[1]);
+            }
+            while !q.is_empty() && q.back().unwrap()[0] <= p[1] - p[0] {
+                q.pop_back();
+            }
+            q.push_back([p[1] - p[0], p[0]]);
+        }
+        max
+
+=======
+
+        let mut max = i32::MIN;
+        let mut queue = std::collections::VecDeque::new();
+        for point in points {
+            while !queue.is_empty() && point[0] - queue[0][1] > k {
+                queue.pop_front();
+            }
+            if !queue.is_empty() {
+                max = max.max(point[0] + point[1] + queue[0][0]);
+            }
+            while !queue.is_empty() && point[1] - point[0] > queue[queue.len() - 1][0] {
+                queue.pop_back();
+            }
+            queue.push_back((point[1] - point[0], point[0]));
+        }
+        max
+    }
+}
+
+=======
+
+        let mut max = std::i32::MIN;
+        let mut q = std::collections::BinaryHeap::new();
+        for p in points {
+            while let Some(&[x, y]) = q.peek() {
+                if p[0] - x <= k {
+                    max = max.max(p[0] + p[1] + y);
+                    break;
+                } else {
+                    q.pop();
+                }
+            }
+            q.push([p[0], p[1] - p[0]]);
+        }
+        max

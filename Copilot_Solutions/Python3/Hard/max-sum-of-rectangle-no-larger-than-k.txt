@@ -1,0 +1,170 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m, n = len(matrix), len(matrix[0])
+        for i in range(m):
+            for j in range(1, n):
+                matrix[i][j] += matrix[i][j - 1]
+        res = float('-inf')
+        for i in range(n):
+            for j in range(i, n):
+                s = set()
+                s.add(0)
+                cur = 0
+                for row in range(m):
+                    cur += matrix[row][j] - (matrix[row][i - 1] if i > 0 else 0)
+                    it = bisect.bisect_left(s, cur - k)
+                    if it < len(s):
+                        res = max(res, cur - s[it])
+                    bisect.insort(s, cur)
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m, n = len(matrix), len(matrix[0])
+        res = float('-inf')
+        for i in range(m):
+            total = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    total[c] += matrix[j][c]
+                res = max(res, self.maxSumSubarray(total, k))
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        pass
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m, n, res = len(matrix), len(matrix[0]), float('-inf')
+        for i in range(m):
+            sums = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    sums[c] += matrix[j][c]
+                set_ = {0}
+                cur_sum = 0
+                for s in sums:
+                    cur_sum += s
+                    it = bisect.bisect_left(set_, cur_sum - k)
+                    if it != len(set_):
+                        res = max(res, cur_sum - set_[it])
+                    bisect.insort(set_, cur_sum)
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        if not matrix or not matrix[0]:
+            return 0
+        m, n = len(matrix), len(matrix[0])
+        if m > n:
+            return self.maxSumSubmatrix([*zip(*matrix)], k)
+        res = float('-inf')
+        for i in range(m):
+            total = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    total[c] += matrix[j][c]
+                set_, cur = {0}, 0
+                for v in total:
+                    cur += v
+                    it = bisect.bisect_left(set_, cur - k)
+                    if it != len(set_):
+                        res = max(res, cur - set_[it])
+                    bisect.insort(set_, cur)
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m, n = len(matrix), len(matrix[0])
+        res = float('-inf')
+        for i in range(n):
+            total = [0] * m
+            for j in range(i, n):
+                for r in range(m):
+                    total[r] += matrix[r][j]
+                maxTotal, acc = float('-inf'), 0
+                for t in total:
+                    acc += t
+                    if acc <= k:
+                        maxTotal = max(maxTotal, acc)
+                    else:
+                        cur = 0
+                        for p in total:
+                            cur += p
+                            if cur > maxTotal and cur <= k:
+                                maxTotal = cur
+                res = max(res, maxTotal)
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m, n = len(matrix), len(matrix[0])
+        res = float('-inf')
+        for i in range(m):
+            row = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    row[c] += matrix[j][c]
+                res = max(res, self.maxSumSubarray(row, k))
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m = len(matrix)
+        n = len(matrix[0])
+        result = float('-inf')
+        for i in range(m):
+            sums = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    sums[c] += matrix[j][c]
+                result = max(result, self.maxSumSubarray(sums, k))
+        return result
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        m,n = len(matrix), len(matrix[0])
+        res = float('-inf')
+        for i in range(m):
+            rowsum = [0]*n
+            for j in range(i,m):
+                for c in range(n):
+                    rowsum[c] += matrix[j][c]
+                res = max(res, self.maxSubArray(rowsum, k))
+        return res
+
+=======
+
+def maxSumSubmatrix(self, matrix: List[List[int]], k: int) -> int:
+        def maxSubArray(nums, k):
+            res = float("-inf")
+            preSum = 0
+            preSumSet = {0}
+            for num in nums:
+                preSum += num
+                it = bisect.bisect_left(preSumSet, preSum - k)
+                if it != len(preSumSet):
+                    res = max(res, preSum - preSumSet[it])
+                bisect.insort(preSumSet, preSum)
+            return res
+        m, n = len(matrix), len(matrix[0])
+        res = float("-inf")
+        for i in range(m):
+            total = [0] * n
+            for j in range(i, m):
+                for c in range(n):
+                    total[c] += matrix[j][c]
+                res = max(res, maxSubArray(total, k))
+        return res

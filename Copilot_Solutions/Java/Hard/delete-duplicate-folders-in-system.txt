@@ -1,0 +1,379 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        TrieNode root = new TrieNode();
+        for (List<String> path : paths) {
+            TrieNode node = root;
+            for (String folder : path) {
+                if (!node.children.containsKey(folder)) {
+                    node.children.put(folder, new TrieNode());
+                }
+                node = node.children.get(folder);
+            }
+        }
+        Map<String, Integer> count = new HashMap<>();
+        Map<String, TrieNode> nodes = new HashMap<>();
+        dfs(root, count, nodes);
+        List<List<String>> res = new ArrayList<>();
+        for (List<String> path : paths) {
+            TrieNode node = root;
+            List<String> tmp = new ArrayList<>();
+            for (String folder : path) {
+                tmp.add(folder);
+                node = node.children.get(folder);
+                if (nodes.get(node.path).count > 1) {
+                    break;
+                }
+            }
+            if (node.count == 1) {
+                res.add(tmp);
+            }
+        }
+        return res;
+    }
+
+    private void dfs(TrieNode node, Map<String, Integer> count, Map<String, TrieNode> nodes) {
+        if (node.children.isEmpty()) {
+            node.count = 1;
+            return;
+        }
+        for (TrieNode child : node.children.values()) {
+            child.path = node.path + "/" + child.val;
+            dfs(child, count, nodes);
+            node.count += child.count;
+        }
+        count.put(node.path, node.count);
+        nodes.put(node.path, node);
+    }
+
+    class TrieNode {
+        String val;
+        String path;
+        int count;
+        Map<String, TrieNode> children;
+
+        public TrieNode() {
+            this.val = "";
+            this.path = "";
+            this.count = 0;
+            this.children = new HashMap<>();
+        }
+
+        public TrieNode(String val) {
+            this.val = val;
+            this.path = val;
+            this.count = 0;
+            this.children = new HashMap<>();
+        }
+
+=======
+
+        Map<String, Integer> map = new HashMap<>();
+        for (List<String> path : paths) {
+            String cur = "";
+            for (String s : path) {
+                cur += "/" + s;
+                map.put(cur, map.getOrDefault(cur, 0) + 1);
+            }
+        }
+        List<List<String>> res = new ArrayList<>();
+        for (List<String> path : paths) {
+            String cur = "";
+            boolean flag = true;
+            for (String s : path) {
+                cur += "/" + s;
+                if (map.get(cur) > 1) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                res.add(path);
+            }
+        }
+        return res;
+
+=======
+
+        Map<String, List<String>> map = new HashMap<>();
+        for (List<String> path : paths) {
+            map.computeIfAbsent(path.get(0), k -> new ArrayList<>()).add(String.join("/", path.subList(1, path.size())));
+        }
+        Set<String> set = new HashSet<>();
+        dfs(map, set, "");
+        List<List<String>> ans = new ArrayList<>();
+        for (List<String> path : paths) {
+            if (!set.contains(String.join("/", path))) {
+                ans.add(path);
+            }
+        }
+        return ans;
+    }
+    private String dfs(Map<String, List<String>> map, Set<String> set, String path) {
+        if (!map.containsKey(path)) {
+            return "";
+        }
+        List<String> sub = map.get(path);
+        List<String> list = new ArrayList<>();
+        for (String s : sub) {
+            list.add(dfs(map, set, path + "/" + s));
+        }
+        Collections.sort(list);
+        String str = String.join("/", list);
+        if (str.length() > 0 && set.contains(str)) {
+            set.add(path + "/" + str);
+        }
+        return str;
+
+=======
+
+        Map<String, List<String>> map = new HashMap<>();
+        for (List<String> path : paths) {
+            String key = "";
+            for (int i = 0; i < path.size(); i++) {
+                key += "/" + path.get(i);
+                map.computeIfAbsent(key, k -> new ArrayList<>()).add(path.get(path.size() - 1));
+            }
+        }
+        Set<String> set = new HashSet<>();
+        for (String key : map.keySet()) {
+            if (map.get(key).size() > 1) {
+                set.add(key);
+            }
+        }
+        List<List<String>> res = new ArrayList<>();
+        for (List<String> path : paths) {
+            String key = "";
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < path.size(); i++) {
+                key += "/" + path.get(i);
+                if (!set.contains(key)) {
+                    list.add(path.get(i));
+                }
+            }
+            if (list.size() > 0) {
+                res.add(list);
+            }
+        }
+        return res;
+
+=======
+
+        Map<String, Integer> map = new HashMap<>();
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (List<String> path : paths) {
+            int cur = 0;
+            for (String s : path) {
+                if (!map.containsKey(s)) {
+                    map.put(s, map.size());
+                    graph.put(map.get(s), new ArrayList<>());
+                }
+                int next = map.get(s);
+                graph.get(cur).add(next);
+                cur = next;
+            }
+        }
+        int[] res = new int[graph.size()];
+        Arrays.fill(res, -1);
+        for (int i = 0; i < res.length; i++) {
+            if (res[i] == -1) {
+                dfs(i, graph, res);
+            }
+        }
+        List<List<String>> ans = new ArrayList<>();
+        for (List<String> path : paths) {
+            int cur = 0;
+            List<String> temp = new ArrayList<>();
+            for (String s : path) {
+                int next = map.get(s);
+                if (res[next] == 0) {
+                    temp.add(s);
+                    cur = next;
+                }
+            }
+            if (temp.size() > 0) {
+                ans.add(temp);
+            }
+        }
+        return ans;
+    }
+
+    private int dfs(int cur, Map<Integer, List<Integer>> graph, int[] res) {
+        if (res[cur] != -1) {
+            return res[cur];
+        }
+        res[cur] = 1;
+        int[] count = new int[2];
+        for (int next : graph.get(cur)) {
+            count[dfs(next, graph, res)]++;
+        }
+        if (count[1] > 0) {
+            res[cur] = 0;
+        }
+        return res[cur];
+
+=======
+
+        List<List<String>> result = new ArrayList<>();
+        Map<String, List<List<String>>> map = new HashMap<>();
+        for (List<String> path: paths) {
+            String key = String.join("/", path);
+            map.putIfAbsent(key, new ArrayList<>());
+            map.get(key).add(path);
+        }
+        for (List<List<String>> list: map.values()) {
+            if (list.size() == 1) {
+                result.add(list.get(0));
+            }
+        }
+        return result;
+
+=======
+
+        Map<String, List<List<String>>> map = new HashMap<>();
+        for (List<String> path : paths) {
+            List<String> subPath = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            for (String folder : path) {
+                sb.append(folder).append("/");
+                subPath.add(folder);
+                map.computeIfAbsent(sb.toString(), k -> new ArrayList<>()).add(subPath);
+            }
+        }
+        Set<String> set = new HashSet<>();
+        for (List<List<String>> list : map.values()) {
+            if (list.size() == 1) {
+                continue;
+            }
+            int[] count = new int[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                count[i] = list.get(i).size();
+            }
+            Arrays.sort(count);
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).size() == count[0]) {
+                    set.add(String.join("/", list.get(i)));
+                }
+            }
+        }
+        List<List<String>> ans = new ArrayList<>();
+        for (List<String> path : paths) {
+            if (!set.contains(String.join("/", path))) {
+                ans.add(path);
+            }
+        }
+        return ans;
+
+=======
+
+        HashMap<String, Integer> pathMap = new HashMap<>();
+        HashMap<Integer, Integer> parentMap = new HashMap<>();
+        HashMap<Integer, Integer> countMap = new HashMap<>();
+        for (List<String> path : paths) {
+            int curr = 0;
+            for (String dir : path) {
+                String pathStr = dir + " " + curr;
+                if (!pathMap.containsKey(pathStr)) {
+                    pathMap.put(pathStr, pathMap.size());
+                }
+                int next = pathMap.get(pathStr);
+                parentMap.put(next, curr);
+                countMap.put(curr, countMap.getOrDefault(curr, 0) + 1);
+                curr = next;
+            }
+        }
+        HashMap<Integer, Integer> rootMap = new HashMap<>();
+        for (int node : parentMap.keySet()) {
+            int root = findRoot(node, parentMap);
+            rootMap.put(root, node);
+        }
+        List<List<String>> ans = new ArrayList<>();
+        for (List<String> path : paths) {
+            List<String> newPath = new ArrayList<>();
+            int curr = 0;
+            for (String dir : path) {
+                String pathStr = dir + " " + curr;
+                int next = pathMap.get(pathStr);
+                if (countMap.get(next) > 1) {
+                    newPath = new ArrayList<>();
+                } else {
+                    newPath.add(dir);
+                }
+                curr = next;
+            }
+            if (newPath.size() > 0) {
+                ans.add(newPath);
+            }
+        }
+        return ans;
+    }
+    private int findRoot(int node, HashMap<Integer, Integer> parentMap) {
+        while (parentMap.containsKey(node)) {
+            node = parentMap.get(node);
+        }
+        return node;
+
+=======
+
+        List<List<String>> ans = new ArrayList<>();
+        Map<String, Integer> map = new HashMap<>();
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        int[] cnt = new int[1];
+        for (List<String> path : paths) {
+            int cur = 0;
+            for (String s : path) {
+                if (!graph.containsKey(cur)) {
+                    graph.put(cur, new ArrayList<>());
+                }
+                if (!map.containsKey(s)) {
+                    map.put(s, cnt[0]);
+                    cnt[0]++;
+                }
+                graph.get(cur).add(map.get(s));
+                cur = map.get(s);
+            }
+        }
+        Set<Integer> visited = new HashSet<>();
+        Set<Integer> deleted = new HashSet<>();
+        dfs(0, graph, visited, deleted);
+        Map<Integer, List<String>> pathMap = new HashMap<>();
+        for (String s : map.keySet()) {
+            int cur = map.get(s);
+            if (!deleted.contains(cur)) {
+                List<String> path = new ArrayList<>();
+                while (cur != 0) {
+                    for (int i : map.keySet()) {
+                        if (map.get(i) == cur) {
+                            path.add(0, i);
+                            break;
+                        }
+                    }
+                    for (int i : graph.keySet()) {
+                        if (graph.get(i).contains(cur)) {
+                            cur = i;
+                            break;
+                        }
+                    }
+                }
+                pathMap.put(cur, path);
+            }
+        }
+        for (int i : pathMap.keySet()) {
+            ans.add(pathMap.get(i));
+        }
+        return ans;
+    }
+
+    private void dfs(int cur, Map<Integer, List<Integer>> graph, Set<Integer> visited, Set<Integer> deleted) {
+        if (visited.contains(cur)) {
+            deleted.add(cur);
+            return;
+        }
+        visited.add(cur);
+        if (graph.containsKey(cur)) {
+            for (int i : graph.get(cur)) {
+                dfs(i, graph, visited, deleted);
+            }
+        }
+        visited.remove(cur);

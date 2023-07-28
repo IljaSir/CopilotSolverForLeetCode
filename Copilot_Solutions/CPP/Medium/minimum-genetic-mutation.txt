@@ -1,0 +1,335 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (startGene == endGene) return 0;
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) return -1;
+        unordered_set<string> visited;
+        int level = 0;
+        queue<string> q;
+        q.push(startGene);
+        while (!q.empty()) {
+            int size = q.size();
+            while (size--) {
+                string cur = q.front();
+                q.pop();
+                if (cur == endGene) return level;
+                for (int i = 0; i < cur.size(); i++) {
+                    for (char c : "ACGT") {
+                        string next = cur;
+                        next[i] = c;
+                        if (bankSet.find(next) != bankSet.end() && visited.find(next) == visited.end()) {
+                            q.push(next);
+                            visited.insert(next);
+                        }
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) return -1;
+        unordered_set<string> visited;
+        queue<string> q;
+        q.push(startGene);
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                string cur = q.front();
+                q.pop();
+                if (cur == endGene) return step;
+                for (int j = 0; j < cur.size(); j++) {
+                    char old = cur[j];
+                    for (char c : {'A', 'C', 'G', 'T'}) {
+                        cur[j] = c;
+                        if (bankSet.find(cur) != bankSet.end() && visited.find(cur) == visited.end()) {
+                            q.push(cur);
+                            visited.insert(cur);
+                        }
+                    }
+                    cur[j] = old;
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) return -1;
+        unordered_set<string> startSet{startGene};
+        unordered_set<string> endSet{endGene};
+        int step = 0;
+        while (!startSet.empty() && !endSet.empty()) {
+            step++;
+            if (startSet.size() > endSet.size()) {
+                swap(startSet, endSet);
+            }
+            unordered_set<string> tempSet;
+            for (auto gene: startSet) {
+                for (int i = 0; i < gene.size(); i++) {
+                    char c = gene[i];
+                    for (auto ch: vector<char>{'A', 'C', 'G', 'T'}) {
+                        gene[i] = ch;
+                        if (endSet.find(gene) != endSet.end()) {
+                            return step;
+                        }
+                        if (bankSet.find(gene) != bankSet.end()) {
+                            tempSet.insert(gene);
+                            bankSet.erase(gene);
+                        }
+                    }
+                    gene[i] = c;
+                }
+            }
+            swap(startSet, tempSet);
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet;
+        for (const auto& gene : bank) {
+            bankSet.insert(gene);
+        }
+        if (bankSet.find(endGene) == bankSet.end()) {
+            return -1;
+        }
+        unordered_set<string> visited;
+        queue<string> q;
+        q.push(startGene);
+        visited.insert(startGene);
+        int dist = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                string gene = q.front();
+                q.pop();
+                if (gene == endGene) {
+                    return dist;
+                }
+                for (int j = 0; j < gene.size(); ++j) {
+                    char oldChar = gene[j];
+                    for (char c : {'A', 'C', 'G', 'T'}) {
+                        gene[j] = c;
+                        if (bankSet.find(gene) != bankSet.end() && visited.find(gene) == visited.end()) {
+                            q.push(gene);
+                            visited.insert(gene);
+                        }
+                    }
+                    gene[j] = oldChar;
+                }
+            }
+            ++dist;
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) {
+            return -1;
+        }
+        unordered_set<string> startSet;
+        unordered_set<string> endSet;
+        startSet.insert(startGene);
+        endSet.insert(endGene);
+        int step = 0;
+        while (!startSet.empty() && !endSet.empty()) {
+            if (startSet.size() > endSet.size()) {
+                swap(startSet, endSet);
+            }
+            unordered_set<string> tmpSet;
+            for (auto& s : startSet) {
+                for (int i = 0; i < s.size(); ++i) {
+                    string tmp = s;
+                    for (char c : {'A', 'C', 'G', 'T'}) {
+                        tmp[i] = c;
+                        if (endSet.find(tmp) != endSet.end()) {
+                            return step + 1;
+                        }
+                        if (bankSet.find(tmp) != bankSet.end()) {
+                            bankSet.erase(tmp);
+                            tmpSet.insert(tmp);
+                        }
+                    }
+                }
+            }
+            swap(startSet, tmpSet);
+            ++step;
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.find(endGene) == bankSet.end()) return -1;
+        unordered_set<string> visited;
+        visited.insert(startGene);
+        queue<string> q;
+        q.push(startGene);
+        int step = 0;
+        while (!q.empty()) {
+            int sz = q.size();
+            while (sz--) {
+                string cur = q.front();
+                q.pop();
+                if (cur == endGene) return step;
+                for (int i = 0; i < cur.size(); i++) {
+                    char old = cur[i];
+                    for (char c : {'A', 'C', 'G', 'T'}) {
+                        cur[i] = c;
+                        if (bankSet.find(cur) != bankSet.end() && visited.find(cur) == visited.end()) {
+                            q.push(cur);
+                            visited.insert(cur);
+                        }
+                    }
+                    cur[i] = old;
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        set<string> s(bank.begin(), bank.end());
+        if (s.find(endGene) == s.end()) return -1;
+        int res = 0;
+        queue<string> q;
+        q.push(startGene);
+        while (!q.empty()) {
+            int n = q.size();
+            for (int i = 0; i < n; ++i) {
+                string cur = q.front();
+                q.pop();
+                if (cur == endGene) return res;
+                for (int j = 0; j < cur.size(); ++j) {
+                    char c = cur[j];
+                    for (char ch : {'A', 'C', 'G', 'T'}) {
+                        if (ch == c) continue;
+                        cur[j] = ch;
+                        if (s.find(cur) != s.end()) {
+                            q.push(cur);
+                            s.erase(cur);
+                        }
+                    }
+                    cur[j] = c;
+                }
+            }
+            ++res;
+        }
+        return -1;
+
+=======
+
+        queue<string> q;
+        unordered_set<string> visited;
+        q.push(startGene);
+        visited.insert(startGene);
+        int level = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            while (size--) {
+                string gene = q.front();
+                q.pop();
+                if (gene == endGene) {
+                    return level;
+                }
+                for (string nextGene : bank) {
+                    if (visited.count(nextGene)) {
+                        continue;
+                    }
+                    int diff = 0;
+                    for (int i = 0; i < gene.length(); i++) {
+                        if (gene[i] != nextGene[i]) {
+                            diff++;
+                        }
+                    }
+                    if (diff == 1) {
+                        q.push(nextGene);
+                        visited.insert(nextGene);
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+
+=======
+
+        unordered_set<string> bankSet(bank.begin(), bank.end());
+        if (bankSet.count(endGene) == 0) {
+            return -1;
+        }
+        unordered_set<string> headSet{startGene};
+        unordered_set<string> tailSet{endGene};
+        int step = 0;
+        while (!headSet.empty() && !tailSet.empty()) {
+            if (headSet.size() > tailSet.size()) {
+                swap(headSet, tailSet);
+            }
+            unordered_set<string> tempSet;
+            for (const string& word : headSet) {
+                for (int i = 0; i < word.length(); ++i) {
+                    char ch = word[i];
+                    for (int j = 0; j < 4; ++j) {
+                        word[i] = "ACGT"[j];
+                        if (tailSet.count(word)) {
+                            return step + 1;
+                        }
+                        if (!bankSet.count(word)) {
+                            continue;
+                        }
+                        bankSet.erase(word);
+                        tempSet.insert(word);
+                    }
+                    word[i] = ch;
+                }
+            }
+            swap(headSet, tempSet);
+            ++step;
+        }
+        return -1;
+
+=======
+
+        int n = startGene.size();
+        unordered_map<string, vector<string>> graph;
+        for (auto& s: bank) {
+            for (int i = 0; i < n; ++i) {
+                string key = s.substr(0, i) + "*" + s.substr(i+1);
+                graph[key].push_back(s);
+            }
+        }
+        queue<string> q;
+        q.push(startGene);
+        unordered_set<string> visited;
+        visited.insert(startGene);
+        int level = 0;
+        while (!q.empty()) {
+            ++level;
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                string cur = q.front();
+                q.pop();
+                for (int j = 0; j < n; ++j) {
+                    string key = cur.substr(0, j) + "*" + cur.substr(j+1);
+                    for (auto& s: graph[key]) {
+                        if (s == endGene) return level;
+                        if (visited.find(s) == visited.end()) {
+                            q.push(s);
+                            visited.insert(s);
+                        }
+                    }
+                }
+            }
+        }
+        return -1;

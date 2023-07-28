@@ -1,0 +1,268 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (gcd(nums[i], nums[j]) > 1) {
+                    int p1 = find(parent, i);
+                    int p2 = find(parent, j);
+                    if (p1 != p2) {
+                        parent[p2] = p1;
+                    }
+                }
+            }
+        }
+        unordered_map<int, int> group;
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int p = find(parent, i);
+            group[p]++;
+            ans = max(ans, group[p]);
+        }
+        return ans;
+    }
+    
+    int find(vector<int> &parent, int x) {
+        if (parent[x] == x) {
+            return x;
+        }
+        return parent[x] = find(parent, parent[x]);
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (gcd(nums[i], nums[j]) > 1) {
+                    unionSet(i, j, parent);
+                }
+            }
+        }
+        unordered_map<int, int> m;
+        int res = 1;
+        for (int i = 0; i < n; i++) {
+            res = max(res, ++m[findSet(i, parent)]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> p(n);
+        for (int i = 0; i < n; ++i) p[i] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (__gcd(nums[i], nums[j]) > 1) {
+                    int pi = find(p, i);
+                    int pj = find(p, j);
+                    if (pi != pj) p[pi] = pj;
+                }
+            }
+        }
+        unordered_map<int, int> m;
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            int pi = find(p, i);
+            ++m[pi];
+            res = max(res, m[pi]);
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        vector<int> p(n);
+        for (int i = 0; i < n; i++) p[i] = i;
+        for (int i = 0; i < n; i++) {
+            int a = nums[i];
+            for (int j = i + 1; j < n; j++) {
+                int b = nums[j];
+                if (__gcd(a, b) > 1) p[find(p, j)] = find(p, i);
+            }
+        }
+        unordered_map<int, int> count;
+        int res = 1;
+        for (int i = 0; i < n; i++) {
+            res = max(res, ++count[find(p, i)]);
+        }
+        return res;
+    }
+    
+    int find(vector<int>& p, int i) {
+        if (p[i] != i) p[i] = find(p, p[i]);
+        return p[i];
+
+=======
+
+        int n = nums.size();
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        for (int i = 0; i < n; ++i) {
+            int x = nums[i];
+            for (int j = 2; j * j <= x; ++j) {
+                if (x % j == 0) {
+                    int a = find(p, i), b = find(p, lower_bound(nums.begin(), nums.end(), j) - nums.begin());
+                    if (a != b) p[a] = b;
+                    while (x % j == 0) x /= j;
+                }
+            }
+            if (x > 1) {
+                int a = find(p, i), b = find(p, lower_bound(nums.begin(), nums.end(), x) - nums.begin());
+                if (a != b) p[a] = b;
+            }
+        }
+        unordered_map<int, int> cnt;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = max(ans, ++cnt[find(p, i)]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
+        vector<int> size(n, 1);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (__gcd(nums[i], nums[j]) > 1) {
+                    unionSet(i, j, parent, size);
+                }
+            }
+        }
+        int ans = 1;
+        for (int i = 0; i < n; i++) {
+            ans = max(ans, size[i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        vector<int> parent(n);
+        for(int i=0; i<n; i++) parent[i] = i;
+        unordered_map<int, int> mp;
+        for(int i=0; i<n; i++){
+            int num = nums[i];
+            for(int j=2; j*j<=num; j++){
+                if(num%j == 0){
+                    if(mp.count(j) == 0) mp[j] = i;
+                    else{
+                        int p = findParent(mp[j], parent);
+                        parent[i] = p;
+                    }
+                    if(mp.count(num/j) == 0) mp[num/j] = i;
+                    else{
+                        int p = findParent(mp[num/j], parent);
+                        parent[i] = p;
+                    }
+                }
+            }
+            if(mp.count(num) == 0) mp[num] = i;
+            else{
+                int p = findParent(mp[num], parent);
+                parent[i] = p;
+            }
+        }
+        unordered_map<int, int> cnt;
+        for(int i=0; i<n; i++){
+            int p = findParent(i, parent);
+            cnt[p]++;
+        }
+        int res = 0;
+        for(auto it : cnt) res = max(res, it.second);
+        return res;
+
+=======
+
+        int n = nums.size();
+        int res = 1;
+        vector<int> parent(n, 0);
+        for (int i = 0; i < n; ++i) parent[i] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (gcd(nums[i], nums[j]) > 1) {
+                    unionSet(parent, i, j);
+                }
+            }
+        }
+        unordered_map<int, int> m;
+        for (int i = 0; i < n; ++i) {
+            int p = findSet(parent, i);
+            ++m[p];
+            res = max(res, m[p]);
+        }
+        return res;
+    }
+    
+    int findSet(vector<int>& parent, int i) {
+        if (parent[i] == i) return i;
+        parent[i] = findSet(parent, parent[i]);
+        return parent[i];
+
+=======
+
+        int n = nums.size();
+        int maxNum = *max_element(nums.begin(), nums.end());
+        vector<int> fa(maxNum + 1);
+        for (int i = 0; i <= maxNum; i++) {
+            fa[i] = i;
+        }
+        for (auto num : nums) {
+            for (int i = 2; i * i <= num; i++) {
+                if (num % i == 0) {
+                    int x = num / i, y = i;
+                    int fx = findFa(fa, x), fy = findFa(fa, y);
+                    fa[fx] = fy;
+                }
+            }
+        }
+        unordered_map<int, int> cnt;
+        int ans = 1;
+        for (auto num : nums) {
+            int f = findFa(fa, num);
+            cnt[f]++;
+            ans = max(ans, cnt[f]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int maxVal = *max_element(nums.begin(), nums.end());
+        vector<int> f(maxVal + 1, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 2; j * j <= nums[i]; j++) {
+                if (nums[i] % j == 0) {
+                    f[j] = i;
+                    f[nums[i] / j] = i;
+                }
+            }
+        }
+        vector<int> p(n);
+        iota(p.begin(), p.end(), 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 2; j * j <= nums[i]; j++) {
+                if (nums[i] % j == 0) {
+                    p[find(p, f[j])] = find(p, f[nums[i] / j]);
+                }
+            }
+        }
+        vector<int> count(n);
+        for (int i = 0; i < n; i++) {
+            count[find(p, i)]++;
+        }
+        return *max_element(count.begin(), count.end());

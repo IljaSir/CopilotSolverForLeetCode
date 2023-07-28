@@ -1,0 +1,306 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int N = graph.length;
+        Queue<int[]> queue = new LinkedList();
+        Set<String> seen = new HashSet();
+        for (int x = 0; x < N; ++x) {
+            queue.offer(new int[]{x, 1 << x, 0});
+            seen.add(x + " " + (1 << x));
+        }
+
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int[] node = queue.poll();
+            int u = node[0], mask = node[1], dist = node[2];
+            if (mask == (1 << N) - 1) {
+                ans = dist;
+                break;
+            }
+
+            // Visiting nei in graph[u]
+            for (int nei: graph[u]) {
+                // Mask & (1 << nei) > 0: has visited node nei
+                // mask | (1 << nei): add node nei to visited set
+                String key = nei + " " + (mask | (1 << nei));
+                if (!seen.contains(key)) {
+                    queue.offer(new int[]{nei, mask | (1 << nei), dist + 1});
+                    seen.add(key);
+                }
+            }
+        }
+
+        return ans;
+
+=======
+
+        int N = graph.length;
+        Queue<int[]> queue = new LinkedList();
+        Set<String> seen = new HashSet();
+        for (int x = 0; x < N; ++x) {
+            queue.offer(new int[]{x, 1 << x, 0});
+            seen.add(x + " " + (1 << x));
+        }
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int[] node = queue.poll();
+            int u = node[0], mask = node[1], dist = node[2];
+            if (mask == (1 << N) - 1) {
+                ans = dist;
+                break;
+            }
+            // Visiting children.
+            for (int v: graph[u]) {
+                // Visiting v from u.
+                int maskV = mask | (1 << v);
+                if (!seen.contains(v + " " + maskV)) {
+                    queue.offer(new int[]{v, maskV, dist + 1});
+                    seen.add(v + " " + maskV);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> q = new LinkedList<>();
+        boolean[][] seen = new boolean[n][1 << n];
+        for (int i = 0; i < n; ++i) {
+            q.offer(new int[]{i, 1 << i, 0});
+            seen[i][1 << i] = true;
+        }
+
+        int ans = 0;
+        while (!q.isEmpty()) {
+            int[] info = q.poll();
+            int u = info[0], mask = info[1], dist = info[2];
+            if (mask == (1 << n) - 1) {
+                ans = dist;
+                break;
+            }
+
+            // Try to walk to every neighbor of node u
+            for (int v: graph[u]) {
+                // vMask = mask w/ vth bit set to 1
+                int vMask = mask | (1 << v);
+                if (!seen[v][vMask]) {
+                    q.offer(new int[]{v, vMask, dist + 1});
+                    seen[v][vMask] = true;
+                }
+            }
+        }
+
+        return ans;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> q = new LinkedList<>();
+        boolean[][] seen = new boolean[n][1 << n];
+        for (int i = 0; i < n; ++i) {
+            q.offer(new int[]{i, 1 << i, 0});
+            seen[i][1 << i] = true;
+        }
+        int res = 0;
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int u = cur[0], mask = cur[1], dist = cur[2];
+            if (mask == (1 << n) - 1) {
+                res = dist;
+                break;
+            }
+            // go through neighbors of node u
+            for (int v : graph[u]) {
+                // add node v to mask
+                int maskV = mask | (1 << v);
+                if (!seen[v][maskV]) {
+                    q.offer(new int[]{v, maskV, dist + 1});
+                    seen[v][maskV] = true;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            queue.offer(new int[]{i, 1 << i, 0});
+            visited.add(i + "," + (1 << i));
+        }
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int node = curr[0], mask = curr[1], dist = curr[2];
+            if (mask == (1 << n) - 1) {
+                res = dist;
+                break;
+            }
+            for (int next : graph[node]) {
+                int nextMask = mask | (1 << next);
+                if (!visited.contains(next + "," + nextMask)) {
+                    queue.offer(new int[]{next, nextMask, dist + 1});
+                    visited.add(next + "," + nextMask);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            queue.offer(new int[]{i, 1 << i, 0});
+            visited.add(i + "," + (1 << i));
+        }
+        int res = 0;
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int node = cur[0], mask = cur[1], dist = cur[2];
+            if (mask == (1 << n) - 1) {
+                res = dist;
+                break;
+            }
+            for (int next : graph[node]) {
+                int nextMask = mask | (1 << next);
+                if (!visited.contains(next + "," + nextMask)) {
+                    queue.offer(new int[]{next, nextMask, dist + 1});
+                    visited.add(next + "," + nextMask);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            queue.offer(new int[]{i, 1 << i});
+            visited.add(i + "," + (1 << i));
+        }
+        int step = 0;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                int node = cur[0], mask = cur[1];
+                if (mask == (1 << n) - 1) {
+                    return step;
+                }
+                for (int next : graph[node]) {
+                    int nextMask = mask | (1 << next);
+                    if (!visited.contains(next + "," + nextMask)) {
+                        queue.offer(new int[]{next, nextMask});
+                        visited.add(next + "," + nextMask);
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int n = graph.length;
+        Queue<int[]> q = new LinkedList<>();
+        Set<String> seen = new HashSet<>();
+        for (int i = 0; i < n; ++i) {
+            q.offer(new int[]{i, 1 << i, 0});
+            seen.add(i + "," + (1 << i));
+        }
+        int ans = 0;
+        while (!q.isEmpty()) {
+            int[] info = q.poll();
+            int u = info[0], mask = info[1], dist = info[2];
+            if (mask == (1 << n) - 1) {
+                ans = dist;
+                break;
+            }
+            // Try every neighbor v of node u
+            for (int v: graph[u]) {
+                // Visiting v for the first time?
+                int maskV = mask | (1 << v);
+                if (!seen.contains(v + "," + maskV)) {
+                    q.offer(new int[]{v, maskV, dist+1});
+                    seen.add(v + "," + maskV);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = graph.length;
+        int target = (1 << n) - 1;
+        Queue<int[]> q = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            q.offer(new int[]{i, 1 << i, 0});
+            visited.add(i + "-" + (1 << i));
+        }
+        while (!q.isEmpty()) {
+            int[] cur = q.poll();
+            int u = cur[0], mask = cur[1], dist = cur[2];
+            if (mask == target) {
+                return dist;
+            }
+            for (int v : graph[u]) {
+                int maskV = mask | (1 << v);
+                if (!visited.contains(v + "-" + maskV)) {
+                    q.offer(new int[]{v, maskV, dist + 1});
+                    visited.add(v + "-" + maskV);
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = graph.length;
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+            for (int j : graph[i]) {
+                dist[i][j] = 1;
+            }
+        }
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE) {
+                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        for (int i = 0; i < 1 << n; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < n; i++) {
+            dp[1 << i][i] = 0;
+        }
+        for (int mask = 1; mask < 1 << n; mask++) {
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) > 0) {
+                    for (int j = 0; j < n; j++) {
+                        if ((mask & (1 << j)) > 0 && i != j) {
+                            dp[mask][i] = Math.min(dp[mask][i], dp[mask ^ (1 << i)][j] + dist[j][i]);
+                        }
+                    }
+                }
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            ans = Math.min(ans, dp[(1 << n) - 1][i]);
+        }
+        return ans;

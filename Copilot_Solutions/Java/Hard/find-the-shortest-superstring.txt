@@ -1,0 +1,528 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    int m = Math.min(words[i].length(), words[j].length());
+                    for (int k = m; k >= 0; k--) {
+                        if (words[i].endsWith(words[j].substring(0, k))) {
+                            overlap[i][j] = k;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < n; i++) {
+            dp[1 << i][i] = words[i].length();
+        }
+        for (int mask = 1; mask < (1 << n); mask++) {
+            for (int bit = 0; bit < n; bit++) {
+                if (((mask >> bit) & 1) > 0) {
+                    int pmask = mask ^ (1 << bit);
+                    for (int i = 0; i < n; i++) {
+                        if (((pmask >> i) & 1) > 0) {
+                            int val = dp[pmask][i] + words[bit].length() - overlap[i][bit];
+                            if (val < dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int[] perm = new int[n];
+        int t = (1 << n) - 1;
+        int min = Integer.MAX_VALUE;
+        int last = -1;
+        for (int i = 0; i < n; i++) {
+            if (dp[t][i] < min) {
+                min = dp[t][i];
+                last = i;
+            }
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            perm[i] = last;
+            int temp = last;
+            last = parent[t][last];
+            t
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    overlap[i][j] = calOverlap(words[i], words[j]);
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int i = 0; i < 1 << n; i++) {
+            Arrays.fill(parent[i], -1);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) != 0) {
+                    int prev = i - (1 << j);
+                    if (prev == 0) {
+                        dp[i][j] = words[j].length();
+                    } else {
+                        for (int k = 0; k < n; k++) {
+                            if (dp[prev][k] + overlap[k][j] > dp[i][j]) {
+                                dp[i][j] = dp[prev][k] + overlap[k][j];
+                                parent[i][j] = k;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int idx = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[(1 << n) - 1][i] > dp[(1 << n) - 1][idx]) {
+                idx = i;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        int cur = (1 << n) - 1;
+        while (idx != -1) {
+            int prev = cur - (1 << idx);
+            if (prev == 0) {
+                sb.append(words[idx]);
+            } else {
+                sb.append(words[idx].substring(words[idx].length() - overlap[parent[cur][idx]][idx]));
+            }
+            cur = prev;
+            idx = parent[cur][idx];
+        }
+        return sb.reverse().toString();
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    overlap[i][j] = getOverlap(words[i], words[j]);
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int i = 0; i < (1 << n); i++) {
+            Arrays.fill(parent[i], -1);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) != 0) {
+                    int prev = i ^ (1 << j);
+                    if (prev == 0) {
+                        continue;
+                    }
+                    for (int k = 0; k < n; k++) {
+                        if ((prev & (1 << k)) != 0) {
+                            int val = dp[prev][k] + overlap[k][j];
+                            if (val > dp[i][j]) {
+                                dp[i][j] = val;
+                                parent[i][j] = k;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int[] perm = new int[n];
+        int t = n - 1;
+        int last = -1;
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[(1 << n) - 1][i] > max) {
+                max = dp[(1 << n) - 1][i];
+                last = i;
+            }
+        }
+        while (last != -1) {
+            perm[t--] = last;
+            int i = (1 << n) - 1;
+            int j = last;
+            last = parent[i][j];
+            i ^= (1 << j);
+        }
+        StringBuilder sb = new StringBuilder(words[perm[0]]);
+        for (int i = 1; i < n; i++) {
+            int overlapLen = overlap[perm[i - 1]][perm[i]];
+            sb.append(words[perm[i]].substring(overlapLen));
+        }
+        return sb.toString();
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    overlap[i][j] = overlap(words[i], words[j]);
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int[] row : dp) {
+            Arrays.fill(row, Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < n; i++) {
+            dp[1 << i][i] = words[i].length();
+        }
+        for (int mask = 1; mask < (1 << n); mask++) {
+            for (int bit = 0; bit < n; bit++) {
+                if (((mask >> bit) & 1) > 0) {
+                    int pmask = mask ^ (1 << bit);
+                    for (int i = 0; i < n; i++) {
+                        if (((pmask >> i) & 1) > 0) {
+                            int val = dp[pmask][i] + overlap[i][bit];
+                            if (val < dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int[] perm = new int[n];
+        int last = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (dp[(1 << n) - 1][i] < min) {
+                min = dp[(1 << n) - 1][i];
+                last = i;
+            }
+        }
+        int t = (1 << n) - 1;
+        for (int i = n - 1; i >= 0; i--) {
+            perm[i] = last;
+            int temp = last;
+            last = parent[t][last];
+            t ^= (1 << temp);
+        }
+        StringBuilder sb = new StringBuilder(words[perm[0]]);
+        for (int i = 1; i < n; i++) {
+            int overlapLength = overlap[perm
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    overlap[i][j] = getOverlap(words[i], words[j]);
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int i = 0; i < (1 << n); i++) {
+            Arrays.fill(parent[i], -1);
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = i == (1 << j) ? words[j].length() : Integer.MAX_VALUE;
+            }
+        }
+        for (int i = 0; i < (1 << n); i++) {
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) == 0) {
+                    for (int k = 0; k < n; k++) {
+                        if (dp[i | (1 << j)][j] > dp[i][k] + words[j].length() - overlap[k][j]) {
+                            dp[i | (1 << j)][j] = dp[i][k] + words[j].length() - overlap[k][j];
+                            parent[i | (1 << j)][j] = k;
+                        }
+                    }
+                }
+            }
+        }
+        int min = Integer.MAX_VALUE;
+        int minIdx = -1;
+        for (int i = 0; i < n; i++) {
+            if (min > dp[(1 << n) - 1][i]) {
+                min = dp[(1 << n) - 1][i];
+                minIdx = i;
+            }
+        }
+        int cur = (1 << n) - 1;
+        int[] path = new int[n];
+        int size = 0;
+        while (minIdx != -1) {
+            path[size++] = minIdx;
+            int next = parent[cur][minIdx];
+            cur = cur ^ (1 << minIdx);
+            minIdx = next;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(words[path[--size]]);
+        while
+
+=======
+
+        int n = words.length;
+        int[][] overlaps = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    int m = Math.min(words[i].length(), words[j].length());
+                    for (int k = m; k >= 0; k--) {
+                        if (words[i].endsWith(words[j].substring(0, k))) {
+                            overlaps[i][j] = k;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int mask = 0; mask < (1 << n); mask++) {
+            Arrays.fill(parent[mask], -1);
+            for (int bit = 0; bit < n; bit++) {
+                if (((mask >> bit) & 1) > 0) {
+                    int pmask = mask ^ (1 << bit);
+                    if (pmask == 0) continue;
+                    for (int i = 0; i < n; i++) {
+                        if (((pmask >> i) & 1) > 0) {
+                            int val = dp[pmask][i] + overlaps[i][bit];
+                            if (val > dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int[] perm = new int[n];
+        int t = 0;
+        int mask = (1 << n) - 1;
+        int p = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[(1 << n) - 1][i] > dp[(1 << n) - 1][p]) {
+                p = i;
+            }
+        }
+        while (p >= 0) {
+            perm[t++] = p;
+            int next = parent[mask][p];
+            mask ^= (1 << p);
+            p = next;
+        }
+        String ans = words[perm[n - 1]];
+        for (int i = n - 2; i >= 0; i--) {
+            int overlap = overlaps[perm
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (i != j) {
+                    int m = Math.min(words[i].length(), words[j].length());
+                    for (int k = m; k >= 0; --k)
+                        if (words[i].endsWith(words[j].substring(0, k))) {
+                            overlap[i][j] = k;
+                            break;
+                        }
+                }
+
+        int[][] dp = new int[1<<n][n];
+        int[][] parent = new int[1<<n][n];
+        for (int mask = 0; mask < (1<<n); ++mask)
+            Arrays.fill(parent[mask], -1);
+
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            for (int bit = 0; bit < n; ++bit) {  // Let's try to start with bit
+                if (((mask >> bit) & 1) > 0) {  // That bit is set in mask. Let's try to remove it from mask
+                    int pmask = mask ^ (1 << bit);  // pmask is parent of mask
+                    if (pmask == 0) continue;
+                    for (int i = 0; i < n; ++i) {  // Let's try to append bit to string ending with i
+                        if (dp[mask][bit] < dp[pmask][i] + overlap[i][bit]) {
+                            dp[mask][bit] = dp[pmask][i] + overlap[i][bit];
+                            parent[mask][bit] = i;
+                        }
+                    }
+                }
+            }
+        }
+
+        int[] perm = new int[n];
+        int t = 0, mask = (1<<n) - 1;
+        for (int j = 0; j < n; ++j)
+            if (dp[(1<<n)-1][t] < dp[(1<<n)-1][j])
+                t = j;
+        while (mask > 0) {
+            perm[--n] = t;
+            int p = parent[mask][t];
+            mask ^= (1 << t);
+            t = p;
+        }
+
+=======
+
+        int n = words.length;
+        int[][] overlap = new int[n][n];
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (i != j) {
+                    int m = Math.min(words[i].length(), words[j].length());
+                    for (int k = m; k >= 0; --k)
+                        if (words[i].endsWith(words[j].substring(0, k))) {
+                            overlap[i][j] = k;
+                            break;
+                        }
+                }
+
+        int[][] dp = new int[1<<n][n];
+        int[][] parent = new int[1<<n][n];
+        for (int mask = 0; mask < (1<<n); ++mask)
+            Arrays.fill(parent[mask], -1);
+
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            for (int bit = 0; bit < n; ++bit) {  // Let's try to start with bit
+                if (((mask >> bit) & 1) > 0) {  // That bit is set in mask
+                    // Let's try to find dp[mask][bit].  Previously, we had
+                    // a collection of items represented by pmask.
+                    int pmask = mask ^ (1 << bit);
+                    if (pmask == 0) continue;
+                    for (int i = 0; i < n; ++i) {  // Which item i to append?
+                        if (((pmask >> i) & 1) > 0) {  // Can we append i to existing collection?
+                            // For each bit in pmask, calculate the value
+                            // if we ended with word 'i'.
+                            int val = dp[pmask][i] + overlap[i][bit];
+                            if (val > dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int[] perm = new int[n];
+        int t = 0, mask = (1<<n) - 1;
+        for (int j = 0; j < n; ++j)
+            if (dp[(1<<n)-1][j] > dp[(1<<n)-
+
+=======
+
+        int n = words.length;
+        int[][] graph = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    graph[i][j] = getOverlap(words[i], words[j]);
+                }
+            }
+        }
+        int[][] dp = new int[1 << n][n];
+        int[][] parent = new int[1 << n][n];
+        for (int mask = 0; mask < (1 << n); mask++) {
+            Arrays.fill(parent[mask], -1);
+            for (int bit = 0; bit < n; bit++) {
+                if (((mask >> bit) & 1) > 0) {
+                    int pmask = mask ^ (1 << bit);
+                    if (pmask == 0) {
+                        continue;
+                    }
+                    for (int i = 0; i < n; i++) {
+                        if (((pmask >> i) & 1) > 0) {
+                            int val = dp[pmask][i] + graph[i][bit];
+                            if (val > dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int[] perm = new int[n];
+        int t = (1 << n) - 1;
+        int p = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[t][i] > dp[t][p]) {
+                p = i;
+            }
+        }
+        int idx = n - 1;
+        while (t > 0) {
+            perm[idx--] = p;
+            int temp = parent[t][p];
+            t = t ^ (1 << p);
+            p = temp;
+        }
+        StringBuilder sb = new StringBuilder(words[perm[0]]);
+        for (int i = 1; i < n; i++) {
+            int overlap = graph[perm[i - 1]][perm[i]];
+            sb.append(words[perm[i]].substring(overlap));
+        }
+        return sb.toString();
+
+=======
+
+        int n = words.length;
+        int[][] overlaps = new int[n][n];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i != j) {
+                    int m = Math.min(words[i].length(), words[j].length());
+                    for (int k = m; k >= 0; --k) {
+                        if (words[i].endsWith(words[j].substring(0, k))) {
+                            overlaps[i][j] = k;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        int[][] dp = new int[1<<n][n];
+        int[][] parent = new int[1<<n][n];
+        for (int mask = 0; mask < (1<<n); ++mask)
+            Arrays.fill(parent[mask], -1);
+
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            for (int bit = 0; bit < n; ++bit) { // There is a bit on in the mask
+                if (((mask >> bit) & 1) > 0) { // If bit is on in the mask
+                    int pmask = mask ^ (1 << bit); // Flip the bit
+                    if (pmask == 0) continue;
+                    for (int i = 0; i < n; ++i) { // Iterate over bits that are on in the pmask
+                        if (((pmask >> i) & 1) > 0) { // If i-th bit is on in the pmask
+                            int val = dp[pmask][i] + overlaps[i][bit];
+                            if (val > dp[mask][bit]) {
+                                dp[mask][bit] = val;
+                                parent[mask][bit] = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int[] perm = new int[n];
+        int t = 0, mask = (1<<n) - 1;
+        for (int j = 0; j < n; ++j)
+            if (dp[(1<<n)-1][j] > dp[(1<<n)-1][t])
+                t = j;
+        while (t != -1) {
+            perm[--n] = t;
+            int p = parent[mask

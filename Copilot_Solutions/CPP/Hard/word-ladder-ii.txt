@@ -1,0 +1,383 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end()) {
+            return {};
+        }
+        dict.erase(beginWord);
+        dict.erase(endWord);
+        unordered_map<string, vector<string>> adj;
+        unordered_map<string, int> dist;
+        vector<vector<string>> res;
+        bfs(beginWord, endWord, dict, adj, dist);
+        vector<string> path = {beginWord};
+        dfs(beginWord, endWord, adj, dist, path, res);
+        return res;
+    }
+    
+    void bfs(const string& beginWord, const string& endWord, unordered_set<string>& dict, unordered_map<string, vector<string>>& adj, unordered_map<string, int>& dist) {
+        queue<string> q;
+        q.push(beginWord);
+        dist[beginWord] = 0;
+        while (!q.empty()) {
+            string word = q.front();
+            q.pop();
+            vector<string> neighbors = getNeighbors(word, dict);
+            for (auto& neighbor : neighbors) {
+                adj[word].push_back(neighbor);
+                if (dist.find(neighbor) == dist.end()) {
+                    dist[neighbor] = dist[word] + 1;
+                    q.push(neighbor);
+                }
+            }
+        }
+    }
+    
+    void dfs(const string& beginWord, const string& endWord, unordered_map<string, vector<string>>& adj, unordered_map<string, int>& dist, vector<string>& path, vector<vector<string>>& res) {
+        if (beginWord == endWord) {
+            res.push_back(path);
+            return;
+        }
+        for (auto& neighbor : adj[beginWord]) {
+            if (dist[neighbor] == dist[beginWord] + 1) {
+                path.push_back(neighbor);
+                dfs(neighbor, endWord, adj, dist, path, res);
+                path.pop_back();
+            }
+        }
+
+=======
+
+        vector<vector<string>> res;
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (!dict.count(endWord)) return res;
+        unordered_map<string, vector<string>> nodeNeighbors; // Neighbors for every node
+        unordered_map<string, int> distance; // Distance of every node from the start node
+        vector<string> solution;
+        
+        dict.insert(beginWord);
+        bfs(beginWord, endWord, dict, nodeNeighbors, distance);
+        dfs(beginWord, endWord, dict, nodeNeighbors, distance, solution, res);
+        return res;
+
+=======
+
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        vector<vector<string>> res;
+        if (dict.find(endWord) == dict.end()) return res;
+        unordered_map<string, vector<string>> next;
+        unordered_set<string> cur{beginWord}, nextLevel;
+        bool found = false;
+        while (!cur.empty() && !found) {
+            for (auto& s : cur) dict.erase(s);
+            for (auto& s : cur) {
+                string t = s;
+                for (int i = 0; i < s.size(); ++i) {
+                    char c = s[i];
+                    for (int j = 0; j < 26; ++j) {
+                        s[i] = 'a' + j;
+                        if (dict.find(s) != dict.end()) {
+                            if (s == endWord) found = true;
+                            else nextLevel.insert(s);
+                            next[t].push_back(s);
+                        }
+                    }
+                    s[i] = c;
+                }
+            }
+            swap(cur, nextLevel);
+            nextLevel.clear();
+        }
+        if (found) {
+            vector<string> path{beginWord};
+            dfs(res, path, next, beginWord, endWord);
+        }
+        return res;
+    }
+    void dfs(vector<vector<string>>& res, vector<string>& path, unordered_map<string, vector<string>>& next, string& beginWord, string& endWord) {
+        if (beginWord == endWord) {
+            res.push_back(path);
+            return;
+        }
+        for (auto& s : next[beginWord]) {
+            path.push_back(s);
+            dfs(res, path, next, s, endWord);
+            path.pop_back();
+        }
+
+=======
+
+        vector<vector<string>> ans;
+        unordered_set<string> wordSet(wordList.begin(), wordList.end());
+        if (wordSet.find(endWord) == wordSet.end()) return ans;
+        unordered_map<string, vector<string>> parents;
+        unordered_map<string, int> distance;
+        distance[beginWord] = 0;
+        queue<string> q;
+        q.push(beginWord);
+        bool found = false;
+        while (!q.empty()) {
+            string word = q.front();
+            q.pop();
+            int d = distance[word];
+            if (word == endWord) {
+                found = true;
+                break;
+            }
+            vector<string> nextWords = getNextWords(word, wordSet);
+            for (auto nextWord : nextWords) {
+                parents[nextWord].push_back(word);
+                if (distance.find(nextWord) == distance.end()) {
+                    distance[nextWord] = d + 1;
+                    q.push(nextWord);
+                }
+            }
+        }
+        if (found) {
+            vector<string> path = {endWord};
+            getPaths(endWord, beginWord, parents, path, ans);
+        }
+        return ans;
+
+=======
+
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end()) return {};
+        unordered_set<string> head{beginWord}, tail{endWord}, *phead = &head, *ptail = &tail;
+        unordered_map<string, vector<string>> children;
+        bool found = false, backward = false;
+        while (!phead->empty() && !ptail->empty() && !found) {
+            if (phead->size() > ptail->size()) {
+                swap(phead, ptail);
+                backward = !backward;
+            }
+            unordered_set<string> temp;
+            for (const string &word : *phead) {
+                dict.erase(word);
+                for (int i = 0; i < word.size(); ++i) {
+                    string new_word = word;
+                    for (char ch = 'a'; ch <= 'z'; ++ch) {
+                        new_word[i] = ch;
+                        if (ptail->find(new_word) != ptail->end()) {
+                            found = true;
+                            backward ? children[new_word].push_back(word) : children[word].push_back(new_word);
+                        }
+                        if (!found && dict.find(new_word) != dict.end()) {
+                            temp.insert(new_word);
+                            backward ? children[new_word].push_back(word) : children[word].push_back(new_word);
+                        }
+                    }
+                }
+            }
+            swap(*phead, temp);
+        }
+        vector<vector<string>> res;
+        if (found) {
+            vector<string> out = {beginWord};
+            gen_paths(beginWord, endWord, children, out, res);
+        }
+        return res;
+
+=======
+
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end()) return {};
+        vector<vector<string>> ans;
+        unordered_map<string, vector<string>> next;
+        unordered_map<string, int> dist;
+        queue<string> q;
+        q.push(beginWord);
+        dist[beginWord] = 0;
+        while (!q.empty()) {
+            string cur = q.front();
+            q.pop();
+            int curDist = dist[cur];
+            string nextWord = cur;
+            for (int i = 0; i < cur.size(); ++i) {
+                char origin = nextWord[i];
+                for (char c = 'a'; c <= 'z'; ++c) {
+                    nextWord[i] = c;
+                    if (dict.find(nextWord) != dict.end()) {
+                        if (dist.find(nextWord) == dist.end()) {
+                            dist[nextWord] = curDist + 1;
+                            q.push(nextWord);
+                        }
+                        if (dist[nextWord] == curDist + 1) {
+                            next[cur].push_back(nextWord);
+                        }
+                    }
+                }
+                nextWord[i] = origin;
+            }
+        }
+        vector<string> path = {beginWord};
+        dfs(beginWord, endWord, next, path, ans);
+        return ans;
+    }
+    void dfs(string& beginWord, string& endWord, unordered_map<string, vector<string>>& next, vector<string>& path, vector<vector<string>>& ans) {
+        if (beginWord == endWord) {
+            ans.push_back(path);
+            return;
+        }
+        for (auto& word : next[beginWord]) {
+            path.push_back(word);
+            dfs(word, endWord, next, path, ans);
+            path.pop_back();
+        }
+
+=======
+
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end())
+            return {};
+        vector<vector<string>> res;
+        unordered_map<string, vector<string>> parents;
+        unordered_set<string> q1{beginWord}, q2{endWord};
+        bool found = false;
+        while (!q1.empty() && !q2.empty() && !found) {
+            if (q1.size() > q2.size())
+                swap(q1, q2);
+            unordered_set<string> q;
+            for (auto word : q1) {
+                dict.erase(word);
+            }
+            for (auto word : q1) {
+                string w = word;
+                for (int i = 0; i < w.size(); i++) {
+                    char ch = w[i];
+                    for (int j = 0; j < 26; j++) {
+                        w[i] = 'a' + j;
+                        if (q2.find(w) != q2.end()) {
+                            found = true;
+                            parents[w].push_back(word);
+                        }
+                        else if (!found && dict.find(w) != dict.end()) {
+                            q.insert(w);
+                            parents[w].push_back(word);
+                        }
+                    }
+                    w[i] = ch;
+                }
+            }
+            swap(q, q1);
+        }
+        if (found) {
+            vector<string> path = {endWord};
+            dfs(endWord, beginWord, parents, path, res);
+        }
+        return res;
+    }
+    void dfs(string& word, string& beginWord, unordered_map<string, vector<string>>& parents, vector<string>& path, vector<vector<string>>& res) {
+        if (word == beginWord) {
+            res.push_back(vector<string>(path.rbegin(), path.rend()));
+            return;
+        }
+        for (auto p : parents[word]) {
+            path.push_back(p);
+            dfs(p, beginWord, parents, path, res);
+            path.pop_back();
+        }
+
+=======
+
+        vector<vector<string>> result;
+        unordered_set<string> wordSet(wordList.begin(), wordList.end());
+        if (wordSet.find(endWord) == wordSet.end()) return result;
+        unordered_set<string> q1, q2;
+        q1.insert(beginWord);
+        q2.insert(endWord);
+        unordered_map<string, vector<string>> map;
+        bool found = false;
+        bool backward = false;
+        while (!q1.empty() && !q2.empty()) {
+            if (q1.size() > q2.size()) {
+                swap(q1, q2);
+                backward = !backward;
+            }
+            unordered_set<string> q;
+            for (auto word : q1) {
+                wordSet.erase(word);
+            }
+            for (auto word : q1) {
+                for (int i = 0; i < word.size(); i++) {
+                    char ch = word[i];
+                    for (int j = 0; j < 26; j++) {
+                        word[i] = 'a' + j;
+                        if (q2.find(word) != q2.end()) {
+                            found = true;
+                            backward ? map[word].push_back(ch) : map[ch].push_back(word);
+                        } else if (!found && wordSet.find(word) != wordSet.end()) {
+                            q.insert(word);
+                            backward ? map[word].push_back(ch) : map[ch].push_back(word);
+                        }
+                    }
+                    word[i] = ch;
+                }
+            }
+            if (found) break;
+            swap(q, q1);
+        }
+        vector<string> path = {beginWord};
+        dfs(beginWord, endWord, map, path, result);
+        return result;
+    }
+    
+    void dfs(string& beginWord, string& endWord, unordered_map<string, vector<string>>& map, vector<string>& path, vector<vector<string>>& result) {
+        if (beginWord == endWord) {
+            result.push_back(path);
+            return;
+        }
+        for (auto ch : map[beginWord]) {
+            path.push_back(ch);
+            dfs(ch, endWord, map, path, result);
+            path.pop_back();
+        }
+
+=======
+
+        vector<vector<string>> res;
+        unordered_set<string> wordSet(wordList.begin(), wordList.end());
+        unordered_map<string, vector<string>> graph;
+        unordered_map<string, int> dist;
+        if (!wordSet.count(endWord)) return res;
+        bfs(beginWord, endWord, wordSet, graph, dist);
+        vector<string> path{beginWord};
+        dfs(beginWord, endWord, graph, dist, path, res);
+        return res;
+    }
+    void bfs(string beginWord, string endWord, unordered_set<string>& wordSet, unordered_map<string, vector<string>>& graph, unordered_map<string, int>& dist) {
+        queue<string> q;
+        q.push(beginWord);
+        dist[beginWord] = 0;
+        while (!q.empty()) {
+            string word = q.front(); q.pop();
+            graph[word] = {};
+            for (int i = 0; i < word.size(); ++i) {
+                string newWord = word;
+                for (char ch = 'a'; ch <= 'z'; ++ch) {
+                    newWord[i] = ch;
+                    if (wordSet.count(newWord) && newWord != word) {
+                        graph[word].push_back(newWord);
+                        if (!dist.count(newWord)) {
+                            dist[newWord] = dist[word] + 1;
+                            q.push(newWord);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    void dfs(string beginWord, string& endWord, unordered_map<string, vector<string>>& graph, unordered_map<string, int>& dist, vector<string>& path, vector<vector<string>>& res) {
+        if (beginWord == endWord) {
+            res.push_back(path);
+            return;
+        }
+        for (auto& nextWord: graph[beginWord]) {
+            if (dist[nextWord] == dist[beginWord] + 1) {
+                path.push_back(nextWord);
+                dfs(nextWord, endWord, graph, dist, path, res);
+                path.pop_back();
+            }
+        }

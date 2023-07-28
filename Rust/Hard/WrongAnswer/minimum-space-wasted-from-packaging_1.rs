@@ -1,0 +1,42 @@
+impl Solution {
+    pub fn min_wasted_space(packages: Vec<i32>, boxes: Vec<Vec<i32>>) -> i32 {
+        
+        let mut packages = packages;
+        let mut boxes = boxes;
+        let mut modu = 1000000007;
+        let mut sum = 0;
+        packages.sort();
+        for i in 0..packages.len() {
+            sum = (sum + packages[i]) % modu;
+        }
+        let mut min = i32::MAX;
+        for i in 0..boxes.len() {
+            let mut boxe = boxes[i].clone();
+            boxe.sort();
+            let mut j = 0;
+            let mut k = 0;
+            let mut cur = 0;
+            let mut is = true;
+            while j < packages.len() {
+                if k == boxe.len() {
+                    is = false;
+                    break;
+                }
+                if packages[j] <= boxe[k] {
+                    cur = (cur + boxe[k] - packages[j]) % modu;
+                    j += 1;
+                } else {
+                    k += 1;
+                }
+            }
+            if is {
+                min = min.min(cur);
+            }
+        }
+        if min == i32::MAX {
+            -1
+        } else {
+            (min - sum + modu) % modu
+        }
+    }
+}

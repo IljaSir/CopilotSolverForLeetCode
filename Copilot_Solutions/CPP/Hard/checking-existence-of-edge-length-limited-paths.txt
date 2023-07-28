@@ -1,0 +1,81 @@
+Synthesizing 2/10 solutions
+
+=======
+
+        for (int i = 0; i < queries.size(); ++i) {
+            queries[i].push_back(i);
+        }
+        sort(queries.begin(), queries.end(), [](const vector<int>& a, const vector<int>& b) { return a[2] < b[2]; });
+        sort(edgeList.begin(), edgeList.end(), [](const vector<int>& a, const vector<int>& b) { return a[2] < b[2]; });
+        vector<bool> res(queries.size());
+        vector<int> p(n);
+        for (int i = 0; i < n; ++i) {
+            p[i] = i;
+        }
+        int i = 0, j = 0;
+        while (i < queries.size()) {
+            while (j < edgeList.size() && edgeList[j][2] < queries[i][2]) {
+                int a = edgeList[j][0], b = edgeList[j][1];
+                while (p[a] != a) {
+                    a = p[a];
+                }
+                while (p[b] != b) {
+                    b = p[b];
+                }
+                if (a != b) {
+                    p[a] = b;
+                }
+                ++j;
+            }
+            int a = queries[i][0], b = queries[i][1];
+            while (p[a] != a) {
+                a = p[a];
+            }
+            while (p[b] != b) {
+                b = p[b];
+            }
+            res[queries[i][3]] = a == b;
+            ++i;
+        }
+        return res;
+
+=======
+
+        vector<int> parent(n, 0);
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+        vector<int> rank(n, 1);
+        auto cmp = [](const vector<int>& a, const vector<int>& b) {
+            return a[2] < b[2];
+        };
+        sort(edgeList.begin(), edgeList.end(), cmp);
+        vector<vector<int>> newQueries;
+        for (int i = 0; i < queries.size(); ++i) {
+            newQueries.push_back({queries[i][0], queries[i][1], queries[i][2], i});
+        }
+        sort(newQueries.begin(), newQueries.end(), cmp);
+        vector<bool> ans(queries.size(), false);
+        int edgeIndex = 0;
+        for (int i = 0; i < newQueries.size(); ++i) {
+            while (edgeIndex < edgeList.size() && edgeList[edgeIndex][2] < newQueries[i][2]) {
+                int u = edgeList[edgeIndex][0];
+                int v = edgeList[edgeIndex][1];
+                int pu = find(u, parent);
+                int pv = find(v, parent);
+                if (pu != pv) {
+                    if (rank[pu] > rank[pv]) {
+                        swap(pu, pv);
+                    }
+                    parent[pu] = pv;
+                    rank[pv] += rank[pu];
+                }
+                ++edgeIndex;
+            }
+            int pu = find(newQueries[i][0], parent);
+            int pv = find(newQueries[i][1], parent);
+            if (pu == pv) {
+                ans[newQueries[i][3]] = true;
+            }
+        }
+        return ans;

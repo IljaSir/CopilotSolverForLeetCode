@@ -1,0 +1,260 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        n = len(dominoes)
+        force = [0] * n
+        f = 0
+        for i in range(n):
+            if dominoes[i] == 'R':
+                f = n
+            elif dominoes[i] == 'L':
+                f = 0
+            else:
+                f = max(f - 1, 0)
+            force[i] += f
+        f = 0
+        for i in range(n-1, -1, -1):
+            if dominoes[i] == 'L':
+                f = n
+            elif dominoes[i] == 'R':
+                f = 0
+            else:
+                f = max(f - 1, 0)
+            force[i] -= f
+        return "".join('.' if f == 0 else 'R' if f > 0 else 'L' for f in force)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        dominoes = 'L' + dominoes + 'R'
+        ans = ''
+        i = 0
+        for j in range(1, len(dominoes)):
+            if dominoes[j] == '.':
+                continue
+            mid = j - i - 1
+            if i:
+                ans += dominoes[i]
+            if dominoes[i] == dominoes[j]:
+                ans += dominoes[i] * mid
+            elif dominoes[i] == 'L' and dominoes[j] == 'R':
+                ans += '.' * mid
+            else:
+                ans += 'R' * (mid//2) + '.' * (mid%2) + 'L' * (mid//2)
+            i = j
+        return ans
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        dominoes = 'L' + dominoes + 'R'
+        i = 0
+        res = []
+        for j in range(1, len(dominoes)):
+            if dominoes[j] == '.':
+                continue
+            middle = j - i - 1
+            if i:
+                res.append(dominoes[i])
+            if dominoes[i] == dominoes[j]:
+                res.append(dominoes[i] * middle)
+            elif dominoes[i] == 'L' and dominoes[j] == 'R':
+                res.append('.' * middle)
+            else:
+                res.append('R' * (middle // 2) + '.' * (middle % 2) + 'L' * (middle // 2))
+            i = j
+        return ''.join(res)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        N = len(dominoes)
+        forces = [0] * N
+
+        # Populate forces going from left to right
+        force = 0
+        for i, x in enumerate(dominoes):
+            if x == 'R': force = N
+            elif x == 'L': force = 0
+            else: force = max(force - 1, 0)
+            forces[i] += force
+
+        # Populate forces going from right to left
+        force = 0
+        for i, x in enumerate(dominoes[::-1]):
+            if x == 'L': force = N
+            elif x == 'R': force = 0
+            else: force = max(force - 1, 0)
+            forces[~i] -= force
+
+        return "".join('.L'[x > 0] if x else 'R' if x < 0 else '.' for x in forces)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        n = len(dominoes)
+        dp = [0] * n
+        for i in range(n):
+            if dominoes[i] == 'R':
+                dp[i] = 1
+            elif dominoes[i] == 'L':
+                dp[i] = -1
+        for i in range(1, n):
+            if dp[i] == 0:
+                dp[i] = dp[i-1]
+        for i in range(n-2, -1, -1):
+            if dp[i] == 0:
+                dp[i] = dp[i+1]
+        for i in range(n):
+            if dp[i] == 1:
+                dp[i] = 'R'
+            elif dp[i] == -1:
+                dp[i] = 'L'
+            else:
+                dp[i] = '.'
+        return ''.join(dp)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        dominoes = list(dominoes)
+        for i in range(1, len(dominoes)):
+            if dominoes[i] == 'L' and dominoes[i-1] == 'R':
+                dominoes[i-1] = dominoes[i] = 'X'
+        for i in range(len(dominoes)-2, -1, -1):
+            if dominoes[i] == 'R' and dominoes[i+1] == 'L':
+                dominoes[i+1] = dominoes[i] = 'X'
+        for i in range(len(dominoes)):
+            if dominoes[i] == 'X':
+                dominoes[i] = '.'
+        return ''.join(dominoes)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        if not dominoes:
+            return dominoes
+        n = len(dominoes)
+        dp = [0] * n
+        for i in range(n):
+            if dominoes[i] == 'L':
+                dp[i] = -1
+            elif dominoes[i] == 'R':
+                dp[i] = 1
+        # print(dp)
+        for i in range(n):
+            if dp[i] == 1:
+                for j in range(i+1, n):
+                    if dp[j] == 0:
+                        dp[j] = 1
+                    else:
+                        break
+        # print(dp)
+        for i in range(n-1, -1, -1):
+            if dp[i] == -1:
+                for j in range(i-1, -1, -1):
+                    if dp[j] == 0:
+                        dp[j] = -1
+                    else:
+                        break
+        # print(dp)
+        for i in range(n):
+            if dp[i] == 1:
+                dominoes = dominoes[:i] + 'R' + dominoes[i+1:]
+            elif dp[i] == -1:
+                dominoes = dominoes[:i] + 'L' + dominoes[i+1:]
+        return dominoes
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        n = len(dominoes)
+        d = [c for c in dominoes]
+        i = 0
+        while i < n:
+            if d[i] == '.':
+                i += 1
+                continue
+            if d[i] == 'L':
+                j = i-1
+                while j >= 0 and d[j] == '.':
+                    d[j] = 'L'
+                    j -= 1
+                i += 1
+            elif d[i] == 'R':
+                j = i+1
+                while j < n and d[j] == '.':
+                    d[j] = 'R'
+                    j += 1
+                if j < n and d[j] == 'L':
+                    k = i+1
+                    while k < j:
+                        d[k] = '.'
+                        k += 1
+                i = j
+        return ''.join(d)
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        if not dominoes:
+            return dominoes
+        n = len(dominoes)
+        #dp = [[0,0] for _ in range(n)]
+        dp = [[0,0] for _ in range(n)]
+        for i in range(n):
+            if dominoes[i] == 'L':
+                dp[i][0] = 1
+                for j in range(i-1, -1, -1):
+                    if dominoes[j] == 'R':
+                        break
+                    dp[j][0] = dp[j+1][0] + 1
+            elif dominoes[i] == 'R':
+                dp[i][1] = 1
+                for j in range(i+1, n):
+                    if dominoes[j] == 'L':
+                        break
+                    dp[j][1] = dp[j-1][1] + 1
+        res = ''
+        for i in range(n):
+            if dp[i][0] == dp[i][1]:
+                res += '.'
+            elif dp[i][0] < dp[i][1]:
+                res += 'R'
+            else:
+                res += 'L'
+        return res
+
+=======
+
+def pushDominoes(self, dominoes: str) -> str:
+        # 1. Init
+        dominoes = list(dominoes)
+        n = len(dominoes)
+        force = [0] * n
+        
+        # 2. Loop dominoes
+        f = 0
+        for i in range(n):
+            if dominoes[i] == 'R':
+                f = n
+            elif dominoes[i] == 'L':
+                f = 0
+            else:
+                f = max(f-1, 0)
+            force[i] += f
+        
+        f = 0
+        for i in range(n-1, -1, -1):
+            if dominoes[i] == 'L':
+                f = n
+            elif dominoes[i] == 'R':
+                f = 0
+            else:
+                f = max(f-1, 0)
+            force[i] -= f
+        
+        # 3. Return
+        return "".join('.' if f == 0 else 'R' if f > 0 else 'L' for f in force)

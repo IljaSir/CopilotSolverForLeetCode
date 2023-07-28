@@ -1,0 +1,303 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] toppingCosts2 = new int[toppingCosts.length * 2];
+        for (int i = 0; i < toppingCosts.length; ++i) {
+            toppingCosts2[i * 2] = toppingCosts[i];
+            toppingCosts2[i * 2 + 1] = toppingCosts[i] * 2;
+        }
+        int[] dp = new int[20001];
+        for (int i = 0; i < baseCosts.length; ++i) {
+            dp[baseCosts[i]] = 1;
+        }
+        for (int i = 0; i < toppingCosts2.length; ++i) {
+            for (int j = 20000; j >= toppingCosts2[i]; --j) {
+                if (dp[j - toppingCosts2[i]] == 1) {
+                    dp[j] = 1;
+                }
+            }
+        }
+        int ans = 0;
+        int diff = Integer.MAX_VALUE;
+        for (int i = 0; i <= 20000; ++i) {
+            if (dp[i] == 1) {
+                if (Math.abs(i - target) < diff) {
+                    ans = i;
+                    diff = Math.abs(i - target);
+                } else if (Math.abs(i - target) == diff) {
+                    ans = Math.min(ans, i);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int closest = Integer.MAX_VALUE;
+        for (int base : baseCosts) {
+            closest = Math.min(closest, closestCost(base, toppingCosts, target, 0));
+        }
+        return closest;
+    }
+    
+    private int closestCost(int base, int[] toppingCosts, int target, int index) {
+        if (index == toppingCosts.length) {
+            return base;
+        }
+        int cost1 = closestCost(base, toppingCosts, target, index + 1);
+        int cost2 = closestCost(base + toppingCosts[index], toppingCosts, target, index + 1);
+        int cost3 = closestCost(base + toppingCosts[index] * 2, toppingCosts, target, index + 1);
+        return getClosest(target, cost1, cost2, cost3);
+    }
+    
+    private int getClosest(int target, int... costs) {
+        int closest = Integer.MAX_VALUE;
+        for (int cost : costs) {
+            if (Math.abs(cost - target) < Math.abs(closest - target)) {
+                closest = cost;
+            } else if (Math.abs(cost - target) == Math.abs(closest - target) && cost < closest) {
+                closest = cost;
+            }
+        }
+        return closest;
+
+=======
+
+        int res = 0;
+        int minDiff = Integer.MAX_VALUE;
+        for (int base : baseCosts) {
+            int diff = Math.abs(base - target);
+            if (diff < minDiff) {
+                minDiff = diff;
+                res = base;
+            }
+            if (diff == 0) {
+                return res;
+            }
+            int[] arr = new int[toppingCosts.length];
+            dfs(toppingCosts, arr, base, target, 0, res, minDiff);
+        }
+        return res;
+    }
+    private void dfs(int[] toppingCosts, int[] arr, int base, int target, int index, int res, int minDiff) {
+        if (index == toppingCosts.length) {
+            int sum = base;
+            for (int i = 0; i < arr.length; i++) {
+                sum += arr[i] * toppingCosts[i];
+            }
+            int diff = Math.abs(sum - target);
+            if (diff < minDiff) {
+                minDiff = diff;
+                res = sum;
+            } else if (diff == minDiff && sum < res) {
+                res = sum;
+            }
+            return;
+        }
+        for (int i = 0; i < 3; i++) {
+            arr[index] = i;
+            dfs(toppingCosts, arr, base, target, index + 1, res, minDiff);
+        }
+
+=======
+
+        int ans = 0;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < baseCosts.length; i++) {
+            int cost = baseCosts[i];
+            if (Math.abs(cost - target) < min) {
+                min = Math.abs(cost - target);
+                ans = cost;
+            }
+            for (int j = 0; j < toppingCosts.length; j++) {
+                cost += toppingCosts[j];
+                if (Math.abs(cost - target) < min) {
+                    min = Math.abs(cost - target);
+                    ans = cost;
+                }
+                for (int k = j + 1; k < toppingCosts.length; k++) {
+                    cost += toppingCosts[k];
+                    if (Math.abs(cost - target) < min) {
+                        min = Math.abs(cost - target);
+                        ans = cost;
+                    }
+                    cost -= toppingCosts[k];
+                }
+                cost -= toppingCosts[j];
+            }
+        }
+        return ans;
+
+=======
+
+        int[] cost = new int[1];
+        cost[0] = Integer.MAX_VALUE;
+        for (int baseCost : baseCosts) {
+            dfs(toppingCosts, 0, baseCost, target, cost);
+        }
+        return cost[0];
+    }
+
+    private void dfs(int[] toppingCosts, int index, int cost, int target, int[] res) {
+        if (Math.abs(target - cost) < Math.abs(target - res[0])) {
+            res[0] = cost;
+        } else if (Math.abs(target - cost) == Math.abs(target - res[0])) {
+            res[0] = Math.min(cost, res[0]);
+        }
+
+        if (index == toppingCosts.length) {
+            return;
+        }
+
+        dfs(toppingCosts, index + 1, cost, target, res);
+        dfs(toppingCosts, index + 1, cost + toppingCosts[index], target, res);
+        dfs(toppingCosts, index + 1, cost + toppingCosts[index] * 2, target, res);
+
+=======
+
+        int closest = Integer.MAX_VALUE;
+        for (int base : baseCosts) {
+            int cost = dfs(toppingCosts, target, 0, base);
+            if (Math.abs(target - cost) < Math.abs(target - closest)) {
+                closest = cost;
+            } else if (Math.abs(target - cost) == Math.abs(target - closest)) {
+                closest = Math.min(closest, cost);
+            }
+        }
+        return closest;
+    }
+    
+    private int dfs(int[] toppingCosts, int target, int index, int cost) {
+        if (index == toppingCosts.length) {
+            return cost;
+        }
+        
+        int cost1 = dfs(toppingCosts, target, index + 1, cost);
+        int cost2 = dfs(toppingCosts, target, index + 1, cost + toppingCosts[index]);
+        int cost3 = dfs(toppingCosts, target, index + 1, cost + toppingCosts[index] * 2);
+        
+        if (Math.abs(target - cost1) < Math.abs(target - cost2) && Math.abs(target - cost1) < Math.abs(target - cost3)) {
+            return cost1;
+        } else if (Math.abs(target - cost2) < Math.abs(target - cost1) && Math.abs(target - cost2) < Math.abs(target - cost3)) {
+            return cost2;
+        } else {
+            return cost3;
+        }
+
+=======
+
+        int closest = Integer.MAX_VALUE;
+        for (int base : baseCosts) {
+            int cost = base;
+            closest = Math.abs(target - cost) < Math.abs(target - closest) ? cost : closest;
+            for (int topping : toppingCosts) {
+                cost += topping;
+                closest = Math.abs(target - cost) < Math.abs(target - closest) ? cost : closest;
+                cost += topping;
+                closest = Math.abs(target - cost) < Math.abs(target - closest) ? cost : closest;
+                cost -= topping;
+            }
+        }
+        return closest;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int result = 0;
+        for (int baseCost : baseCosts) {
+            int sum = baseCost;
+            int diff = Math.abs(target - sum);
+            if (diff < min) {
+                min = diff;
+                result = sum;
+            }
+            for (int toppingCost : toppingCosts) {
+                sum += toppingCost;
+                diff = Math.abs(target - sum);
+                if (diff < min) {
+                    min = diff;
+                    result = sum;
+                }
+                for (int toppingCost2 : toppingCosts) {
+                    sum += toppingCost2;
+                    diff = Math.abs(target - sum);
+                    if (diff < min) {
+                        min = diff;
+                        result = sum;
+                    }
+                    sum -= toppingCost2;
+                }
+                sum -= toppingCost;
+            }
+        }
+        return result;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int minCost = 0;
+        for (int baseCost: baseCosts) {
+            int cost = closestCost(baseCost, toppingCosts, target, 0, 0);
+            if (Math.abs(cost - target) < min) {
+                min = Math.abs(cost - target);
+                minCost = cost;
+            }
+        }
+        return minCost;
+    }
+    
+    private int closestCost(int baseCost, int[] toppingCosts, int target, int index, int cost) {
+        if (index == toppingCosts.length) {
+            return cost + baseCost;
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i <= 2; i++) {
+            int newCost = closestCost(baseCost, toppingCosts, target, index + 1, cost + i * toppingCosts[index]);
+            if (Math.abs(newCost - target) < min) {
+                min = Math.abs(newCost - target);
+                cost = newCost;
+            }
+        }
+        return cost;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int minCost = 0;
+        for(int baseCost : baseCosts){
+            int cost = getMinCost(baseCost, toppingCosts, 0, target);
+            if(Math.abs(target - cost) < min){
+                min = Math.abs(target - cost);
+                minCost = cost;
+            }
+            else if(Math.abs(target - cost) == min){
+                minCost = Math.min(minCost, cost);
+            }
+        }
+        return minCost;
+    }
+    
+    public int getMinCost(int baseCost, int[] toppingCosts, int index, int target){
+        if(index == toppingCosts.length){
+            return baseCost;
+        }
+        int cost = getMinCost(baseCost, toppingCosts, index + 1, target);
+        int cost1 = getMinCost(baseCost + toppingCosts[index], toppingCosts, index + 1, target);
+        int cost2 = getMinCost(baseCost + 2 * toppingCosts[index], toppingCosts, index + 1, target);
+        if(Math.abs(target - cost) < Math.abs(target - cost1)){
+            if(Math.abs(target - cost) < Math.abs(target - cost2)){
+                return cost;
+            }
+            else{
+                return cost2;
+            }
+        }
+        else{
+            if(Math.abs(target - cost1) < Math.abs(target - cost2)){
+                return cost1;
+            }
+            else{
+                return cost2;
+            }
+        }

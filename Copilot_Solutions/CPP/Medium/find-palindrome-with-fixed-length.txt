@@ -1,0 +1,310 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        vector<long long> answer(queries.size());
+        for (int i = 0; i < queries.size(); ++i) {
+            answer[i] = kthPalindrome(queries[i], intLength);
+        }
+        return answer;
+
+=======
+
+        int len = queries.size();
+        vector<long long> ans(len);
+        for (int i = 0; i < len; i++) {
+            ans[i] = kthPalindrome(queries[i], intLength);
+        }
+        return ans;
+    }
+    long long kthPalindrome(int k, int intLength) {
+        int max = 1;
+        for (int i = 1; i < intLength; i++) {
+            max *= 10;
+        }
+        if (k >= max) {
+            return -1;
+        }
+        int n = intLength / 2;
+        int m = intLength - n;
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans = ans * 10 + (k % 10);
+            k /= 10;
+        }
+        long long ans2 = ans;
+        if (intLength % 2 == 1) {
+            ans2 = ans2 * 10 + (k % 10);
+            k /= 10;
+        }
+        while (ans > 0) {
+            ans2 = ans2 * 10 + (ans % 10);
+            ans /= 10;
+        }
+        return ans2;
+
+=======
+
+        vector<long long> answer;
+        for (int i = 0; i < queries.size(); i++) {
+            answer.push_back(getKthPalindrome(queries[i], intLength));
+        }
+        return answer;
+    }
+    
+    long long getKthPalindrome(int k, int intLength) {
+        if (k < 0) return -1;
+        if (k == 0) return 0;
+        if (k == 1) return 1;
+        if (k == 2) return 11;
+        if (intLength == 1) return k;
+        if (intLength == 2) {
+            if (k > 9) return -1;
+            return k * 10 + k;
+        }
+        if (k > 10) {
+            int base = 1;
+            for (int i = 0; i < intLength - 2; i++) {
+                base *= 10;
+            }
+            int num = k / 10;
+            int rem = k % 10;
+            if (rem == 0) {
+                num--;
+                rem = 9;
+            }
+            else {
+                rem--;
+            }
+            if (rem == 0) {
+                return num * base + getKthPalindrome(9, intLength - 2) * 10 + num;
+            }
+            else {
+                return num * base + getKthPalindrome(rem, intLength - 2) * 10 + num;
+            }
+        }
+        else {
+            if (k == 3) return 101;
+            if (k == 4) return 111;
+            if (k == 5) return 121;
+            if (k == 6) return 131;
+            if (k == 7) return 141;
+            if (k == 8) return 151;
+            if (k == 9) return 161;
+            if (k == 10) return 171;
+        }
+        return -1;
+
+=======
+
+        vector<long long> result;
+        for (auto query : queries) {
+            result.push_back(kthPalindrome(query, intLength));
+        }
+        return result;
+    }
+    long long kthPalindrome(int query, int intLength) {
+        if (query == 1) {
+            return 10 * query + 1;
+        }
+        if (intLength == 1) {
+            return query;
+        }
+        if (intLength == 2) {
+            return query * 11;
+        }
+        if (intLength == 3) {
+            return query * 111;
+        }
+        int half = (intLength + 1) / 2;
+        int base = pow(10, half - 1);
+        int max = base * 10 - 1;
+        int min = base;
+        int range = max - min + 1;
+        int count = 0;
+        for (int i = min; i <= max; i++) {
+            long long palindrome = toPalindrome(i);
+            if (palindrome > query) {
+                count++;
+            }
+        }
+        if (count < query) {
+            return -1;
+        }
+        int start = min;
+        int end = max;
+        while (start < end) {
+            int mid = (start + end) / 2;
+            long long palindrome = toPalindrome(mid);
+            if (palindrome > query) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return toPalindrome(start);
+
+=======
+
+        vector<long long> res;
+        for (auto q : queries) {
+            res.push_back(findKthPalindrome(q, intLength));
+        }
+        return res;
+    }
+    long long findKthPalindrome(long long k, int intLength) {
+        long long min = 1;
+        for (int i = 1; i < intLength; ++i) {
+            min *= 10;
+        }
+        long long max = min * 10 - 1;
+        long long cur = min;
+        long long count = 0;
+        if (intLength == 1) {
+            return k;
+        }
+        while (cur <= max) {
+            if (isPalindrome(cur)) {
+                count++;
+            }
+            if (count == k) {
+                return cur;
+            }
+            cur++;
+        }
+        return -1;
+    }
+    bool isPalindrome(long long num) {
+        long long rev = 0;
+        long long n = num;
+        while (n > 0) {
+            long long digit = n % 10;
+            rev = rev * 10 + digit;
+            n /= 10;
+        }
+        return rev == num;
+
+=======
+
+        vector<long long> vecResult;
+        vecResult.reserve(queries.size());
+        for (int i = 0; i < queries.size(); ++i) {
+            vecResult.push_back(kthPalindrome(queries[i], intLength));
+        }
+        return vecResult;
+    }
+    long long kthPalindrome(int intQuery, int intLength) {
+        if (intLength == 1) {
+            return intQuery;
+        }
+        if (intLength == 2) {
+            return intQuery * 10 + intQuery;
+        }
+        if (intQuery == 1) {
+            return intLength == 3 ? 101 : 1001;
+        }
+        if (intQuery == 2) {
+            return intLength == 3 ? 111 : 1111;
+        }
+        if (intQuery == 3) {
+            return intLength == 3 ? 121 : 1221;
+        }
+        if (intQuery == 4) {
+            return intLength == 3 ? 131 : 1331;
+        }
+        if (intQuery == 5) {
+            return intLength == 3 ? 141 : 1441;
+        }
+        if (intQuery == 6) {
+            return intLength == 3 ? 151 : 1551;
+        }
+        if (intQuery == 7) {
+            return intLength == 3 ? 161 : 1661;
+        }
+        if (intQuery == 8) {
+            return intLength == 3 ? 171 : 1771;
+        }
+        if (intQuery == 9) {
+            return intLength == 3 ? 181 : 1881;
+        }
+        if (intQuery == 10) {
+            return intLength == 3 ? 191 : 1991;
+        }
+        if (intQuery == 11) {
+            return intLength == 3 ? 202 : 2002;
+        }
+        if (intQuery == 12) {
+            return intLength == 3 ? 212 : 2112;
+        }
+        if (intQuery == 13) {
+            return intLength == 3 ? 222 : 2222;
+        }
+        if (intQuery == 14) {
+            return intLength == 3 ? 232 : 2332;
+        }
+        if (intQuery == 15
+
+=======
+
+        vector<long long> res;
+        for(auto q : queries) {
+            res.push_back(findKthPalindrome(q, intLength));
+        }
+        return res;
+
+=======
+
+        vector<long long> ans;
+        for (auto q : queries) {
+            long long x = 0;
+            for (int i = 0; i < intLength / 2; ++i) {
+                x = x * 10 + q % 10;
+                q /= 10;
+            }
+            if (intLength % 2 == 1) x = x * 10 + q % 10;
+            while (q > 0) {
+                x = x * 10 + q % 10;
+                q /= 10;
+            }
+            ans.push_back(x);
+        }
+        return ans;
+
+=======
+
+        int len = queries.size();
+        vector<long long> res(len, -1);
+        vector<long long> palindromes;
+        generatePalindromes(palindromes, intLength);
+        for (int i = 0; i < len; ++i) {
+            if (queries[i] <= palindromes.size()) {
+                res[i] = palindromes[queries[i] - 1];
+            }
+        }
+        return res;
+
+=======
+
+        vector<long long> answer;
+        for (int i = 0; i < queries.size(); i++) {
+            long long num = queries[i];
+            long long palindrome = 0;
+            long long base = 1;
+            for (int j = 0; j < intLength / 2; j++) {
+                palindrome += base * (num % 10);
+                num /= 10;
+                base *= 10;
+            }
+            if (intLength % 2 == 1) {
+                palindrome += base * (num % 10);
+                num /= 10;
+                base *= 10;
+            }
+            for (int j = 0; j < intLength / 2; j++) {
+                palindrome += base * (num % 10);
+                num /= 10;
+                base *= 10;
+            }
+            answer.push_back(palindrome);
+        }
+        return answer;

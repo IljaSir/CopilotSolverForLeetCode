@@ -1,0 +1,332 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        vector<vector<vector<int>>> visited(m, vector<vector<int>>(n, vector<int>(k+1, 0)));
+        queue<vector<int>> q; // {x, y, k}
+        q.push({0, 0, k});
+        visited[0][0][k] = 1;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto t = q.front(); q.pop();
+                int x = t[0], y = t[1], kk = t[2];
+                if (x == m - 1 && y == n - 1) return step;
+                for (auto dir : dirs) {
+                    int nx = x + dir[0], ny = y + dir[1], nk = kk;
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                    if (grid[nx][ny] == 1) --nk;
+                    if (nk < 0 || visited[nx][ny][nk]) continue;
+                    visited[nx][ny][nk] = 1;
+                    q.push({nx, ny, nk});
+                }
+            }
+            ++step;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        vector<vector<vector<int>>> visited(m, vector<vector<int>>(n, vector<int>(k + 1, -1)));
+        queue<vector<int>> q;
+        q.push({0, 0, k});
+        visited[0][0][k] = 0;
+        while (!q.empty()) {
+            auto t = q.front();
+            q.pop();
+            int x = t[0], y = t[1], remain = t[2];
+            if (x == m - 1 && y == n - 1) {
+                return visited[x][y][remain];
+            }
+            for (auto dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                    continue;
+                }
+                if (grid[nx][ny] == 1 && remain > 0 && visited[nx][ny][remain - 1] == -1) {
+                    visited[nx][ny][remain - 1] = visited[x][y][remain] + 1;
+                    q.push({nx, ny, remain - 1});
+                } else if (grid[nx][ny] == 0 && visited[nx][ny][remain] == -1) {
+                    visited[nx][ny][remain] = visited[x][y][remain] + 1;
+                    q.push({nx, ny, remain});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        if (m == 1 && n == 1) return 0;
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k + 1, INT_MAX)));
+        dp[0][0][0] = 0;
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            int x = q.front().first, y = q.front().second;
+            q.pop();
+            for (int i = 0; i < 4; i++) {
+                int nx = x + dir[i][0], ny = y + dir[i][1];
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                if (grid[nx][ny] == 0) {
+                    for (int j = 0; j <= k; j++) {
+                        if (dp[x][y][j] + 1 < dp[nx][ny][j]) {
+                            dp[nx][ny][j] = dp[x][y][j] + 1;
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+                else {
+                    for (int j = 0; j < k; j++) {
+                        if (dp[x][y][j] + 1 < dp[nx][ny][j + 1]) {
+                            dp[nx][ny][j + 1] = dp[x][y][j] + 1;
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 0; i <= k; i++) {
+            res = min(res, dp[m - 1][n - 1][i]);
+        }
+        return res == INT_MAX ? -1 : res;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> visited(m, vector<int>(n, INT_MAX));
+        queue<vector<int>> q;
+        q.push({0, 0, 0});
+        visited[0][0] = 0;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto cur = q.front();
+                q.pop();
+                if (cur[0] == m - 1 && cur[1] == n - 1) {
+                    return step;
+                }
+                vector<vector<int>> dirs = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+                for (auto dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= m || y < 0 || y >= n) {
+                        continue;
+                    }
+                    int obs = cur[2] + grid[x][y];
+                    if (obs < visited[x][y]) {
+                        visited[x][y] = obs;
+                        if (obs <= k) {
+                            q.push({x, y, obs});
+                        }
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> visited(m, vector<int>(n, INT_MAX));
+        queue<vector<int>> q;
+        q.push({0, 0, k});
+        visited[0][0] = k;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            while (size--) {
+                auto cur = q.front(); q.pop();
+                int x = cur[0], y = cur[1], k = cur[2];
+                if (x == m - 1 && y == n - 1) return step;
+                for (int i = 0; i < 4; ++i) {
+                    int nx = x + dx[i], ny = y + dy[i];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+                    if (grid[nx][ny] == 1) {
+                        if (k - 1 >= 0 && visited[nx][ny] < k - 1) {
+                            visited[nx][ny] = k - 1;
+                            q.push({nx, ny, k - 1});
+                        }
+                    } else {
+                        if (visited[nx][ny] < k) {
+                            visited[nx][ny] = k;
+                            q.push({nx, ny, k});
+                        }
+                    }
+                }
+            }
+            ++step;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dirs{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        vector<vector<vector<int>>> visited(m, vector<vector<int>>(n, vector<int>(k+1, 0)));
+        queue<vector<int>> q;
+        q.push({0, 0, 0});
+        visited[0][0][0] = 1;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto cur = q.front();
+                q.pop();
+                if (cur[0] == m - 1 && cur[1] == n - 1) {
+                    return step;
+                }
+                for (auto dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    int obs = cur[2] + grid[x][y];
+                    if (x >= 0 && x < m && y >= 0 && y < n && obs <= k && !visited[x][y][obs]) {
+                        q.push({x, y, obs});
+                        visited[x][y][obs] = 1;
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dirs{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        queue<vector<int>> q;
+        q.push({0, 0, 0});
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        visited[0][0] = 1;
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto t = q.front();
+                q.pop();
+                if (t[0] == m - 1 && t[1] == n - 1) return step;
+                for (auto dir : dirs) {
+                    int x = t[0] + dir[0], y = t[1] + dir[1];
+                    if (x >= 0 && x < m && y >= 0 && y < n) {
+                        if (grid[x][y] == 1 && t[2] + 1 <= k && !visited[x][y]) {
+                            visited[x][y] = 1;
+                            q.push({x, y, t[2] + 1});
+                        }
+                        if (grid[x][y] == 0 && !visited[x][y]) {
+                            visited[x][y] = 1;
+                            q.push({x, y, t[2]});
+                        }
+                    }
+                }
+            }
+            ++step;
+        }
+        return -1;
+
+=======
+
+        int m = grid.size();
+        int n = grid[0].size();
+        if (m == 1 && n == 1) return 0;
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        dist[0][0] = 0;
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        while (!q.empty()) {
+            auto [i, j] = q.front();
+            q.pop();
+            if (i == m - 1 && j == n - 1) return dist[i][j];
+            for (int di = -1; di <= 1; ++di) {
+                for (int dj = -1; dj <= 1; ++dj) {
+                    if (di == 0 && dj == 0) continue;
+                    if (di * dj != 0) continue;
+                    int ni = i + di;
+                    int nj = j + dj;
+                    if (ni < 0 || ni >= m || nj < 0 || nj >= n) continue;
+                    int nd = dist[i][j] + 1;
+                    if (grid[ni][nj] == 1) {
+                        nd++;
+                    }
+                    if (nd < dist[ni][nj] && nd <= k) {
+                        dist[ni][nj] = nd;
+                        q.push({ni, nj});
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = grid.size(), n = grid[0].size();
+        vector<int> dirs = {-1, 0, 1, 0, -1};
+        vector<vector<vector<int>>> visited(m, vector<vector<int>>(n, vector<int>(k + 1, 0)));
+        queue<vector<int>> q;
+        q.push({0, 0, 0});
+        while (!q.empty()) {
+            auto t = q.front();
+            q.pop();
+            int i = t[0], j = t[1], d = t[2];
+            if (i == m - 1 && j == n - 1) {
+                return d;
+            }
+            for (int l = 0; l < 4; ++l) {
+                int x = i + dirs[l], y = j + dirs[l + 1];
+                if (x < 0 || x >= m || y < 0 || y >= n) {
+                    continue;
+                }
+                int z = k - grid[x][y];
+                if (z < 0 || visited[x][y][z]) {
+                    continue;
+                }
+                visited[x][y][z] = 1;
+                q.push({x, y, d + 1});
+            }
+        }
+        return -1;
+
+=======
+
+        int M = grid.size();
+        int N = grid[0].size();
+        vector<vector<int>> visited(M, vector<int>(N, -1));
+        queue<vector<int>> q;
+        q.push({0, 0, 0});
+        visited[0][0] = 0;
+        int steps = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                auto cur = q.front();
+                q.pop();
+                if (cur[0] == M - 1 && cur[1] == N - 1) {
+                    return steps;
+                }
+                for (int j = 0; j < 4; ++j) {
+                    int x = cur[0] + dir[j][0];
+                    int y = cur[1] + dir[j][1];
+                    if (x < 0 || x >= M || y < 0 || y >= N) {
+                        continue;
+                    }
+                    int obs = cur[2] + grid[x][y];
+                    if (obs > k || (visited[x][y] != -1 && obs >= visited[x][y])) {
+                        continue;
+                    }
+                    q.push({x, y, obs});
+                    visited[x][y] = obs;
+                }
+            }
+            ++steps;
+        }
+        return -1;

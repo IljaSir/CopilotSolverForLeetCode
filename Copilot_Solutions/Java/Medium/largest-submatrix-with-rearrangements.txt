@@ -1,0 +1,278 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = matrix[i][j] == 1 ? (i == 0 ? 1 : dp[i - 1][j] + 1) : 0;
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < m; i++) {
+            Arrays.sort(dp[i]);
+            for (int j = n - 1; j >= 0; j--) {
+                int w = n - j;
+                max = Math.max(max, dp[i][j] * w);
+            }
+        }
+        return max;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] height = new int[n];
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    height[j] += 1;
+                } else {
+                    height[j] = 0;
+                }
+            }
+            res = Math.max(res, largestRectangleArea(height));
+        }
+        return res;
+    }
+
+    private int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(-1);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            while (stack.peek() != -1 && heights[stack.peek()] >= heights[i]) {
+                res = Math.max(res, heights[stack.pop()] * (i - stack.peek() - 1));
+            }
+            stack.push(i);
+        }
+        while (stack.peek() != -1) {
+            res = Math.max(res, heights[stack.pop()] * (n - stack.peek() - 1));
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] height = new int[n];
+        int maxArea = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    height[j] = 0;
+                } else {
+                    height[j]++;
+                }
+            }
+            int[] sortedHeight = Arrays.copyOf(height, n);
+            Arrays.sort(sortedHeight);
+            for (int j = 0; j < n; j++) {
+                maxArea = Math.max(maxArea, sortedHeight[j] * (n - j));
+            }
+        }
+        return maxArea;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] height = new int[n];
+        int maxArea = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                height[j] = matrix[i][j] == 0 ? 0 : height[j] + 1;
+            }
+            maxArea = Math.max(maxArea, getMaxArea(height));
+        }
+        return maxArea;
+    }
+
+    private int getMaxArea(int[] height) {
+        int[] stack = new int[height.length];
+        int top = -1;
+        int maxArea = 0;
+        for (int i = 0; i < height.length; i++) {
+            while (top >= 0 && height[stack[top]] > height[i]) {
+                int h = height[stack[top--]];
+                int w = top == -1 ? i : i - stack[top] - 1;
+                maxArea = Math.max(maxArea, h * w);
+            }
+            stack[++top] = i;
+        }
+        while (top >= 0) {
+            int h = height[stack[top--]];
+            int w = top == -1 ? height.length : height.length - stack[top] - 1;
+            maxArea = Math.max(maxArea, h * w);
+        }
+        return maxArea;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] height = new int[n];
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m; i++) {
+                if (matrix[i][j] == 0) {
+                    height[j] = 0;
+                } else {
+                    height[j] += 1;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            Arrays.sort(height);
+            for (int j = 0; j < n; j++) {
+                res = Math.max(res, height[j] * (n - j));
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] dp = new int[n];
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    dp[j] = 0;
+                } else {
+                    dp[j] = dp[j] + 1;
+                }
+            }
+            Arrays.sort(dp);
+            for (int j = 0; j < n; j++) {
+                res = Math.max(res, dp[j] * (n - j));
+            }
+        }
+        return res;
+
+=======
+
+        int m = matrix.length, n = matrix[0].length;
+        int[] heights = new int[n];
+        for (int j = 0; j < n; ++j) {
+            for (int i = 0; i < m; ++i) {
+                if (matrix[i][j] == 0) {
+                    break;
+                }
+                ++heights[j];
+            }
+        }
+        int ans = 0;
+        for (int j = 0; j < n; ++j) {
+            int[] order = new int[n];
+            for (int k = 0; k < n; ++k) {
+                order[k] = k;
+            }
+            Arrays.sort(order, (u, v) -> Integer.compare(heights[u], heights[v]));
+            int width = 0;
+            for (int k = 0; k < n; ++k) {
+                int col = order[k];
+                ++width;
+                if (width * heights[col] <= ans) {
+                    break;
+                }
+                ans = Math.max(ans, width * heights[col]);
+            }
+        }
+        return ans;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] height = new int[n];
+        int res = 0;
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                height[j] = matrix[i][j] == 0 ? 0 : height[j] + 1;
+            }
+            res = Math.max(res, largestRectangleArea(height));
+        }
+        return res;
+    }
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < n; i++) {
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                stack.pop();
+            }
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            stack.push(i);
+        }
+        stack.clear();
+        for(int i = n - 1; i >= 0; i--) {
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]) {
+                stack.pop();
+            }
+            right[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+        int res = 0;
+        for(int i = 0; i < n; i++) {
+            res = Math.max(res, (right[i] - left[i] - 1) * heights[i]);
+        }
+        return res;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] count = new int[n];
+        int max = 0;
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(matrix[i][j] == 1) {
+                    count[j]++;
+                } else {
+                    count[j] = 0;
+                }
+            }
+            max = Math.max(max, largestSubmatrixHelper(count));
+        }
+        return max;
+    }
+    
+    public int largestSubmatrixHelper(int[] count) {
+        int n = count.length;
+        int[] sortedCount = Arrays.copyOf(count, n);
+        Arrays.sort(sortedCount);
+        int max = 0;
+        for(int i = 0; i < n; i++) {
+            max = Math.max(max, sortedCount[i] * (n - i));
+        }
+        return max;
+
+=======
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] count = new int[n];
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(matrix[i][j] == 1){
+                    count[j]++;
+                }
+                else{
+                    count[j] = 0;
+                }
+            }
+            Arrays.sort(count);
+            for(int j = n - 1; j >= 0; j--){
+                count[j] = (n - j) * count[j];
+            }
+            Arrays.sort(count);
+        }
+        return count[n - 1];

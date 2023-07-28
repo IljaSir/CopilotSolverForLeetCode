@@ -1,0 +1,202 @@
+Synthesizing 10/10 solutions
+
+=======
+
+class Solution:
+    def getPermutation(self, n: int, k: int) -> str:
+        # 1 2 3 4
+        # 1 2 4 3
+        # 1 3 2 4
+        # 1 3 4 2
+        # 1 4 2 3
+        # 1 4 3 2
+        # 2 1 3 4
+        # 2 1 4 3
+        # 2 3 1 4
+        # 2 3 4 1
+        # 2 4 1 3
+        # 2 4 3 1
+        # 3 1 2 4
+        # 3 1 4 2
+        # 3 2 1 4
+        # 3 2 4 1
+        # 3 4 1 2
+        # 3 4 2 1
+        # 4 1 2 3
+        # 4 1 3 2
+        # 4 2 1 3
+        # 4 2 3 1
+        # 4 3 1 2
+        # 4 3 2 1
+        # 1 2 3 4
+        # 1 2 4 3
+        # 1 3 2 4
+        # 1 3 4 2
+        # 1 4 2 3
+        # 1 4 3 2
+        # 2 1 3 4
+        # 2 1 4 3
+        # 2 3 1 4
+        # 2 3 4 1
+        # 2 4 1 3
+        # 2 4 3 1
+        # 3 1 2 4
+        # 3 1 4 2
+        # 3 2 1 4
+        # 3 2 4 1
+        # 3 4 1 2
+        # 3 4 2 1
+        # 4 1 2 3
+        # 4 1 3 2
+        # 4 2 1 3
+        # 4
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        nums = [str(i) for i in range(1, n+1)]
+        fact = [1]
+        for i in range(1, n):
+            fact.append(fact[-1] * i)
+        k -= 1
+        ans = []
+        for i in range(n-1, -1, -1):
+            idx = k // fact[i]
+            ans.append(nums.pop(idx))
+            k -= idx * fact[i]
+        return "".join(ans)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        nums = [str(i) for i in range(1, n+1)]
+        fact = [1]
+        for i in range(1, n):
+            fact.append(fact[-1] * i)
+        k -= 1
+        ans = []
+        for i in range(n-1, -1, -1):
+            idx = k // fact[i]
+            k %= fact[i]
+            ans.append(nums[idx])
+            nums.remove(nums[idx])
+        return ''.join(ans)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        # return self.getPermutation_v1(n, k)
+        return self.getPermutation_v2(n, k)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        def fact(n):
+            if n == 0:
+                return 1
+            return n * fact(n - 1)
+        nums = [i for i in range(1, n + 1)]
+        k -= 1
+        res = []
+        while n > 0:
+            n -= 1
+            index, k = divmod(k, fact(n))
+            res.append(str(nums[index]))
+            nums.pop(index)
+        return "".join(res)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        def factorial(n):
+            if n == 0:
+                return 1
+            return n * factorial(n - 1)
+
+        def get_permutation(n, k):
+            if n == 1:
+                return [1]
+            if k == 0:
+                return list(range(1, n + 1))
+            if k == factorial(n - 1):
+                return list(range(n, 0, -1))
+            if k < factorial(n - 1):
+                return [n] + get_permutation(n - 1, k)
+            return [n - k // factorial(n - 1)] + get_permutation(n - 1, k % factorial(n - 1))
+
+        return ''.join(map(str, get_permutation(n, k - 1)))
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        import math
+        def get_kth(n, k):
+            if n == 1:
+                return '1'
+            if n == 2:
+                if k == 1:
+                    return '12'
+                else:
+                    return '21'
+            if n == 3:
+                if k == 1:
+                    return '123'
+                elif k == 2:
+                    return '132'
+                elif k == 3:
+                    return '213'
+                elif k == 4:
+                    return '231'
+                elif k == 5:
+                    return '312'
+                else:
+                    return '321'
+            if k <= math.factorial(n-1):
+                return str(n) + get_kth(n-1, k)
+            else:
+                return get_kth(n-1, k-math.factorial(n-1)) + str(n)
+        return get_kth(n, k)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        def get_permutation(n, k):
+            if n == 1:
+                return '1'
+            else:
+                fact = 1
+                for i in range(2, n):
+                    fact *= i
+                first = (k-1) // fact
+                k = (k-1) % fact + 1
+                return str(first+1) + get_permutation(n-1, k)
+
+        return get_permutation(n, k)
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        self.ans = ""
+        self.n = n
+        self.k = k
+        self.dfs([], [i for i in range(1,n+1)])
+        return self.ans
+
+=======
+
+def getPermutation(self, n: int, k: int) -> str:
+        k -= 1
+        r = n-1
+        f = 1
+        for i in range(2, n): f *= i
+        r = k // f
+        k %= f
+        r = str(r+1)
+        for i in range(2, n+1):
+            if i == int(r): continue
+            r += str(i)
+        for i in range(n-2, 0, -1):
+            f //= i+1
+            r = r[:i] + r[i:i+1] + r[i+1:].replace(r[i], '', k//f)
+            k %= f
+        return r

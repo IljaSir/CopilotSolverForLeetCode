@@ -1,0 +1,220 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = circles.length;
+        int[] x = new int[n];
+        int[] y = new int[n];
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            x[i] = circles[i][0];
+            y[i] = circles[i][1];
+            r[i] = circles[i][2];
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            ans += 4 * r[i] + 1;
+            for (int j = 0; j < i; j++) {
+                int dx = x[i] - x[j];
+                int dy = y[i] - y[j];
+                int d2 = dx * dx + dy * dy;
+                int r2 = (r[i] + r[j]) * (r[i] + r[j]);
+                if (d2 <= r2) {
+                    if (d2 + r[i] * r[i] <= r[j] * r[j]) {
+                        ans -= 4 * r[i] + 1;
+                    } else if (d2 + r[j] * r[j] <= r[i] * r[i]) {
+                        ans -= 4 * r[j] + 1;
+                    } else {
+                        int d = (int) Math.sqrt(d2);
+                        int a = (int) (r[i] * r[i] - r[j] * r[j] + d2) / (2 * d);
+                        int b = d - a;
+                        int h = (int) Math.sqrt(r[i] * r[i] - a * a);
+                        ans -= 4 * (a * b + b * h);
+                    }
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int[][] grid = new int[101][101];
+        for (int i = 0; i < circles.length; i++) {
+            int x = circles[i][0];
+            int y = circles[i][1];
+            int r = circles[i][2];
+            for (int j = x - r; j <= x + r; j++) {
+                for (int k = y - r; k <= y + r; k++) {
+                    if (j >= 0 && j <= 100 && k >= 0 && k <= 100 && (x - j) * (x - j) + (y - k) * (y - k) <= r * r) {
+                        grid[j][k] = 1;
+                    }
+                }
+            }
+        }
+        int count = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == 1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int result = 0;
+        for (int i = 0; i < circles.length; i++) {
+            int[] circle = circles[i];
+            int x = circle[0];
+            int y = circle[1];
+            int r = circle[2];
+            int x1 = x - r;
+            int x2 = x + r;
+            int y1 = y - r;
+            int y2 = y + r;
+            int count = 0;
+            for (int j = 0; j < circles.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int[] circle2 = circles[j];
+                int x3 = circle2[0];
+                int y3 = circle2[1];
+                int r2 = circle2[2];
+                if (x3 >= x1 && x3 <= x2 && y3 >= y1 && y3 <= y2) {
+                    count++;
+                }
+            }
+            result += 4 * r - 4 * count;
+        }
+        return result;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < circles.length; i++) {
+            int[] circle = circles[i];
+            int x = circle[0];
+            int y = circle[1];
+            int r = circle[2];
+            for (int j = x - r; j <= x + r; j++) {
+                for (int k = y - r; k <= y + r; k++) {
+                    if (j >= 0 && k >= 0 && (j != x || k != y) && Math.sqrt(Math.pow(j - x, 2) + Math.pow(k - y, 2)) <= r) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int res = 0;
+        for (int i = 0; i < circles.length; i++) {
+            int[] c1 = circles[i];
+            for (int j = 0; j < circles.length; j++) {
+                if (i == j) continue;
+                int[] c2 = circles[j];
+                int dx = c1[0] - c2[0];
+                int dy = c1[1] - c2[1];
+                int d = dx * dx + dy * dy;
+                int r = c1[2] + c2[2];
+                if (d <= r * r) {
+                    res += 4;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        for (int[] c : circles) {
+            int x = c[0], y = c[1], r = c[2];
+            ans += 4 * r + 1;
+            for (int[] c2 : circles) {
+                int x2 = c2[0], y2 = c2[1], r2 = c2[2];
+                if (x == x2 && y == y2) continue;
+                int d = (x - x2) * (x - x2) + (y - y2) * (y - y2);
+                if (d > (r + r2) * (r + r2)) continue;
+                if (d <= (r - r2) * (r - r2)) {
+                    ans -= 4 * r2 + 1;
+                } else {
+                    double a = Math.acos((d + r * r - r2 * r2) / 2.0 / r / Math.sqrt(d));
+                    double b = Math.acos((d + r2 * r2 - r * r) / 2.0 / r2 / Math.sqrt(d));
+                    ans -= Math.round(2 * r * a / Math.PI) + Math.round(2 * r2 * b / Math.PI) - 4;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int result = 0;
+        for (int[] circle : circles) {
+            int x = circle[0];
+            int y = circle[1];
+            int r = circle[2];
+            int r2 = r * r;
+            for (int i = x - r; i <= x + r; i++) {
+                for (int j = y - r; j <= y + r; j++) {
+                    if ((x - i) * (x - i) + (y - j) * (y - j) <= r2) {
+                        result++;
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int ans = 0;
+        for(int[] c : circles){
+            int x = c[0], y = c[1], r = c[2];
+            for(int i = x-r; i <= x+r; i++){
+                if(i < 1 || i > 100) continue;
+                int d = (int)Math.sqrt(r*r - (i-x)*(i-x));
+                ans += Math.max(0, Math.min(100, y+d) - Math.max(1, y-d) + 1);
+            }
+        }
+        return ans;
+
+=======
+
+        int count = 0;
+        for(int i = 1; i < 101; i++){
+            for(int j = 1; j < 101; j++){
+                for(int[] circle : circles){
+                    if((i - circle[0]) * (i - circle[0]) + (j - circle[1]) * (j - circle[1]) <= circle[2] * circle[2]){
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        int[] x = new int[101];
+        int[] y = new int[101];
+        for (int i = 0; i < circles.length; i++) {
+            int[] circle = circles[i];
+            int xi = circle[0];
+            int yi = circle[1];
+            int ri = circle[2];
+            for (int j = xi - ri; j <= xi + ri; j++) {
+                for (int k = yi - ri; k <= yi + ri; k++) {
+                    if (j >= 0 && j <= 100 && k >= 0 && k <= 100) {
+                        if (x[j] == 0 && y[k] == 0) {
+                            count++;
+                        }
+                        x[j]++;
+                        y[k]++;
+                    }
+                }
+            }
+        }
+        return count;

@@ -1,0 +1,249 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = nums[0];
+        right[n-1] = nums[n-1];
+        for(int i=1;i<n;i++){
+            left[i] = Math.min(left[i-1], nums[i]);
+        }
+        for(int i=n-2;i>=0;i--){
+            right[i] = Math.max(right[i+1], nums[i]);
+        }
+        int min = Integer.MAX_VALUE;
+        for(int i=1;i<n-1;i++){
+            if(left[i-1] < nums[i] && nums[i] < right[i+1]){
+                min = Math.min(min, i);
+            }
+        }
+        return min == Integer.MAX_VALUE ? 0 : min;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = nums[0];
+        right[n - 1] = nums[n - 1];
+        
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.min(left[i - 1], nums[i]);
+        }
+        
+        for (int i = n - 2; i >= 0; i--) {
+            right[i] = Math.max(right[i + 1], nums[i]);
+        }
+        
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            int l = i;
+            int r = n - i - 1;
+            int cur = 0;
+            if (l > 0) {
+                cur += l - 1;
+            }
+            if (r > 0) {
+                cur += r - 1;
+            }
+            if (i > 0 && i < n - 1 && left[i - 1] < right[i + 1]) {
+                cur++;
+            }
+            ans = Math.min(ans, cur);
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        left[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            left[i] = Math.min(left[i - 1], nums[i]);
+        }
+        right[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            right[i] = Math.max(right[i + 1], nums[i]);
+        }
+        int ans = n - 1;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                ans = Math.min(ans, n - 1 - i - (right[i + 1] == left[i] ? 1 : 0));
+            } else if (i == n - 1) {
+                ans = Math.min(ans, i - 0 - (right[i] == left[i - 1] ? 1 : 0));
+            } else {
+                ans = Math.min(ans, i - 0 - (right[i] == left[i - 1] ? 1 : 0) + n - 1 - i - (right[i + 1] == left[i] ? 1 : 0));
+            }
+        }
+        return ans;
+
+=======
+
+        int[] leftMin = new int[nums.length];
+        int[] rightMax = new int[nums.length];
+        leftMin[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            leftMin[i] = Math.min(leftMin[i - 1], nums[i]);
+        }
+        rightMax[nums.length - 1] = nums[nums.length - 1];
+        for (int i = nums.length - 2; i >= 0; i--) {
+            rightMax[i] = Math.max(rightMax[i + 1], nums[i]);
+        }
+        int ans = nums.length - 1;
+        for (int i = 0; i < nums.length; i++) {
+            if (i == 0) {
+                ans = Math.min(ans, nums.length - 1 - i - (rightMax[i + 1] == nums[i] ? 1 : 0));
+            } else if (i == nums.length - 1) {
+                ans = Math.min(ans, i - (leftMin[i - 1] == nums[i] ? 1 : 0));
+            } else {
+                ans = Math.min(ans, i - (leftMin[i - 1] == nums[i] ? 1 : 0) + nums.length - 1 - i - (rightMax[i + 1] == nums[i] ? 1 : 0));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] l = new int[n];
+        int[] r = new int[n];
+        l[0] = nums[0];
+        r[n-1] = nums[n-1];
+        for(int i=1; i<n; i++){
+            l[i] = Math.min(l[i-1], nums[i]);
+        }
+        for(int i=n-2; i>=0; i--){
+            r[i] = Math.max(r[i+1], nums[i]);
+        }
+        int ans = n;
+        for(int i=0; i<n; i++){
+            int left = i-1>=0?l[i-1]:Integer.MAX_VALUE;
+            int right = i+1<n?r[i+1]:Integer.MAX_VALUE;
+            if(left<nums[i] && nums[i]<right){
+                ans = Math.min(ans, i+1+(n-i-1));
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.length;
+        int[] max = new int[n];
+        int[] min = new int[n];
+        max[0] = nums[0];
+        min[n - 1] = nums[n - 1];
+        for (int i = 1; i < n; i++) {
+            max[i] = Math.max(max[i - 1], nums[i]);
+            min[n - i - 1] = Math.min(min[n - i], nums[n - i - 1]);
+        }
+        int ans = n - 1;
+        for (int i = 0; i < n; i++) {
+            if (i == 0) {
+                ans = Math.min(ans, n - 1 - binarySearch(min, max[i]));
+            } else if (i == n - 1) {
+                ans = Math.min(ans, i - binarySearch(max, min[i]));
+            } else {
+                ans = Math.min(ans, i - binarySearch(max, min[i]) + n - 1 - binarySearch(min, max[i]));
+            }
+        }
+        return ans;
+    }
+
+    public int binarySearch(int[] a, int target) {
+        int l = 0, r = a.length - 1;
+        while (l <= r) {
+            int m = (l + r) >> 1;
+            if (a[m] <= target) {
+                l = m + 1;
+            } else {
+                r = m - 1;
+            }
+        }
+        return l;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        int minIndex = 0;
+        int maxIndex = 0;
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] < min) {
+                min = nums[i];
+                minIndex = i;
+            }
+            if(nums[i] > max) {
+                max = nums[i];
+                maxIndex = i;
+            }
+        }
+        if(minIndex < maxIndex) {
+            return minIndex + (nums.length - maxIndex - 1);
+        }
+        else {
+            return minIndex + (nums.length - maxIndex - 2);
+        }
+
+=======
+
+        int n = nums.length;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        int minIndex = 0;
+        int maxIndex = 0;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] < min) {
+                min = nums[i];
+                minIndex = i;
+            }
+            if (nums[i] > max) {
+                max = nums[i];
+                maxIndex = i;
+            }
+        }
+        int left = minIndex + 1;
+        int right = n - maxIndex;
+        int mid = Math.min(left, right);
+        return Math.min(left, right) - 1;
+
+=======
+
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        int countMin = 0;
+        int countMax = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(nums[i] == min){
+                countMin++;
+            }
+            if(nums[i] == max){
+                countMax++;
+            }
+            if(nums[i] < min){
+                min = nums[i];
+                countMin = 1;
+            }
+            if(nums[i] > max){
+                max = nums[i];
+                countMax = 1;
+            }
+        }
+        
+        return nums.length - countMin - countMax;
+
+=======
+
+        int min = 0, max = nums.length - 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] < nums[min]) {
+                min = i;
+            } else if (nums[i] > nums[max]) {
+                max = i;
+            }
+        }
+        if (min < max) {
+            return min + nums.length - 1 - max;
+        }
+        return min + nums.length - 2 - max;

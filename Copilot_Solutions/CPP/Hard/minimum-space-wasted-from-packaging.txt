@@ -1,0 +1,148 @@
+Synthesizing 6/10 solutions
+
+=======
+
+        sort(packages.begin(), packages.end());
+        int n = packages.size();
+        long long sum = 0;
+        for (int i = 0; i < n; ++i) {
+            sum += packages[i];
+        }
+        long long ans = LLONG_MAX;
+        for (auto& b : boxes) {
+            sort(b.begin(), b.end());
+            if (b.back() < packages.back()) {
+                continue;
+            }
+            int j = 0;
+            long long cur = 0;
+            for (int i = 0; i < b.size(); ++i) {
+                while (j < n && packages[j] <= b[i]) {
+                    ++j;
+                }
+                cur += (long long)b[i] * (j - i);
+            }
+            ans = min(ans, cur);
+        }
+        return ans == LLONG_MAX ? -1 : (ans - sum) % 1000000007;
+
+=======
+
+        sort(packages.begin(), packages.end());
+        for (auto& box : boxes) {
+            sort(box.begin(), box.end());
+        }
+        int n = packages.size();
+        vector<int> prefix(n + 1);
+        for (int i = 0; i < n; ++i) {
+            prefix[i + 1] = prefix[i] + packages[i];
+        }
+        long long ans = LLONG_MAX;
+        for (auto& box : boxes) {
+            if (box.back() < packages.back()) continue;
+            int i = 0, j = 0;
+            long long cur = 0;
+            while (i < n && j < box.size()) {
+                if (box[j] < packages[i]) {
+                    ++j;
+                } else {
+                    cur += 1LL * (j + 1) * packages[i] - prefix[i + 1];
+                    ++i;
+                }
+            }
+            if (i == n) {
+                ans = min(ans, cur);
+            }
+        }
+        return ans == LLONG_MAX ? -1 : ans % (1000000007);
+
+=======
+
+        const int MOD = 1e9 + 7;
+        sort(begin(packages), end(packages));
+        for (auto& box: boxes)
+            sort(begin(box), end(box));
+        long long ans = numeric_limits<long long>::max();
+        for (auto& box: boxes) {
+            if (box.back() < packages.back()) continue;
+            auto it = upper_bound(begin(box), end(box), packages.back());
+            long long waste = 0;
+            for (int i = 0, j = 0; i < packages.size(); ++i) {
+                while (j < box.size() && box[j] < packages[i])
+                    ++j;
+                if (j == box.size()) break;
+                waste += box[j++] - packages[i];
+            }
+            if (waste < ans) ans = waste;
+        }
+        return ans == numeric_limits<long long>::max() ? -1 : ans % MOD;
+
+=======
+
+        sort(packages.begin(), packages.end());
+        int n = packages.size();
+        int m = boxes.size();
+        int mod = 1e9 + 7;
+        long long res = INT_MAX;
+        for (int i = 0; i < m; i++) {
+            sort(boxes[i].begin(), boxes[i].end());
+            if (boxes[i].back() < packages.back()) continue;
+            long long waste = 0;
+            int j = 0;
+            for (int k = 0; k < boxes[i].size(); k++) {
+                while (j < n && packages[j] <= boxes[i][k]) {
+                    waste += boxes[i][k] - packages[j];
+                    j++;
+                }
+            }
+            res = min(res, waste);
+        }
+        return res == INT_MAX ? -1 : res % mod;
+
+=======
+
+        const int MOD = 1e9 + 7;
+        int n = packages.size(), m = boxes.size();
+        sort(packages.begin(), packages.end());
+        int total = 0;
+        for (auto& b : boxes) {
+            sort(b.begin(), b.end());
+            if (b.back() >= packages.back()) {
+                int i = 0;
+                for (auto& p : packages) {
+                    while (i + 1 < b.size() && b[i + 1] <= p) ++i;
+                    total += b[i] - p;
+                    if (total >= MOD) total -= MOD;
+                }
+            }
+        }
+        return total == 0 ? -1 : total;
+
+=======
+
+        sort(packages.begin(), packages.end());
+        for (auto& box: boxes) {
+            sort(box.begin(), box.end());
+        }
+        int n = packages.size();
+        int m = boxes.size();
+        long long prefix[n + 1];
+        prefix[0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            prefix[i] = prefix[i - 1] + packages[i - 1];
+        }
+        long long ans = LLONG_MAX;
+        for (auto& box: boxes) {
+            int j = 0;
+            long long waste = 0;
+            for (int k = 0; k < box.size(); ++k) {
+                while (j < n && packages[j] <= box[k]) {
+                    ++j;
+                }
+                waste += (long long) box[k] * (j - k - 1) - (prefix[j] - prefix[k + 1]);
+            }
+            if (j == n) {
+                ans = min(ans, waste);
+            }
+        }
+        return ans == LLONG_MAX ? -1 : ans % (int) (1e9 + 7);

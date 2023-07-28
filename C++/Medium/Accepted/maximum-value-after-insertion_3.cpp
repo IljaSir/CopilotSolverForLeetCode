@@ -1,0 +1,15 @@
+class Solution {
+public:
+    string maxValue(string n, int x) {
+        
+        int i = 0;
+        if (n[0] == '-') {
+            i = 1;
+            while (i < n.size() && n[i] <= '0' + x) ++i;
+        } else {
+            while (i < n.size() && n[i] >= '0' + x) ++i;
+        }
+        n.insert(i, 1, '0' + x);
+        return n;
+    }
+};

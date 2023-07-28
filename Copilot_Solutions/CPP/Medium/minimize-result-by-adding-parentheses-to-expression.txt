@@ -1,0 +1,352 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int n = expression.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MAX));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = expression[i] - '0';
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i + 1; k < j; k += 2) {
+                    int left = dp[i][k - 1];
+                    int right = dp[k + 1][j];
+                    int val = 0;
+                    if (expression[k] == '+') {
+                        val = left + right;
+                    } else {
+                        val = left * right;
+                    }
+                    if (val < dp[i][j]) {
+                        dp[i][j] = val;
+                    }
+                }
+            }
+        }
+        return dfs(expression, dp, 0, n - 1);
+
+=======
+
+        int n = expression.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MAX));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = expression[i] - '0';
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len - 1 < n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i + 1; k < j; k += 2) {
+                    int left = dp[i][k - 1], right = dp[k + 1][j];
+                    if (expression[k] == '+') {
+                        dp[i][j] = min(dp[i][j], left + right);
+                    } else {
+                        dp[i][j] = min(dp[i][j], left * right);
+                    }
+                }
+            }
+        }
+        return dfs(expression, 0, n - 1, dp);
+
+=======
+
+        int n = expression.size();
+        vector<int> num;
+        vector<char> op;
+        int i = 0;
+        while (i < n) {
+            if (expression[i] == '+') {
+                op.push_back(expression[i]);
+                i++;
+            } else {
+                int j = i;
+                while (j < n && expression[j] != '+') {
+                    j++;
+                }
+                num.push_back(stoi(expression.substr(i, j - i)));
+                i = j;
+            }
+        }
+        vector<vector<int>> dp(n, vector<int>(n, INT_MAX));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = expression[i] - '0';
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i; k < j; k += 2) {
+                    dp[i][j] = min(dp[i][j], dp[i][k] + dp[k + 2][j]);
+                }
+                if (op[(i + 1) / 2] == '+') {
+                    dp[i][j] = min(dp[i][j], dp[i + 2][j] + num[i / 2]);
+                } else {
+                    dp[i][j] = min(dp[i][j], dp[i + 2][j] * num[i / 2]);
+                }
+            }
+        }
+        vector<vector<string>> ans(n, vector<string>(n));
+        for (int i = 0; i < n; i += 2) {
+            ans[i][i] = expression.substr(i, 1);
+        }
+        for (int len = 3; len <= n; len += 2) {
+            for (int i = 0; i + len <= n; i += 2) {
+                int j = i + len - 1;
+                for (int k = i; k < j; k += 2) {
+                    if (dp[i][j] == dp[i][k] + dp[k + 2][j]) {
+                        ans[i][j] = ans[i][k] + ans[k + 2][
+
+=======
+
+        int n = expression.length();
+        vector<int> nums;
+        vector<char> ops;
+        string num;
+        for (int i = 0; i < n; ++i) {
+            if (isdigit(expression[i])) {
+                num += expression[i];
+            } else {
+                nums.push_back(stoi(num));
+                num = "";
+                ops.push_back(expression[i]);
+            }
+        }
+        nums.push_back(stoi(num));
+        int m = nums.size();
+        vector<vector<int>> dp(m, vector<int>(m));
+        vector<vector<int>> pos(m, vector<int>(m));
+        for (int i = 0; i < m; ++i) {
+            dp[i][i] = nums[i];
+            pos[i][i] = i;
+        }
+        for (int i = 1; i < m; ++i) {
+            for (int j = 0; j + i < m; ++j) {
+                int k = j + i;
+                dp[j][k] = dp[j][k - 1] + dp[k][k];
+                pos[j][k] = k;
+                for (int l = j + 1; l < k; ++l) {
+                    int tmp = dp[j][l - 1] + dp[l][k];
+                    if (tmp < dp[j][k]) {
+                        dp[j][k] = tmp;
+                        pos[j][k] = l;
+                    }
+                }
+            }
+        }
+        string ans;
+        int i = 0, j = m - 1;
+        while (i < j) {
+            int k = pos[i][j];
+            if (k == j) {
+                ans += to_string(nums[i]);
+                ans += ops[i];
+                ++i;
+            } else {
+                ans += "(";
+                while (i < k) {
+                    ans += to_string(nums[i]);
+                    ans += ops[i];
+                    ++i;
+                }
+                ans += to_string(nums[k]);
+                ans += ")";
+                i = k + 1;
+            }
+        }
+        ans += to_string(nums[j]);
+        return ans;
+
+=======
+
+        int n = expression.length();
+        vector<int> num;
+        vector<char> op;
+        int i = 0;
+        while (i < n) {
+            if (expression[i] == '+') {
+                op.push_back('+');
+                i++;
+            } else {
+                int j = i;
+                while (j < n && expression[j] != '+') {
+                    j++;
+                }
+                num.push_back(stoi(expression.substr(i, j - i)));
+                i = j;
+            }
+        }
+        int m = num.size();
+        vector<vector<int>> dp(m, vector<int>(m, INT_MAX));
+        vector<vector<int>> parent(m, vector<int>(m, -1));
+        for (int i = 0; i < m; i++) {
+            dp[i][i] = num[i];
+        }
+        for (int l = 2; l <= m; l++) {
+            for (int i = 0; i <= m - l; i++) {
+                int j = i + l - 1;
+                for (int k = i; k < j; k++) {
+                    int cur = dp[i][k] + dp[k + 1][j];
+                    if (cur < dp[i][j]) {
+                        dp[i][j] = cur;
+                        parent[i][j] = k;
+                    }
+                }
+            }
+        }
+        string str = "";
+        int i = 0;
+        int j = m - 1;
+        while (i < j) {
+            int k = parent[i][j];
+            if (k == i) {
+                str += "(";
+            } else {
+                str += ")";
+            }
+            str += to_string(num[i]);
+            str += op[i];
+            i++;
+        }
+        str += to_string(num[j]);
+        if (parent[i][j] == j - 1) {
+            str += ")";
+        }
+        return str;
+
+=======
+
+        int n = expression.size();
+        vector<int> nums(n / 2 + 1);
+        vector<char> ops(n / 2);
+        for (int i = 0; i < n; i++) {
+            if (i % 2 == 0) {
+                nums[i / 2] = expression[i] - '0';
+            }
+            else {
+                ops[i / 2] = expression[i];
+            }
+        }
+        vector<vector<int>> dp(n / 2 + 1, vector<int>(n / 2 + 1, INT_MAX));
+        vector<vector<int>> dp2(n / 2 + 1, vector<int>(n / 2 + 1, INT_MAX));
+        for (int i = 0; i <= n / 2; i++) dp[i][i] = nums[i];
+        for (int i = 0; i <= n / 2; i++) dp2[i][i] = nums[i];
+        for (int len = 1; len <= n / 2; len++) {
+            for (int i = 0; i + len <= n / 2; i++) {
+                int j = i + len;
+                for (int k = i; k < j; k++) {
+                    int a = dp[i][k];
+                    int b = dp[k + 1][j];
+                    int c = dp2[i][k];
+                    int d = dp2[k + 1][j];
+                    if (ops[k] == '+') {
+                        dp[i][j] = min(dp[i][j], a + b);
+                        dp2[i][j] = min(dp2[i][j], c + d);
+                    }
+                    else if (ops[k] == '-') {
+                        dp[i][j] = min(dp[i][j], a - b);
+                        dp2[i][j] = min(dp2[i][j], c - d);
+                    }
+                    else {
+                        dp[i][j] = min(dp[i][j], a * b);
+                        dp2[i][j] = min(dp2[i][j], min(c * d, min(c * b, a * d)));
+                    }
+                }
+            }
+        }
+        vector<vector<string>> dp3(n / 2 + 1, vector<string>(n / 2 + 1, ""));
+        for (int i =
+
+=======
+
+        int n = expression.size();
+        int a = 0, b = 0;
+        int i = 0;
+        while (i < n && expression[i] != '+') {
+            a = a * 10 + expression[i] - '0';
+            i++;
+        }
+        i++;
+        while (i < n) {
+            b = b * 10 + expression[i] - '0';
+            i++;
+        }
+        int x = a + b;
+        int y = a * b;
+        if (x < y) {
+            return expression;
+        } else if (x == y) {
+            return "(" + expression + ")";
+        } else {
+            return to_string(a) + "(" + to_string(b) + ")";
+        }
+
+=======
+
+        int n = expression.size();
+        vector<vector<int>> dp(n, vector<int>(n));
+        vector<vector<int>> paren(n, vector<int>(n));
+        for (int i = 0; i < n; i += 2) {
+            dp[i][i] = expression[i] - '0';
+        }
+        for (int i = 0; i < n; i += 2) {
+            for (int j = i - 2; j >= 0; j -= 2) {
+                dp[j][i] = dp[j][j] + dp[j + 2][i];
+                paren[j][i] = j + 1;
+                for (int k = j + 3; k <= i; k += 2) {
+                    int v = dp[j][k - 2] + dp[k][i];
+                    if (v < dp[j][i]) {
+                        dp[j][i] = v;
+                        paren[j][i] = k;
+                    }
+                }
+            }
+        }
+        return build(expression, 0, n - 1, paren);
+
+=======
+
+        int n = expression.size();
+        vector<int> nums;
+        vector<char> ops;
+        int i = 0;
+        while (i < n) {
+            char ch = expression[i];
+            if (ch == '+') {
+                ops.push_back(ch);
+                i++;
+            } else {
+                int j = i + 1;
+                while (j < n && isdigit(expression[j])) {
+                    j++;
+                }
+                nums.push_back(stoi(expression.substr(i, j - i)));
+                i = j;
+            }
+        }
+        int m = nums.size();
+        vector<vector<int>> dp(m, vector<int>(m, INT_MAX));
+        vector<vector<int>> dp2(m, vector<int>(m, INT_MAX));
+        for (int i = 0; i < m; i++) {
+            dp[i][i] = nums[i];
+            dp2[i][i] = nums[i];
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < m - i; j++) {
+                for (int k = j; k < j + i; k++) {
+                    if (ops[k] == '+') {
+                        if (dp[j][k] != INT_MAX && dp[k + 1][j + i] != INT_MAX) {
+                            dp[j][j + i] = min(dp[j][j + i], dp[j][k] + dp[k + 1][j + i]);
+                        }
+                        if (dp2[j][k] != INT_MAX && dp2[k + 1][j + i] != INT_MAX) {
+                            dp2[j][j + i] = min(dp2[j][j + i], dp2[j][k] + dp2[k + 1][j + i]);
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 0; j < m - i; j++) {
+                for (int k = j; k < j + i; k++) {
+                    if (ops[k] == '+') {
+                        if (dp[j][k] != INT_MAX && dp2[k + 1][j + i] != INT_MAX) {
+                            dp[j][j + i] = min(dp[j][j + i], dp[j][

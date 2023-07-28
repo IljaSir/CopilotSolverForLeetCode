@@ -1,0 +1,132 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int res = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                int diff = 0;
+                for (int k = 0; i + k < s.length() && j + k < t.length(); k++) {
+                    if (s.charAt(i + k) != t.charAt(j + k)) {
+                        diff++;
+                    }
+                    if (diff == 1) {
+                        res++;
+                    } else if (diff > 1) {
+                        break;
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                if (s.charAt(i) == t.charAt(j)) {
+                    continue;
+                }
+                int k = 0;
+                while (i + k < s.length() && j + k < t.length() && s.charAt(i + k) == t.charAt(j + k)) {
+                    k++;
+                }
+                count += k;
+            }
+        }
+        return count;
+
+=======
+
+        int count = 0;
+        int n = s.length();
+        int m = t.length();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int diff = 0;
+                int k = 0;
+                while (i + k < n && j + k < m) {
+                    if (s.charAt(i + k) != t.charAt(j + k)) {
+                        diff++;
+                    }
+                    if (diff > 1) {
+                        break;
+                    }
+                    if (diff == 1) {
+                        count++;
+                    }
+                    k++;
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int result = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                int len = 0;
+                while (i + len < s.length() && j + len < t.length() && s.charAt(i + len) == t.charAt(j + len)) {
+                    len++;
+                }
+                if (len > 0) {
+                    result += len;
+                    i += len;
+                    j += len;
+                }
+            }
+        }
+        return result;
+
+=======
+
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = 0; j < t.length(); j++) {
+                ans += countSubstrings(s, t, i, j);
+            }
+        }
+        return ans;
+    }
+    private int countSubstrings(String s, String t, int i, int j) {
+        int ans = 0;
+        int count = 0;
+        while (i < s.length() && j < t.length()) {
+            if (s.charAt(i) != t.charAt(j)) {
+                count++;
+            }
+            if (count > 1) {
+                break;
+            }
+            if (count == 1) {
+                ans++;
+            }
+            i++;
+            j++;
+        }
+        return ans;
+
+=======
+
+        int n = s.length();
+        int m = t.length();
+        int[][][] dp = new int[n][m][n+1];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k <= n; k++) {
+                    if (i > 0) dp[i][j][k] += dp[i-1][j][k];
+                    if (j > 0) dp[i][j][k] += dp[i][j-1][k];
+                    if (i > 0 && j > 0) dp[i][j][k] -= dp[i-1][j-1][k];
+                    if (s.charAt(i) == t.charAt(j)) {
+                        if (k > 0) dp[i][j][k] += dp[i-1][j-1][k-1] + 1;
+                    } else {
+                        dp[i][j][k] += 1;
+                    }
+                    if (k > 0) res += dp[i][j][k];
+                }
+            }
+        }
+        return res;

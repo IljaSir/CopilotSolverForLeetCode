@@ -1,0 +1,212 @@
+Synthesizing 5/10 solutions
+
+=======
+
+        set<pair<int, int>> guardSet;
+        for (auto guard : guards) {
+            guardSet.insert(make_pair(guard[0], guard[1]));
+        }
+        set<pair<int, int>> wallSet;
+        for (auto wall : walls) {
+            wallSet.insert(make_pair(wall[0], wall[1]));
+        }
+        int count = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (guardSet.find(make_pair(i, j)) == guardSet.end()) {
+                    // this cell is not guarded, check if it is visible
+                    bool visible = false;
+                    for (int x = i - 1; x >= 0; x--) {
+                        if (wallSet.find(make_pair(x, j)) != wallSet.end()) {
+                            break;
+                        }
+                        if (guardSet.find(make_pair(x, j)) != guardSet.end()) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                    if (visible) {
+                        count++;
+                        continue;
+                    }
+                    for (int x = i + 1; x < m; x++) {
+                        if (wallSet.find(make_pair(x, j)) != wallSet.end()) {
+                            break;
+                        }
+                        if (guardSet.find(make_pair(x, j)) != guardSet.end()) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                    if (visible) {
+                        count++;
+                        continue;
+                    }
+                    for (int y = j - 1; y >= 0; y--) {
+                        if (wallSet.find(make_pair(i, y)) != wallSet.end()) {
+                            break;
+                        }
+                        if (guardSet.find(make_pair(i, y)) != guardSet.end()) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                    if (visible) {
+                        count++;
+                        continue;
+                    }
+                    for (int y = j + 1; y < n; y++) {
+                        if (wallSet.find(make_pair(i, y)) != wallSet.end()) {
+                            break;
+                        }
+                        if (guardSet.find(make_pair(i, y)) != guardSet.end()) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                    if (visible) {
+                        count++;
+                        continue;
+                    }
+                }
+            }
+        }
+        return
+
+=======
+
+        vector<vector<bool>> occupied(m, vector<bool>(n, false));
+        for (auto& g : guards) {
+            occupied[g[0]][g[1]] = true;
+        }
+        for (auto& w : walls) {
+            occupied[w[0]][w[1]] = true;
+        }
+        vector<vector<bool>> seen(m, vector<bool>(n, false));
+        vector<vector<int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int res = 0;
+        for (auto& g : guards) {
+            queue<pair<int, int>> q;
+            q.push({g[0], g[1]});
+            while (!q.empty()) {
+                auto [x, y] = q.front();
+                q.pop();
+                if (x < 0 || x >= m || y < 0 || y >= n || seen[x][y] || occupied[x][y]) {
+                    continue;
+                }
+                seen[x][y] = true;
+                for (auto& d : dirs) {
+                    q.push({x + d[0], y + d[1]});
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (!seen[i][j]) {
+                    res++;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int ans = 0;
+        vector<vector<bool>> guard(m, vector<bool>(n, false));
+        vector<vector<bool>> wall(m, vector<bool>(n, false));
+        for (auto& g : guards) {
+            guard[g[0]][g[1]] = true;
+        }
+        for (auto& w : walls) {
+            wall[w[0]][w[1]] = true;
+        }
+        vector<vector<int>> dir = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (guard[i][j]) {
+                    continue;
+                }
+                bool isGuard = false;
+                for (auto& d : dir) {
+                    int x = i + d[0];
+                    int y = j + d[1];
+                    while (x >= 0 && x < m && y >= 0 && y < n) {
+                        if (guard[x][y]) {
+                            isGuard = true;
+                            break;
+                        }
+                        if (wall[x][y]) {
+                            break;
+                        }
+                        x += d[0];
+                        y += d[1];
+                    }
+                    if (isGuard) {
+                        break;
+                    }
+                }
+                if (!isGuard) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<bool>> grid(m, vector<bool>(n, false));
+        
+        for(auto g : guards) {
+            grid[g[0]][g[1]] = true;
+        }
+        
+        for(auto w : walls) {
+            grid[w[0]][w[1]] = true;
+        }
+        
+        int count = 0;
+        
+        for(int i = 0; i < m; ++i) {
+            for(int j = 0; j < n; ++j) {
+                if(grid[i][j] == false) {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+
+=======
+
+        int ans = 0;
+        vector<vector<int>> grid(m, vector<int>(n, 0));
+        for (auto& guard : guards) {
+            int x = guard[0], y = guard[1];
+            grid[x][y] = 1;
+            for (int i = x - 1; i >= 0; --i) {
+                if (grid[i][y] == 2) break;
+                grid[i][y] = 1;
+            }
+            for (int i = x + 1; i < m; ++i) {
+                if (grid[i][y] == 2) break;
+                grid[i][y] = 1;
+            }
+            for (int j = y - 1; j >= 0; --j) {
+                if (grid[x][j] == 2) break;
+                grid[x][j] = 1;
+            }
+            for (int j = y + 1; j < n; ++j) {
+                if (grid[x][j] == 2) break;
+                grid[x][j] = 1;
+            }
+        }
+        for (auto& wall : walls) {
+            int x = wall[0], y = wall[1];
+            grid[x][y] = 2;
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0) ++ans;
+            }
+        }
+        return ans;

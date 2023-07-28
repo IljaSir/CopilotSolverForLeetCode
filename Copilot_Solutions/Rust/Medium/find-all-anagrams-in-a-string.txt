@@ -1,0 +1,225 @@
+Synthesizing 10/10 solutions
+
+=======
+Suggestion 1
+
+        let mut res: Vec<i32> = vec![];
+        let mut p_count: Vec<i32> = vec![0; 26];
+        let mut s_count: Vec<i32> = vec![0; 26];
+        let mut n = 0;
+        for c in p.chars() {
+            p_count[c as usize - 'a' as usize] += 1;
+            n += 1;
+        }
+        let mut i = 0;
+        for (j, c) in s.chars().enumerate() {
+            s_count[c as usize - 'a' as usize] += 1;
+            if j >= n {
+                s_count[s.chars().nth(i).unwrap() as usize - 'a' as usize] -= 1;
+                i += 1;
+            }
+            if s_count == p_count {
+                res.push(i as i32);
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 2
+
+        let s = s.as_bytes();
+        let p = p.as_bytes();
+        let mut p_count = vec![0; 26];
+        for &c in p {
+            p_count[(c - b'a') as usize] += 1;
+        }
+        let mut s_count = vec![0; 26];
+        let mut result = vec![];
+        for i in 0..s.len() {
+            s_count[(s[i] - b'a') as usize] += 1;
+            if i >= p.len() {
+                s_count[(s[i - p.len()] - b'a') as usize] -= 1;
+            }
+            if s_count == p_count {
+                result.push((i - p.len() + 1) as i32);
+            }
+        }
+        result
+
+=======
+Suggestion 3
+
+        let mut res = Vec::new();
+        let mut map = [0; 26];
+        for c in p.chars() {
+            map[c as usize - 'a' as usize] += 1;
+        }
+        let mut count = p.len() as i32;
+        let mut i = 0;
+        let mut j = 0;
+        while j < s.len() {
+            let c = s.chars().nth(j).unwrap();
+            if map[c as usize - 'a' as usize] > 0 {
+                count -= 1;
+            }
+            map[c as usize - 'a' as usize] -= 1;
+            if j - i + 1 > p.len() {
+                let c = s.chars().nth(i).unwrap();
+                if map[c as usize - 'a' as usize] >= 0 {
+                    count += 1;
+                }
+                map[c as usize - 'a' as usize] += 1;
+                i += 1;
+            }
+            if count == 0 {
+                res.push(i as i32);
+            }
+            j += 1;
+        }
+        res
+
+=======
+Suggestion 4
+
+        let mut anagrams: Vec<i32> = Vec::new();
+        let mut s: Vec<char> = s.chars().collect();
+        let mut p: Vec<char> = p.chars().collect();
+        p.sort();
+        for i in 0..s.len() - p.len() + 1 {
+            let mut sub: Vec<char> = s[i..i + p.len()].to_vec();
+            sub.sort();
+            if sub == p {
+                anagrams.push(i as i32);
+            }
+        }
+        anagrams
+
+=======
+Suggestion 5
+
+        let mut res = vec![];
+        let mut s = s.chars().collect::<Vec<_>>();
+        let mut p = p.chars().collect::<Vec<_>>();
+        p.sort();
+        let n = s.len();
+        let m = p.len();
+        for i in 0..=n - m {
+            let mut tmp = s[i..i + m].to_vec();
+            tmp.sort();
+            if tmp == p {
+                res.push(i as i32);
+            }
+        }
+        res
+    }
+}
+
+=======
+Suggestion 6
+
+        let mut res = vec![];
+        let mut s = s.chars().collect::<Vec<char>>();
+        let mut p = p.chars().collect::<Vec<char>>();
+        let mut p_map = vec![0; 26];
+        for c in p {
+            p_map[c as usize - 'a' as usize] += 1;
+        }
+        let mut s_map = vec![0; 26];
+        for i in 0..s.len() {
+            s_map[s[i] as usize - 'a' as usize] += 1;
+            if i >= p.len() {
+                s_map[s[i - p.len()] as usize - 'a' as usize] -= 1;
+            }
+            if s_map == p_map {
+                res.push(i as i32 - p.len() as i32 + 1);
+            }
+        }
+        res
+
+=======
+Suggestion 7
+
+        let mut res = Vec::new();
+        let mut s = s.as_bytes().to_vec();
+        let mut p = p.as_bytes().to_vec();
+        let mut pmap = [0; 26];
+        let mut smap = [0; 26];
+        for i in 0..p.len() {
+            pmap[(p[i] - b'a') as usize] += 1;
+        }
+        for i in 0..s.len() {
+            smap[(s[i] - b'a') as usize] += 1;
+            if i >= p.len() {
+                smap[(s[i - p.len()] - b'a') as usize] -= 1;
+            }
+            if smap == pmap {
+                res.push((i - p.len() + 1) as i32);
+            }
+        }
+        res
+
+=======
+Suggestion 8
+
+        let mut ret = Vec::new();
+        let mut s = s.as_bytes().to_vec();
+        let mut p = p.as_bytes().to_vec();
+        let mut p_count = vec![0; 26];
+        let mut s_count = vec![0; 26];
+        for i in 0..p.len() {
+            p_count[(p[i] - b'a') as usize] += 1;
+        }
+        for i in 0..s.len() {
+            s_count[(s[i] - b'a') as usize] += 1;
+            if i >= p.len() {
+                s_count[(s[i - p.len()] - b'a') as usize] -= 1;
+            }
+            if p_count == s_count {
+                ret.push((i - p.len() + 1) as i32);
+            }
+        }
+        ret
+    }
+}
+
+=======
+Suggestion 9
+
+        let mut p = p.into_bytes();
+        p.sort();
+        let mut ans = vec![];
+        let s = s.as_bytes();
+        for i in 0..=s.len()-p.len() {
+            let mut tmp = s[i..i+p.len()].to_vec();
+            tmp.sort();
+            if tmp == p {
+                ans.push(i as i32);
+            }
+        }
+        ans
+
+=======
+Suggestion 10
+
+        let mut result = vec![];
+        let (p, s) = (p.as_bytes(), s.as_bytes());
+        let (mut start, mut end) = (0, 0);
+        let mut pmap = vec![0; 26];
+        let mut smap = vec![0; 26];
+        for c in p {
+            pmap[(c - b'a') as usize] += 1;
+        }
+        while end < s.len() {
+            smap[(s[end] - b'a') as usize] += 1;
+            if end - start + 1 > p.len() {
+                smap[(s[start] - b'a') as usize] -= 1;
+                start += 1;
+            }
+            if smap == pmap {
+                result.push(start as i32);
+            }
+            end += 1;
+        }
+        result

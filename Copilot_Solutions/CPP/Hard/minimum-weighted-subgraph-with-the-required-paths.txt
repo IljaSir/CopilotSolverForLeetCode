@@ -1,0 +1,334 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].push_back({e[1], e[2]});
+        }
+        vector<vector<long long>> dist(n, vector<long long>(n, LLONG_MAX));
+        for (int i = 0; i < n; ++i) {
+            dist[i][i] = 0;
+            priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+            pq.push({0, i});
+            while (!pq.empty()) {
+                auto [d, u] = pq.top();
+                pq.pop();
+                if (d > dist[i][u]) {
+                    continue;
+                }
+                for (auto [v, w] : graph[u]) {
+                    if (d + w < dist[i][v]) {
+                        dist[i][v] = d + w;
+                        pq.push({dist[i][v], v});
+                    }
+                }
+            }
+        }
+        if (dist[src1][dest] == LLONG_MAX || dist[src2][dest] == LLONG_MAX) {
+            return -1;
+        }
+        long long ans = dist[src1][dest] + dist[src2][dest];
+        for (int i = 0; i < n; ++i) {
+            if (dist[src1][i] != LLONG_MAX && dist[src2][i] != LLONG_MAX && dist[i][dest] != LLONG_MAX) {
+                ans = min(ans, dist[src1][i] + dist[src2][i] + dist[i][dest]);
+            }
+        }
+        return ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].emplace_back(e[1], e[2]);
+        }
+        vector<vector<long long>> dist(n, vector<long long>(n, INT64_MAX));
+        for (int i = 0; i < n; ++i) {
+            dist[i][i] = 0;
+            priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+            pq.emplace(0, i);
+            while (!pq.empty()) {
+                auto [d, u] = pq.top();
+                pq.pop();
+                if (d > dist[i][u]) continue;
+                for (auto [v, w] : graph[u]) {
+                    if (d + w < dist[i][v]) {
+                        dist[i][v] = d + w;
+                        pq.emplace(d + w, v);
+                    }
+                }
+            }
+        }
+        long long ans = INT64_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (dist[src1][i] != INT64_MAX && dist[src2][i] != INT64_MAX && dist[i][dest] != INT64_MAX) {
+                ans = min(ans, dist[src1][i] + dist[src2][i] + dist[i][dest]);
+            }
+        }
+        return ans == INT64_MAX ? -1 : ans;
+
+=======
+
+        vector<vector<pair<int, long long>>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].emplace_back(e[1], e[2]);
+        }
+        vector<long long> dist1(n, LLONG_MAX), dist2(n, LLONG_MAX);
+        dijkstra(adj, dist1, src1);
+        dijkstra(adj, dist2, src2);
+        long long res = LLONG_MAX;
+        for (auto& e : edges) {
+            if (dist1[e[0]] == LLONG_MAX || dist2[e[0]] == LLONG_MAX || dist1[e[1]] == LLONG_MAX || dist2[e[1]] == LLONG_MAX) {
+                continue;
+            }
+            long long cur = dist1[e[0]] + dist2[e[0]] + e[2] + dist1[e[1]] + dist2[e[1]];
+            if (e[0] == src1 && e[1] == src2) {
+                cur -= e[2];
+            }
+            if (e[0] == src2 && e[1] == src1) {
+                cur -= e[2];
+            }
+            res = min(res, cur);
+        }
+        return res == LLONG_MAX ? -1 : res;
+
+=======
+
+        vector<vector<pair<int, int>>> g(n);
+        for (auto& e : edges) {
+            g[e[0]].emplace_back(e[1], e[2]);
+        }
+        vector<vector<long long>> d(n, vector<long long>(n, 1e18L));
+        for (int i = 0; i < n; ++i) {
+            d[i][i] = 0;
+        }
+        for (int i = 0; i < n; ++i) {
+            for (auto& e : g[i]) {
+                d[i][e.first] = e.second;
+            }
+        }
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+                }
+            }
+        }
+        long long ans = 1e18L;
+        for (int i = 0; i < n; ++i) {
+            if (d[src1][i] < 1e18L && d[src2][i] < 1e18L && d[i][dest] < 1e18L) {
+                ans = min(ans, d[src1][i] + d[src2][i] + d[i][dest]);
+            }
+        }
+        return ans == 1e18L ? -1 : ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& edge: edges) {
+            graph[edge[0]].emplace_back(edge[1], edge[2]);
+        }
+        vector<vector<long long>> dist(n, vector<long long>(n, INT_MAX));
+        for (int i = 0; i < n; i++) {
+            dist[i][i] = 0;
+            priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+            pq.emplace(0, i);
+            while (!pq.empty()) {
+                auto [d, u] = pq.top();
+                pq.pop();
+                if (d > dist[i][u]) {
+                    continue;
+                }
+                for (auto& [v, w]: graph[u]) {
+                    if (d + w < dist[i][v]) {
+                        dist[i][v] = d + w;
+                        pq.emplace(d + w, v);
+                    }
+                }
+            }
+        }
+        long long ans = INT_MAX;
+        for (int i = 0; i < n; i++) {
+            if (dist[src1][i] == INT_MAX or dist[src2][i] == INT_MAX or dist[dest][i] == INT_MAX) {
+                continue;
+            }
+            ans = min(ans, dist[src1][i] + dist[src2][i] + dist[dest][i]);
+        }
+        return ans == INT_MAX ? -1 : ans;
+
+=======
+
+        vector<vector<pair<int, int>>> graph(n);
+        for (auto& e : edges) {
+            graph[e[0]].emplace_back(e[1], e[2]);
+        }
+        vector<long long> dist1(n, LLONG_MAX / 2);
+        vector<long long> dist2(n, LLONG_MAX / 2);
+        vector<long long> dist3(n, LLONG_MAX / 2);
+        vector<bool> visited(n, false);
+        dist1[src1] = 0;
+        dist2[src2] = 0;
+        dist3[dest] = 0;
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> q;
+        q.emplace(0, src1);
+        while (!q.empty()) {
+            auto [d, u] = q.top();
+            q.pop();
+            if (visited[u]) {
+                continue;
+            }
+            visited[u] = true;
+            for (auto [v, w] : graph[u]) {
+                if (dist1[v] > d + w) {
+                    dist1[v] = d + w;
+                    q.emplace(dist1[v], v);
+                }
+            }
+        }
+        q.emplace(0, src2);
+        fill(visited.begin(), visited.end(), false);
+        while (!q.empty()) {
+            auto [d, u] = q.top();
+            q.pop();
+            if (visited[u]) {
+                continue;
+            }
+            visited[u] = true;
+            for (auto [v, w] : graph[u]) {
+                if (dist2[v] > d + w) {
+                    dist2[v] = d + w;
+                    q.emplace(dist2[v], v);
+                }
+            }
+        }
+        q.emplace(0, dest);
+        fill(visited.begin(), visited.end(), false);
+        while (!q.empty()) {
+            auto [d, u] = q.top();
+            q.pop();
+            if (visited[u]) {
+                continue;
+            }
+            visited[u] = true;
+            for (auto [v, w] : graph[u]) {
+                if (dist3[v] > d + w) {
+                    dist3[v] = d + w;
+                    q.emplace(dist3[v], v);
+                }
+            }
+        }
+        long long ans = LLONG_MAX;
+        for (auto& e : edges) {
+            ans
+
+=======
+
+        long long INF = 1e18;
+        vector<vector<pair<int, long long>>> adj(n);
+        for (auto& e : edges) {
+            adj[e[0]].push_back({e[1], e[2]});
+        }
+        vector<vector<long long>> dist(3, vector<long long>(n, INF));
+        vector<vector<int>> par(3, vector<int>(n, -1));
+        for (int i = 0; i < 3; ++i) {
+            priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+            pq.push({0, i == 0 ? src1 : src2});
+            dist[i][i == 0 ? src1 : src2] = 0;
+            while (!pq.empty()) {
+                auto [d, u] = pq.top();
+                pq.pop();
+                if (d > dist[i][u]) {
+                    continue;
+                }
+                for (auto [v, w] : adj[u]) {
+                    if (d + w < dist[i][v]) {
+                        dist[i][v] = d + w;
+                        par[i][v] = u;
+                        pq.push({dist[i][v], v});
+                    }
+                }
+            }
+        }
+        long long ans = INF;
+        for (int i = 0; i < n; ++i) {
+            if (dist[0][i] != INF && dist[1][i] != INF && dist[2][i] != INF) {
+                ans = min(ans, dist[0][i] + dist[1][i] + dist[2][i]);
+            }
+        }
+        return ans == INF ? -1 : ans;
+
+=======
+
+        vector<vector<pair<int,int>>> g(n);
+        for (auto e : edges) {
+            g[e[0]].emplace_back(e[1], e[2]);
+        }
+        vector<vector<long long>> dist(n, vector<long long>(n, LONG_LONG_MAX));
+        for (int i = 0; i < n; ++i) {
+            dist[i][i] = 0;
+            priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+            pq.emplace(0, i);
+            while (!pq.empty()) {
+                auto p = pq.top();
+                pq.pop();
+                if (p.first > dist[i][p.second]) continue;
+                for (auto e : g[p.second]) {
+                    if (dist[i][p.second] + e.second < dist[i][e.first]) {
+                        dist[i][e.first] = dist[i][p.second] + e.second;
+                        pq.emplace(dist[i][e.first], e.first);
+                    }
+                }
+            }
+        }
+        long long res = LONG_LONG_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (dist[src1][i] != LONG_LONG_MAX && dist[src2][i] != LONG_LONG_MAX && dist[i][dest] != LONG_LONG_MAX) {
+                res = min(res, dist[src1][i] + dist[src2][i] + dist[i][dest]);
+            }
+        }
+        return res == LONG_LONG_MAX ? -1 : res;
+
+=======
+
+        vector<vector<int>> graph(n);
+        for (auto& e: edges) {
+            graph[e[0]].push_back(e[1]);
+        }
+        vector<int> dist1(n, INT_MAX), dist2(n, INT_MAX);
+        dist1[src1] = dist2[src2] = 0;
+        queue<int> q1, q2;
+        q1.push(src1);
+        q2.push(src2);
+        while (!q1.empty() || !q2.empty()) {
+            if (!q1.empty()) {
+                int u = q1.front();
+                q1.pop();
+                for (int v: graph[u]) {
+                    if (dist1[v] > dist1[u] + 1) {
+                        dist1[v] = dist1[u] + 1;
+                        q1.push(v);
+                    }
+                }
+            }
+            if (!q2.empty()) {
+                int u = q2.front();
+                q2.pop();
+                for (int v: graph[u]) {
+                    if (dist2[v] > dist2[u] + 1) {
+                        dist2[v] = dist2[u] + 1;
+                        q2.push(v);
+                    }
+                }
+            }
+        }
+        long long ans = INT_MAX;
+        for (auto& e: edges) {
+            int u = e[0], v = e[1], w = e[2];
+            if (dist1[u] != INT_MAX && dist2[v] != INT_MAX && dist1[u] + dist2[v] + 1 <= dist1[dest]) {
+                ans = min(ans, dist1[u] + dist2[v] + 1LL * w);
+            }
+            if (dist1[v] != INT_MAX && dist2[u] != INT_MAX && dist1[v] + dist2[u] + 1 <= dist1[dest]) {
+                ans = min(ans, dist1[v] + dist2[u] + 1LL * w);
+            }
+        }
+        return ans == INT_MAX ? -1 : ans;

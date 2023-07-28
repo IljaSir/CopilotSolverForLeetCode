@@ -1,0 +1,431 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut q = std::collections::VecDeque::new();
+        q.push_back((0, 0));
+        visited[0][0] = true;
+        while !q.is_empty() {
+            let (x, y) = q.pop_front().unwrap();
+            if x == m - 1 && y == n - 1 {
+                return true;
+            }
+            let c = grid[x][y];
+            let mut dir = vec![];
+            match c {
+                '(' => dir = vec![(0, 1), (1, 0)],
+                ')' => dir = vec![(0, -1), (-1, 0)],
+                '*' => dir = vec![(0, 1), (1, 0), (0, -1), (-1, 0)],
+                '|' => dir = vec![(1, 0), (-1, 0)],
+                '-' => dir = vec![(0, 1), (0, -1)],
+                _ => {}
+            }
+            for (dx, dy) in dir {
+                let nx = x as i32 + dx;
+                let ny = y as i32 + dy;
+                if nx < 0 || nx >= m as i32 || ny < 0 || ny >= n as i32 {
+                    continue;
+                }
+                let nx = nx as usize;
+                let ny = ny as usize;
+                if visited[nx][ny] {
+                    continue;
+                }
+                let nc = grid[nx][ny];
+                if (dx == 0 && dy == 1 && nc == '(') || (dx == 1 && dy == 0 && nc == '|') || (dx == 0 && dy == -1 && nc == ')') || (dx == -1 && dy == 0 && nc == '|') {
+                    visited[nx][ny] = true;
+                    q.push_back((nx, ny));
+                }
+                if (dx == 0 && dy == -1 && nc == '(') || (dx == 1 && dy == 0 && nc == '-') || (dx == 0 && dy == 1 && nc == ')') || (dx == -1 && dy == 0 && nc == '-') {
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue = Vec::new();
+        queue.push((0, 0));
+        visited[0][0] = true;
+        let mut res = false;
+        while !queue.is_empty() {
+            let (x, y) = queue.remove(0);
+            if x == m - 1 && y == n - 1 {
+                res = true;
+                break;
+            }
+            let c = grid[x][y];
+            for (i, j) in [(x, y + 1), (x, y - 1), (x + 1, y), (x - 1, y)].iter() {
+                if *i >= 0 && *i < m && *j >= 0 && *j < n && !visited[*i][*j] {
+                    match grid[*i][*j] {
+                        '(' => {
+                            if c == '(' || c == ' ' {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        ')' => {
+                            if c == ')' || c == ' ' {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        '-' => {
+                            if c == '-' || c == ' ' {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        '|' => {
+                            if c == '|' || c == ' ' {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        ' ' => {
+                            queue.push((*i, *j));
+                            visited[*i][*j] = true;
+                        }
+                        '/' => {
+                            if (c == '(' && *j > y) || (c == ')' && *j < y) {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        '\\' => {
+                            if (c == '(' && *j < y) || (c == ')' && *j > y) {
+                                queue.push((*i, *j));
+                                visited[*i][*j] = true;
+                            }
+                        }
+                        _ =>
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut stack = vec![(0, 0)];
+        while !stack.is_empty() {
+            let (i, j) = stack.pop().unwrap();
+            if i == m - 1 && j == n - 1 {
+                return true;
+            }
+            visited[i][j] = true;
+            let c = grid[i][j];
+            let mut next = vec![];
+            if i > 0 && !visited[i - 1][j] {
+                match c {
+                    '(' | 'A' | 'C' | 'E' | 'G' => {
+                        match grid[i - 1][j] {
+                            ')' | 'A' | 'B' | 'D' | 'F' => next.push((i - 1, j)),
+                            _ => (),
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if i < m - 1 && !visited[i + 1][j] {
+                match c {
+                    ')' | 'A' | 'B' | 'D' | 'F' => {
+                        match grid[i + 1][j] {
+                            '(' | 'A' | 'C' | 'E' | 'G' => next.push((i + 1, j)),
+                            _ => (),
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if j > 0 && !visited[i][j - 1] {
+                match c {
+                    '(' | 'B' | 'D' | 'F' | 'G' => {
+                        match grid[i][j - 1] {
+                            ')' | 'B' | 'C' | 'E' | 'G' => next.push((i, j - 1)),
+                            _ => (),
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if j < n - 1 && !visited[i][j + 1] {
+                match c {
+                    ')' | 'B' | 'C' | 'E' | 'G' => {
+                        match grid[i][j + 1] {
+                            '(' | 'B' | 'D' | 'F' | 'G' => next.push((i, j + 1)),
+                            _ => (),
+                        }
+                    }
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut stack = vec![(0, 0, 0)];
+        while let Some((x, y, d)) = stack.pop() {
+            if x == m - 1 && y == n - 1 {
+                return true;
+            }
+            if visited[x][y] {
+                continue;
+            }
+            visited[x][y] = true;
+            let dirs = match grid[x][y] {
+                '(' => vec![(0, 1), (1, 0)],
+                ')' => vec![(0, -1), (-1, 0)],
+                '/' => vec![(0, d), (d, 0)],
+                '\\' => vec![(-d, 0), (0, -d)],
+                _ => vec![(0, 1), (1, 0), (0, -1), (-1, 0)],
+            };
+            for (dx, dy) in dirs {
+                let nx = x as i32 + dx;
+                let ny = y as i32 + dy;
+                if nx < 0 || ny < 0 || nx >= m as i32 || ny >= n as i32 {
+                    continue;
+                }
+                let nx = nx as usize;
+                let ny = ny as usize;
+                if visited[nx][ny] {
+                    continue;
+                }
+                match grid[nx][ny] {
+                    '(' => {
+                        if dy == 1 {
+                            stack.push((nx, ny, 1));
+                        }
+                    }
+                    ')' => {
+                        if dy == -1 {
+                            stack.push((nx, ny, -1));
+                        }
+                    }
+                    '/' => {
+                        if dx == 1 {
+                            stack.push((nx, ny, 1));
+                        } else {
+                            stack.push((nx, ny, -1));
+                        }
+                    }
+                    '\\' => {
+                        if dx == 1 {
+                            stack.push((nx, ny, -1));
+                        } else {
+                            stack.push((nx, ny, 1));
+                        }
+                    }
+                    _ => {
+                        stack.push((nx, ny, 0));
+                    }
+                }
+            }
+        }
+        false
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        let mut queue: Vec<(usize, usize)> = vec![];
+        queue.push((0, 0));
+        let mut res = false;
+        while !queue.is_empty() {
+            let (i, j) = queue.remove(0);
+            if i == m - 1 && j == n - 1 {
+                res = true;
+                break;
+            }
+            if !visited[i][j] {
+                visited[i][j] = true;
+                match grid[i][j] {
+                    '/' => {
+                        if i > 0 && grid[i - 1][j] == '/' {
+                            queue.push((i - 1, j));
+                        }
+                        if j > 0 && grid[i][j - 1] == '/' {
+                            queue.push((i, j - 1));
+                        }
+                        if i < m - 1 && grid[i + 1][j] == '\\' {
+                            queue.push((i + 1, j));
+                        }
+                        if j < n - 1 && grid[i][j + 1] == '\\' {
+                            queue.push((i, j + 1));
+                        }
+                    }
+                    '\\' => {
+                        if i > 0 && grid[i - 1][j] == '\\' {
+                            queue.push((i - 1, j));
+                        }
+                        if j > 0 && grid[i][j - 1] == '\\' {
+                            queue.push((i, j - 1));
+                        }
+                        if i < m - 1 && grid[i + 1][j] == '/' {
+                            queue.push((i + 1, j));
+                        }
+                        if j < n - 1 && grid[i][j + 1] == '/' {
+                            queue.push((i, j + 1));
+                        }
+                    }
+                    '(' => {
+                        if i > 0 && grid[i - 1][j] != ')' {
+                            queue.push((i - 1, j));
+                        }
+                        if j > 0 && grid[i][j - 1] != ')' {
+                            queue.push((i, j - 1));
+                        }
+                        if i < m - 1 && grid[i + 1][j] != ')' {
+                            queue.push((i + 1,
+
+=======
+
+        let mut queue = Vec::new();
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        queue.push((0, 0));
+        while !queue.is_empty() {
+            let (x, y) = queue.remove(0);
+            if x == grid.len() - 1 && y == grid[0].len() - 1 {
+                return true;
+            }
+            if visited[x][y] {
+                continue;
+            }
+            visited[x][y] = true;
+            match grid[x][y] {
+                '(' => {
+                    if y + 1 < grid[0].len() && grid[x][y + 1] == ')' {
+                        queue.push((x, y + 1));
+                    }
+                }
+                ')' => {
+                    if y > 0 && grid[x][y - 1] == '(' {
+                        queue.push((x, y - 1));
+                    }
+                }
+                '[' => {
+                    if x + 1 < grid.len() && grid[x + 1][y] == ']' {
+                        queue.push((x + 1, y));
+                    }
+                }
+                ']' => {
+                    if x > 0 && grid[x - 1][y] == '[' {
+                        queue.push((x - 1, y));
+                    }
+                }
+                '{' => {
+                    if x + 1 < grid.len() && grid[x + 1][y] == '}' {
+                        queue.push((x + 1, y));
+                    }
+                }
+                '}' => {
+                    if x > 0 && grid[x - 1][y] == '{' {
+                        queue.push((x - 1, y));
+                    }
+                }
+                _ => {}
+            }
+        }
+        false
+
+=======
+
+        let mut q = std::collections::VecDeque::new();
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        q.push_back((0, 0, 0));
+        while !q.is_empty() {
+            let (x, y, cnt) = q.pop_front().unwrap();
+            if visited[x][y] { continue; }
+            visited[x][y] = true;
+            if x == grid.len() - 1 && y == grid[0].len() - 1 { return true; }
+            let c = grid[x][y];
+            if c == '(' {
+                if y + 1 < grid[0].len() && grid[x][y + 1] == ')' {
+                    q.push_back((x, y + 1, cnt + 1));
+                }
+                if x + 1 < grid.len() && grid[x + 1][y] == ')' {
+                    q.push_back((x + 1, y, cnt + 1));
+                }
+            } else if c == ')' {
+                if y > 0 && grid[x][y - 1] == '(' {
+                    q.push_back((x, y - 1, cnt + 1));
+                }
+                if x > 0 && grid[x - 1][y] == '(' {
+                    q.push_back((x - 1, y, cnt + 1));
+                }
+            } else if c == '*' {
+                if y + 1 < grid[0].len() && grid[x][y + 1] != '(' {
+                    q.push_back((x, y + 1, cnt + 1));
+                }
+                if x + 1 < grid.len() && grid[x + 1][y] != '(' {
+                    q.push_back((x + 1, y, cnt + 1));
+                }
+                if y > 0 && grid[x][y - 1] != ')' {
+                    q.push_back((x, y - 1, cnt + 1));
+                }
+                if x > 0 && grid[x - 1][y] != ')' {
+                    q.push_back((x - 1, y, cnt + 1));
+                }
+            } else if c == '|' {
+                if y + 1 < grid[0].len() && grid[x][y + 1] !=
+
+=======
+
+        let mut dp = vec![vec![vec![false; 4]; grid[0].len()]; grid.len()];
+        let mut q = Vec::new();
+        q.push((0, 0, 0));
+        q.push((0, 0, 1));
+        q.push((0, 0, 2));
+        q.push((0, 0, 3));
+        while !q.is_empty() {
+            let (x, y, d) = q.remove(0);
+            if dp[x][y][d] {
+                continue;
+            }
+            dp[x][y][d] = true;
+            match (grid[x][y], d) {
+                ('/', 0) => {
+                    if x + 1 < grid.len() {
+                        q.push((x + 1, y, 2));
+                    }
+                    if y + 1 < grid[0].len() {
+                        q.push((x, y + 1, 3));
+                    }
+                }
+                ('/', 1) => {
+                    if x + 1 < grid.len() {
+                        q.push((x + 1, y, 3));
+                    }
+                    if y > 0 {
+                        q.push((x, y - 1, 2));
+                    }
+                }
+                ('/', 2) => {
+                    if x > 0 {
+                        q.push((x - 1, y, 0));
+                    }
+                    if y + 1 < grid[0].len() {
+                        q.push((x, y + 1, 1));
+                    }
+                }
+                ('/', 3) => {
+                    if x > 0 {
+                        q.push((x - 1, y, 1));
+                    }
+                    if y > 0 {
+                        q.push((x, y - 1, 0));
+                    }
+                }
+                ('\\', 0) => {
+                    if x + 1 < grid.len() {
+                        q.push((x + 1, y, 3));
+                    }
+                    if y > 0 {
+                        q.push((x, y - 1, 2));
+                    }
+                }
+                ('\\', 1) => {
+                    if x + 1 < grid.len() {
+                        q.push((x + 1, y, 2));
+                    }
+                    if y + 1 < grid[0].len()

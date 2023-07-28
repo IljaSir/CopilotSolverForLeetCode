@@ -1,0 +1,472 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        List<int[]> trees = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int height = forest.get(i).get(j);
+                if (height > 1) {
+                    trees.add(new int[] {height, i, j});
+                }
+            }
+        }
+        Collections.sort(trees, (a, b) -> a[0] - b[0]);
+        int total = 0;
+        int[] start = new int[] {0, 0};
+        for (int[] tree : trees) {
+            int steps = bfs(forest, start[0], start[1], tree[1], tree[2]);
+            if (steps == -1) {
+                return -1;
+            }
+            total += steps;
+            start[0] = tree[1];
+            start[1] = tree[2];
+        }
+        return total;
+    }
+
+    private int bfs(List<List<Integer>> forest, int startRow, int startCol, int endRow, int endCol) {
+        int m = forest.size();
+        int n = forest.get(0).size();
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[m][n];
+        queue.offer(new int[] {startRow, startCol});
+        visited[startRow][startCol] = true;
+        int steps = 0;
+        int[][] dirs = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = queue.poll();
+                if (cur[0] == endRow && cur[1] == endCol) {
+                    return steps;
+                }
+                for (int[] dir : dirs) {
+                    int nextRow = cur[0] + dir[0];
+                    int nextCol = cur[1] + dir[1];
+                    if (nextRow >= 0 && nextRow < m && nextCol >= 0 && nextCol < n && !visited[nextRow][nextCol] && forest.get(nextRow).get(nextCol) > 0
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        List<int[]> trees = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int h = forest.get(i).get(j);
+                if (h > 1) {
+                    trees.add(new int[]{h, i, j});
+                }
+            }
+        }
+        trees.sort((a, b) -> a[0] - b[0]);
+        int x = 0, y = 0, steps = 0;
+        for (int[] tree : trees) {
+            int step = bfs(forest, x, y, tree[1], tree[2]);
+            if (step < 0) return -1;
+            steps += step;
+            x = tree[1];
+            y = tree[2];
+        }
+        return steps;
+    }
+
+    private int bfs(List<List<Integer>> forest, int x1, int y1, int x2, int y2) {
+        int m = forest.size();
+        int n = forest.get(0).size();
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{x1, y1});
+        boolean[][] visited = new boolean[m][n];
+        visited[x1][y1] = true;
+        int step = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                if (cur[0] == x2 && cur[1] == y2) return step;
+                for (int[] d : new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}) {
+                    int nx = cur[0] + d[0];
+                    int ny = cur[1] + d[1];
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny] && forest.get(nx).get(ny) > 0) {
+                        q.offer(new int[]{nx, ny});
+                        visited[nx][ny] = true;
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+
+=======
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        int m = forest.size(), n = forest.get(0).size();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int tree = forest.get(i).get(j);
+                if (tree > 1) {
+                    pq.add(new int[]{i, j, tree});
+                }
+            }
+        }
+        int steps = 0, sr = 0, sc = 0;
+        while (!pq.isEmpty()) {
+            int[] tree = pq.poll();
+            int tr = tree[0], tc = tree[1], dist = distance(forest, sr, sc, tr, tc);
+            if (dist < 0) {
+                return -1;
+            }
+            steps += dist;
+            sr = tr;
+            sc = tc;
+        }
+        return steps;
+    }
+
+    private int distance(List<List<Integer>> forest, int sr, int sc, int tr, int tc) {
+        int m = forest.size(), n = forest.get(0).size();
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{sr, sc});
+        boolean[][] visited = new boolean[m][n];
+        visited[sr][sc] = true;
+        int dist = 0;
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                if (cur[0] == tr && cur[1] == tc) {
+                    return dist;
+                }
+                for (int[] dir : dirs) {
+                    int r = cur[0] + dir[0];
+                    int c = cur[1] + dir[1];
+                    if (r < 0 || r >= m || c < 0 || c >= n || visited[r][c] || forest.get(r).get(c) == 0) {
+                        continue;
+                    }
+                    q.offer(new int[]{r, c});
+                    visited[r][c] = true;
+                }
+            }
+            dist++;
+        }
+        return -1;
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        List<int[]> trees = new ArrayList<>();
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int v = forest.get(i).get(j);
+                if (v > 1) trees.add(new int[]{v, i, j});
+            }
+        }
+        Collections.sort(trees, (a, b) -> a[0] - b[0]);
+        int ans = 0, sr = 0, sc = 0;
+        for (int[] tree: trees) {
+            int d = dist(forest, sr, sc, tree[1], tree[2]);
+            if (d < 0) return -1;
+            ans += d;
+            sr = tree[1]; sc = tree[2];
+        }
+        return ans;
+    }
+
+    public int dist(List<List<Integer>> forest, int r1, int c1, int r2, int c2) {
+        int m = forest.size(), n = forest.get(0).size();
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{r1, c1});
+        boolean[][] seen = new boolean[m][n];
+        seen[r1][c1] = true;
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int d = 0;
+        while (!queue.isEmpty()) {
+            for (int sz = queue.size(); sz > 0; --sz) {
+                int[] rc = queue.poll();
+                if (rc[0] == r2 && rc[1] == c2) return d;
+                for (int[] dir: dirs) {
+                    int nr = rc[0] + dir[0], nc = rc[1] + dir[1];
+                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && !seen[nr][nc] && forest.get(nr).get(nc) > 0) {
+                        queue.offer(new int[]{nr, nc});
+                        seen[nr][nc] = true;
+                    }
+                }
+            }
+            d++;
+        }
+        return -1;
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] grid = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                grid[i][j] = forest.get(i).get(j);
+            }
+        }
+        int[][] dirs = new int[][] {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                return a[2] - b[2];
+            }
+        });
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] > 1) {
+                    pq.offer(new int[] {i, j, grid[i][j]});
+                }
+            }
+        }
+        int[] start = new int[] {0, 0};
+        int res = 0;
+        while (!pq.isEmpty()) {
+            int[] tree = pq.poll();
+            int dist = distance(grid, start, tree, m, n, dirs);
+            if (dist == -1) {
+                return -1;
+            }
+            res += dist;
+            start[0] = tree[0];
+            start[1] = tree[1];
+        }
+        return res;
+    }
+    
+    private int distance(int[][] grid, int[] start, int[] tree, int m, int n, int[][] dirs) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(start);
+        boolean[][] visited = new boolean[m][n];
+        visited[start[0]][start[1]] = true;
+        int dist = 0;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int[] cur = q.poll();
+                if (cur[0] == tree[0] && cur[1] == tree[1]) {
+                    return dist;
+                }
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] +
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] grid = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                grid[i][j] = forest.get(i).get(j);
+            }
+        }
+        int[][] dist = new int[m * n][m * n];
+        int[] dx = new int[]{-1, 1, 0, 0};
+        int[] dy = new int[]{0, 0, -1, 1};
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] > 1) {
+                    boolean[][] visited = new boolean[m][n];
+                    Queue<int[]> queue = new LinkedList<>();
+                    queue.offer(new int[]{i, j});
+                    visited[i][j] = true;
+                    while (!queue.isEmpty()) {
+                        int[] cur = queue.poll();
+                        int x = cur[0];
+                        int y = cur[1];
+                        int d = dist[i * n + j][x * n + y];
+                        if (grid[x][y] > 1 && grid[x][y] != grid[i][j]) {
+                            dist[i * n + j][x * n + y] = d;
+                            dist[x * n + y][i * n + j] = d;
+                        }
+                        for (int k = 0; k < 4; k++) {
+                            int nx = x + dx[k];
+                            int ny = y + dy[k];
+                            if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny] && grid[nx][ny] != 0) {
+                                queue.offer(new int[]{nx, ny});
+                                visited[nx][ny] = true;
+                                dist[i * n + j][nx * n + ny] = d + 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        int cur = 0;
+        boolean[] visited = new boolean[m * n];
+        visited[0] = true;
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b)
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] grid = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                grid[i][j] = forest.get(i).get(j);
+            }
+        }
+        List<int[]> trees = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] > 1) {
+                    trees.add(new int[]{grid[i][j], i, j});
+                }
+            }
+        }
+        Collections.sort(trees, (a, b) -> a[0] - b[0]);
+        int ans = 0;
+        int x = 0, y = 0;
+        for (int[] tree : trees) {
+            int d = dist(grid, x, y, tree[1], tree[2]);
+            if (d < 0) {
+                return -1;
+            }
+            ans += d;
+            x = tree[1];
+            y = tree[2];
+        }
+        return ans;
+    }
+    
+    private int dist(int[][] grid, int sx, int sy, int tx, int ty) {
+        int m = grid.length;
+        int n = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] seen = new boolean[m][n];
+        queue.offer(new int[]{sx, sy, 0});
+        seen[sx][sy] = true;
+        int[][] dirs = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        while (!queue.isEmpty()) {
+            int[] p = queue.poll();
+            if (p[0] == tx && p[1] == ty) {
+                return p[2];
+            }
+            for (int[] dir : dirs) {
+                int x = p[0] + dir[0];
+                int y = p[1] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || seen[x][y] || grid[x][y] == 0) {
+                    continue;
+                }
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] f = new int[m][n];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                f[i][j] = forest.get(i).get(j);
+            }
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[2] - b[2]);
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (f[i][j] > 1) {
+                    pq.offer(new int[]{i, j, f[i][j]});
+                }
+            }
+        }
+        int[] start = new int[]{0, 0};
+        int res = 0;
+        while (!pq.isEmpty()) {
+            int[] tree = pq.poll();
+            int step = bfs(f, start, tree);
+            if (step == -1) {
+                return -1;
+            }
+            res += step;
+            start[0] = tree[0];
+            start[1] = tree[1];
+        }
+        return res;
+    }
+    private int bfs(int[][] f, int[] start, int[] tree) {
+        int m = f.length;
+        int n = f[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(start);
+        visited[start[0]][start[1]] = true;
+        int step = 0;
+        int[][] dirs = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                int[] cur = q.poll();
+                if (cur[0] == tree[0] && cur[1] == tree[1]) {
+                    return step;
+                }
+                for (int[] dir : dirs) {
+                    int x = cur[0] + dir[0];
+                    int y = cur[1] + dir[1];
+                    if (x < 0 || x >= m || y < 0
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] trees = new int[m*n][3];
+        int k = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int h = forest.get(i).get(j);
+                if (h > 1) {
+                    trees[k][0] = h;
+                    trees[k][1] = i;
+                    trees[k][2] = j;
+                    k++;
+                }
+            }
+        }
+        Arrays.sort(trees, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return a[0] - b[0];
+            }
+        });
+        int x = 0, y = 0, ans = 0;
+        for (int i = 0; i < k; i++) {
+            int d = dist(forest, x, y, trees[i][1], trees[i][2]);
+            if (d < 0) return -1;
+            ans += d;
+            x = trees[i][1];
+            y = trees[i][2];
+        }
+        return ans;
+
+=======
+
+        int m = forest.size();
+        int n = forest.get(0).size();
+        int[][] trees = new int[m*n][3];
+        int k = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                int height = forest.get(i).get(j);
+                if (height > 1) {
+                    trees[k][0] = height;
+                    trees[k][1] = i;
+                    trees[k][2] = j;
+                    k++;
+                }
+            }
+        }
+        Arrays.sort(trees, (a, b) -> Integer.compare(a[0], b[0]));
+        int res = 0, sr = 0, sc = 0;
+        for (int i = 0; i < k; i++) {
+            int d = dist(forest, sr, sc, trees[i][1], trees[i][2]);
+            if (d < 0) return -1;
+            res += d;
+            sr = trees[i][1];
+            sc = trees[i][2];
+        }
+        return res;

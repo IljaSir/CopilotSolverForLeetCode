@@ -1,0 +1,13 @@
+impl Solution {
+    pub fn add_digits(num: i32) -> i32 {
+        
+        if num == 0 {
+            return 0;
+        }
+        let mut n = num;
+        while n >= 10 {
+            n = n / 10 + n % 10;
+        }
+        n
+    }
+}

@@ -1,0 +1,294 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut words = words;
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp = vec![1; words.len()];
+        let mut res = 0;
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() == 1 && Solution::is_predecessor(&words[i], &words[j]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+            res = res.max(dp[i]);
+        }
+        res
+    }
+    fn is_predecessor(a: &String, b: &String) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a.as_bytes()[i] != b.as_bytes()[j] {
+                if i > j {
+                    return false;
+                }
+                i += 1;
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        true
+
+=======
+
+        let mut words: Vec<Vec<char>> = words.iter().map(|w| w.chars().collect()).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp: Vec<i32> = vec![1; words.len()];
+        let mut ans = 1;
+        for i in 1..words.len() {
+            for j in 0..i {
+                if words[i].len() == words[j].len() + 1 && Self::is_predecessor(&words[j], &words[i]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                    ans = ans.max(dp[i]);
+                }
+            }
+        }
+        ans
+    }
+    fn is_predecessor(a: &Vec<char>, b: &Vec<char>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a[i] == b[j] {
+                i += 1;
+                j += 1;
+            } else {
+                j += 1;
+            }
+        }
+        i == a.len()
+
+=======
+
+        let mut words: Vec<Vec<char>> = words.into_iter().map(|w| w.chars().collect()).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp: Vec<i32> = vec![1; words.len()];
+        let mut max_len: i32 = 1;
+        for i in 1..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() > 1 {
+                    continue;
+                }
+                let mut is_predecessor = true;
+                let mut l = 0;
+                let mut r = 0;
+                while l < words[j].len() && r < words[i].len() {
+                    if words[j][l] == words[i][r] {
+                        l += 1;
+                        r += 1;
+                    } else {
+                        if l != r {
+                            is_predecessor = false;
+                            break;
+                        }
+                        r += 1;
+                    }
+                }
+                if is_predecessor && l == words[j].len() {
+                    dp[i] = std::cmp::max(dp[i], dp[j] + 1);
+                }
+            }
+            max_len = std::cmp::max(max_len, dp[i]);
+        }
+        max_len
+
+=======
+
+        let mut words: Vec<String> = words;
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp = vec![1; words.len()];
+        let mut ans = 1;
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() > 1 {
+                    continue;
+                }
+                if Solution::is_predecessor(&words[i], &words[j]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+            ans = ans.max(dp[i]);
+        }
+        ans
+    }
+    fn is_predecessor(a: &String, b: &String) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a.as_bytes()[i] == b.as_bytes()[j] {
+                i += 1;
+                j += 1;
+            } else {
+                if i != j {
+                    return false;
+                }
+                i += 1;
+            }
+        }
+        true
+
+=======
+
+        let mut words = words;
+        words.sort_by_key(|s| s.len());
+        let mut dp = vec![1; words.len()];
+        let mut ans = 1;
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() > 1 {
+                    continue;
+                }
+                let mut diff = 0;
+                let mut k = 0;
+                let mut l = 0;
+                while k < words[i].len() && l < words[j].len() {
+                    if words[i].as_bytes()[k] == words[j].as_bytes()[l] {
+                        k += 1;
+                        l += 1;
+                    } else {
+                        diff += 1;
+                        k += 1;
+                    }
+                }
+                if diff == 1 || (diff == 0 && words[i].len() > words[j].len()) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                    ans = ans.max(dp[i]);
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut words: Vec<Vec<char>> = words.iter().map(|s| s.chars().collect()).collect();
+        words.sort_by_key(|w| w.len());
+        let mut dp: Vec<i32> = vec![1; words.len()];
+        for i in 1..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() == 1 {
+                    if Self::is_predecessor(&words[j], &words[i]) {
+                        dp[i] = dp[i].max(dp[j] + 1);
+                    }
+                }
+            }
+        }
+        *dp.iter().max().unwrap()
+    }
+    fn is_predecessor(a: &Vec<char>, b: &Vec<char>) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a[i] == b[j] {
+                i += 1;
+                j += 1;
+            } else {
+                j += 1;
+            }
+        }
+        i == a.len()
+
+=======
+
+        let mut words: Vec<Vec<char>> = words.iter().map(|s| s.chars().collect()).collect();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp = vec![0; words.len()];
+        let mut ans = 0;
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() == 1 && Self::is_predecessor(&words[j], &words[i]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+            ans = ans.max(dp[i]);
+        }
+        ans + 1
+    }
+    fn is_predecessor(a: &[char], b: &[char]) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a[i] == b[j] {
+                i += 1;
+                j += 1;
+            } else {
+                if i != j {
+                    return false;
+                }
+                j += 1;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut words = words.iter().map(|x| x.as_bytes()).collect::<Vec<&[u8]>>();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        let mut dp = vec![1; words.len()];
+        let mut ans = 0;
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() == 1 && Self::is_predecessor(words[j], words[i]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+            ans = ans.max(dp[i]);
+        }
+        ans
+    }
+    fn is_predecessor(pre: &[u8], cur: &[u8]) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < pre.len() {
+            if pre[i] != cur[j] {
+                if i != j {
+                    return false;
+                }
+                j += 1;
+            } else {
+                i += 1;
+                j += 1;
+            }
+        }
+        true
+    }
+}
+
+=======
+
+        let mut words = words;
+        let mut dp = vec![1; words.len()];
+        let mut ans = 1;
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        for i in 0..words.len() {
+            for j in 0..i {
+                if words[i].len() - words[j].len() == 1 && Self::is_predecessor(&words[i], &words[j]) {
+                    dp[i] = dp[i].max(dp[j] + 1);
+                }
+            }
+            ans = ans.max(dp[i]);
+        }
+        ans
+    }
+    fn is_predecessor(a: &str, b: &str) -> bool {
+        let mut i = 0;
+        let mut j = 0;
+        while i < a.len() && j < b.len() {
+            if a[i..i + 1] == b[j..j + 1] {
+                i += 1;
+                j += 1;
+            } else {
+                i += 1;
+            }
+        }
+        j == b.len()
+
+=======
+
+        
+    }
+}

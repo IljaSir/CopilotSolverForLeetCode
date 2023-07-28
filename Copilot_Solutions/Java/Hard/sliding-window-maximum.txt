@@ -1,0 +1,253 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        if (nums == null || nums.length == 0) return new int[0];
+        int[] result = new int[nums.length - k + 1];
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 0; i < nums.length; i++) {
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+            if (i - deque.peekFirst() + 1 > k) {
+                deque.pollFirst();
+            }
+            if (i - k + 1 >= 0) {
+                result[i - k + 1] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
+
+=======
+
+        if (nums == null || nums.length == 0) {
+            return new int[0];
+        }
+        int[] result = new int[nums.length - k + 1];
+        int maxIndex = 0;
+        for (int i = 1; i < k; i++) {
+            if (nums[i] > nums[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+        for (int i = k; i < nums.length; i++) {
+            result[i - k] = nums[maxIndex];
+            if (nums[i] >= nums[maxIndex]) {
+                maxIndex = i;
+            } else if (maxIndex == i - k) {
+                maxIndex = i - k + 1;
+                for (int j = i - k + 1; j <= i; j++) {
+                    if (nums[j] > nums[maxIndex]) {
+                        maxIndex = j;
+                    }
+                }
+            }
+        }
+        result[nums.length - k] = nums[maxIndex];
+        return result;
+
+=======
+
+        if (nums.length == 0 || k == 0) {
+            return new int[0];
+        }
+        int[] result = new int[nums.length - k + 1];
+        int max = Integer.MIN_VALUE;
+        int maxIndex = -1;
+        for (int i = 0; i < k; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                maxIndex = i;
+            }
+        }
+        result[0] = max;
+        for (int i = 1; i < result.length; i++) {
+            if (maxIndex < i) {
+                max = Integer.MIN_VALUE;
+                for (int j = i; j < i + k; j++) {
+                    if (nums[j] > max) {
+                        max = nums[j];
+                        maxIndex = j;
+                    }
+                }
+            } else if (nums[i + k - 1] > max) {
+                max = nums[i + k - 1];
+                maxIndex = i + k - 1;
+            }
+            result[i] = max;
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        int[] res = new int[n - k + 1];
+        int j = 0;
+        Deque<Integer> dq = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!dq.isEmpty() && dq.peekFirst() < i - k + 1) {
+                dq.pollFirst();
+            }
+            while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) {
+                dq.pollLast();
+            }
+            dq.offerLast(i);
+            if (i >= k - 1) {
+                res[j++] = nums[dq.peekFirst()];
+            }
+        }
+        return res;
+
+=======
+
+        int[] res = new int[nums.length - k + 1];
+        int max = Integer.MIN_VALUE;
+        int maxIndex = -1;
+        for (int i = 0; i < k; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                maxIndex = i;
+            }
+        }
+        res[0] = max;
+        for (int i = 1; i < nums.length - k + 1; i++) {
+            if (nums[i + k - 1] > max) {
+                max = nums[i + k - 1];
+                maxIndex = i + k - 1;
+            }
+            if (maxIndex < i) {
+                max = Integer.MIN_VALUE;
+                for (int j = i; j < i + k; j++) {
+                    if (nums[j] > max) {
+                        max = nums[j];
+                        maxIndex = j;
+                    }
+                }
+            }
+            res[i] = max;
+        }
+        return res;
+
+=======
+
+        if (k == 1) return nums;
+        int[] result = new int[nums.length - k + 1];
+        int max = Integer.MIN_VALUE;
+        int maxIndex = -1;
+        for (int i = 0; i < k; i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+                maxIndex = i;
+            }
+        }
+        result[0] = max;
+        for (int i = k; i < nums.length; i++) {
+            if (i - maxIndex >= k) {
+                max = Integer.MIN_VALUE;
+                for (int j = i - k + 1; j <= i; j++) {
+                    if (nums[j] > max) {
+                        max = nums[j];
+                        maxIndex = j;
+                    }
+                }
+            } else {
+                if (nums[i] > max) {
+                    max = nums[i];
+                    maxIndex = i;
+                }
+            }
+            result[i - k + 1] = max;
+        }
+        return result;
+
+=======
+
+        int n = nums.length;
+        int[] ans = new int[n - k + 1];
+        if (n == 0) {
+            return new int[0];
+        }
+        Deque<Integer> dq = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (i >= k && dq.peekFirst() == i - k) {
+                dq.pollFirst();
+            }
+            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {
+                dq.pollLast();
+            }
+            dq.offerLast(i);
+            if (i >= k - 1) {
+                ans[i - k + 1] = nums[dq.peekFirst()];
+            }
+        }
+        return ans;
+
+=======
+
+        int[] result = new int[nums.length - k + 1];
+        int maxIndex = 0;
+        
+        for (int i = 0; i < nums.length - k + 1; i++) {
+            if (maxIndex < i) {
+                maxIndex = i;
+                for (int j = i; j < i + k; j++) {
+                    if (nums[j] > nums[maxIndex]) {
+                        maxIndex = j;
+                    }
+                }
+            } else if (nums[i + k - 1] > nums[maxIndex]) {
+                maxIndex = i + k - 1;
+            }
+            result[i] = nums[maxIndex];
+        }
+        
+        return result;
+
+=======
+
+        int[] result = new int[nums.length - k + 1];
+        int max = Integer.MIN_VALUE;
+        int start = 0;
+        int end = 0;
+        int index = 0;
+        while (end < nums.length) {
+            if (nums[end] > max) {
+                max = nums[end];
+            }
+            if (end - start + 1 == k) {
+                result[index++] = max;
+                if (nums[start] == max) {
+                    max = Integer.MIN_VALUE;
+                    for (int i = start + 1; i <= end; i++) {
+                        if (nums[i] > max) {
+                            max = nums[i];
+                        }
+                    }
+                }
+                start++;
+            }
+            end++;
+        }
+        return result;
+
+=======
+
+        if (nums == null || nums.length < 2) return nums;
+        int n = nums.length;
+        int[] max = new int[n - k + 1];
+        int maxIdx = 0;
+        Deque<Integer> deque = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!deque.isEmpty() && deque.peek() < i - k + 1) {
+                deque.poll();
+            }
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offer(i);
+            if (i >= k - 1) {
+                max[maxIdx++] = nums[deque.peek()];
+            }
+        }
+        return max;

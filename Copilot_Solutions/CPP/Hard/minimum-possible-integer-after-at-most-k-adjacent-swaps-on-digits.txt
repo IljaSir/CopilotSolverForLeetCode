@@ -1,0 +1,202 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = num.size();
+        vector<queue<int>> pos(10);
+        for (int i = 0; i < n; ++i) {
+            pos[num[i] - '0'].push(i);
+        }
+        string ans;
+        for (int i = 0; i < n; ++i) {
+            for (int d = 0; d < 10; ++d) {
+                if (pos[d].empty()) continue;
+                int j = pos[d].front();
+                if (j - i <= k) {
+                    k -= j - i;
+                    ans.push_back('0' + d);
+                    pos[d].pop();
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = num.size();
+        string ans = "";
+        vector<int> pos[10];
+        for (int i = 0; i < n; i++) {
+            pos[num[i] - '0'].push_back(i);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int d = 0; d < 10; d++) {
+                if (pos[d].empty()) continue;
+                int j = pos[d][0];
+                int moves = j - i;
+                if (moves <= k) {
+                    k -= moves;
+                    ans += '0' + d;
+                    pos[d].erase(pos[d].begin());
+                    for (int d2 = 0; d2 < 10; d2++) {
+                        for (int & p : pos[d2]) {
+                            if (p < j) p++;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        if (k == 0) return num;
+        int n = num.size();
+        vector<int> pos[10];
+        for (int i = 0; i < n; ++i) {
+            pos[num[i] - '0'].push_back(i);
+        }
+        string ans;
+        for (int i = 0; i < n; ++i) {
+            for (int d = 0; d < 10; ++d) {
+                if (pos[d].empty()) continue;
+                int j = pos[d][0];
+                if (j - i <= k) {
+                    k -= j - i;
+                    ans.push_back('0' + d);
+                    pos[d].erase(pos[d].begin());
+                    for (int& p : pos[d]) --p;
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = num.size();
+        vector<int> v(n, 0);
+        for (int i = 0; i < n; ++i) {
+            v[i] = num[i] - '0';
+        }
+        for (int i = 0; i < n; ++i) {
+            int min_i = i;
+            for (int j = i + 1; j < n && j - i <= k; ++j) {
+                if (v[j] < v[min_i]) {
+                    min_i = j;
+                }
+            }
+            k -= (min_i - i);
+            for (int j = min_i; j > i; --j) {
+                swap(v[j], v[j - 1]);
+            }
+        }
+        string ret;
+        for (int i = 0; i < n; ++i) {
+            ret += (v[i] + '0');
+        }
+        return ret;
+
+=======
+
+        string ans;
+        int n = num.size();
+        vector<int> pos(10);
+        for (int i = 0; i < n; ++i) pos[num[i] - '0'] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int d = 0; d < 10; ++d) {
+                if (pos[d] >= i && pos[d] - i <= k) {
+                    ans += '0' + d;
+                    k -= pos[d] - i;
+                    for (int d1 = 0; d1 < 10; ++d1) {
+                        if (pos[d1] < pos[d]) pos[d1]++;
+                    }
+                    pos[d] = n;
+                    break;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = num.size();
+        string res = "";
+        vector<int> idx(10, 0);
+        for (int i = 0; i < n; ++i) idx[num[i] - '0'] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                if (idx[j] < i) continue;
+                if (idx[j] - i <= k) {
+                    res += j + '0';
+                    k -= idx[j] - i;
+                    idx[j] = -1;
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = num.size();
+        string ans;
+        for (int i = 0; i < n; ++i) {
+            int j = i;
+            for (int k1 = k; k1 >= 0 && j < n; --k1) {
+                if (num[j] < num[i]) {
+                    i = j;
+                }
+                ++j;
+            }
+            ans.push_back(num[i]);
+            k -= i - ans.size() + 1;
+            num.erase(i, 1);
+        }
+        return ans;
+
+=======
+
+        string res;
+        int n = num.size(), i = 0;
+        while (k && i < n) {
+            int j = i;
+            while (j + 1 < n && num[j + 1] >= num[j]) ++j;
+            int d = min(j - i + 1, k);
+            int m = i;
+            for (int l = i; l <= j; ++l)
+                if (num[l] < num[m]) {
+                    m = l;
+                    if (num[l] == '0') break;
+                }
+            for (int l = m; l > i; --l) swap(num[l], num[l - 1]);
+            k -= m - i;
+            res += num[i++];
+        }
+        res += num.substr(i);
+        return res;
+
+=======
+
+        if (num.size() <= 1) {
+            return num;
+        }
+        int N = num.size();
+        int i = 0;
+        string res = "";
+        while (i < N) {
+            int j = i;
+            while (j < N && j - i <= k) {
+                if (num[j] < num[i]) {
+                    i = j;
+                }
+                j++;
+            }
+            k -= i - res.size();
+            res += num[i];
+            num.erase(i, 1);
+            i = res.size();
+        }
+        return res;

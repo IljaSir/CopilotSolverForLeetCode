@@ -1,0 +1,200 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = events.length;
+        int[] start = new int[n];
+        int[] end = new int[n];
+        for (int i = 0; i < n; i++) {
+            start[i] = events[i][0];
+            end[i] = events[i][1];
+        }
+        Arrays.sort(start);
+        Arrays.sort(end);
+        int res = 0;
+        int i = 0;
+        int j = 0;
+        while (i < n && j < n) {
+            if (start[i] <= end[j]) {
+                i++;
+                res++;
+            } else {
+                j++;
+            }
+        }
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int i = 0;
+        int res = 0;
+        for (int d = 1; d <= 100000; d++) {
+            while (i < events.length && events[i][0] == d) {
+                pq.add(events[i++][1]);
+            }
+            while (!pq.isEmpty() && pq.peek() < d) {
+                pq.poll();
+            }
+            if (!pq.isEmpty()) {
+                pq.poll();
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int res = 0, i = 0, n = events.length;
+        for (int d = 1; d <= 100000; d++) {
+            while (!pq.isEmpty() && pq.peek() < d) pq.poll();
+            while (i < n && events[i][0] == d) {
+                pq.offer(events[i++][1]);
+            }
+            if (!pq.isEmpty()) {
+                pq.poll();
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int ans = 0;
+        int i = 0;
+        for (int d = 1; d <= 100000; d++) {
+            while (!pq.isEmpty() && pq.peek() < d) {
+                pq.poll();
+            }
+            while (i < events.length && events[i][0] == d) {
+                pq.offer(events[i][1]);
+                i++;
+            }
+            if (!pq.isEmpty()) {
+                pq.poll();
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = events.length;
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int i = 0, res = 0, day = 0;
+        while (!pq.isEmpty() || i < n) {
+            if (pq.isEmpty()) day = events[i][0];
+            while (i < n && events[i][0] == day) {
+                pq.offer(events[i++][1]);
+            }
+            pq.poll();
+            res++;
+            day++;
+            while (!pq.isEmpty() && pq.peek() < day) pq.poll();
+        }
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int i = 0;
+        int max = 0;
+        for (int d = 1; d <= 100000; d++) {
+            while (i < events.length && events[i][0] == d) {
+                pq.offer(events[i][1]);
+                i++;
+            }
+            while (!pq.isEmpty() && pq.peek() < d) {
+                pq.poll();
+            }
+            if (!pq.isEmpty()) {
+                pq.poll();
+                max++;
+            }
+        }
+        return max;
+
+=======
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        int i = 0, n = events.length, ans = 0;
+        for (int d = 1; d <= 100000; d++) {
+            while (!pq.isEmpty() && pq.peek() < d) pq.poll();
+            while (i < n && events[i][0] == d) {
+                pq.offer(events[i][1]);
+                i++;
+            }
+            if (!pq.isEmpty()) {
+                pq.poll();
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int i = 0, res = 0, day = 1;
+        while (i < events.length || !pq.isEmpty()) {
+            while (i < events.length && events[i][0] == day)
+                pq.offer(events[i++][1]);
+            while (!pq.isEmpty() && pq.peek() < day)
+                pq.poll();
+            if (!pq.isEmpty()) {
+                pq.poll();
+                res++;
+            }
+            day++;
+        }
+        return res;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[1] - b[1]);
+        int day = 0;
+        int count = 0;
+        int i = 0;
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        while (i < events.length || !pq.isEmpty()) {
+            if (pq.isEmpty()) {
+                day = events[i][0];
+            }
+            while (i < events.length && events[i][0] <= day) {
+                pq.offer(events[i][0]);
+                i++;
+            }
+            pq.poll();
+            day++;
+            count++;
+            while (!pq.isEmpty() && pq.peek() < day) {
+                pq.poll();
+            }
+        }
+        return count;
+
+=======
+
+        Arrays.sort(events, (a, b) -> a[0] - b[0]);
+        int n = events.length;
+        int[] dp = new int[n + 1];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            dp[i + 1] = Math.max(dp[i], dp[i + 1]);
+            int[] e = events[i];
+            int start = e[0];
+            int end = e[1];
+            if (start <= dp[i + 1] + 1) {
+                res++;
+                dp[i + 1] = Math.max(dp[i + 1], end);
+            }
+        }
+        return res;

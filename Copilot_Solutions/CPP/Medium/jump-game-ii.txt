@@ -1,0 +1,179 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n, INT_MAX);
+        dp[0] = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 1; j <= nums[i]; ++j) {
+                if (i + j >= n) break;
+                dp[i + j] = min(dp[i + j], dp[i] + 1);
+            }
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int maxPos = 0;
+        int end = 0;
+        for (int i = 0; i < n - 1; ++i) {
+            maxPos = max(maxPos, i + nums[i]);
+            if (i == end) {
+                end = maxPos;
+                ++ans;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int far = 0;
+        int end = 0;
+        for (int i = 0; i < n - 1; i++) {
+            far = max(far, i + nums[i]);
+            if (i == end) {
+                ans++;
+                end = far;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int start = 0;
+        int end = 0;
+        while (end < n - 1) {
+            ans++;
+            int maxend = end + 1;
+            for (int i = start; i <= end; i++) {
+                if (i + nums[i] >= n - 1) {
+                    return ans;
+                }
+                maxend = max(maxend, i + nums[i]);
+            }
+            start = end + 1;
+            end = maxend;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int i = 0;
+        int ret = 0;
+        while (i < n - 1) {
+            if (i + nums[i] >= n - 1) {
+                ret++;
+                break;
+            }
+            int next = -1;
+            int max = -1;
+            for (int j = 1; j <= nums[i]; j++) {
+                if (i + j + nums[i + j] > max) {
+                    max = i + j + nums[i + j];
+                    next = i + j;
+                }
+            }
+            i = next;
+            ret++;
+        }
+        return ret;
+
+=======
+
+        int n = nums.size();
+        vector<int> dp(n, 0);
+        dp[0] = 0;
+        for (int i = 1; i < n; i++) {
+            int minJump = INT_MAX;
+            for (int j = 0; j < i; j++) {
+                if (nums[j] >= i - j) {
+                    minJump = min(minJump, dp[j]);
+                }
+            }
+            dp[i] = minJump + 1;
+        }
+        return dp[n - 1];
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int cur = 0, nxt = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > cur) {
+                cur = nxt;
+                ans++;
+            }
+            nxt = max(nxt, i + nums[i]);
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int i = 0;
+        while (i < n - 1) {
+            ans++;
+            int j = i + nums[i];
+            if (j >= n - 1) {
+                break;
+            }
+            int maxJ = j;
+            for (int k = i + 1; k <= j; k++) {
+                if (k + nums[k] > maxJ) {
+                    maxJ = k + nums[k];
+                    i = k;
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        if (n == 1) return 0;
+        int ans = 0;
+        int i = 0;
+        int maxReach = 0;
+        while (i < n) {
+            int j = i + 1;
+            int maxNext = 0;
+            while (j <= maxReach) {
+                maxNext = max(maxNext, j + nums[j]);
+                if (maxNext >= n - 1) {
+                    return ans + 1;
+                }
+                j++;
+            }
+            i = maxReach + 1;
+            maxReach = maxNext;
+            ans++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        if (n <= 1) return 0;
+        int maxJump = nums[0];
+        int steps = 1;
+        int currentJump = nums[0];
+        for (int i = 1; i < n; i++) {
+            if (i == n-1) return steps;
+            maxJump = max(maxJump, i + nums[i]);
+            currentJump--;
+            if (currentJump == 0) {
+                steps++;
+                currentJump = maxJump - i;
+            }
+        }
+        return steps;

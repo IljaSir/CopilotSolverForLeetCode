@@ -1,0 +1,167 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int[] type : types) {
+            int count = type[0], mark = type[1];
+            for (int i = mark; i <= target; i++) {
+                dp[i] = (dp[i] + dp[i - mark] * count) % 1000000007;
+            }
+        }
+        return dp[target];
+
+=======
+
+        int mod = 1000000007;
+        int[] dp = new int[target+1];
+        dp[0] = 1;
+        for (int i = 0; i < types.length; i++) {
+            int count = types[i][0];
+            int points = types[i][1];
+            for (int j = 0; j < points; j++) {
+                int[] dp2 = new int[target+1];
+                for (int k = j; k <= target; k += points) {
+                    dp2[k] = dp[k];
+                    if (k >= count*points) {
+                        dp2[k] += dp2[k-count*points];
+                        dp2[k] %= mod;
+                    }
+                }
+                dp = dp2;
+            }
+        }
+        return dp[target];
+
+=======
+
+        int mod = 1_000_000_007;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int[] type : types) {
+            int count = type[0], mark = type[1];
+            for (int i = 1; i <= count; i++) {
+                for (int j = mark; j <= target; j++) {
+                    dp[j] = (dp[j] + dp[j - mark]) % mod;
+                }
+            }
+        }
+        return dp[target];
+
+=======
+
+        int n = types.length;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            int count = types[i][0];
+            int mark = types[i][1];
+            int[] newDp = new int[target + 1];
+            for (int j = 0; j <= target; j++) {
+                newDp[j] = dp[j];
+            }
+            for (int j = 0; j <= target; j++) {
+                for (int k = 1; k <= count && j + k * mark <= target; k++) {
+                    newDp[j + k * mark] = (newDp[j + k * mark] + dp[j]) % 1000000007;
+                }
+            }
+            dp = newDp;
+        }
+        return dp[target];
+
+=======
+
+        int n = types.length;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            int count = types[i][0];
+            int marks = types[i][1];
+            for (int j = 1; j <= count; j++) {
+                for (int k = target; k >= marks; k--) {
+                    dp[k] = (dp[k] + dp[k - marks]) % 1000000007;
+                }
+            }
+        }
+        return dp[target];
+
+=======
+
+        int mod = 1000000007;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int[] type : types) {
+            for (int i = type[1]; i <= target; i++) {
+                dp[i] = (dp[i] + dp[i - type[1]]) % mod;
+            }
+        }
+        return dp[target];
+
+=======
+
+        int mod = (int)1e9 + 7;
+        int n = types.length;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            int[] type = types[i - 1];
+            for (int j = type[1]; j <= target; j++) {
+                dp[j] = (dp[j] + dp[j - type[1]]) % mod;
+            }
+        }
+        return dp[target];
+
+=======
+
+        int n = types.length;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            int[] type = types[i];
+            for (int j = 1; j <= target; j++) {
+                for (int k = 1; k <= type[0]; k++) {
+                    int newTarget = j - k * type[1];
+                    if (newTarget < 0) {
+                        break;
+                    }
+                    dp[j] = (dp[j] + dp[newTarget]) % 1000000007;
+                }
+            }
+        }
+        return dp[target];
+
+=======
+
+        int mod = 1000000007;
+        int[] dp = new int[target+1];
+        dp[0] = 1;
+        for (int[] type : types) {
+            int count = type[0];
+            int marks = type[1];
+            int[] dp2 = new int[target+1];
+            for (int i = 0; i <= target; i++) {
+                if (i >= marks) {
+                    dp2[i] = (dp2[i] + dp[i-marks]) % mod;
+                }
+                dp2[i] = (dp2[i] + dp[i]) % mod;
+            }
+            dp = dp2;
+        }
+        return dp[target];
+
+=======
+
+        int mod = 1000000007;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int[] type : types) {
+            int[] dp2 = new int[target + 1];
+            for (int i = 0; i <= target; i++) {
+                for (int j = 1; j <= type[0] && i + j * type[1] <= target; j++) {
+                    dp2[i + j * type[1]] = (dp2[i + j * type[1]] + dp[i]) % mod;
+                }
+            }
+            dp = dp2;
+        }
+        return dp[target];

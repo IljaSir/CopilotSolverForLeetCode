@@ -1,0 +1,280 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        let (x, y) = (x.max(y), x.min(y));
+        let (a, b) = if x == x.max(y) { ('a', 'b') } else { ('b', 'a') };
+        let mut ans = 0;
+        let mut stack = vec![];
+        for c in s.chars() {
+            if c == b {
+                if let Some(&top) = stack.last() {
+                    if top == a {
+                        stack.pop();
+                        ans += x;
+                        continue;
+                    }
+                }
+            }
+            stack.push(c);
+        }
+        let mut stack = vec![];
+        for c in stack.into_iter().rev() {
+            if c == b {
+                if let Some(&top) = stack.last() {
+                    if top == a {
+                        stack.pop();
+                        ans += y;
+                        continue;
+                    }
+                }
+            }
+            stack.push(c);
+        }
+        ans
+
+=======
+
+        let (x, y) = if x > y { (x, y, "ab", "ba") } else { (y, x, "ba", "ab") };
+        let mut stack = Vec::new();
+        let mut res = 0;
+        for c in s.chars() {
+            if let Some(&last) = stack.last() {
+                if last == c {
+                    stack.push(c);
+                } else if last == x.2.chars().nth(0).unwrap() && c == x.2.chars().nth(1).unwrap() {
+                    stack.pop();
+                    res += x;
+                } else if last == y.2.chars().nth(0).unwrap() && c == y.2.chars().nth(1).unwrap() {
+                    stack.pop();
+                    res += y;
+                } else {
+                    stack.push(c);
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        res
+
+=======
+
+        let (x, y) = (x.max(y), x.min(y));
+        let (a, b) = if x == x.max(y) { ("ab", "ba") } else { ("ba", "ab") };
+        let mut stack = Vec::new();
+        let mut score = 0;
+        for c in s.chars() {
+            stack.push(c);
+            if stack.len() >= 2 && &stack[stack.len()-2..] == a.chars().collect::<Vec<_>>().as_slice() {
+                stack.pop();
+                stack.pop();
+                score += x;
+            }
+        }
+        let mut stack = Vec::new();
+        for c in stack.iter().rev().map(|x| *x) {
+            stack.push(c);
+            if stack.len() >= 2 && &stack[stack.len()-2..] == b.chars().collect::<Vec<_>>().as_slice() {
+                stack.pop();
+                stack.pop();
+                score += y;
+            }
+        }
+        score
+
+=======
+
+        let (x, y) = if x > y { (x, y, "ab", "ba") } else { (y, x, "ba", "ab") };
+        let mut stack = vec![];
+        let mut result = 0;
+        for c in s.chars() {
+            if let Some(&last) = stack.last() {
+                if last == c {
+                    stack.push(c);
+                } else if last == y.2.chars().nth(0).unwrap() && c == y.2.chars().nth(1).unwrap() {
+                    stack.pop();
+                    result += y;
+                } else if last == x.2.chars().nth(0).unwrap() && c == x.2.chars().nth(1).unwrap() {
+                    stack.pop();
+                    result += x;
+                } else {
+                    stack.push(c);
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        result
+    }
+}
+
+=======
+
+        let (x, y) = (x as u8, y as u8);
+        let (a, b) = if x > y { ('a', 'b') } else { ('b', 'a') };
+        let (x, y) = if x > y { (x, y) } else { (y, x) };
+        let mut stack = vec![];
+        let mut res = 0;
+        for c in s.chars() {
+            if c == b && !stack.is_empty() && stack.last().unwrap() == &a {
+                stack.pop();
+                res += y as i32;
+            } else if c == a {
+                stack.push(a);
+            } else if c == b {
+                stack.push(b);
+            } else if !stack.is_empty() && stack.last().unwrap() == &a {
+                stack.pop();
+                res += x as i32;
+            }
+        }
+        res
+
+=======
+
+        let mut stack = Vec::new();
+        let mut score = 0;
+        let (a, b) = if x > y { ('a', 'b') } else { ('b', 'a') };
+        let (x, y) = if x > y { (x, y) } else { (y, x) };
+        for c in s.chars() {
+            if c == a {
+                stack.push(c);
+            } else if c == b {
+                if let Some(&a) = stack.last() {
+                    if a == a {
+                        stack.pop();
+                        score += y;
+                    } else {
+                        stack.push(c);
+                    }
+                } else {
+                    stack.push(c);
+                }
+            } else {
+                while let Some(&a) = stack.last() {
+                    if a == a {
+                        stack.pop();
+                    } else {
+                        break;
+                    }
+                }
+                while let Some(&b) = stack.last() {
+                    if b == b {
+                        stack.pop();
+                    } else {
+                        break;
+                    }
+                }
+                score += stack.len() as i32 * x;
+                stack.clear();
+            }
+        }
+        while let Some(&a) = stack.last() {
+            if a == a {
+                stack.pop();
+            } else {
+                break;
+            }
+        }
+        while let Some(&b) = stack.last() {
+            if b == b {
+                stack.pop();
+            } else {
+                break;
+            }
+        }
+        score += stack.len() as i32 * x;
+        score
+
+=======
+
+        let mut stack: Vec<char> = Vec::new();
+        let mut score = 0;
+        for c in s.chars() {
+            match c {
+                'a' => {
+                    if stack.last() == Some(&'b') {
+                        stack.pop();
+                        score += x;
+                    } else {
+                        stack.push(c);
+                    }
+                }
+                'b' => {
+                    if stack.last() == Some(&'a') {
+                        stack.pop();
+                        score += y;
+                    } else {
+                        stack.push(c);
+                    }
+                }
+                _ => {
+                    stack.push(c);
+                }
+            }
+        }
+        score
+
+=======
+
+        let (mut a, mut b) = (0, 0);
+        let (x, y) = (x.min(y), x.max(y));
+        let (mut ab, mut ba) = (0, 0);
+        for c in s.chars() {
+            match c {
+                'a' => {
+                    if ba > 0 {
+                        ba -= 1;
+                        a += y;
+                    } else {
+                        ab += 1;
+                    }
+                },
+                'b' => {
+                    if ab > 0 {
+                        ab -= 1;
+                        a += x;
+                    } else {
+                        ba += 1;
+                    }
+                },
+                _ => {
+                    a += ab * x;
+                    a += ba * y;
+                    ab = 0;
+                    ba = 0;
+                }
+            }
+        }
+        a += ab * x;
+        a += ba * y;
+        a
+
+=======
+
+        let mut s = s;
+        let mut count = 0;
+        if x > y {
+            let (a, b) = ('a', 'b');
+            count += Self::remove(&mut s, a, b, x);
+            count += Self::remove(&mut s, b, a, y);
+        } else {
+            let (a, b) = ('b', 'a');
+            count += Self::remove(&mut s, a, b, y);
+            count += Self::remove(&mut s, b, a, x);
+        }
+        count
+    }
+    fn remove(s: &mut String, a: char, b: char, x: i32) -> i32 {
+        let mut count = 0;
+        let mut stack = vec![];
+        for c in s.chars() {
+            if c == b && stack.last() == Some(&a) {
+                stack.pop();
+                count += x;
+            } else {
+                stack.push(c);
+            }
+        }
+        *s = stack.into_iter().collect();
+        count

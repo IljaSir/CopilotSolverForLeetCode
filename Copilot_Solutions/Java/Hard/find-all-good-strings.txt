@@ -1,0 +1,320 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        int m = evil.length();
+        int[][] dp = new int[n + 1][m];
+        int[][] next = new int[m][26];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(next[i], -1);
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (i > 0 && evil.charAt(i) != 'a' + j) {
+                    next[i][j] = next[i - 1][j];
+                } else {
+                    next[i][j] = i + (evil.charAt(i) == 'a' + j ? 1 : 0);
+                }
+            }
+        }
+        int[] sum = new int[n + 1];
+        sum[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] * 26 % mod;
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < m; j++) {
+                for (int k = 0; k < 26; k++) {
+                    if (next[j][k] != -1) {
+                        dp[i][next[j][k]] = (dp[i][next[j][k]] + dp[i - 1][j]) % mod;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            res = (res + dp[n][i]) % mod;
+        }
+        int i = 0;
+        for (; i < n; i++) {
+            int j = s1.charAt(i) - 'a';
+            int k = s2.charAt(i) - 'a';
+            for (int p = 0; p < j; p++) {
+                if (next[i][p] != -1) {
+                    res = (res + sum[n - i - 1]) % mod;
+                }
+            }
+            if (next[i][j] == -1) {
+                break;
+            } else {
+                i = next[i][j];
+            }
+        }
+        if (i
+
+=======
+
+        int mod = 1000000007;
+        int m = evil.length();
+        int[][] dp = new int[n + 1][m];
+        int[] next = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (evil.substring(0, j).equals(evil.substring(i - j + 1, i + 1))) {
+                    next[i] = j;
+                }
+            }
+        }
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            int min = s1.charAt(i - 1) - 'a';
+            int max = s2.charAt(i - 1) - 'a';
+            for (int j = 0; j < 26; j++) {
+                if (j < min || j > max) {
+                    continue;
+                }
+                for (int k = 0; k < m; k++) {
+                    int p = k;
+                    while (p > 0 && evil.charAt(p) != 'a' + j) {
+                        p = next[p - 1];
+                    }
+                    if (evil.charAt(p) == 'a' + j) {
+                        p++;
+                    }
+                    dp[i][p] = (dp[i][p] + dp[i - 1][k]) % mod;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; i++) {
+            res = (res + dp[n][i]) % mod;
+        }
+        return res;
+
+=======
+
+        int MOD = 1000000007;
+        int m = evil.length();
+        int[][] dp = new int[n + 1][m + 1];
+        dp[0][0] = 1;
+        int[][] next = new int[m + 1][26];
+        for (int i = 0; i <= m; i++) {
+            for (int j = 0; j < 26; j++) {
+                String s = evil.substring(0, i) + (char)('a' + j);
+                for (int k = Math.min(m, s.length()); k >= 0; k--) {
+                    if (s.endsWith(evil.substring(0, k))) {
+                        next[i][j] = k;
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= m; j++) {
+                int low = i == 0 ? s1.charAt(i) - 'a' : 0;
+                int high = i == 0 ? s2.charAt(i) - 'a' : 25;
+                for (int k = low; k <= high; k++) {
+                    int nj = next[j][k];
+                    dp[i + 1][nj] = (dp[i + 1][nj] + dp[i][j]) % MOD;
+                }
+            }
+        }
+        int ans = 0;
+        for (int j = 1; j <= m; j++) {
+            ans = (ans + dp[n][j]) % MOD;
+        }
+        return ans;
+
+=======
+
+        return 0;
+
+=======
+
+        int MOD = 1000000007;
+        int[] dp = new int[n + 1];
+        int[] dp2 = new int[n + 1];
+        int[] next = new int[evil.length() + 1];
+        int[] fail = new int[evil.length() + 1];
+        for (int i = 0; i < evil.length(); ++i) {
+            int j = i;
+            while (j > 0 && evil.charAt(j) != evil.charAt(i)) {
+                j = fail[j - 1];
+            }
+            if (j > 0 || evil.charAt(j) == evil.charAt(i)) {
+                fail[i] = j + 1;
+            }
+        }
+        next[0] = 0;
+        for (int i = 1; i <= evil.length(); ++i) {
+            int j = i - 1;
+            while (j > 0 && evil.charAt(j) != s2.charAt(i - 1)) {
+                j = fail[j - 1];
+            }
+            if (j > 0 || evil.charAt(j) == s2.charAt(i - 1)) {
+                ++j;
+            }
+            next[i] = j;
+        }
+        int max = 1;
+        for (int i = 0; i < n; ++i) {
+            max = (max * 26) % MOD;
+        }
+        dp[0] = 1;
+        for (int i = 0; i < n; ++i) {
+            int min = s1.charAt(i) - 'a';
+            int max = s2.charAt(i) - 'a';
+            for (int j = 0; j < 26; ++j) {
+                if (j < min || j > max) {
+                    continue;
+                }
+                int k = next[i + 1];
+                while (k > 0 && evil.charAt(k) != 'a' + j) {
+                    k = fail[k - 1];
+                }
+                if (k > 0 || evil.charAt(k) == 'a' + j) {
+                    ++k;
+                }
+                dp2[i + 1] = (dp2[i + 1] + dp[i] - (k == evil.length() ? dp[k - 1] : 0) + MOD) % MOD;
+            }
+            for (int
+
+=======
+
+        int MOD = 1000000007;
+        int[][] dp = new int[n + 1][evil.length()];
+        int[][][] memo = new int[n + 1][evil.length()][26];
+        int[][][] memo2 = new int[n + 1][evil.length()][26];
+        int[][][] memo3 = new int[n + 1][evil.length()][26];
+        int[][][] memo4 = new int[n + 1][evil.length()][26];
+        for (int i = 0; i < n + 1; i++) {
+            Arrays.fill(dp[i], -1);
+            for (int j = 0; j < evil.length(); j++) {
+                Arrays.fill(memo[i][j], -1);
+                Arrays.fill(memo2[i][j], -1);
+                Arrays.fill(memo3[i][j], -1);
+                Arrays.fill(memo4[i][j], -1);
+            }
+        }
+        return dfs(n, s1, s2, evil, 0, 0, dp, memo, memo2, memo3, memo4) % MOD;
+    }
+    private int dfs(int n, String s1, String s2, String evil, int i, int j, int[][] dp, int[][][] memo, int[][][] memo2, int[][][] memo3, int[][][] memo4) {
+        if (i == n) {
+            return 1;
+        }
+        if (j == evil.length()) {
+            return 0;
+        }
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        int count = 0;
+        int start = s1.charAt(i) - 'a';
+        int end = s2.charAt(i) - 'a';
+        for (int k = start; k <= end; k++) {
+            int next = j;
+            while (next > 0 && k != evil.charAt(next) - 'a') {
+                next = memo[i][j][k];
+            }
+            if (k == evil.charAt(next) - 'a') {
+                next++;
+            }
+            if (next == evil.length()) {
+                continue;
+            }
+            if (k == start && k == end) {
+                if (memo2[i][j][k] == -1) {
+                    memo2[i][j][k] = dfs
+
+=======
+
+        int m = evil.length();
+        int[] dp = new int[n + 1];
+        int[] pre = new int[n + 1];
+        int[][] next = new int[m + 1][26];
+        int[][] fail = new int[m + 1][26];
+        int mod = 1000000007;
+        for (int i = 0; i < 26; i++) {
+            next[0][i] = 0;
+            fail[0][i] = 0;
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 0; j < 26; j++) {
+                fail[i][j] = fail[next[i - 1][j]][j];
+            }
+            fail[i][evil.charAt(i - 1) - 'a'] = i;
+            for (int j = 0; j < 26; j++) {
+                next[i][j] = next[i - 1][j];
+            }
+            next[i][evil.charAt(i - 1) - 'a'] = i;
+        }
+        dp[0] = 1;
+        pre[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < 26; j++) {
+                int cur = next[fail[i - 1][j]][j];
+                dp[i] += pre[i - 1] - (cur == m ? pre[i - m - 1] : 0);
+            }
+            dp[i] %= mod;
+            dp[i] += mod;
+            dp[i] %= mod;
+            pre[i] = pre[i - 1] + dp[i];
+            pre[i] %= mod;
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            int start = i == 0 ? 1 : 0;
+            int end = s1.charAt(i) - 'a';
+            for (int j = start; j < end; j++) {
+                int cur = next[fail[i][j]][j];
+                ans += pre[n - i - 1] - (cur == m ? pre[n - i - m - 1] : 0);
+                ans %= mod;
+                ans += mod;
+
+=======
+
+        int[][][] dp = new int[2][n + 1][evil.length()];
+        int[][][] diff = new int[2][n + 1][evil.length()];
+        int mod = 1000000007;
+        int[][] next = new int[evil.length()][26];
+        for (int i = 0; i < evil.length(); i++) {
+            for (int j = 0; j < 26; j++) {
+                String s = evil.substring(0, i) + (char)('a' + j);
+                for (int k = s.length(); k >= 0; k--) {
+                    if (evil.startsWith(s.substring(s.length() - k))) {
+                        next[i][j] = k;
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j <= n; j++) {
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (s1.charAt(i) <= 'a' + j && 'a' + j <= s2.charAt(i)) {
+                    res += dfs(i, 0, j, s1, s2, evil, dp, diff, next, mod);
+                    res %= mod;
+                }
+            }
+        }
+        return res;
+    }
+    
+    private int dfs(int i, int j, int c, String s1, String s2, String evil, int[][][] dp, int[][][] diff, int[][] next, int mod) {
+        if (dp[i & 1][j][c] != -1) {
+            return dp[i & 1][j][c];
+        }
+        int res = 0;
+        if (i == s1.length() - 1) {
+            res = 1;
+        } else {
+            for (int k = 0; k < 26; k++) {
+                int nj = next[j][k];
+                if (nj != evil.length()) {
+                    if (s1.charAt(i + 1) <= 'a' + k && 'a' + k <= s2.charAt(i + 1))

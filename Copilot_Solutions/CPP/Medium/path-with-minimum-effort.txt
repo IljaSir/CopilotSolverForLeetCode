@@ -1,0 +1,324 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = heights.size();
+        int m = heights[0].size();
+        vector<vector<int>> dp(n, vector<int>(m, INT_MAX));
+        dp[0][0] = 0;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {0, 0}});
+        while (!pq.empty()) {
+            int cur = pq.top().first;
+            int x = pq.top().second.first;
+            int y = pq.top().second.second;
+            pq.pop();
+            if (dp[x][y] < cur) continue;
+            if (x == n - 1 && y == m - 1) return cur;
+            if (x > 0) {
+                int diff = abs(heights[x][y] - heights[x - 1][y]);
+                int next = max(cur, diff);
+                if (dp[x - 1][y] > next) {
+                    dp[x - 1][y] = next;
+                    pq.push({next, {x - 1, y}});
+                }
+            }
+            if (x < n - 1) {
+                int diff = abs(heights[x][y] - heights[x + 1][y]);
+                int next = max(cur, diff);
+                if (dp[x + 1][y] > next) {
+                    dp[x + 1][y] = next;
+                    pq.push({next, {x + 1, y}});
+                }
+            }
+            if (y > 0) {
+                int diff = abs(heights[x][y] - heights[x][y - 1]);
+                int next = max(cur, diff);
+                if (dp[x][y - 1] > next) {
+                    dp[x][y - 1] = next;
+                    pq.push({next, {x, y - 1}});
+                }
+            }
+            if (y < m - 1) {
+                int diff = abs(heights[x][y] - heights[x][y + 1]);
+                int next = max(cur, diff);
+                if (dp[x][y + 1] > next) {
+                    dp[x][y + 1] = next;
+                    pq.push({next, {x, y + 1}});
+                }
+            }
+        }
+
+=======
+
+        int n = heights.size(), m = heights[0].size();
+        vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+        dist[0][0] = 0;
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({0, 0, 0});
+        while (!pq.empty()) {
+            auto [d, x, y] = pq.top(); pq.pop();
+            if (d > dist[x][y]) continue;
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dx[i], ny = y + dy[i];
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                int nd = max(d, abs(heights[nx][ny] - heights[x][y]));
+                if (nd < dist[nx][ny]) {
+                    dist[nx][ny] = nd;
+                    pq.push({nd, nx, ny});
+                }
+            }
+        }
+        return dist[n - 1][m - 1];
+
+=======
+
+        int n = heights.size();
+        int m = heights[0].size();
+        vector<vector<int>> dp(n, vector<int>(m, INT_MAX));
+        dp[0][0] = 0;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        vector<int> dx = {0, 0, 1, -1};
+        vector<int> dy = {1, -1, 0, 0};
+        while(!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            int x = p.second / m;
+            int y = p.second % m;
+            for(int i = 0; i < 4; i++) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if(nx >= 0 && nx < n && ny >= 0 && ny < m) {
+                    int diff = abs(heights[x][y] - heights[nx][ny]);
+                    int maxDiff = max(dp[x][y], diff);
+                    if(maxDiff < dp[nx][ny]) {
+                        dp[nx][ny] = maxDiff;
+                        pq.push({dp[nx][ny], nx * m + ny});
+                    }
+                }
+            }
+        }
+        return dp[n-1][m-1];
+
+=======
+
+        int n = heights.size();
+        int m = heights[0].size();
+        vector<vector<int>> dp(n, vector<int>(m, INT_MAX));
+        dp[0][0] = 0;
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {0, 0}});
+        while(!pq.empty()) {
+            int x = pq.top().second.first;
+            int y = pq.top().second.second;
+            int w = pq.top().first;
+            pq.pop();
+            if(dp[x][y] < w) continue;
+            if(x == n-1 && y == m-1) return w;
+            if(x > 0) {
+                int t = max(w, abs(heights[x][y] - heights[x-1][y]));
+                if(dp[x-1][y] > t) {
+                    dp[x-1][y] = t;
+                    pq.push({t, {x-1, y}});
+                }
+            }
+            if(x < n-1) {
+                int t = max(w, abs(heights[x][y] - heights[x+1][y]));
+                if(dp[x+1][y] > t) {
+                    dp[x+1][y] = t;
+                    pq.push({t, {x+1, y}});
+                }
+            }
+            if(y > 0) {
+                int t = max(w, abs(heights[x][y] - heights[x][y-1]));
+                if(dp[x][y-1] > t) {
+                    dp[x][y-1] = t;
+                    pq.push({t, {x, y-1}});
+                }
+            }
+            if(y < m-1) {
+                int t = max(w, abs(heights[x][y] - heights[x][y+1]));
+                if(dp[x][y+1] > t) {
+                    dp[x][y+1] = t;
+                    pq.push({t, {x, y+1}});
+                }
+            }
+        }
+        return 0;
+
+=======
+
+        int m = heights.size();
+        int n = heights[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[0][0] = 0;
+        vector<pair<int, int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+        pq.push({0, {0, 0}});
+        while (!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            int x = p.second.first;
+            int y = p.second.second;
+            if (x == m - 1 && y == n - 1) {
+                return p.first;
+            }
+            for (auto d : dirs) {
+                int nx = x + d.first;
+                int ny = y + d.second;
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    int diff = abs(heights[nx][ny] - heights[x][y]);
+                    int newDiff = max(p.first, diff);
+                    if (newDiff < dp[nx][ny]) {
+                        dp[nx][ny] = newDiff;
+                        pq.push({newDiff, {nx, ny}});
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = heights.size(), n = heights[0].size();
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        dist[0][0] = 0;
+        vector<vector<int>> dirs{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto p = pq.top(); pq.pop();
+            int x = p.second / n, y = p.second % n;
+            if (x == m - 1 && y == n - 1) return p.first;
+            for (auto& dir : dirs) {
+                int nx = x + dir[0], ny = y + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    int d = max(p.first, abs(heights[x][y] - heights[nx][ny]));
+                    if (d < dist[nx][ny]) {
+                        dist[nx][ny] = d;
+                        pq.push({d, nx * n + ny});
+                    }
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int m = heights.size(), n = heights[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX));
+        dp[0][0] = 0;
+        vector<vector<int>> dir = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({0, 0, 0});
+        while(!pq.empty()) {
+            auto node = pq.top();
+            pq.pop();
+            int i = node[1], j = node[2];
+            if (i == m-1 && j == n-1) return node[0];
+            for (auto d : dir) {
+                int x = i + d[0], y = j + d[1];
+                if (x < 0 || x >= m || y < 0 || y >= n) continue;
+                int newEffort = max(node[0], abs(heights[i][j] - heights[x][y]));
+                if (dp[x][y] > newEffort) {
+                    dp[x][y] = newEffort;
+                    pq.push({newEffort, x, y});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int n = heights.size();
+        int m = heights[0].size();
+        vector<vector<int>> dp(n, vector<int>(m, INT_MAX));
+        dp[0][0] = 0;
+        vector<int> dx = {0, 1, 0, -1};
+        vector<int> dy = {1, 0, -1, 0};
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({0, 0, 0});
+        while (!pq.empty()) {
+            auto [effort, x, y] = pq.top();
+            pq.pop();
+            if (x == n - 1 && y == m - 1) {
+                return effort;
+            }
+            for (int i = 0; i < 4; ++i) {
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) {
+                    continue;
+                }
+                int newEffort = max(effort, abs(heights[x][y] - heights[nx][ny]));
+                if (newEffort < dp[nx][ny]) {
+                    dp[nx][ny] = newEffort;
+                    pq.push({newEffort, nx, ny});
+                }
+            }
+        }
+        return -1;
+
+=======
+
+        int rows = heights.size();
+        int cols = heights[0].size();
+        int result = 0;
+        vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+        vector<vector<int>> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        visited[0][0] = true;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto [x, y] = q.front();
+                q.pop();
+                if (x == rows - 1 && y == cols - 1) {
+                    return result;
+                }
+                for (auto& direction : directions) {
+                    int nx = x + direction[0];
+                    int ny = y + direction[1];
+                    if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && !visited[nx][ny]) {
+                        int diff = abs(heights[nx][ny] - heights[x][y]);
+                        if (diff <= result) {
+                            q.push({nx, ny});
+                            visited[nx][ny] = true;
+                        }
+                    }
+                }
+            }
+            result++;
+        }
+        return result;
+
+=======
+
+        int row = heights.size();
+        int column = heights[0].size();
+        vector<int> distance(row * column, INT_MAX);
+        distance[0] = 0;
+        vector<vector<int>> direction = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        while (!pq.empty()) {
+            auto top = pq.top();
+            pq.pop();
+            int x = top.second / column;
+            int y = top.second % column;
+            for (auto &d : direction) {
+                int nextX = x + d[0];
+                int nextY = y + d[1];
+                if (nextX < 0 || nextX >= row || nextY < 0 || nextY >= column)
+                    continue;
+                int nextIndex = nextX * column + nextY;
+                int nextDistance = max(distance[top.second], abs(heights[x][y] - heights[nextX][nextY]));
+                if (nextDistance < distance[nextIndex]) {
+                    distance[nextIndex] = nextDistance;
+                    pq.push({nextDistance, nextIndex});
+                }
+            }
+        }
+        return distance[row * column - 1];

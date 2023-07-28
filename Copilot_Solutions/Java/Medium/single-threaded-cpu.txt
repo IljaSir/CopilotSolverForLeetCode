@@ -1,0 +1,319 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = tasks.length;
+        int[][] t = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        Arrays.sort(t, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        int[] res = new int[n];
+        int i = 0, j = 0, time = 0;
+        while (j < n) {
+            while (j < n && t[j][0] <= time) {
+                pq.add(new int[]{t[j][0], t[j][1], t[j][2]});
+                j++;
+            }
+            if (pq.isEmpty()) {
+                time = t[j][0];
+                continue;
+            }
+            int[] cur = pq.poll();
+            time += cur[1];
+            res[i++] = cur[2];
+        }
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            res[i++] = cur[2];
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[][] t = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        Arrays.sort(t, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        int[] ans = new int[n];
+        int idx = 0, i = 0, time = 0;
+        while (i < n) {
+            while (i < n && t[i][0] <= time) {
+                pq.offer(t[i++]);
+            }
+            if (pq.isEmpty()) {
+                time = t[i][0];
+                continue;
+            }
+            int[] cur = pq.poll();
+            ans[idx++] = cur[2];
+            time += cur[1];
+        }
+        while (!pq.isEmpty()) {
+            ans[idx++] = pq.poll()[2];
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int[][] t = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        Arrays.sort(t, Comparator.comparingInt(a -> a[0]));
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]).thenComparingInt(a -> a[2]));
+        int[] ans = new int[n];
+        int i = 0;
+        int time = t[0][0];
+        int j = 0;
+        while (i < n) {
+            while (j < n && t[j][0] <= time) {
+                pq.offer(t[j]);
+                j++;
+            }
+            if (pq.isEmpty()) {
+                time = t[j][0];
+                continue;
+            }
+            int[] task = pq.poll();
+            ans[i] = task[2];
+            time += task[1];
+            i++;
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int[] res = new int[n];
+        int[] index = new int[n];
+        for (int i = 0; i < n; i++) {
+            index[i] = i;
+        }
+        Arrays.sort(index, (a, b) -> tasks[a][0] - tasks[b][0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> {
+            if (tasks[a][1] != tasks[b][1]) {
+                return tasks[a][1] - tasks[b][1];
+            }
+            return a - b;
+        });
+        int t = 0;
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            while (j < n && tasks[index[j]][0] <= t) {
+                pq.offer(index[j++]);
+            }
+            if (pq.isEmpty()) {
+                t = tasks[index[j]][0];
+            } else {
+                int cur = pq.poll();
+                res[i++] = cur;
+                t += tasks[cur][1];
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[] res = new int[n];
+        int[][] t = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        Arrays.sort(t, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        int i = 0;
+        long time = 0;
+        while (i < n || !pq.isEmpty()) {
+            if (pq.isEmpty()) {
+                time = t[i][0];
+            }
+            while (i < n && t[i][0] <= time) {
+                pq.add(t[i++]);
+            }
+            int[] cur = pq.poll();
+            res[i++] = cur[2];
+            time += cur[1];
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[] res = new int[n];
+        int[][] t = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            t[i][0] = tasks[i][0];
+            t[i][1] = tasks[i][1];
+            t[i][2] = i;
+        }
+        Arrays.sort(t, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        int i = 0;
+        long time = 0;
+        while (i < n || !pq.isEmpty()) {
+            if (pq.isEmpty()) {
+                time = t[i][0];
+            }
+            while (i < n && t[i][0] <= time) {
+                pq.offer(t[i++]);
+            }
+            int[] cur = pq.poll();
+            res[cur[2]] = (int) time;
+            time += cur[1];
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[] ans = new int[n];
+        int[][] newTasks = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            newTasks[i][0] = tasks[i][0];
+            newTasks[i][1] = tasks[i][1];
+            newTasks[i][2] = i;
+        }
+        Arrays.sort(newTasks, (o1, o2) -> {
+            if (o1[0] != o2[0]) {
+                return o1[0] - o2[0];
+            } else {
+                return o1[1] - o2[1];
+            }
+        });
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> {
+            if (o1[1] != o2[1]) {
+                return o1[1] - o2[1];
+            } else {
+                return o1[2] - o2[2];
+            }
+        });
+        int index = 0;
+        int time = 0;
+        while (index < n) {
+            while (index < n && newTasks[index][0] <= time) {
+                pq.offer(newTasks[index++]);
+            }
+            if (pq.isEmpty()) {
+                pq.offer(newTasks[index++]);
+            }
+            int[] task = pq.poll();
+            ans[task[2]] = time;
+            time += task[1];
+        }
+        while (!pq.isEmpty()) {
+            int[] task = pq.poll();
+            ans[task[2]] = time;
+            time += task[1];
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int[] res = new int[n];
+        int[] idx = new int[n];
+        for (int i = 0; i < n; i++) {
+            idx[i] = i;
+        }
+        Arrays.sort(idx, (a, b) -> tasks[a][0] - tasks[b][0]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> {
+            if (tasks[a][1] != tasks[b][1]) {
+                return tasks[a][1] - tasks[b][1];
+            }
+            return a - b;
+        });
+        int i = 0, t = 0;
+        int j = 0;
+        while (i < n) {
+            if (j < n && tasks[idx[j]][0] <= t) {
+                pq.add(idx[j]);
+                j++;
+            } else {
+                if (pq.isEmpty()) {
+                    t = tasks[idx[j]][0];
+                } else {
+                    int cur = pq.poll();
+                    res[i++] = cur;
+                    t += tasks[cur][1];
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = tasks.length;
+        int[][] taskWithIndex = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            taskWithIndex[i][0] = tasks[i][0];
+            taskWithIndex[i][1] = i;
+        }
+        Arrays.sort(taskWithIndex, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]));
+        int[] ans = new int[n];
+        int i = 0, t = 0;
+        while (i < n || !pq.isEmpty()) {
+            if (pq.isEmpty() && i < n) {
+                t = Math.max(t, taskWithIndex[i][0]);
+            }
+            while (i < n && t >= taskWithIndex[i][0]) {
+                pq.offer(new int[]{taskWithIndex[i][0], tasks[taskWithIndex[i][1]][1], taskWithIndex[i][1]});
+                i++;
+            }
+            int[] task = pq.poll();
+            t += task[1];
+            ans[i++] = task[2];
+        }
+        return ans;
+
+=======
+
+        int n = tasks.length;
+        int[] ans = new int[n];
+        int[][] tasksWithIndex = new int[n][3];
+        for (int i = 0; i < n; i++) {
+            tasksWithIndex[i][0] = tasks[i][0];
+            tasksWithIndex[i][1] = tasks[i][1];
+            tasksWithIndex[i][2] = i;
+        }
+        Arrays.sort(tasksWithIndex, (a, b) -> a[0] - b[0]);
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] == b[1] ? a[2] - b[2] : a[1] - b[1]);
+        long time = 0;
+        int i = 0;
+        int j = 0;
+        while (i < n) {
+            if (pq.isEmpty()) {
+                time = Math.max(time, tasksWithIndex[i][0]);
+            }
+            while (i < n && tasksWithIndex[i][0] <= time) {
+                pq.offer(tasksWithIndex[i]);
+                i++;
+            }
+            int[] task = pq.poll();
+            ans[j++] = task[2];
+            time += task[1];
+            while (i < n && pq.isEmpty() && tasksWithIndex[i][0] > time) {
+                time = tasksWithIndex[i][0];
+            }
+        }
+        while (!pq.isEmpty()) {
+            int[] task = pq.poll();
+            ans[j++] = task[2];
+        }
+        return ans;

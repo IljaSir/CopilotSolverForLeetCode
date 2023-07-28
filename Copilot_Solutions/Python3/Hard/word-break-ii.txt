@@ -1,0 +1,175 @@
+Synthesizing 10/10 solutions
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        def dfs(s, wordDict, memo):
+            if s in memo:
+                return memo[s]
+            if not s:
+                return []
+            res = []
+            for word in wordDict:
+                if s.startswith(word):
+                    if len(s) == len(word):
+                        res.append(word)
+                    else:
+                        resOfRest = dfs(s[len(word):], wordDict, memo)
+                        for item in resOfRest:
+                            item = word + ' ' + item
+                            res.append(item)
+            memo[s] = res
+            return res
+        memo = {}
+        return dfs(s, wordDict, memo)
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        def helper(s, wordDict, memo):
+            if s in memo:
+                return memo[s]
+            if not s:
+                return []
+            res = []
+            for word in wordDict:
+                if s.startswith(word):
+                    if len(s) == len(word):
+                        res.append(word)
+                    else:
+                        res += [word + ' ' + rest for rest in helper(s[len(word):], wordDict, memo)]
+            memo[s] = res
+            return res
+        return helper(s, wordDict, {})
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        memo = {}
+        def dfs(s):
+            if s in memo: return memo[s]
+            if not s: return []
+            res = []
+            for word in wordDict:
+                if s.startswith(word):
+                    if len(s) == len(word):
+                        res.append(word)
+                    else:
+                        res += [word + ' ' + rest for rest in dfs(s[len(word):])]
+            memo[s] = res
+            return res
+        return dfs(s)
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        wordDict = set(wordDict)
+        memo = {}
+        def dfs(s):
+            if s in memo:
+                return memo[s]
+            if not s:
+                return [[]]
+            res = []
+            for i in range(1, len(s)+1):
+                word = s[:i]
+                if word in wordDict:
+                    for rest in dfs(s[i:]):
+                        res.append([word] + rest)
+            memo[s] = res
+            return res
+        return [' '.join(words) for words in dfs(s)]
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        n = len(s)
+        dp = [False for _ in range(n+1)]
+        dp[0] = True
+        for i in range(n):
+            for j in range(i+1, n+1):
+                if dp[i] and s[i:j] in wordDict:
+                    dp[j] = True
+        if not dp[-1]:
+            return []
+        res = []
+        self.dfs(s, wordDict, [], res)
+        return res
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        memo = {}
+        def backtrack(s):
+            if s in memo:
+                return memo[s]
+            if not s:
+                return []
+            res = []
+            for w in wordDict:
+                if s.startswith(w):
+                    if len(s) == len(w):
+                        res.append(w)
+                    else:
+                        res.extend([w + ' ' + r for r in backtrack(s[len(w):])])
+            memo[s] = res
+            return res
+        return backtrack(s)
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        words = set(wordDict)
+        @lru_cache(None)
+        def dfs(s):
+            if not s:
+                return [[]]
+            ans = []
+            for i in range(1, len(s)+1):
+                if s[:i] in words:
+                    for rest in dfs(s[i:]):
+                        ans.append([s[:i]] + rest)
+            return ans
+        return [' '.join(words) for words in dfs(s)]
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        wordDict = set(wordDict)
+        @functools.lru_cache(maxsize=None)
+        def dfs(s):
+            if not s:
+                return [[]]
+            res = []
+            for i in range(1, len(s) + 1):
+                if s[:i] in wordDict:
+                    for j in dfs(s[i:]):
+                        res.append([s[:i]] + j)
+            return res
+        return [" ".join(x) for x in dfs(s)]
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        def dfs(s, wordDict, mem):
+            if s in mem:
+                return mem[s]
+            if s in wordDict:
+                mem[s] = [s]
+                return mem[s]
+            for i in range(1, len(s)):
+                left, right = s[:i], s[i:]
+                if right in wordDict:
+                    for left in dfs(left, wordDict, mem):
+                        mem[s] = mem.get(s, []) + [left + ' ' + right]
+            return mem.get(s, [])
+        
+        mem = {}
+        return dfs(s, set(wordDict), mem)
+
+=======
+
+def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        self.memo = {}
+        self.wordDict = set(wordDict)
+        return self.dfs(s)

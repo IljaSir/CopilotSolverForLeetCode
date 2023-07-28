@@ -1,0 +1,328 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = favorite.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < n; i++) {
+            graph[i].add(favorite[i]);
+        }
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            boolean[] visited = new boolean[n];
+            if (dfs(i, graph, match, visited)) {
+                result++;
+            }
+        }
+        return result;
+    }
+    private boolean dfs(int u, List<Integer>[] graph, int[] match, boolean[] visited) {
+        for (int v : graph[u]) {
+            if (visited[v]) {
+                continue;
+            }
+            visited[v] = true;
+            if (match[v] == -1 || dfs(match[v], graph, match, visited)) {
+                match[v] = u;
+                return true;
+            }
+        }
+        return false;
+
+=======
+
+        int n = favorite.length;
+        int[] visited = new int[n];
+        Arrays.fill(visited, -1);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == -1) {
+                ans += dfs(i, favorite, visited);
+            }
+        }
+        return ans;
+    }
+
+    private int dfs(int i, int[] favorite, int[] visited) {
+        if (visited[i] == 1) {
+            return 0;
+        }
+        visited[i] = 1;
+        int ans = 1;
+        ans += dfs(favorite[i], favorite, visited);
+        visited[i] = 2;
+        return ans;
+
+=======
+
+        int n = favorite.length;
+        int[] degree = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n; i++) {
+            int f = favorite[i];
+            graph.get(f).add(i);
+            degree[i]++;
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        int ans = 0;
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            ans++;
+            for (int v : graph.get(u)) {
+                degree[v]--;
+                if (degree[v] == 0) {
+                    queue.offer(v);
+                }
+            }
+        }
+        return ans;
+
+=======
+
+        int n = favorite.length;
+        int[] visited = new int[n];
+        int[] count = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                int c = dfs(favorite, visited, count, i);
+                res += c;
+            }
+        }
+        return res;
+    }
+    
+    private int dfs(int[] favorite, int[] visited, int[] count, int i) {
+        if (visited[i] == 1) {
+            return 0;
+        }
+        if (visited[i] == 2) {
+            return count[i];
+        }
+        visited[i] = 1;
+        int c = dfs(favorite, visited, count, favorite[i]) + 1;
+        visited[i] = 2;
+        count[i] = c;
+        return c;
+
+=======
+
+        int n = favorite.length;
+        int[] color = new int[n];
+        int[] size = new int[n];
+        for (int i = 0; i < n; i++) {
+            color[i] = i;
+            size[i] = 1;
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            int j = find(color, i);
+            int k = find(color, favorite[i]);
+            if (j != k) {
+                color[j] = k;
+                size[k] += size[j];
+            }
+            max = Math.max(max, size[k]);
+        }
+        return max;
+
+=======
+
+        int n = favorite.length;
+        List<Integer> [] graph = new List[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < n; i++) {
+            int j = favorite[i];
+            if (j != i) {
+                graph[i].add(j);
+            }
+        }
+        int[] color = new int[n];
+        int[] match = new int[n];
+        Arrays.fill(match, -1);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (color[i] == 0) {
+                res += dfs(i, graph, color, match);
+            }
+        }
+        return res;
+    }
+    private int dfs(int i, List<Integer>[] graph, int[] color, int[] match) {
+        color[i] = 1;
+        for (int j : graph[i]) {
+            if (match[j] == -1 || color[match[j]] == 0 && dfs(match[j], graph, color, match) == 1) {
+                match[j] = i;
+                return 1;
+            }
+        }
+        return 0;
+
+=======
+
+        int n = favorite.length;
+        int[] next = new int[n];
+        for (int i = 0; i < n; i++) {
+            next[i] = favorite[i];
+        }
+        int[] vis = new int[n];
+        int[] pre = new int[n];
+        int[] dp = new int[n];
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (vis[i] != 0) {
+                continue;
+            }
+            int cnt = 0;
+            int j = i;
+            while (vis[j] == 0) {
+                vis[j] = 1;
+                j = next[j];
+                cnt++;
+            }
+            int s = 0;
+            j = i;
+            while (vis[j] == 1) {
+                vis[j] = 2;
+                pre[j] = s;
+                s += cnt;
+                j = next[j];
+                cnt--;
+            }
+            j = i;
+            while (vis[j] == 2) {
+                vis[j] = 3;
+                dp[j] = s;
+                s -= pre[j];
+                j = next[j];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+
+=======
+
+        int n = favorite.length;
+        int[] next = new int[n];
+        int[] dp = new int[n];
+        Arrays.fill(next, -1);
+        for (int i = 0; i < n; i++) {
+            int j = i;
+            boolean[] visited = new boolean[n];
+            while (next[j] == -1 && !visited[j]) {
+                visited[j] = true;
+                j = favorite[j];
+            }
+            if (next[j] == -1) {
+                next[j] = i;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (next[i] != -1) {
+                int j = i;
+                int cnt = 0;
+                while (next[j] != -1) {
+                    cnt++;
+                    j = next[j];
+                }
+                ans += cnt;
+                dp[i] = cnt;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            if (next[i] == -1) {
+                ans += dp[favorite[i]];
+            }
+        }
+        return ans;
+
+=======
+
+        int n = favorite.length;
+        int[] visited = new int[n];
+        int[] inCycle = new int[n];
+        int[] next = new int[n];
+        for (int i = 0; i < n; i++) {
+            next[i] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            if (visited[i] == 0) {
+                int j = i;
+                while (visited[j] == 0) {
+                    visited[j] = 1;
+                    j = favorite[j];
+                }
+                if (visited[j] == 1) {
+                    while (visited[j] == 1) {
+                        visited[j] = 2;
+                        j = favorite[j];
+                    }
+                }
+                if (visited[j] == 2) {
+                    while (visited[j] == 2) {
+                        inCycle[j] = 1;
+                        j = favorite[j];
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (inCycle[i] == 1) {
+                int j = i;
+                while (next[j] != j) {
+                    j = next[j];
+                }
+                next[j] = favorite[i];
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = favorite.length;
+        int[] match = new int[n];
+        int[] matchCount = new int[n];
+        int[] visited = new int[n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (matchCount[i] == 0) {
+                dfs(i, favorite, match, matchCount, visited, 1);
+                res += matchCount[i];
+            }
+        }
+        return res;
+    }
+    
+    private void dfs(int i, int[] favorite, int[] match, int[] matchCount, int[] visited, int count) {
+        int j = favorite[i];
+        match[i] = j;
+        visited[i] = 1;
+        if (visited[j] == 0) {
+            dfs(j, favorite, match, matchCount, visited, count + 1);
+        } else if (match[j] == i) {
+            matchCount[j] = count;
+        } else if (matchCount[j] == 0) {
+            dfs(match[j], favorite, match, matchCount, visited, count - 1);
+            matchCount[j] = matchCount[match[j]];
+        }
+        visited[i] = 2;

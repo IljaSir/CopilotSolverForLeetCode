@@ -1,0 +1,48 @@
+impl Solution {
+    pub fn advantage_count(nums1: Vec<i32>, nums2: Vec<i32>) -> Vec<i32> {
+        
+        let mut s1 = nums1.clone();
+        s1.sort();
+        let mut s2 = nums2.clone();
+        s2.sort();
+        let mut r = vec![];
+        let mut i = 0;
+        let mut j = 0;
+        let mut k = 0;
+        let mut m = vec![false; nums1.len()];
+        while i < nums1.len() {
+            if s1[i] > s2[j] {
+                r.push(s1[i]);
+                m[i] = true;
+                i += 1;
+                j += 1;
+            } else {
+                i += 1;
+            }
+        }
+        for i in 0..nums1.len() {
+            if !m[i] {
+                while k < nums1.len() && m[k] {
+                    k += 1;
+                }
+                r.push(s1[k]);
+                k += 1;
+            }
+        }
+        let mut res = vec![];
+        for i in 0..nums2.len() {
+            for j in 0..r.len() {
+                if nums2[i] < r[j] && !m[j] {
+                    res.push(r[j]);
+                    m[j] = true;
+                    break;
+                } else if j == r.len() - 1 {
+                    res.push(r[j]);
+                    m[j] = true;
+                    break;
+                }
+            }
+        }
+        res
+    }
+}

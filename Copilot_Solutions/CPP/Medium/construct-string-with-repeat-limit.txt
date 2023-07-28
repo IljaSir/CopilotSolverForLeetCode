@@ -1,0 +1,118 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        string res;
+        int i = 0;
+        while (i < s.length()) {
+            int j = i + 1;
+            while (j < s.length() && s[j] == s[i]) j++;
+            int count = j - i;
+            while (count > 0) {
+                int len = min(count, repeatLimit);
+                res += string(len, s[i]);
+                count -= len;
+            }
+            i = j;
+        }
+        return res;
+
+=======
+
+        string ret;
+        int cnt = 1;
+        char last = s[0];
+        ret.push_back(last);
+        for (int i = 1; i < s.size(); ++i) {
+            if (s[i] == last) {
+                ++cnt;
+                if (cnt <= repeatLimit) {
+                    ret.push_back(last);
+                }
+            } else {
+                last = s[i];
+                cnt = 1;
+                ret.push_back(last);
+            }
+        }
+        return ret;
+
+=======
+
+        string result;
+        int n = s.size();
+        int left = 0;
+        while (left < n) {
+            int right = left + 1;
+            while (right < n && s[right] == s[left]) {
+                ++right;
+            }
+            int count = right - left;
+            result += string(min(count, repeatLimit), s[left]);
+            left = right;
+        }
+        return result;
+
+=======
+
+        string res = "";
+        int i = 0, n = s.length();
+        while(i < n) {
+            int j = i;
+            while(j < n && s[j] == s[i]) j++;
+            int cnt = j - i;
+            res += s[i];
+            if(cnt > repeatLimit) {
+                int k = 0;
+                while(k < repeatLimit - 1) {
+                    res += s[i];
+                    k++;
+                }
+            }
+            i = j;
+        }
+        return res;
+
+=======
+
+        int n = s.size();
+        vector<int> cnt(26);
+        for (auto c: s) ++cnt[c-'a'];
+        for (int i = 0; i < 26; ++i) {
+            if (cnt[i] > repeatLimit) return "";
+        }
+        string res;
+        for (int i = 0; i < n; ++i) {
+            if (res.empty()) {
+                res.push_back(s[i]);
+            } else {
+                if (s[i] == res.back()) {
+                    if (res.size() >= repeatLimit) {
+                        continue;
+                    } else {
+                        res.push_back(s[i]);
+                    }
+                } else {
+                    res.push_back(s[i]);
+                }
+            }
+        }
+        return res;
+
+=======
+
+        int n = s.length();
+        vector<int> count(26, 0);
+        for (char c : s) {
+            count[c - 'a']++;
+        }
+        string ans = "";
+        for (int i = n - 1; i >= 0; i--) {
+            int c = s[i] - 'a';
+            if (count[c] == 0) continue;
+            count[c]--;
+            int l = ans.length();
+            if (l >= repeatLimit && ans[l - repeatLimit] == s[i]) continue;
+            ans += s[i];
+        }
+        return ans;

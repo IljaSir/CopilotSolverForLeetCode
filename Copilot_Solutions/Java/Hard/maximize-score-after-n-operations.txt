@@ -1,0 +1,234 @@
+Synthesizing 8/10 solutions
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[1 << n][n / 2 + 1];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], Integer.MIN_VALUE);
+        }
+        dp[0][0] = 0;
+        for (int i = 0; i < dp.length; i++) {
+            int c = Integer.bitCount(i);
+            for (int j = 0; j < n; j++) {
+                if ((i & (1 << j)) != 0) {
+                    for (int k = 0; k < n; k++) {
+                        if (j != k && (i & (1 << k)) != 0) {
+                            int s = c / 2;
+                            dp[i][s] = Math.max(dp[i][s], dp[i ^ (1 << j) ^ (1 << k)][s - 1] + c * gcd(nums[j], nums[k]));
+                        }
+                    }
+                }
+            }
+        }
+        return dp[dp.length - 1][n / 2];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[1 << n][n];
+        for (int i = 0; i < 1 << n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(0, 0, nums, dp);
+    }
+
+    private int dfs(int mask, int index, int[] nums, int[][] dp) {
+        if (index >= nums.length) {
+            return 0;
+        }
+        if (dp[mask][index] != -1) {
+            return dp[mask][index];
+        }
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if ((mask & (1 << i)) == 0) {
+                for (int j = i + 1; j < nums.length; j++) {
+                    if ((mask & (1 << j)) == 0) {
+                        int newMask = mask | (1 << i) | (1 << j);
+                        max = Math.max(max, dfs(newMask, index + 1, nums, dp) + (index + 1) * gcd(nums[i], nums[j]));
+                    }
+                }
+            }
+        }
+        dp[mask][index] = max;
+        return max;
+
+=======
+
+        int n = nums.length / 2;
+        int[][] dp = new int[1 << (2 * n)][n + 1];
+        for (int[] row : dp) {
+            Arrays.fill(row, -1);
+        }
+        dp[0][0] = 0;
+        for (int mask = 0; mask < (1 << (2 * n)); mask++) {
+            int bits = Integer.bitCount(mask);
+            for (int i = 0; i < n; i++) {
+                if (dp[mask][i] >= 0) {
+                    for (int j = 0; j < 2 * n; j++) {
+                        if (((mask >> j) & 1) == 0) {
+                            for (int k = j + 1; k < 2 * n; k++) {
+                                if (((mask >> k) & 1) == 0) {
+                                    int nmask = mask | (1 << j) | (1 << k);
+                                    dp[nmask][i + 1] = Math.max(dp[nmask][i + 1], dp[mask][i] + (bits / 2 + 1) * gcd(nums[j], nums[k]));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << (2 * n)) - 1][n];
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][1 << n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, 0, 0, dp);
+    }
+    
+    private int dfs(int[] nums, int i, int mask, int[][] dp) {
+        if (i == nums.length / 2) {
+            return 0;
+        }
+        if (dp[i][mask] != -1) {
+            return dp[i][mask];
+        }
+        int max = 0;
+        for (int j = 0; j < nums.length; j++) {
+            if ((mask & (1 << j)) == 0) {
+                for (int k = j + 1; k < nums.length; k++) {
+                    if ((mask & (1 << k)) == 0) {
+                        max = Math.max(max, i + 1 + dfs(nums, i + 1, mask | (1 << k) | (1 << j), dp));
+                    }
+                }
+            }
+        }
+        dp[i][mask] = max;
+        return max;
+
+=======
+
+        int n = nums.length / 2;
+        int[][] dp = new int[1 << n][n + 1];
+        for (int[] row : dp) {
+            Arrays.fill(row, -1);
+        }
+        return dfs(nums, 0, 0, 0, dp);
+    }
+    private int dfs(int[] nums, int mask, int i, int j, int[][] dp) {
+        if (j == nums.length / 2) {
+            return 0;
+        }
+        if (dp[mask][j] != -1) {
+            return dp[mask][j];
+        }
+        int ans = 0;
+        for (int k = i; k < nums.length; k++) {
+            if ((mask & (1 << k)) == 0) {
+                for (int l = k + 1; l < nums.length; l++) {
+                    if ((mask & (1 << l)) == 0) {
+                        ans = Math.max(ans, dfs(nums, mask | (1 << k) | (1 << l), k + 1, j + 1, dp) + (j + 1) * gcd(nums[k], nums[l]));
+                    }
+                }
+            }
+        }
+        return dp[mask][j] = ans;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[1 << n][n / 2 + 1];
+        for (int i = 1; i < 1 << n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return dfs(nums, dp, 0, 0);
+    }
+    
+    private int dfs(int[] nums, int[][] dp, int mask, int k) {
+        if (k == nums.length / 2) {
+            return 0;
+        }
+        if (dp[mask][k] != -1) {
+            return dp[mask][k];
+        }
+        int res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if ((mask & (1 << i)) != 0) {
+                continue;
+            }
+            for (int j = i + 1; j < nums.length; j++) {
+                if ((mask & (1 << j)) != 0) {
+                    continue;
+                }
+                res = Math.max(res, k + 1 + dfs(nums, dp, mask | (1 << i) | (1 << j), k + 1));
+            }
+        }
+        dp[mask][k] = res;
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[1 << n][n];
+        for (int[] row : dp) {
+            Arrays.fill(row, -1);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dfs(nums, 1 << i, i, dp));
+        }
+        return res;
+    }
+    private int dfs(int[] nums, int mask, int last, int[][] dp) {
+        if (dp[mask][last] != -1) {
+            return dp[mask][last];
+        }
+        int n = nums.length;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if ((mask & (1 << i)) == 0) {
+                res = Math.max(res, dfs(nums, mask | (1 << i), i, dp) + (Integer.bitCount(mask) + 1) * gcd(nums[last], nums[i]));
+            }
+        }
+        dp[mask][last] = res;
+        return res;
+
+=======
+
+        int n = nums.length;
+        int[][] dp = new int[n][1 << n];
+        return dfs(0, 0, nums, dp);
+    }
+    
+    private int dfs(int idx, int used, int[] nums, int[][] dp) {
+        if (idx == nums.length / 2) {
+            return 0;
+        }
+        if (dp[idx][used] != 0) {
+            return dp[idx][used];
+        }
+        
+        int max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if ((used & (1 << i)) == 0) {
+                for (int j = i + 1; j < nums.length; j++) {
+                    if ((used & (1 << j)) == 0) {
+                        max = Math.max(max, dfs(idx + 1, used | (1 << i) | (1 << j), nums, dp) + (idx + 1) * gcd(nums[i], nums[j]));
+                    }
+                }
+            }
+        }
+        dp[idx][used] = max;
+        return max;
+    }
+    
+    private int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return gcd(b, a % b);

@@ -1,0 +1,655 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        long sum1 = 0, sum2 = 0;
+        for (int i = 0; i < k; i++) {
+            sum1 += nums1[i];
+            sum2 += nums2[i];
+        }
+        long diff = sum2 - sum1;
+        if (diff == 0) {
+            return 0;
+        }
+        if (diff < 0) {
+            diff = -diff;
+            int[] tmp = nums1;
+            nums1 = nums2;
+            nums2 = tmp;
+        }
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] cnt1 = new int[6];
+        int[] cnt2 = new int[6];
+        for (int i = 0; i < n; i++) {
+            cnt1[nums1[i] - 1]++;
+        }
+        for (int i = 0; i < m; i++) {
+            cnt2[nums2[i] - 1]++;
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                long need = diff - (j - i);
+                if (need > 0 && need % 5 == 0) {
+                    long cnt = need / 5 + cnt1[i] + cnt2[j];
+                    if (cnt <= k) {
+                        ans = Math.min(ans, cnt);
+                    }
+                }
+            }
+        }
+        return ans == Long.MAX_VALUE ? -1 : ans;
+
+=======
+
+        int n = nums1.length;
+        long sum1 = 0;
+        long sum2 = 0;
+        for (int i = 0; i < n; i++) {
+            sum1 += nums1[i];
+            sum2 += nums2[i];
+        }
+        if (sum1 < sum2) {
+            return minOperations(nums2, nums1, k);
+        }
+        long target = sum1 - sum2;
+        if (target < k) {
+            return -1;
+        }
+        int[] count1 = new int[6];
+        int[] count2 = new int[6];
+        for (int i = 0; i < n; i++) {
+            count1[nums1[i] - 1]++;
+            count2[nums2[i] - 1]++;
+        }
+        long[] sumCount1 = new long[6];
+        long[] sumCount2 = new long[6];
+        for (int i = 1; i < 6; i++) {
+            sumCount1[i] = sumCount1[i - 1] + count1[i - 1];
+            sumCount2[i] = sumCount2[i - 1] + count2[i - 1];
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= k; i++) {
+            long t = target - i;
+            if (t > 5 * k || t < 0) {
+                continue;
+            }
+            int j = (int) (t / 5);
+            int l = (int) (t % 5);
+            long c1 = sumCount1[5] - sumCount1[5 - j];
+            long c2 = sumCount2[l];
+            ans = Math.min(ans, c1 + c2);
+        }
+        return ans;
+
+=======
+
+        long sum1 = 0;
+        for (int i : nums1) {
+            sum1 += i;
+        }
+        long sum2 = 0;
+        for (int i : nums2) {
+            sum2 += i;
+        }
+        int diff = Math.abs((int) (sum1 - sum2));
+        if (diff > k) {
+            return -1;
+        }
+        if (diff == k) {
+            return k;
+        }
+        int[] count1 = new int[6];
+        int[] count2 = new int[6];
+        for (int i : nums1) {
+            count1[i - 1]++;
+        }
+        for (int i : nums2) {
+            count2[i - 1]++;
+        }
+        int[] sum = new int[k + 1];
+        for (int i = 0; i <= k; i++) {
+            sum[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 1; i <= 6; i++) {
+            for (int j = k; j >= 0; j--) {
+                for (int l = 0; l <= count1[i - 1] && l <= j; l++) {
+                    if (sum[j - l] != Integer.MAX_VALUE) {
+                        sum[j] = Math.min(sum[j], sum[j - l] + count2[6 - i] * l);
+                    }
+                }
+            }
+        }
+        return sum[k];
+
+=======
+
+        if (nums1.length * 6 < k || nums2.length * 6 < k) {
+            return -1;
+        }
+        int sum1 = 0;
+        int sum2 = 0;
+        for (int num : nums1) {
+            sum1 += num;
+        }
+        for (int num : nums2) {
+            sum2 += num;
+        }
+        if (sum1 == sum2 + k) {
+            return 0;
+        }
+        if (sum1 < sum2) {
+            int[] temp = nums1;
+            nums1 = nums2;
+            nums2 = temp;
+            int sum = sum1;
+            sum1 = sum2;
+            sum2 = sum;
+        }
+        int diff = sum1 - sum2;
+        int[] count1 = new int[6];
+        int[] count2 = new int[6];
+        for (int num : nums1) {
+            count1[num - 1]++;
+        }
+        for (int num : nums2) {
+            count2[6 - num]++;
+        }
+        int[] sum1s = new int[6];
+        int[] sum2s = new int[6];
+        sum1s[0] = count1[0];
+        sum2s[0] = count2[0];
+        for (int i = 1; i < 6; i++) {
+            sum1s[i] = sum1s[i - 1] + count1[i];
+            sum2s[i] = sum2s[i - 1] + count2[i];
+        }
+        long min = Long.MAX_VALUE;
+        for (int i = 0; i < 6; i++) {
+            int j = k - i;
+            if (j < 0 || j > 6) {
+                continue;
+            }
+            long sum = sum1s[i] + sum2s[j];
+            long s = sum1 - sum2 - (i + 1) * (sum1s[i] - (i == 0 ? 0 : sum1s[i - 1])) + (j + 1) * (sum2s[j] - (j == 0 ? 0 : sum2s[j - 1]));
+            if (s <= diff) {
+                min = Math.min(min, sum);
+            }
+        }
+        return min;
+
+=======
+
+        int n = nums1.length;
+        int[] diff = new int[n];
+        int sum1 = 0;
+        int sum2 = 0;
+        for (int i = 0; i < n; ++i) {
+            diff[i] = nums1[i] - nums2[i];
+            sum1 += nums1[i];
+            sum2 += nums2[i];
+        }
+        if (sum1 < sum2) {
+            return minOperations(nums2, nums1, k);
+        }
+        if (sum1 - sum2 < k) {
+            return -1;
+        }
+        Arrays.sort(diff);
+        long ans = 0;
+        for (int i = 0; i < k; ++i) {
+            ans += diff[n - i - 1];
+        }
+        return ans;
+
+=======
+
+        long sum1 = 0;
+        long sum2 = 0;
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        for (int i = 0; i < len1; i++) {
+            sum1 += nums1[i];
+        }
+        for (int i = 0; i < len2; i++) {
+            sum2 += nums2[i];
+        }
+        if (sum1 == sum2) {
+            return 0;
+        }
+        if (sum1 > sum2) {
+            return minOperations(nums2, nums1, k);
+        }
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int[] diff1 = new int[len1];
+        int[] diff2 = new int[len2];
+        for (int i = 0; i < len1; i++) {
+            diff1[i] = nums1[i] - 1;
+        }
+        for (int i = 0; i < len2; i++) {
+            diff2[i] = 6 - nums2[i];
+        }
+        Arrays.sort(diff1);
+        Arrays.sort(diff2);
+        long diff = sum2 - sum1;
+        int i = 0;
+        int j = 0;
+        while (j < k) {
+            if (i < len1 && j < len2) {
+                if (diff1[i] > diff2[j]) {
+                    diff -= diff1[i];
+                    i++;
+                } else {
+                    diff -= diff2[j];
+                    j++;
+                }
+            } else if (i < len1) {
+                diff -= diff1[i];
+                i++;
+            } else {
+                diff -= diff2[j];
+                j++;
+            }
+            if (diff <= 0) {
+                return j;
+            }
+        }
+        return -1;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        if (n > m) {
+            return minOperations(nums2, nums1, k);
+        }
+        if (k > n + m) {
+            return -1;
+        }
+        int[] diff = new int[n + m];
+        int idx = 0;
+        for (int i = 0; i < n; i++) {
+            diff[idx++] = nums1[i] - 1;
+        }
+        for (int i = 0; i < m; i++) {
+            diff[idx++] = 6 - nums2[i];
+        }
+        Arrays.sort(diff);
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += diff[i];
+        }
+        if (sum >= k) {
+            return k;
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = k; i < n + m; i++) {
+            sum += diff[i] - diff[i - k];
+            if (sum >= k) {
+                ans = Math.min(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        if (n * 6 < k || m * 6 < k) {
+            return -1;
+        }
+        int[] sum1 = new int[n + 1];
+        int[] sum2 = new int[m + 1];
+        for (int i = 0; i < n; i++) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+        }
+        for (int i = 0; i < m; i++) {
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; i++) {
+            int target = k - i;
+            if (target < 0 || target > m || target % 6 != 0) {
+                continue;
+            }
+            target /= 6;
+            int j = lowerBound(sum2, sum2[m] - target);
+            ans = Math.min(ans, Math.abs(sum1[i] - (sum2[m] - sum2[j])));
+            if (j > 0) {
+                ans = Math.min(ans, Math.abs(sum1[i] - (sum2[m] - sum2[j - 1])));
+            }
+        }
+        return ans;
+    }
+
+    public int lowerBound(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (nums[mid] >= target) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] diff = new int[n + m];
+        int[] cnt = new int[6];
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums1[i] - 1;
+            cnt[nums1[i] - 1]++;
+        }
+        for (int i = 0; i < m; i++) {
+            diff[n + i] = 6 - nums2[i];
+            cnt[6 - nums2[i]]++;
+        }
+        int sum = 0;
+        for (int i = 0; i < 6; i++) {
+            sum += cnt[i];
+        }
+        if (sum < k) {
+            return -1;
+        }
+        Arrays.sort(diff);
+        long ans = 0;
+        for (int i = 0; i < k; i++) {
+            ans += diff[i];
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] diff = new int[n + m];
+        int i = 0, j = 0, c = 0;
+        for (int x : nums1) {
+            diff[i++] = x - 1;
+            c += x - 1;
+        }
+        for (int x : nums2) {
+            diff[i++] = 6 - x;
+            c -= x - 1;
+        }
+        if (c < 0 || c > k) return -1;
+        Arrays.sort(diff);
+        long ans = 0, sum = 0;
+        for (int x : diff) {
+            if (sum + x > k) break;
+            sum += x;
+            ans++;
+        }
+        return ans;
+            int j = (int) (t / 5);
+            int l = (int) (t % 5);
+            long c1 = sumCount1[5] - sumCount1[5 - j];
+            long c2 = sumCount2[l];
+            ans = Math.min(ans, c1 + c2);
+        }
+        return ans;
+
+=======
+
+        long sum1 = 0;
+        for (int i : nums1) {
+            sum1 += i;
+        }
+        long sum2 = 0;
+        for (int i : nums2) {
+            sum2 += i;
+        }
+        int diff = Math.abs((int) (sum1 - sum2));
+        if (diff > k) {
+            return -1;
+        }
+        if (diff == k) {
+            return k;
+        }
+        int[] count1 = new int[6];
+        int[] count2 = new int[6];
+        for (int i : nums1) {
+            count1[i - 1]++;
+        }
+        for (int i : nums2) {
+            count2[i - 1]++;
+        }
+        int[] sum = new int[k + 1];
+        for (int i = 0; i <= k; i++) {
+            sum[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 1; i <= 6; i++) {
+            for (int j = k; j >= 0; j--) {
+                for (int l = 0; l <= count1[i - 1] && l <= j; l++) {
+                    if (sum[j - l] != Integer.MAX_VALUE) {
+                        sum[j] = Math.min(sum[j], sum[j - l] + count2[6 - i] * l);
+                    }
+                }
+            }
+        }
+        return sum[k];
+
+=======
+
+        long sum1 = 0;
+        for (int i : nums1) {
+            sum1 += i;
+        }
+        long sum2 = 0;
+        for (int i : nums2) {
+            sum2 += i;
+        }
+        int diff = Math.abs((int) (sum1 - sum2));
+        if (diff > k) {
+            return -1;
+        }
+        if (diff == k) {
+            return k;
+        }
+        int[] count1 = new int[6];
+        int[] count2 = new int[6];
+        for (int i : nums1) {
+            count1[i - 1]++;
+        }
+        for (int i : nums2) {
+            count2[i - 1]++;
+        }
+        int[] sum = new int[k + 1];
+        for (int i = 0; i <= k; i++) {
+            sum[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 1; ) {
+                ans = Math.min(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        if (n * 6 < k || m * 6 < k) {
+            return -1;
+        }
+        int[] sum1 = new int[n + 1];
+        int[] sum2 = new int[m + 1];
+        for (int i = 0; i < n; i++) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+        }
+        for (int i = 0; i < m; i++) {
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; i++) {
+            int target = k - i;
+            if (target < 0 || target > m || target % 6 != 0) {
+                continue;
+            }
+            target /= 6;
+            int j = lowerBound(sum2, sum2[m] - target);
+            ans = Math.min(ans, Math.abs(sum1[i] - (sum2[m] - sum2[j])));
+            if (j > 0i <= 6; i++) {
+            for (int j = k; j >= 0; Math.abj(s--1[i] - (sum2[m] - sum2[j - 1]))) {
+             
+        }
+        return ans;
+    }
+
+    public int lowerBound(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (nums[mid] >= target) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] diff = new int[n + m];
+        int[] cnt = new int[6];
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums1[i] - 1;
+            cnt[nums1[i] - 1]++;
+        }
+        for (int i = 0; i < m; i++) {
+            diff[n + i] = 6 - nums2[i];
+            cnt[6 - nums2[i]]++;
+        }
+        int sum = 0;
+        for (int i = 0; i < 6; i++) {
+            sum += cnt[i];
+        }
+        if (sum < k) {
+            return -1;
+        }
+        Arrays.sort(diff);
+        long ans = 0;
+        for (int i = 0; i < k; i++) {
+            ans += diff[i];   for (int l = 0; l <= count1[i - 1] && l <= j; l++) {
+                    if (sum[j - l] != Integer.MAX_VALUE) {
+                        sum[j] = Math.min(sum[j], sum[j - l] + count2[6 - i] * l);
+                    }
+                }
+            }
+        }
+        return sum[k];
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        if (n > m) {
+            return minOperations(nums2, nums1, k);
+        }
+        if (k > n + m) {
+            return -1;
+        }
+        int[] diff = new int[n + m];
+        int idx = 0;
+        for (int i = 0; i < n; i++) {
+            diff[idx++] = nums1[i] - 1;
+        }
+        for (int i = 0; i < m; i++) {
+            diff[idx++] = 6 - nums2[i];
+        }
+        Arrays.sort(diff);
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += diff[i];
+        }
+        if (sum >= k) {
+            return k;
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = k; i < n + m; i++) {
+            sum += diff[i] - diff[i - k];
+            if (sum >= k) {
+                ans = Math.min(ans, sum);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        if (n * 6 < k || m * 6 < k) {
+            return -1;
+        }
+        int[] sum1 = new int[n + 1];
+        int[] sum2 = new int[m + 1];
+        for (int i = 0; i < n; i++) {
+            sum1[i + 1] = sum1[i] + nums1[i];
+        }
+        for (int i = 0; i < m; i++) {
+            sum2[i + 1] = sum2[i] + nums2[i];
+        }
+        long ans = Long.MAX_VALUE;
+        for (int i = 0; i <= n; i++) {
+            int target = k - i;
+            if (target < 0 || target > m || target % 6 != 0) {
+                continue;
+            }
+            target /= 6;
+            int j = lowerBound(sum2, sum2[m] - target);
+            ans = Math.min(ans, Math.abs(sum1[i] - (sum2[m] - sum2[j])));
+            if (j > 0) {
+                ans = Math.min(ans, Math.abs(sum1[i] - (sum2[m] - sum2[j - 1])));
+            }
+        }
+        return ans;
+    }
+
+    public int lowerBound(int[] nums, int target) {
+        int l = 0;
+        int r = nums.length - 1;
+        while (l < r) {
+            int mid = l + r >> 1;
+            if (nums[mid] >= target) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+
+=======
+
+        int n = nums1.length;
+        int m = nums2.length;
+        int[] diff = new int[n + m];
+        int[] cnt = new int[6];
+        for (int i = 0; i < n; i++) {
+            diff[i] = nums1[i] - 1;
+            cnt[nums1[i] - 1]++;
+        }
+        for (int i = 0; i < m; i++) {
+            diff[n + i] = 6 - nums2[i];
+            cnt[6 - nums2[i]]++;
+        }
+        int sum = 0;
+        for (int i = 0; i < 6; i++) {
+            sum += cnt[i];
+        }
+        if (sum < k) {
+            return -1;
+        }
+        Arrays.sort(diff);
+        long ans = 0;
+        for (int i = 0; i < k; i++) {
+            ans += diff[i];
+        }
+        return ans;

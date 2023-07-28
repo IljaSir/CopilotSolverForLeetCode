@@ -1,0 +1,168 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        return atMostKDistinct(nums, k) - atMostKDistinct(nums, k - 1);
+
+=======
+
+        return atMost(nums, k) - atMost(nums, k - 1);
+
+=======
+
+        return atMostK(nums, k) - atMostK(nums, k-1);
+
+=======
+
+        return atMostK(nums, k) - atMostK(nums, k - 1);
+    }
+    int atMostK(vector<int>& nums, int k) {
+        int n = nums.size(), i = 0, j = 0, res = 0;
+        unordered_map<int, int> cnt;
+        while (j < n) {
+            if (cnt[nums[j++]]++ == 0) k--;
+            while (k < 0)
+                if (cnt[nums[i++]]-- == 1) k++;
+            res += j - i;
+        }
+        return res;
+
+=======
+
+        return atMostK(nums, k) - atMostK(nums, k-1);
+    }
+    
+    int atMostK(vector<int>& nums, int k) {
+        int ans = 0;
+        unordered_map<int, int> count;
+        for (int i = 0, j = 0; i < nums.size(); i++) {
+            if (count[nums[i]]++ == 0) k--;
+            while (k < 0) {
+                if (--count[nums[j++]] == 0) k++;
+            }
+            ans += i - j + 1;
+        }
+        return ans;
+
+=======
+
+        return helper(nums, k) - helper(nums, k - 1);
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int left = 0, right = 0;
+        unordered_map<int, int> mp;
+        while (right < n) {
+            mp[nums[right]]++;
+            while (mp.size() > k) {
+                mp[nums[left]]--;
+                if (mp[nums[left]] == 0) {
+                    mp.erase(nums[left]);
+                }
+                left++;
+            }
+            int tmp = left;
+            while (mp.size() == k) {
+                mp[nums[tmp]]--;
+                if (mp[nums[tmp]] == 0) {
+                    mp.erase(nums[tmp]);
+                }
+                tmp++;
+                ans++;
+            }
+            while (left < tmp) {
+                mp[nums[left]]++;
+                left++;
+            }
+            right++;
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int i = 0, j = 0;
+        int res = 0;
+        unordered_map<int, int> count;
+        while (j < n) {
+            while (j < n && count.size() < k) {
+                count[nums[j]]++;
+                if (count[nums[j]] == 1) {
+                    if (count.size() == k) {
+                        res += (n - j);
+                    }
+                }
+                j++;
+            }
+            while (i < j && count.size() == k) {
+                count[nums[i]]--;
+                if (count[nums[i]] == 0) {
+                    count.erase(nums[i]);
+                }
+                if (count.size() < k) {
+                    res += (j - i - 1);
+                }
+                i++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int res = 0;
+        vector<int> cnt(n+1, 0);
+        int num = 0;
+        int l = 0, r = 0;
+        while(r < n) {
+            if(cnt[nums[r]] == 0) {
+                num++;
+            }
+            cnt[nums[r]]++;
+            r++;
+            while(num > k) {
+                cnt[nums[l]]--;
+                if(cnt[nums[l]] == 0) {
+                    num--;
+                }
+                l++;
+            }
+            int l2 = l;
+            while(cnt[nums[l2]] > 1) {
+                cnt[nums[l2]]--;
+                l2++;
+            }
+            res += l2 - l + 1;
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int ans = 0;
+        int j = 0;
+        int i = 0;
+        int count = 0;
+        unordered_map<int, int> mp;
+        for (int j = 0; j < n; j++) {
+            if (mp[nums[j]] == 0) {
+                count++;
+            }
+            mp[nums[j]]++;
+            while (count > k) {
+                mp[nums[i]]--;
+                if (mp[nums[i]] == 0) {
+                    count--;
+                }
+                i++;
+            }
+            int idx = i;
+            while (mp[nums[idx]] > 1) {
+                mp[nums[idx]]--;
+                idx++;
+            }
+            ans += idx - i + 1;
+        }
+        return ans;

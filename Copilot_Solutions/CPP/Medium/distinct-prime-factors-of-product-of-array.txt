@@ -1,0 +1,290 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int max = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+        }
+        vector<int> prime(max + 1, 0);
+        for (int i = 2; i <= max; i++) {
+            if (prime[i] == 0) {
+                for (int j = i; j <= max; j += i) {
+                    prime[j]++;
+                }
+            }
+        }
+        unordered_set<int> s;
+        for (int i = 0; i < nums.size(); i++) {
+            s.insert(prime[nums[i]]);
+        }
+        return s.size();
+
+=======
+
+        int maxVal = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] > maxVal) {
+                maxVal = nums[i];
+            }
+        }
+        vector<int> primes = getPrimes(maxVal);
+        if (primes.size() == 0) {
+            return 0;
+        }
+        unordered_set<int> primeSet(primes.begin(), primes.end());
+        unordered_map<int, int> primeCount;
+        for (int i = 0; i < nums.size(); i++) {
+            int val = nums[i];
+            for (int j = 0; j < primes.size(); j++) {
+                int prime = primes[j];
+                if (prime > val) {
+                    break;
+                }
+                if (val % prime == 0) {
+                    primeCount[prime]++;
+                    while (val % prime == 0) {
+                        val /= prime;
+                    }
+                }
+            }
+        }
+        return primeCount.size();
+    }
+    
+    vector<int> getPrimes(int n) {
+        vector<bool> prime(n + 1, true);
+        prime[0] = false;
+        prime[1] = false;
+        for (int i = 2; i * i <= n; i++) {
+            if (prime[i]) {
+                for (int j = i * i; j <= n; j += i) {
+                    prime[j] = false;
+                }
+            }
+        }
+        vector<int> primes;
+        for (int i = 0; i <= n; i++) {
+            if (prime[i]) {
+                primes.push_back(i);
+            }
+        }
+        return primes;
+
+=======
+
+        int res = 0;
+        for (int i = 2; i <= 1000; ++i) {
+            int count = 0;
+            for (int num : nums) {
+                while (num % i == 0) {
+                    num /= i;
+                }
+                count += num == 1;
+            }
+            res += count == nums.size();
+        }
+        return res;
+
+=======
+
+        int n = nums.size();
+        int maxNum = 0;
+        for (int i = 0; i < n; i++) {
+            maxNum = max(maxNum, nums[i]);
+        }
+        vector<int> primeFactors(maxNum + 1, 0);
+        for (int i = 2; i <= maxNum; i++) {
+            if (primeFactors[i] == 0) {
+                for (int j = i; j <= maxNum; j += i) {
+                    primeFactors[j]++;
+                }
+            }
+        }
+        unordered_set<int> distinctFactors;
+        for (int i = 0; i < n; i++) {
+            distinctFactors.insert(primeFactors[nums[i]]);
+        }
+        return distinctFactors.size();
+
+=======
+
+        vector<int> primes;
+        for (int i = 2; i <= 1000; i++) {
+            bool is_prime = true;
+            for (int j = 2; j < i; j++) {
+                if (i % j == 0) {
+                    is_prime = false;
+                    break;
+                }
+            }
+            if (is_prime) {
+                primes.push_back(i);
+            }
+        }
+        int n = nums.size();
+        vector<int> factors(n, 0);
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            for (int j = 0; j < primes.size(); j++) {
+                if (num % primes[j] == 0) {
+                    factors[i] |= (1 << j);
+                    while (num % primes[j] == 0) {
+                        num /= primes[j];
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            bool is_distinct = true;
+            for (int j = 0; j < n; j++) {
+                if (i == j) {
+                    continue;
+                }
+                if ((factors[i] & factors[j]) == factors[i]) {
+                    is_distinct = false;
+                    break;
+                }
+            }
+            if (is_distinct) {
+                ans++;
+            }
+        }
+        return ans;
+
+=======
+
+        int n = nums.size();
+        int max_num = 0;
+        for (int i = 0; i < n; i++) {
+            max_num = max(max_num, nums[i]);
+        }
+        vector<int> prime(max_num + 1, 0);
+        for (int i = 2; i <= max_num; i++) {
+            if (prime[i] == 0) {
+                for (int j = i; j <= max_num; j += i) {
+                    prime[j] = i;
+                }
+            }
+        }
+        unordered_set<int> set;
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            while (num > 1) {
+                set.insert(prime[num]);
+                num /= prime[num];
+            }
+        }
+        return set.size();
+
+=======
+
+        int n = nums.size();
+        vector<int> primes;
+        for (int i = 2; i < 1000; i++) {
+            if (isPrime(i)) {
+                primes.push_back(i);
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < primes.size(); i++) {
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                if (nums[j] % primes[i] == 0) {
+                    count++;
+                }
+            }
+            if (count > 0) {
+                res++;
+            }
+        }
+        return res;
+    }
+    bool isPrime(int n) {
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+
+=======
+
+        int max = 0;
+        for (int n : nums) {
+            if (n > max) {
+                max = n;
+            }
+        }
+        int count = 0;
+        for (int i = 2; i <= max; i++) {
+            bool isPrime = true;
+            for (int j = 2; j <= i / 2; j++) {
+                if (i % j == 0) {
+                    isPrime = false;
+                    break;
+                }
+            }
+            if (isPrime) {
+                bool hasFactor = false;
+                for (int n : nums) {
+                    if (n % i == 0) {
+                        if (hasFactor) {
+                            hasFactor = false;
+                            break;
+                        }
+                        hasFactor = true;
+                    }
+                }
+                if (hasFactor) {
+                    count++;
+                }
+            }
+        }
+        return count;
+
+=======
+
+        int n = nums.size();
+        int max = 0;
+        for(int i = 0; i < n; i++) {
+            if(nums[i] > max)
+                max = nums[i];
+        }
+        int count = 0;
+        for(int i = 2; i <= max; i++) {
+            int c = 0;
+            for(int j = 0; j < n; j++) {
+                if(nums[j] % i == 0)
+                    c++;
+            }
+            if(c > 0)
+                count++;
+        }
+        return count;
+
+=======
+
+        int n = nums.size();
+        vector<int> primes = getPrimes();
+        vector<int> freq(1001, 0);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < primes.size() && primes[j] <= nums[i]; ++j) {
+                if (nums[i] % primes[j] == 0) {
+                    freq[primes[j]]++;
+                    while (nums[i] % primes[j] == 0) {
+                        nums[i] /= primes[j];
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= 1000; ++i) {
+            if (freq[i] > 0) {
+                ans++;
+            }
+        }
+        return ans;

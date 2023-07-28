@@ -1,0 +1,203 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        sort(events.begin(), events.end(), [](const vector<int>& a, const vector<int>& b) {
+            if (a[1] == b[1]) {
+                return a[0] < b[0];
+            }
+            return a[1] < b[1];
+        });
+        int n = events.size();
+        int res = 0;
+        int i = 0;
+        int d = 1;
+        priority_queue<int, vector<int>, greater<int>> pq;
+        while (!pq.empty() || i < n) {
+            if (pq.empty()) {
+                d = events[i][0];
+            }
+            while (i < n && events[i][0] <= d) {
+                pq.push(events[i][0]);
+                ++i;
+            }
+            pq.pop();
+            ++res;
+            ++d;
+            while (!pq.empty() && pq.top() < d) {
+                pq.pop();
+            }
+        }
+        return res;
+
+=======
+
+        sort(events.begin(), events.end());
+        int n = events.size();
+        priority_queue<int, vector<int>, greater<int>> pq;
+        int res = 0;
+        int i = 0;
+        for (int d = 1; d <= 100000; d++) {
+            while (!pq.empty() && pq.top() < d) pq.pop();
+            while (i < n && events[i][0] == d) pq.push(events[i++][1]);
+            if (!pq.empty()) {
+                pq.pop();
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        sort(events.begin(), events.end());
+        int i = 0, n = events.size(), res = 0, d = 1;
+        priority_queue<int, vector<int>, greater<int>> pq;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                d = events[i][0];
+            }
+            while (i < n && events[i][0] <= d) {
+                pq.push(events[i++][1]);
+            }
+            pq.pop();
+            ++res;
+            ++d;
+            while (!pq.empty() && pq.top() < d) {
+                pq.pop();
+            }
+        }
+        return res;
+
+=======
+
+        int n = events.size();
+        sort(events.begin(), events.end(), [](auto& a, auto& b) {
+            return a[1] < b[1];
+        });
+        priority_queue<int, vector<int>, greater<int>> pq;
+        int ans = 0, i = 0, day = 1;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) {
+                day = events[i][0];
+            }
+            while (i < n && events[i][0] <= day) {
+                pq.push(events[i++][1]);
+            }
+            pq.pop();
+            ++day;
+            ++ans;
+            while (!pq.empty() && pq.top() < day) {
+                pq.pop();
+            }
+        }
+        return ans;
+
+=======
+
+        sort(events.begin(), events.end(), [](const vector<int>& a, const vector<int>& b) {
+            return a[1] < b[1];
+        });
+        unordered_set<int> days;
+        for (auto& event: events) {
+            for (int i = event[0]; i <= event[1]; ++i) {
+                if (days.count(i) == 0) {
+                    days.insert(i);
+                    break;
+                }
+            }
+        }
+        return days.size();
+
+=======
+
+        sort(events.begin(), events.end(), [&](const auto& a, const auto& b) {
+            return a[0] < b[0];
+        });
+        priority_queue<int, vector<int>, greater<int>> pq;
+        int i = 0, n = events.size(), res = 0, d = 1;
+        while (i < n || !pq.empty()) {
+            if (pq.empty()) d = events[i][0];
+            while (i < n && events[i][0] == d) {
+                pq.push(events[i++][1]);
+            }
+            pq.pop();
+            ++res;
+            ++d;
+            while (!pq.empty() && pq.top() < d) pq.pop();
+        }
+        return res;
+
+=======
+
+        sort(events.begin(), events.end(), [](vector<int>& a, vector<int>& b){return a[1] < b[1];});
+        int res = 0;
+        int i = 0;
+        int n = events.size();
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for(int d = 1; d <= 100000; d++) {
+            while(!pq.empty() && pq.top() < d) pq.pop();
+            while(i < n && events[i][0] == d) {
+                pq.push(events[i][1]);
+                i++;
+            }
+            if(!pq.empty()) {
+                pq.pop();
+                res++;
+            }
+        }
+        return res;
+
+=======
+
+        int n = events.size();
+        sort(events.begin(), events.end(), [](auto &a, auto &b){return a[1] < b[1];});
+        int ans = 0;
+        set<int> st;
+        for (int i = 1; i <= 1e5; i++) {
+            st.insert(i);
+        }
+        for (int i = 0; i < n; i++) {
+            auto it = st.lower_bound(events[i][0]);
+            if (it != st.end() && *it <= events[i][1]) {
+                ans++;
+                st.erase(it);
+            }
+        }
+        return ans;
+
+=======
+
+        int n = events.size();
+        vector<int> dp(n + 1, 0);
+        sort(events.begin(), events.end(), [](vector<int>& a, vector<int>& b) {
+            return a[0] < b[0];
+        });
+        dp[0] = 1;
+        int res = 1;
+        for (int i = 1; i <= n; ++i) {
+            for (int j = i - 1; j >= 0; --j) {
+                if (events[j][1] < events[i - 1][0]) {
+                    dp[i] = max(dp[i], dp[j] + 1);
+                } else {
+                    dp[i] = max(dp[i], dp[j]);
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        return res;
+
+=======
+
+        sort(events.begin(), events.end(), [](auto &a, auto &b){return a[1] < b[1];});
+        int ans = 0;
+        unordered_set<int> days;
+        for (auto &e : events) {
+            for (int i = e[0]; i <= e[1]; ++i) {
+                if (days.find(i) == days.end()) {
+                    days.insert(i);
+                    ans++;
+                    break;
+                }
+            }
+        }
+        return ans;

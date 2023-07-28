@@ -1,0 +1,288 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let mut counts = vec![0; 26];
+        for c in license_plate.chars() {
+            if c.is_ascii_alphabetic() {
+                counts[c.to_ascii_lowercase() as usize - 'a' as usize] += 1;
+            }
+        }
+        let mut result = String::new();
+        let mut min_len = usize::MAX;
+        for word in words {
+            if word.len() < min_len {
+                if Self::is_completing(&counts, &word) {
+                    result = word;
+                    min_len = word.len();
+                }
+            }
+        }
+        result
+    }
+    fn is_completing(counts: &Vec<i32>, word: &String) -> bool {
+        let mut counts = counts.clone();
+        for c in word.chars() {
+            counts[c as usize - 'a' as usize] -= 1;
+            if counts[c as usize - 'a' as usize] < 0 {
+                return false;
+            }
+        }
+        true
+
+=======
+
+        let mut count = vec![0; 26];
+        for c in license_plate.chars() {
+            if c.is_ascii_alphabetic() {
+                count[c.to_ascii_lowercase() as usize - 97] += 1;
+            }
+        }
+        let mut ans = String::new();
+        for word in words {
+            if ans.len() > 0 && ans.len() <= word.len() {
+                continue;
+            }
+            let mut count2 = vec![0; 26];
+            for c in word.chars() {
+                count2[c as usize - 97] += 1;
+            }
+            let mut ok = true;
+            for i in 0..26 {
+                if count[i] > count2[i] {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                ans = word;
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut map = vec![0; 26];
+        for c in license_plate.chars() {
+            if c.is_alphabetic() {
+                map[c.to_ascii_lowercase() as usize - 'a' as usize] += 1;
+            }
+        }
+        let mut ans = String::from("");
+        for w in words {
+            let mut tmp = vec![0; 26];
+            for c in w.chars() {
+                tmp[c as usize - 'a' as usize] += 1;
+            }
+            let mut ok = true;
+            for i in 0..26 {
+                if map[i] > tmp[i] {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                if ans.len() == 0 {
+                    ans = w;
+                } else if ans.len() > w.len() {
+                    ans = w;
+                }
+            }
+        }
+        ans
+
+=======
+
+        let mut dict = vec![0; 26];
+        for c in license_plate.chars() {
+            if c.is_ascii_alphabetic() {
+                dict[c.to_ascii_lowercase() as usize - 97] += 1;
+            }
+        }
+        let mut ret = String::new();
+        let mut min_len = 16;
+        for s in words {
+            let mut tmp = dict.clone();
+            for c in s.chars() {
+                tmp[c as usize - 97] -= 1;
+            }
+            if tmp.iter().all(|&x| x <= 0) && s.len() < min_len {
+                min_len = s.len();
+                ret = s;
+            }
+        }
+        ret
+
+=======
+
+        let mut license = vec![0; 26];
+        for c in license_plate.chars() {
+            if c.is_alphabetic() {
+                license[c.to_ascii_lowercase() as usize - 'a' as usize] += 1;
+            }
+        }
+        let mut ans = "".to_string();
+        for word in words {
+            let mut word = word;
+            let mut word_vec = vec![0; 26];
+            for c in word.chars() {
+                word_vec[c as usize - 'a' as usize] += 1;
+            }
+            let mut ok = true;
+            for i in 0..26 {
+                if word_vec[i] < license[i] {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok && (ans == "" || ans.len() > word.len()) {
+                ans = word;
+            }
+        }
+        ans
+
+=======
+
+        let mut count = vec![0; 26];
+        for c in license_plate.chars() {
+            let c = c.to_ascii_lowercase();
+            if c.is_ascii_alphabetic() {
+                count[(c as u8 - b'a') as usize] += 1;
+            }
+        }
+        let mut result = String::new();
+        let mut min_len = 16;
+        for word in words {
+            let mut count_copy = count.clone();
+            for c in word.chars() {
+                let c = c.to_ascii_lowercase();
+                if !c.is_ascii_alphabetic() { continue; }
+                let idx = (c as u8 - b'a') as usize;
+                count_copy[idx] -= 1;
+            }
+            if count_copy.iter().all(|&x| x <= 0) && word.len() < min_len {
+                result = word;
+                min_len = word.len();
+            }
+        }
+        result
+
+=======
+
+        let mut license_plate = license_plate
+            .to_lowercase()
+            .chars()
+            .filter(|c| c.is_alphabetic())
+            .collect::<Vec<char>>();
+        license_plate.sort();
+        let mut words = words
+            .iter()
+            .map(|s| s.chars().collect::<Vec<char>>())
+            .collect::<Vec<Vec<char>>>();
+        words.sort_by(|a, b| a.len().cmp(&b.len()));
+        for word in words {
+            let mut word = word;
+            word.sort();
+            let mut i = 0;
+            for c in word {
+                if i >= license_plate.len() {
+                    return word.into_iter().collect::<String>();
+                }
+                if c == license_plate[i] {
+                    i += 1;
+                }
+            }
+            if i == license_plate.len() {
+                return word.into_iter().collect::<String>();
+            }
+        }
+        String::from("")
+
+=======
+
+        let mut plate = [0; 26];
+        for c in license_plate.chars() {
+            if c.is_ascii_alphabetic() {
+                let i = c.to_ascii_lowercase() as usize - 'a' as usize;
+                plate[i] += 1;
+            }
+        }
+        let mut res = "".to_string();
+        for word in words {
+            let mut w = [0; 26];
+            for c in word.chars() {
+                let i = c as usize - 'a' as usize;
+                w[i] += 1;
+            }
+            if w.iter().zip(plate.iter()).all(|(a, b)| a >= b) {
+                if res.is_empty() || res.len() > word.len() {
+                    res = word;
+                }
+            }
+        }
+        res
+
+=======
+
+        let mut char_count: [i32;26] = [0;26];
+        for c in license_plate.as_bytes() {
+            if c.is_ascii_alphabetic() {
+                char_count[(c.to_ascii_lowercase()-b'a') as usize] += 1;
+            }
+        }
+        let mut ans = String::new();
+        for word in words {
+            let mut char_count2: [i32;26] = [0;26];
+            for c in word.as_bytes() {
+                char_count2[(c-b'a') as usize] += 1;
+            }
+            let mut ok = true;
+            for i in 0..26 {
+                if char_count[i] > char_count2[i] {
+                    ok = false;
+                    break;
+                }
+            }
+            if ok {
+                if ans.is_empty() || ans.len() > word.len() {
+                    ans = word;
+                }
+            }
+        }
+        ans
+    }
+}
+
+=======
+
+        let mut license_plate = license_plate.to_lowercase();
+        let mut map: Vec<i32> = vec![0; 26];
+        let mut min = 16;
+        let mut min_word = "".to_string();
+        for c in license_plate.chars() {
+            if c.is_alphabetic() {
+                map[(c as u8 - b'a') as usize] += 1;
+            }
+        }
+        for word in words {
+            let mut word_map: Vec<i32> = vec![0; 26];
+            for c in word.chars() {
+                word_map[(c as u8 - b'a') as usize] += 1;
+            }
+            let mut flag = true;
+            for i in 0..26 {
+                if map[i] > word_map[i] {
+                    flag = false;
+                    break;
+                }
+            }
+            if flag && word.len() < min {
+                min = word.len();
+                min_word = word;
+            }
+        }
+        min_word
+    }
+}

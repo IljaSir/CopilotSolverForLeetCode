@@ -1,0 +1,199 @@
+Synthesizing 9/10 solutions
+
+=======
+
+        int y = year - (14 - month) / 12;
+        int x = y + y/4 - y/100 + y/400;
+        int m = month + 12 * ((14 - month) / 12) - 2;
+        int d = (day + x + (31*m)/12) % 7;
+        string days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        return days[d];
+
+=======
+
+        vector<string> week = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        vector<int> days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int daysCount = 0;
+        for (int i = 1971; i < year; ++i) {
+            daysCount += 365;
+            if (i % 4 == 0 && (i % 100 != 0 || i % 400 == 0)) {
+                ++daysCount;
+            }
+        }
+        for (int i = 0; i < month - 1; ++i) {
+            daysCount += days[i];
+            if (i == 1 && year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+                ++daysCount;
+            }
+        }
+        daysCount += day - 1;
+        return week[daysCount % 7];
+
+=======
+
+        vector<string> week = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        vector<int> month_day = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int days = 0;
+        for (int i = 1971; i < year; i++) {
+            days += 365;
+            if (i % 4 == 0 && i % 100 != 0 || i % 400 == 0) {
+                days++;
+            }
+        }
+        for (int i = 0; i < month - 1; i++) {
+            days += month_day[i];
+        }
+        if (month > 2 && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0)) {
+            days++;
+        }
+        days += day;
+        return week[days % 7];
+
+=======
+
+        int days = 0;
+        for (int i = 1971; i < year; ++i) {
+            days += isLeapYear(i) ? 366 : 365;
+        }
+        for (int i = 1; i < month; ++i) {
+            days += daysInMonth(i, year);
+        }
+        days += day - 1;
+        return daysOfTheWeek[days % 7];
+
+=======
+
+        int days = 0;
+        for (int y = 1971; y < year; ++y) {
+            days += isLeapYear(y) ? 366 : 365;
+        }
+        for (int m = 1; m < month; ++m) {
+            days += daysOfMonth(m, isLeapYear(year));
+        }
+        days += day;
+        return weekDays[days % 7];
+
+=======
+
+        vector<string> day_of_week = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        vector<int> days_of_month = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+            days_of_month[1] = 29;
+        }
+        int days = 0;
+        for (int i = 1971; i < year; i++) {
+            days += 365;
+            if (i % 4 == 0 && (i % 100 != 0 || i % 400 == 0)) {
+                days++;
+            }
+        }
+        for (int i = 0; i < month - 1; i++) {
+            days += days_of_month[i];
+        }
+        days += day - 1;
+        return day_of_week[days % 7];
+
+=======
+
+        int days[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+        int week[] = {4,0,1,4,6,2,4,0,3,5,1,3};
+        int sum = 0;
+        for (int i = 1971; i < year; i++) {
+            sum += 365;
+            if (i % 4 == 0 && i % 100 != 0 || i % 400 == 0) {
+                sum++;
+            }
+        }
+        if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+            days[1]++;
+        }
+        for (int i = 0; i < month - 1; i++) {
+            sum += days[i];
+        }
+        sum += day - 1;
+        string weekDay[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        return weekDay[(sum + week[month - 1]) % 7];
+
+=======
+
+        int days = 0;
+        for(int i=1971;i<year;i++){
+            if(isLeapYear(i)){
+                days+=366;
+            }else{
+                days+=365;
+            }
+        }
+        for(int i=1;i<month;i++){
+            days+=getDaysOfMonth(i,year);
+        }
+        days+=day-1;
+        int week = days%7;
+        string ans;
+        switch(week){
+            case 0:
+                ans = "Sunday";
+                break;
+            case 1:
+                ans = "Monday";
+                break;
+            case 2:
+                ans = "Tuesday";
+                break;
+            case 3:
+                ans = "Wednesday";
+                break;
+            case 4:
+                ans = "Thursday";
+                break;
+            case 5:
+                ans = "Friday";
+                break;
+            case 6:
+                ans = "Saturday";
+                break;
+        }
+        return ans;
+    }
+    int getDaysOfMonth(int month,int year){
+        if(month==1||month==3||month==5||month==7||month==8||month==10||month==12){
+            return 31;
+        }
+        if(month==4||month==6||month==9||month==11){
+            return 30;
+        }
+        if(month==2){
+            if(isLeapYear(year)){
+                return 29;
+            }else{
+                return 28;
+            }
+        }
+        return -1;
+    }
+    bool isLeapYear(int year){
+        if(year%400==0){
+            return true;
+        }
+        if(year%100==0){
+            return false;
+        }
+        if(year%4==0){
+            return true;
+        }
+        return false;
+
+=======
+
+        int days = 0;
+        int y = 1971;
+        while (y < year) {
+            days += 365 + isLeap(y);
+            y++;
+        }
+        for (int i = 1; i < month; i++) {
+            days += monthDays[i];
+        }
+        days += day;
+        if (month > 2 && isLeap(year)) days++;
+        return weekday[days % 7];

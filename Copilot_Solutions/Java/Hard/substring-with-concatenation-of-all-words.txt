@@ -1,0 +1,356 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (s == null || s.length() == 0 || words == null || words.length == 0) {
+            return result;
+        }
+        int wordLength = words[0].length();
+        Map<String, Integer> wordToCount = new HashMap<>();
+        for (String word : words) {
+            wordToCount.put(word, wordToCount.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i < wordLength; i++) {
+            int left = i;
+            int right = i;
+            int count = 0;
+            Map<String, Integer> seen = new HashMap<>();
+            while (right + wordLength <= s.length()) {
+                String word = s.substring(right, right + wordLength);
+                right += wordLength;
+                if (!wordToCount.containsKey(word)) {
+                    left = right;
+                    seen.clear();
+                    count = 0;
+                } else {
+                    seen.put(word, seen.getOrDefault(word, 0) + 1);
+                    count++;
+                    while (seen.get(word) > wordToCount.get(word)) {
+                        String leftWord = s.substring(left, left + wordLength);
+                        seen.put(leftWord, seen.get(leftWord) - 1);
+                        count--;
+                        left += wordLength;
+                    }
+                    if (count == words.length) {
+                        result.add(left);
+                        String leftWord = s.substring(left, left + wordLength);
+                        seen.put(leftWord, seen.get(leftWord) - 1);
+                        count--;
+                        left += wordLength;
+                    }
+                }
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (s == null || s.length() == 0 || words == null || words.length == 0) {
+            return result;
+        }
+        int wordLength = words[0].length();
+        int wordCount = words.length;
+        int totalLength = wordLength * wordCount;
+        if (s.length() < totalLength) {
+            return result;
+        }
+        HashMap<String, Integer> wordMap = new HashMap<>();
+        for (String word : words) {
+            wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i <= s.length() - totalLength; i++) {
+            HashMap<String, Integer> temp = new HashMap<>(wordMap);
+            for (int j = 0; j < totalLength; j += wordLength) {
+                String sub = s.substring(i + j, i + j + wordLength);
+                if (!temp.containsKey(sub)) {
+                    break;
+                }
+                if (temp.get(sub) == 1) {
+                    temp.remove(sub);
+                } else {
+                    temp.put(sub, temp.get(sub) - 1);
+                }
+            }
+            if (temp.size() == 0) {
+                result.add(i);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        if (s == null || s.length() == 0 || words == null || words.length == 0) {
+            return res;
+        }
+        int n = s.length();
+        int m = words.length;
+        int k = words[0].length();
+        if (n < m * k) {
+            return res;
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (String w : words) {
+            map.put(w, map.getOrDefault(w, 0) + 1);
+        }
+        for (int i = 0; i < k; i++) {
+            Map<String, Integer> seen = new HashMap<>();
+            int left = i, right = i, count = 0;
+            while (right + k <= n) {
+                String w = s.substring(right, right + k);
+                right += k;
+                if (!map.containsKey(w)) {
+                    seen.clear();
+                    count = 0;
+                    left = right;
+                } else {
+                    seen.put(w, seen.getOrDefault(w, 0) + 1);
+                    count++;
+                    while (seen.get(w) > map.get(w)) {
+                        String w2 = s.substring(left, left + k);
+                        seen.put(w2, seen.get(w2) - 1);
+                        count--;
+                        left += k;
+                    }
+                    if (count == m) {
+                        res.add(left);
+                        String w2 = s.substring(left, left + k);
+                        seen.put(w2, seen.get(w2) - 1);
+                        count--;
+                        left += k;
+                    }
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        if (s == null || words == null || words.length == 0) {
+            return res;
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+        int len = words[0].length();
+        int n = words.length;
+        for (int i = 0; i < len; i++) {
+            Map<String, Integer> tmp = new HashMap<>();
+            int left = i, right = i, count = 0;
+            while (right + len <= s.length()) {
+                String str = s.substring(right, right + len);
+                right += len;
+                if (map.containsKey(str)) {
+                    tmp.put(str, tmp.getOrDefault(str, 0) + 1);
+                    count++;
+                    while (tmp.get(str) > map.get(str)) {
+                        String leftStr = s.substring(left, left + len);
+                        left += len;
+                        tmp.put(leftStr, tmp.get(leftStr) - 1);
+                        count--;
+                    }
+                    if (count == n) {
+                        res.add(left);
+                    }
+                } else {
+                    tmp.clear();
+                    count = 0;
+                    left = right;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (words.length == 0) {
+            return result;
+        }
+        int wordLength = words[0].length();
+        int totalLength = wordLength * words.length;
+        Map<String, Integer> wordMap = new HashMap<>();
+        for (String word : words) {
+            wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i <= s.length() - totalLength; i++) {
+            Map<String, Integer> tempMap = new HashMap<>();
+            int j = i;
+            while (j <= i + totalLength - wordLength) {
+                String subString = s.substring(j, j + wordLength);
+                if (wordMap.containsKey(subString)) {
+                    tempMap.put(subString, tempMap.getOrDefault(subString, 0) + 1);
+                    if (tempMap.get(subString) > wordMap.get(subString)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                j += wordLength;
+            }
+            if (j == i + totalLength) {
+                result.add(i);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> res = new ArrayList<>();
+        if (words.length == 0) {
+            return res;
+        }
+        int wordLen = words[0].length();
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i < s.length() - wordLen * words.length + 1; i++) {
+            Map<String, Integer> copy = new HashMap<>(map);
+            for (int j = 0; j < words.length; j++) {
+                String sub = s.substring(i + j * wordLen, i + (j + 1) * wordLen);
+                if (copy.containsKey(sub)) {
+                    int count = copy.get(sub);
+                    if (count == 1) {
+                        copy.remove(sub);
+                    } else {
+                        copy.put(sub, count - 1);
+                    }
+                    if (copy.isEmpty()) {
+                        res.add(i);
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return res;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if (words.length == 0) return result;
+        int wordLen = words[0].length();
+        int totalLen = wordLen * words.length;
+        Map<String, Integer> wordMap = new HashMap<>();
+        for (String word : words) {
+            wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i <= s.length() - totalLen; i++) {
+            Map<String, Integer> seen = new HashMap<>();
+            int j = 0;
+            while (j < words.length) {
+                String word = s.substring(i + j * wordLen, i + (j + 1) * wordLen);
+                if (!wordMap.containsKey(word)) break;
+                seen.put(word, seen.getOrDefault(word, 0) + 1);
+                if (seen.get(word) > wordMap.get(word)) break;
+                j++;
+            }
+            if (j == words.length) result.add(i);
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        int wordLength = words[0].length();
+        int wordCount = words.length;
+        int totalLength = wordLength * wordCount;
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+        for (int i = 0; i < s.length() - totalLength + 1; i++) {
+            int j = i;
+            Map<String, Integer> tempMap = new HashMap<>();
+            while (j < i + totalLength) {
+                String word = s.substring(j, j + wordLength);
+                if (!map.containsKey(word)) {
+                    break;
+                }
+                tempMap.put(word, tempMap.getOrDefault(word, 0) + 1);
+                if (tempMap.get(word) > map.get(word)) {
+                    break;
+                }
+                j += wordLength;
+            }
+            if (j == i + totalLength) {
+                result.add(i);
+            }
+        }
+        return result;
+
+=======
+
+        List<Integer> result = new ArrayList<>();
+        if(words.length == 0) return result;
+        int wordLength = words[0].length();
+        int totalLength = wordLength * words.length;
+        // count each word
+        Map<String, Integer> count = new HashMap<>();
+        for(String word : words) {
+            count.put(word, count.getOrDefault(word, 0) + 1);
+        }
+        for(int i = 0; i <= s.length() - totalLength; i++) {
+            Map<String, Integer> seen = new HashMap<>();
+            int j = 0;
+            for(j = 0; j < words.length; j++) {
+                String word = s.substring(i + j * wordLength, i + (j + 1) * wordLength);
+                if(!count.containsKey(word)) break;
+                seen.put(word, seen.getOrDefault(word, 0) + 1);
+                if(seen.get(word) > count.get(word)) break;
+            }
+            if(j == words.length) result.add(i);
+        }
+        return result;
+
+=======
+
+        // 1. Create a map of the words
+        // 2. Iterate through the string and check if the substring is in the map
+        // 3. If it is, then add the index to the list
+        // 4. If it is not, then continue
+        // 5. Return the list
+        
+        List<Integer> result = new ArrayList<>();
+        if (s == null || s.length() == 0 || words == null || words.length == 0) {
+            return result;
+        }
+        
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+        
+        int wordLength = words[0].length();
+        int totalLength = wordLength * words.length;
+        int length = s.length();
+        
+        for (int i = 0; i < length - totalLength + 1; i++) {
+            Map<String, Integer> copy = new HashMap<>(map);
+            for (int j = 0; j < words.length; j++) {
+                int start = i + j * wordLength;
+                String word = s.substring(start, start + wordLength);
+                if (copy.containsKey(word)) {
+                    int count = copy.get(word);
+                    if (count == 1) {
+                        copy.remove(word);
+                    } else {
+                        copy.put(word, count - 1);
+                    }
+                } else {
+                    break;
+                }
+            }
+            
+            if (copy.isEmpty()) {
+                result.add(i);
+            }
+        }
+        
+        return result;

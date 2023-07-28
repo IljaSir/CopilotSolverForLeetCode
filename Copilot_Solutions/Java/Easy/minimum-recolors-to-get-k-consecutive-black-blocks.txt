@@ -1,0 +1,209 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = blocks.length();
+        int[] prefix = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = prefix[i] + (blocks.charAt(i) == 'B' ? 1 : 0);
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i + k <= n; i++) {
+            int cnt = prefix[i + k] - prefix[i];
+            res = Math.min(res, cnt + (k - cnt) / 2);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        int[] preSum = new int[n + 1];
+        for (int i = 1; i <= n; ++i) {
+            preSum[i] = preSum[i - 1] + (blocks.charAt(i - 1) == 'B' ? 1 : 0);
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i + k <= n; ++i) {
+            int j = i + k - 1;
+            int black = preSum[j + 1] - preSum[i];
+            int white = j - i + 1 - black;
+            ans = Math.min(ans, black + white - black);
+        }
+        return ans;
+
+=======
+
+        int n = blocks.length();
+        int[] psum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            psum[i + 1] = psum[i] + (blocks.charAt(i) == 'B' ? 1 : 0);
+        }
+        int[] dp = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            dp[i + 1] = dp[i] + (blocks.charAt(i) == 'B' ? 0 : 1);
+            if (i + 1 >= k) {
+                int t = psum[i + 1] - psum[i + 1 - k];
+                if (t < k) {
+                    dp[i + 1] = Math.min(dp[i + 1], dp[i + 1 - k] + k - t);
+                }
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = blocks.length();
+        int[] count = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            if (blocks.charAt(i) == 'B') {
+                count[i + 1] = count[i] + 1;
+            } else {
+                count[i + 1] = count[i];
+            }
+        }
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i <= n - k; i++) {
+            ans = Math.min(ans, count[i] + count[n] - count[i + k] - (k - (count[i + k] - count[i])));
+        }
+        return ans;
+
+=======
+
+        int n = blocks.length();
+        int[] dp = new int[n + 1];
+        for (int i = 1; i <= n; i++) {
+            dp[i] = dp[i - 1] + (blocks.charAt(i - 1) == 'W' ? 1 : 0);
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = 0; i <= n - k; i++) {
+            res = Math.min(res, dp[i + k] - dp[i]);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        char[] s = blocks.toCharArray();
+        int[] pre = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            pre[i + 1] = pre[i] + (s[i] == 'B' ? 1 : 0);
+        }
+        int[] f = new int[n + 1];
+        int res = n;
+        for (int i = 0; i <= n - k; i++) {
+            int l = i, r = n - k + 1;
+            while (l < r) {
+                int mid = (l + r) / 2;
+                if (pre[mid + k] - pre[mid] >= k) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if (pre[l + k] - pre[l] >= k) {
+                res = Math.min(res, f[l] + pre[i + k] - pre[i] + pre[n] - pre[l + k]);
+            }
+            f[i + 1] = f[i] + (s[i] == 'W' ? 1 : 0);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        int[] pre = new int[n];
+        int[] suf = new int[n];
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (blocks.charAt(i) == 'B') {
+                cnt++;
+            }
+            pre[i] = cnt;
+        }
+        cnt = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (blocks.charAt(i) == 'B') {
+                cnt++;
+            }
+            suf[i] = cnt;
+        }
+        int res = Integer.MAX_VALUE;
+        for (int i = k - 1; i < n; i++) {
+            int left = i - k + 1;
+            int right = i + 1;
+            int cur = pre[left] + suf[right];
+            res = Math.min(res, cur);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        int[] count = new int[n];
+        int res = n;
+        for (int i = 0; i < n; i++) {
+            if (blocks.charAt(i) == 'W') {
+                count[i] = 1;
+            }
+        }
+        for (int i = 1; i < n; i++) {
+            count[i] += count[i - 1];
+        }
+        for (int i = 0; i + k <= n; i++) {
+            int l = i, r = i + k - 1;
+            int w = count[r] - (l == 0 ? 0 : count[l - 1]);
+            res = Math.min(res, w);
+        }
+        return res;
+
+=======
+
+        int n = blocks.length();
+        int[] dp = new int[n + 1];
+        int[] sum = new int[n + 1];
+        int[][] f = new int[n + 1][n + 1];
+        for (int i = 1; i <= n; i++) {
+            sum[i] = sum[i - 1] + (blocks.charAt(i - 1) == 'B' ? 1 : 0);
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                f[i][j] = f[i - 1][j] + (blocks.charAt(i - 1) == 'W' && j <= k ? 1 : 0);
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            dp[i] = f[i][k];
+            for (int j = 1; j < i; j++) {
+                dp[i] = Math.min(dp[i], dp[j] + f[i][k] - f[j + k][k]);
+            }
+        }
+        return dp[n];
+
+=======
+
+        int n = blocks.length();
+        int[] count = new int[n];
+        int[] sum = new int[n];
+        int[] dp = new int[n];
+        int[] pre = new int[n];
+        int[] suf = new int[n];
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            count[i] = blocks.charAt(i) == 'W' ? 1 : 0;
+            sum[i] = count[i] + (i > 0 ? sum[i - 1] : 0);
+            dp[i] = Integer.MAX_VALUE;
+        }
+        for (int i = 0; i < n; i++) {
+            if (i >= k) {
+                pre[i] = Math.min(pre[i - 1], dp[i - k]);
+            }
+            dp[i] = (i > 0 ? pre[i - 1] : 0) + sum[i] - (i >= k ? sum[i - k] : 0);
+        }
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        for (int i = n - 1; i >= 0; i--) {
+            if (i + k - 1 < n) {
+                suf[i] = Math.min(suf[i + 1], dp[i + k]);
+            }
+            dp[i] = (i + 1 < n ? suf[i + 1] : 0) + sum[n - 1] - sum[i] - (i + k - 1 < n ? sum[i + k - 1] : 0);
+            if (i + k - 1 < n) {
+                ans = Math.min(ans, dp[i]);
+            }
+        }
+        return ans;

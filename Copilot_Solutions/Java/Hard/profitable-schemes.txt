@@ -1,0 +1,187 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int mod = 1000000007;
+        int[][][] dp = new int[group.length + 1][n + 1][minProfit + 1];
+        dp[0][0][0] = 1;
+        for (int i = 1; i <= group.length; i++) {
+            int members = group[i - 1], earn = profit[i - 1];
+            for (int j = 0; j <= n; j++) {
+                for (int k = 0; k <= minProfit; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= members) {
+                        dp[i][j][k] = (dp[i][j][k] + dp[i - 1][j - members][Math.max(0, k - earn)]) % mod;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int j = 0; j <= n; j++) {
+            res = (res + dp[group.length][j][minProfit]) % mod;
+        }
+        return res;
+
+=======
+
+        int[][][] dp = new int[group.length + 1][n + 1][minProfit + 1];
+        for (int i = 0; i <= group.length; i++) {
+            dp[i][0][0] = 1;
+        }
+        for (int i = 1; i <= group.length; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = 0; k <= minProfit; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= group[i - 1]) {
+                        dp[i][j][k] = (dp[i][j][k] + dp[i - 1][j - group[i - 1]][Math.max(0, k - profit[i - 1])]) % 1000000007;
+                    }
+                }
+            }
+        }
+        int res = 0;
+        for (int j = 0; j <= n; j++) {
+            res = (res + dp[group.length][j][minProfit]) % 1000000007;
+        }
+        return res;
+
+=======
+
+        int MOD = 1000000007;
+        int[][] dp = new int[minProfit + 1][n + 1];
+        dp[0][0] = 1;
+        for (int k = 0; k < group.length; ++k) {
+            int g = group[k], p = profit[k];
+            for (int i = minProfit; i >= 0; --i)
+                for (int j = n - g; j >= 0; --j)
+                    dp[Math.min(i + p, minProfit)][j + g] = (dp[Math.min(i + p, minProfit)][j + g] + dp[i][j]) % MOD;
+        }
+        int ans = 0;
+        for (int x: dp[minProfit]) ans = (ans + x) % MOD;
+        return ans;
+
+=======
+
+        int[][][] dp = new int[group.length + 1][n + 1][minProfit + 1];
+        for (int i = 0; i <= group.length; i++) {
+            dp[i][0][0] = 1;
+        }
+        for (int i = 1; i <= group.length; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = 0; k <= minProfit; k++) {
+                    dp[i][j][k] = dp[i - 1][j][k];
+                    if (j >= group[i - 1]) {
+                        dp[i][j][k] = (dp[i][j][k] + dp[i - 1][j - group[i - 1]][Math.max(0, k - profit[i - 1])]) % 1000000007;
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i <= n; i++) {
+            ans = (ans + dp[group.length][i][minProfit]) % 1000000007;
+        }
+        return ans;
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[n + 1][minProfit + 1];
+        dp[0][0] = 1;
+        for (int k = 0; k < group.length; k++) {
+            int g = group[k];
+            int p = profit[k];
+            for (int i = n; i >= g; i--) {
+                for (int j = minProfit; j >= 0; j--) {
+                    dp[i][j] = (dp[i][j] + dp[i - g][Math.max(0, j - p)]) % mod;
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i <= n; i++) {
+            res = (res + dp[i][minProfit]) % mod;
+        }
+        return res;
+
+=======
+
+        int mod = 1000000007;
+        int[][] dp = new int[n + 1][minProfit + 1];
+        dp[0][0] = 1;
+        for (int k = 0; k < group.length; k++) {
+            int members = group[k], earn = profit[k];
+            for (int i = n; i >= members; i--) {
+                for (int j = minProfit; j >= 0; j--) {
+                    dp[i][j] = (dp[i][j] + dp[i - members][Math.max(0, j - earn)]) % mod;
+                }
+            }
+        }
+        int res = 0;
+        for (int x : dp[n]) res = (res + x) % mod;
+        return res;
+
+=======
+
+        int MOD = 1_000_000_007;
+        int[][] dp = new int[minProfit + 1][n + 1];
+        dp[0][0] = 1;
+        for (int k = 0; k < group.length; ++k) {
+            int g = group[k], p = profit[k];
+            for (int i = minProfit; i >= 0; --i)
+                for (int j = n - g; j >= 0; --j)
+                    dp[Math.min(i + p, minProfit)][j + g] = (dp[Math.min(i + p, minProfit)][j + g] + dp[i][j]) % MOD;
+        }
+
+        int ans = 0;
+        for (int x: dp[minProfit]) ans = (ans + x) % MOD;
+        return ans;
+
+=======
+
+        int[][] dp = new int[n + 1][minProfit + 1];
+        dp[0][0] = 1;
+        int res = 0, mod = (int)1e9 + 7;
+        for (int i = 0; i < group.length; ++i) {
+            int g = group[i], p = profit[i];
+            for (int j = n; j >= g; --j) {
+                for (int k = minProfit; k >= 0; --k) {
+                    dp[j][k] = (dp[j][k] + dp[j - g][Math.max(0, k - p)]) % mod;
+                }
+            }
+        }
+        for (int x : dp[n]) res = (res + x) % mod;
+        return res;
+
+=======
+
+        int[][] dp = new int[n+1][minProfit+1];
+        dp[0][0] = 1;
+        int m = group.length;
+        int mod = 1000000007;
+        for (int k = 0; k < m; ++k) {
+            int g = group[k], p = profit[k];
+            for (int i = n; i >= g; --i) {
+                for (int j = minProfit; j >= 0; --j) {
+                    dp[i][j] = (dp[i][j] + dp[i - g][Math.max(0, j - p)]) % mod;
+                }
+            }
+        }
+        int ans = 0;
+        for (int x: dp[n]) ans = (ans + x) % mod;
+        return ans;
+
+=======
+
+        int[][][] dp = new int[group.length][n+1][minProfit+1];
+        int mod = 1000000007;
+        for(int i=0; i<group.length; i++) {
+            for(int j=0; j<=n; j++) {
+                for(int k=0; k<=minProfit; k++) {
+                    int without = i > 0 ? dp[i-1][j][k] : 0;
+                    int with = 0;
+                    if(j >= group[i]) {
+                        with = (k - profit[i] >= 0 ? dp[i][j-group[i]][k-profit[i]] : dp[i][j-group[i]][0]) + (i > 0 ? dp[i-1][j-group[i]][k-profit[i]] : 1);
+                    }
+                    dp[i][j][k] = (without + with) % mod;
+                }
+            }
+        }
+        return dp[group.length-1][n][minProfit];

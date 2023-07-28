@@ -1,0 +1,142 @@
+Synthesizing 7/10 solutions (Duplicates hidden)
+
+=======
+
+        int n = hats.size();
+        vector<vector<int>> person(41);
+        for (int i = 0; i < n; ++i) {
+            for (int hat : hats[i]) {
+                person[hat].push_back(i);
+            }
+        }
+        vector<vector<int>> dp(n, vector<int>(1 << n, -1));
+        return dfs(person, dp, 1, 0);
+    }
+    int dfs(vector<vector<int>>& person, vector<vector<int>>& dp, int i, int mask) {
+        if (i == 41) return mask == (1 << dp.size()) - 1;
+        if (dp[__builtin_popcount(mask)][mask] != -1) return dp[__builtin_popcount(mask)][mask];
+        int res = dfs(person, dp, i + 1, mask);
+        for (int j : person[i]) {
+            if (!(mask & (1 << j))) {
+                res += dfs(person, dp, i + 1, mask | (1 << j));
+                res %= 1000000007;
+            }
+        }
+        return dp[__builtin_popcount(mask)][mask] = res;
+
+=======
+
+        int n = hats.size(), mod = 1e9 + 7;
+        vector<vector<int>> people(40);
+        for (int i = 0; i < n; ++i) {
+            for (int hat : hats[i]) {
+                people[hat - 1].push_back(i);
+            }
+        }
+        vector<vector<int>> dp(1 << n, vector<int>(41));
+        dp[0][0] = 1;
+        for (int i = 0; i < 40; ++i) {
+            for (int mask = (1 << n) - 1; mask >= 0; --mask) {
+                for (int j = 0; j <= n; ++j) {
+                    if (dp[mask][j] == 0) {
+                        continue;
+                    }
+                    dp[mask][j + 1] = (dp[mask][j + 1] + dp[mask][j]) % mod;
+                    for (int p : people[i]) {
+                        if (mask & (1 << p)) {
+                            continue;
+                        }
+                        dp[mask | (1 << p)][j + 1] = (dp[mask | (1 << p)][j + 1] + dp[mask][j]) % mod;
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1][n];
+
+=======
+
+        int n = hats.size();
+        vector<vector<int>> hat2people(41, vector<int>());
+        for (int i = 0; i < n; i++) {
+            for (int hat : hats[i]) {
+                hat2people[hat].push_back(i);
+            }
+        }
+        vector<vector<int>> dp(1 << n, vector<int>(41, -1));
+        return dfs(0, 1, hat2people, dp);
+
+=======
+
+        const int MOD = 1000000007;
+        int n = hats.size();
+        vector<vector<int>> people(41);
+        for (int i = 0; i < n; i++) {
+            for (auto h : hats[i]) {
+                people[h].push_back(i);
+            }
+        }
+        
+        vector<vector<int>> dp(n, vector<int>(1 << n));
+        dp[0][1 << 0] = 1;
+        for (int i = 1; i < 41; i++) {
+            for (auto p : people[i]) {
+                for (int j = 0; j < (1 << n); j++) {
+                    if (j & (1 << p)) {
+                        dp[p][j] = (dp[p][j] + dp[p][j ^ (1 << p)]) % MOD;
+                    }
+                    else {
+                        dp[p][j] = (dp[p][j] + dp[p - 1][j]) % MOD;
+                    }
+                }
+            }
+        }
+        return dp[n - 1][(1 << n) - 1];
+
+=======
+
+        int n = hats.size();
+        int m = 40;
+        int mod = 1e9 + 7;
+        vector<vector<int>> dp(1 << n, vector<int>(m + 1, 0));
+        dp[0][0] = 1;
+        vector<vector<int>> people(m + 1, vector<int>());
+        for (int i = 0; i < n; ++i) {
+            for (int hat : hats[i]) {
+                people[hat].push_back(i);
+            }
+        }
+        for (int i = 1; i <= m; ++i) {
+            for (int j = 0; j < (1 << n); ++j) {
+                dp[j][i] = dp[j][i - 1];
+                for (int p : people[i]) {
+                    if ((j & (1 << p)) == 0) {
+                        dp[j | (1 << p)][i] = (dp[j | (1 << p)][i] + dp[j][i - 1]) % mod;
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1][m];
+
+=======
+
+        const int MOD = 1000000007;
+        int n = hats.size();
+        vector<vector<int>> dp(1 << n, vector<int>(41, 0));
+        vector<vector<int>> person(41);
+        for (int i = 0; i < n; i++) {
+            for (int hat : hats[i]) {
+                person[hat].push_back(i);
+            }
+        }
+        dp[0][0] = 1;
+        for (int i = 1; i <= 40; i++) {
+            for (int j = 0; j < (1 << n); j++) {
+                dp[j][i] = dp[j][i - 1];
+                for (int k : person[i]) {
+                    if (j & (1 << k)) {
+                        dp[j][i] = (dp[j][i] + dp[j ^ (1 << k)][i - 1]) % MOD;
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1][40];

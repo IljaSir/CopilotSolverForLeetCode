@@ -1,0 +1,369 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        int n = amount.length;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+        }
+        int[][] dp = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MIN_VALUE);
+        }
+        dp[0][0] = 0;
+        dp[bob][1] = 0;
+        dfs(graph, amount, dp, 0, -1);
+        return dp[0][0];
+    }
+    
+    private int dfs(List<List<Integer>> graph, int[] amount, int[][] dp, int u, int p) {
+        if (dp[u][0] != Integer.MIN_VALUE) {
+            return dp[u][0];
+        }
+        int res = 0;
+        for (int v : graph.get(u)) {
+            if (v == p) {
+                continue;
+            }
+            res = Math.max(res, dfs(graph, amount, dp, v, u));
+        }
+        res += amount[u];
+        dp[u][0] = res;
+        return res;
+
+=======
+
+        int n = amount.length;
+        List<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], Integer.MIN_VALUE);
+        }
+        dp[0][bob] = 0;
+        dfs(graph, 0, -1, dp, amount);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, dp[i][0]);
+        }
+        return res;
+    }
+    
+    private void dfs(List<Integer>[] graph, int u, int p, int[][] dp, int[] amount) {
+        for (int v : graph[u]) {
+            if (v != p) {
+                dfs(graph, v, u, dp, amount);
+                for (int i = 0; i < dp.length; i++) {
+                    int cost = 0;
+                    if (i == v) {
+                        cost = amount[v];
+                    } else if (i == 0) {
+                        cost = amount[v] / 2;
+                    } else if (i != u) {
+                        cost = amount[v] / 2;
+                    }
+                    dp[u][i] = Math.max(dp[u][i], dp[v][i] + cost);
+                }
+            }
+        }
+
+=======
+
+        int n = amount.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; ++i) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            graph[edge[0]].add(edge[1]);
+            graph[edge[1]].add(edge[0]);
+        }
+        int[][] dp = new int[n][2];
+        dfs(graph, amount, dp, 0, -1);
+        return dp[0][bob];
+    }
+    private void dfs(List<Integer>[] graph, int[] amount, int[][] dp, int u, int p) {
+        for (int v : graph[u]) {
+            if (v == p) {
+                continue;
+            }
+            dfs(graph, amount, dp, v, u);
+            dp[u][0] += Math.max(dp[v][0], dp[v][1]);
+            dp[u][1] += dp[v][0];
+        }
+        dp[u][0] += amount[u] > 0 ? amount[u] / 2 : 0;
+        dp[u][1] += amount[u] < 0 ? amount[u] / 2 : 0;
+
+=======
+
+        int n = edges.length + 1;
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
+        }
+        int[] cost = new int[n];
+        int[] profit = new int[n];
+        dfs(0, -1, graph, cost, profit, amount);
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, profit[i] - cost[i]);
+        }
+        return res;
+    }
+    
+    private void dfs(int u, int p, List<List<Integer>> graph, int[] cost, int[] profit, int[] amount) {
+        int n = graph.size();
+        for (int v : graph.get(u)) {
+            if (v == p) {
+                continue;
+            }
+            dfs(v, u, graph, cost, profit, amount);
+            if (cost[v] < cost[u]) {
+                cost[u] = cost[v];
+                profit[u] = profit[v];
+            } else if (cost[v] == cost[u]) {
+                profit[u] = Math.max(profit[u], profit[v]);
+            }
+        }
+        if (amount[u] < 0) {
+            cost[u] -= amount[u];
+        } else {
+            profit[u] += amount[u];
+        }
+
+=======
+
+        int n = amount.length;
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        int[] dp = new int[n];
+        int[] profit = new int[n];
+        dfs(0, -1, adj, dp, profit, amount);
+        return profit[0];
+    }
+
+    private void dfs(int u, int p, List<List<Integer>> adj, int[] dp, int[] profit, int[] amount) {
+        dp[u] = amount[u] > 0 ? 1 : -1;
+        profit[u] = amount[u];
+        for (int v : adj.get(u)) {
+            if (v == p) {
+                continue;
+            }
+            dfs(v, u, adj, dp, profit, amount);
+            if (dp[v] > 0) {
+                dp[u] += dp[v];
+                profit[u] += profit[v];
+            }
+        }
+        if (dp[u] > 0) {
+            profit[u] -= dp[u] * amount[u] / 2;
+        } else {
+            profit[u] -= amount[u];
+        }
+
+=======
+
+        int n = amount.length;
+        List<List<Integer>> adjList = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adjList.add(new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            adjList.get(u).add(v);
+            adjList.get(v).add(u);
+        }
+        int[] dp = new int[n];
+        int[] next = new int[n];
+        int[] parent = new int[n];
+        boolean[] visited = new boolean[n];
+        dfs(adjList, 0, visited, parent);
+        for (int i = n - 1; i > 0; i--) {
+            int u = i;
+            int v = parent[i];
+            next[u] = v;
+            next[v] = u;
+        }
+        for (int i = 0; i < n; i++) {
+            dp[i] = amount[i];
+        }
+        for (int i = n - 1; i > 0; i--) {
+            int u = i;
+            int v = next[i];
+            if (u > bob) {
+                dp[v] += dp[u] / 2;
+            } else {
+                dp[v] += dp[u];
+            }
+        }
+        return Math.max(dp[0], dp[bob]);
+    }
+    private void dfs(List<List<Integer>> adjList, int u, boolean[] visited, int[] parent) {
+        visited[u] = true;
+        for (int v : adjList.get(u)) {
+            if (!visited[v]) {
+                parent[v] = u;
+                dfs(adjList, v, visited, parent);
+            }
+        }
+
+=======
+
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for(int[] edge: edges){
+            map.putIfAbsent(edge[0], new ArrayList<>());
+            map.putIfAbsent(edge[1], new ArrayList<>());
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+        int[] dp = new int[amount.length];
+        int[] visited = new int[amount.length];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        Arrays.fill(visited, -1);
+        return dfs(map, amount, bob, 0, dp, visited);
+    }
+    
+    private int dfs(Map<Integer, List<Integer>> map, int[] amount, int bob, int node, int[] dp, int[] visited){
+        if(node == bob)
+            return 0;
+        if(visited[node] != -1)
+            return dp[node];
+        visited[node] = 1;
+        int max = Integer.MIN_VALUE;
+        for(int next: map.get(node)){
+            int nextMax = dfs(map, amount, bob, next, dp, visited);
+            if(nextMax != Integer.MIN_VALUE)
+                max = Math.max(max, nextMax + (amount[node] < 0 ? amount[node] : amount[node] / 2));
+        }
+        return dp[node] = max;
+
+=======
+
+        int n = amount.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        dp[0] = 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new ArrayList<>());
+        }
+        for (int[] edge : edges) {
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+        dfs(0, -1, dp, map, amount, bob);
+        return dp[bob];
+    }
+    private void dfs(int node, int parent, int[] dp, Map<Integer, List<Integer>> map, int[] amount, int bob) {
+        if (node == bob) {
+            return;
+        }
+        List<Integer> nexts = map.get(node);
+        for (int next : nexts) {
+            if (next == parent) {
+                continue;
+            }
+            dfs(next, node, dp, map, amount, bob);
+            int cost = amount[node];
+            if (cost < 0) {
+                cost = -cost / 2;
+            } else {
+                cost /= 2;
+            }
+            dp[node] = Math.max(dp[node], dp[next] + cost);
+        }
+
+=======
+
+        int n = amount.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        dp[0] = 0;
+        int[][] graph = new int[n][n];
+        for (int[] edge : edges) {
+            graph[edge[0]][edge[1]] = 1;
+            graph[edge[1]][edge[0]] = 1;
+        }
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        dfs(graph, amount, dp, 0, visited);
+        return dp[bob];
+    }
+    
+    private void dfs(int[][] graph, int[] amount, int[] dp, int cur, boolean[] visited) {
+        if (graph[cur][0] == 1 && !visited[0]) {
+            dp[0] = Math.max(dp[0], dp[cur] + amount[cur] / 2);
+            visited[0] = true;
+            dfs(graph, amount, dp, 0, visited);
+            visited[0] = false;
+        }
+        for (int i = 1; i < graph.length; i++) {
+            if (graph[cur][i] == 1 && !visited[i]) {
+                dp[i] = Math.max(dp[i], dp[cur] + amount[cur] / 2);
+                visited[i] = true;
+                dfs(graph, amount, dp, i, visited);
+                visited[i] = false;
+            }
+        }
+
+=======
+
+        int n = amount.length;
+        int[] dp = new int[n];
+        int[] dp2 = new int[n];
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            g.add(new ArrayList<>());
+        }
+        for (int[] e : edges) {
+            g.get(e[0]).add(e[1]);
+            g.get(e[1]).add(e[0]);
+        }
+        int res = amount[0];
+        dfs(g, 0, -1, dp, dp2, amount, bob, res);
+        return res;
+    }
+    void dfs(List<List<Integer>> g, int u, int p, int[] dp, int[] dp2, int[] amount, int bob, int res) {
+        dp[u] = amount[u];
+        for (int v : g.get(u)) {
+            if (v == p) continue;
+            dfs(g, v, u, dp, dp2, amount, bob, res);
+            if (dp[v] > 0) {
+                dp[u] += dp[v];
+            }
+        }
+        if (u == bob) {
+            dp2[u] = dp[u];
+            return;
+        }
+        int max = 0;
+        for (int v : g.get(u)) {
+            if (v == p) continue;
+            max = Math.max(max, dp2[v]);
+        }
+        dp2[u] = max;
+        res = Math.max(res, dp[u] - dp2[u]);

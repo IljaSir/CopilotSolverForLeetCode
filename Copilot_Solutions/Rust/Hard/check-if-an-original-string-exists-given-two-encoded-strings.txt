@@ -1,0 +1,205 @@
+Synthesizing 8/10 solutions (Duplicates hidden)
+
+=======
+
+        
+    }
+}
+
+=======
+
+        if s1 == s2 {
+            true
+        } else if s1.len() != s2.len() {
+            false
+        } else {
+            let mut i = 0;
+            let mut j = 0;
+            let mut c1 = 0;
+            let mut c2 = 0;
+            while i < s1.len() && j < s2.len() {
+                if s1.as_bytes()[i] == s2.as_bytes()[j] {
+                    i += 1;
+                    j += 1;
+                    continue;
+                }
+                if s1.as_bytes()[i] >= b'1' && s1.as_bytes()[i] <= b'9' {
+                    c1 = s1.as_bytes()[i] - b'0';
+                    i += 1;
+                    while i < s1.len() && s1.as_bytes()[i] >= b'0' && s1.as_bytes()[i] <= b'9' {
+                        c1 = c1 * 10 + (s1.as_bytes()[i] - b'0');
+                        i += 1;
+                    }
+                }
+                if s2.as_bytes()[j] >= b'1' && s2.as_bytes()[j] <= b'9' {
+                    c2 = s2.as_bytes()[j] - b'0';
+                    j += 1;
+                    while j < s2.len() && s2.as_bytes()[j] >= b'0' && s2.as_bytes()[j] <= b'9' {
+                        c2 = c2 * 10 + (s2.as_bytes()[j] - b'0');
+                        j += 1;
+                    }
+                }
+                if c1 != c2 {
+                    return false;
+                }
+                c1 = 0;
+                c2 = 0;
+            }
+            true
+        }
+    }
+}
+
+=======
+
+        if s1 == s2 {
+            return true;
+        }
+        let s1 = s1.into_bytes();
+        let s2 = s2.into_bytes();
+        let mut i = 0;
+        let mut j = 0;
+        let mut n = s1.len();
+        let mut m = s2.len();
+        while i < n && j < m {
+            if s1[i] == s2[j] {
+                i += 1;
+                j += 1;
+                continue;
+            }
+            if s1[i].is_ascii_digit() && s2[j].is_ascii_digit() {
+                let mut k = i;
+                while k < n && s1[k].is_ascii_digit() {
+                    k += 1;
+                }
+                let mut l = j;
+                while l < m && s2[l].is_ascii_digit() {
+                    l += 1;
+                }
+                if k - i != l - j {
+                    return false;
+                }
+                if k - i == 1 {
+                    return false;
+                }
+                let mut x = s1[i] as i32 - '0' as i32;
+                let mut y = s2[j] as i32 - '0' as i32;
+                i += 1;
+                j += 1;
+                while i < k && j < l {
+                    x = x * 10 + (s1[i] as i32 - '0' as i32);
+                    y = y * 10 + (s2[j] as i32 - '0' as i32);
+                    i += 1;
+                    j += 1;
+                }
+                if x != y {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        i == n && j == m
+    }
+}
+
+=======
+
+        let s1 = s1.as_bytes();
+        let s2 = s2.as_bytes();
+        Self::dfs(s1, s2, 0, 0)
+    }
+    fn dfs(s1: &[u8], s2: &[u8], i: usize, j: usize) -> bool {
+        let mut i = i;
+        let mut j = j;
+        while i < s1.len() && j < s2.len() && s1[i] == s2[j] {
+            i += 1;
+            j += 1;
+        }
+        if i == s1.len() && j == s2.len() {
+            return true;
+        }
+        if i == s1.len() || j == s2.len() || !s1[i].is_ascii_digit() || !s2[j].is_ascii_digit() {
+            return false;
+        }
+        let mut i = i;
+        let mut j = j;
+        let mut k = 0;
+        while i < s1.len() && s1[i].is_ascii_digit() {
+            k = k * 10 + (s1[i] - b'0') as usize;
+            i += 1;
+        }
+        let mut l = 0;
+        while j < s2.len() && s2[j].is_ascii_digit() {
+            l = l * 10 + (s2[j] - b'0') as usize;
+            j += 1;
+        }
+        if k == l && Self::dfs(s1, s2, i, j) {
+            return true;
+        }
+        if k < l && Self::dfs(&s1[i..], &s2[j..], 0, 0) {
+            return true;
+        }
+        if k > l && Self::dfs(&s1[i..], &s2[j..], 0, 0) {
+            return true;
+        }
+        false
+
+=======
+
+        Self::decode(s1) == Self::decode(s2)
+    }
+    
+    fn decode(s: String) -> String {
+        let mut res = String::new();
+        let mut i = 0;
+        while i < s.len() {
+            let mut j = i;
+            while j < s.len() && s.as_bytes()[j] >= b'0' && s.as_bytes()[j] <= b'9' {
+                j += 1;
+            }
+            if j == i {
+                res.push(s.as_bytes()[i] as char);
+                i += 1;
+            } else {
+                let len = s[i..j].parse::<usize>().unwrap();
+                i = j + len;
+            }
+        }
+        res
+
+=======
+
+        let mut s1 = s1.chars().collect::<Vec<_>>();
+        let mut s2 = s2.chars().collect::<Vec<_>>();
+        let mut i = 0;
+        let mut j = 0;
+        while i < s1.len() && j < s2.len() {
+            if s1[i] == s2[j] {
+                i += 1;
+                j += 1;
+                continue;
+            }
+            if s1[i].is_digit(10) && s2[j].is_digit(10) {
+                let mut k = i;
+                let mut l = j;
+                while k < s1.len() && s1[k].is_digit(10) {
+                    k += 1;
+                }
+                while l < s2.len() && s2[l].is_digit(10) {
+                    l += 1;
+                }
+                let n1 = s1[i..k].iter().collect::<String>().parse::<i32>().unwrap();
+                let n2 = s2[j..l].iter().collect::<String>().parse::<i32>().unwrap();
+                if n1 != n2 {
+                    return false;
+                }
+                i = k;
+                j = l;
+            } else {
+                return false;
+            }
+        }
+        i == s1.len() && j == s2.len()
+    }
+}

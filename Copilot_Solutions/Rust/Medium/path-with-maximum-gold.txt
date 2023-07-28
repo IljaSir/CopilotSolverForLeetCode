@@ -1,0 +1,301 @@
+Synthesizing 10/10 solutions
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut max = 0;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] > 0 {
+                    let mut visited = vec![vec![false; n]; m];
+                    let mut cur_max = 0;
+                    Solution::dfs(&grid, &mut visited, i, j, &mut cur_max);
+                    max = max.max(cur_max);
+                }
+            }
+        }
+        max
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, i: usize, j: usize, cur_max: &mut i32) {
+        let m = grid.len();
+        let n = grid[0].len();
+        if i >= m || j >= n || visited[i][j] {
+            return;
+        }
+        if grid[i][j] == 0 {
+            return;
+        }
+        visited[i][j] = true;
+        *cur_max += grid[i][j];
+        Solution::dfs(grid, visited, i + 1, j, cur_max);
+        Solution::dfs(grid, visited, i, j + 1, cur_max);
+        Solution::dfs(grid, visited, i, j.checked_sub(1).unwrap_or(0), cur_max);
+        Solution::dfs(grid, visited, i.checked_sub(1).unwrap_or(0), j, cur_max);
+        visited[i][j] = false;
+        *cur_max -= grid[i][j];
+    }
+}
+
+=======
+
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut max_gold = 0;
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] != 0 {
+                    max_gold = max_gold.max(Solution::dfs(&grid, i, j));
+                }
+            }
+        }
+        max_gold
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize) -> i32 {
+        if i >= grid.len() || j >= grid[0].len() || i < 0 || j < 0 {
+            return 0;
+        }
+        if grid[i][j] == 0 {
+            return 0;
+        }
+        let mut max_gold = 0;
+        let tmp = grid[i][j];
+        grid[i][j] = 0;
+        max_gold = max_gold.max(Solution::dfs(grid, i, j + 1));
+        max_gold = max_gold.max(Solution::dfs(grid, i, j - 1));
+        max_gold = max_gold.max(Solution::dfs(grid, i + 1, j));
+        max_gold = max_gold.max(Solution::dfs(grid, i - 1, j));
+        grid[i][j] = tmp;
+        max_gold + tmp
+    }
+}
+
+=======
+
+        let mut max_gold = 0;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                let mut gold = 0;
+                Solution::dfs(&grid, i, j, &mut visited, &mut gold);
+                max_gold = max_gold.max(gold);
+            }
+        }
+        max_gold
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize, visited: &mut Vec<Vec<bool>>, gold: &mut i32) {
+        if i >= grid.len() || j >= grid[0].len() || i < 0 || j < 0 || visited[i][j] || grid[i][j] == 0 {
+            return;
+        }
+        visited[i][j] = true;
+        *gold += grid[i][j];
+        Solution::dfs(grid, i+1, j, visited, gold);
+        Solution::dfs(grid, i-1, j, visited, gold);
+        Solution::dfs(grid, i, j+1, visited, gold);
+        Solution::dfs(grid, i, j-1, visited, gold);
+        visited[i][j] = false;
+
+=======
+
+        let mut max = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] > 0 {
+                    max = max.max(Solution::dfs(&grid, i, j));
+                }
+            }
+        }
+        max
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize) -> i32 {
+        let mut max = 0;
+        let mut grid = grid.clone();
+        grid[i][j] = 0;
+        if i > 0 && grid[i-1][j] > 0 {
+            max = max.max(Solution::dfs(&grid, i-1, j));
+        }
+        if i < grid.len()-1 && grid[i+1][j] > 0 {
+            max = max.max(Solution::dfs(&grid, i+1, j));
+        }
+        if j > 0 && grid[i][j-1] > 0 {
+            max = max.max(Solution::dfs(&grid, i, j-1));
+        }
+        if j < grid[0].len()-1 && grid[i][j+1] > 0 {
+            max = max.max(Solution::dfs(&grid, i, j+1));
+        }
+        max + grid[i][j] + 1
+
+=======
+
+        let mut max = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] > 0 {
+                    max = max.max(Solution::dfs(&grid, i, j, 0));
+                }
+            }
+        }
+        max
+    }
+    
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize, sum: i32) -> i32 {
+        if i >= grid.len() || j >= grid[0].len() || i < 0 || j < 0 || grid[i][j] == 0 {
+            return sum;
+        }
+        let tmp = grid[i][j];
+        grid[i][j] = 0;
+        let mut max = 0;
+        max = max.max(Solution::dfs(grid, i + 1, j, sum + tmp));
+        max = max.max(Solution::dfs(grid, i, j + 1, sum + tmp));
+        max = max.max(Solution::dfs(grid, i - 1, j, sum + tmp));
+        max = max.max(Solution::dfs(grid, i, j - 1, sum + tmp));
+        grid[i][j] = tmp;
+        max
+
+=======
+
+        let mut max_gold = 0;
+        let m = grid.len();
+        let n = grid[0].len();
+        let mut visited = vec![vec![false; n]; m];
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] > 0 {
+                    max_gold = max_gold.max(Solution::dfs(&grid, &mut visited, i, j));
+                }
+            }
+        }
+        max_gold
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, i: usize, j: usize) -> i32 {
+        if i >= grid.len() || j >= grid[0].len() || grid[i][j] == 0 || visited[i][j] {
+            return 0;
+        }
+        visited[i][j] = true;
+        let mut max_gold = 0;
+        max_gold = max_gold.max(Solution::dfs(grid, visited, i+1, j));
+        max_gold = max_gold.max(Solution::dfs(grid, visited, i, j+1));
+        max_gold = max_gold.max(Solution::dfs(grid, visited, i, j.checked_sub(1).unwrap_or(0)));
+        max_gold = max_gold.max(Solution::dfs(grid, visited, i.checked_sub(1).unwrap_or(0), j));
+        visited[i][j] = false;
+        max_gold + grid[i][j]
+
+=======
+
+        let mut max = 0;
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] > 0 {
+                    let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+                    max = max.max(Solution::dfs(&grid, i, j, &mut visited));
+                }
+            }
+        }
+        max
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize, visited: &mut Vec<Vec<bool>>) -> i32 {
+        if i >= grid.len() || j >= grid[0].len() || grid[i][j] == 0 || visited[i][j] {
+            return 0;
+        }
+        visited[i][j] = true;
+        let max = grid[i][j] + Solution::dfs(grid, i + 1, j, visited).max(Solution::dfs(grid, i, j + 1, visited).max(Solution::dfs(grid, i, j.checked_sub(1).unwrap_or(0), visited).max(Solution::dfs(grid, i.checked_sub(1).unwrap_or(0), j, visited))));
+        visited[i][j] = false;
+        max
+
+=======
+
+        let (m, n) = (grid.len(), grid[0].len());
+        let mut max_gold = 0;
+        let mut visited = vec![vec![false; n]; m];
+        for i in 0..m {
+            for j in 0..n {
+                if grid[i][j] > 0 {
+                    max_gold = max_gold.max(Self::dfs(&grid, &mut visited, i, j));
+                }
+            }
+        }
+        max_gold
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, i: usize, j: usize) -> i32 {
+        let (m, n) = (grid.len(), grid[0].len());
+        let mut max_gold = 0;
+        let dirs = vec![(-1, 0), (0, -1), (1, 0), (0, 1)];
+        visited[i][j] = true;
+        for (di, dj) in dirs {
+            let (ni, nj) = (i as i32 + di, j as i32 + dj);
+            if ni >= 0 && ni < m as i32 && nj >= 0 && nj < n as i32 {
+                let (ni, nj) = (ni as usize, nj as usize);
+                if !visited[ni][nj] && grid[ni][nj] > 0 {
+                    max_gold = max_gold.max(Self::dfs(grid, visited, ni, nj));
+                }
+            }
+        }
+        visited[i][j] = false;
+        max_gold + grid[i][j]
+
+=======
+
+        let mut result: i32 = 0;
+        let mut visited: Vec<Vec<bool>> = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] != 0 {
+                    let mut visited: Vec<Vec<bool>> = vec![vec![false; grid[0].len()]; grid.len()];
+                    let mut temp = 0;
+                    Self::dfs(&grid, i, j, &mut visited, &mut temp);
+                    result = result.max(temp);
+                }
+            }
+        }
+        result
+    }
+    fn dfs(grid: &Vec<Vec<i32>>, i: usize, j: usize, visited: &mut Vec<Vec<bool>>, temp: &mut i32) {
+        if i >= grid.len() || j >= grid[0].len() || i < 0 || j < 0 || visited[i][j] || grid[i][j] == 0 {
+            return;
+        }
+        visited[i][j] = true;
+        *temp += grid[i][j];
+        Self::dfs(grid, i + 1, j, visited, temp);
+        Self::dfs(grid, i - 1, j, visited, temp);
+        Self::dfs(grid, i, j + 1, visited, temp);
+        Self::dfs(grid, i, j - 1, visited, temp);
+        visited[i][j] = false;
+        *temp -= grid[i][j];
+
+=======
+
+        let mut max_gold = 0;
+        let mut grid = grid;
+        let mut visited = vec![vec![false; grid[0].len()]; grid.len()];
+        for i in 0..grid.len() {
+            for j in 0..grid[0].len() {
+                if grid[i][j] != 0 {
+                    let gold = Self::dfs(&mut grid, &mut visited, i, j);
+                    max_gold = max_gold.max(gold);
+                }
+            }
+        }
+        max_gold
+    }
+    fn dfs(grid: &mut Vec<Vec<i32>>, visited: &mut Vec<Vec<bool>>, i: usize, j: usize) -> i32 {
+        if grid[i][j] == 0 || visited[i][j] {
+            return 0;
+        }
+        visited[i][j] = true;
+        let mut gold = grid[i][j];
+        if i > 0 {
+            gold += Self::dfs(grid, visited, i - 1, j);
+        }
+        if i + 1 < grid.len() {
+            gold = gold.max(grid[i][j] + Self::dfs(grid, visited, i + 1, j));
+        }
+        if j > 0 {
+            gold = gold.max(grid[i][j] + Self::dfs(grid, visited, i, j - 1));
+        }
+        if j + 1 < grid[0].len() {
+            gold = gold.max(grid[i][j] + Self::dfs(grid, visited, i, j + 1));
+        }
+        visited[i][j] = false;
+        gold
+    }
+}

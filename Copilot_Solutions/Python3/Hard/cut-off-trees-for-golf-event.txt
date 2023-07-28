@@ -1,0 +1,191 @@
+Synthesizing 10/10 solutions (Duplicates hidden)
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        m, n = len(forest), len(forest[0])
+        trees = sorted((v, r, c) for r, row in enumerate(forest) for c, v in enumerate(row) if v > 1)
+        sr = sc = ans = 0
+        for _, tr, tc in trees:
+            d = self.bfs(forest, sr, sc, tr, tc)
+            if d < 0: return -1
+            ans += d
+            sr, sc = tr, tc
+        return ans
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        m, n = len(forest), len(forest[0])
+        trees = sorted((v, r, c) for r, row in enumerate(forest) for c, v in enumerate(row) if v > 1)
+        sr, sc = 0, 0
+        ans = 0
+        for _, tr, tc in trees:
+            d = self.bfs(forest, sr, sc, tr, tc)
+            if d < 0: return -1
+            ans += d
+            sr, sc = tr, tc
+        return ans
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        m, n = len(forest), len(forest[0])
+        trees = [(h, r, c) for r, row in enumerate(forest) for c, h in enumerate(row) if h > 1]
+        trees.sort()
+        sr, sc = 0, 0
+        ans = 0
+        for h, tr, tc in trees:
+            steps = self.bfs(forest, sr, sc, tr, tc)
+            if steps < 0:
+                return -1
+            ans += steps
+            sr, sc = tr, tc
+        return ans
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        m, n = len(forest), len(forest[0])
+        trees = sorted([(forest[i][j], i, j) for i in range(m) for j in range(n) if forest[i][j] > 1])
+        def bfs(sx, sy, tx, ty):
+            q = collections.deque([(sx, sy, 0)])
+            seen = {(sx, sy)}
+            while q:
+                x, y, step = q.popleft()
+                if x == tx and y == ty:
+                    return step
+                for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < m and 0 <= ny < n and forest[nx][ny] and (nx, ny) not in seen:
+                        q.append((nx, ny, step + 1))
+                        seen.add((nx, ny))
+            return -1
+        ans = 0
+        sx, sy = 0, 0
+        for _, tx, ty in trees:
+            steps = bfs(sx, sy, tx, ty)
+            if steps == -1:
+                return -1
+            ans += steps
+            sx, sy = tx, ty
+        return ans
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        pass
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        def bfs(forest, start, target):
+            m, n = len(forest), len(forest[0])
+            queue = collections.deque([(start, 0)])
+            visited = set()
+            while queue:
+                (x, y), d = queue.popleft()
+                if (x, y) == target:
+                    return d
+                for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < m and 0 <= ny < n and forest[nx][ny] and (nx, ny) not in visited:
+                        visited.add((nx, ny))
+                        queue.append(((nx, ny), d + 1))
+            return -1
+        
+        trees = []
+        for i in range(len(forest)):
+            for j in range(len(forest[i])):
+                if forest[i][j] > 1:
+                    trees.append((forest[i][j], i, j))
+        trees.sort()
+        start = (0, 0)
+        ans = 0
+        for _, x, y in trees:
+            d = bfs(forest, start, (x, y))
+            if d < 0:
+                return -1
+            ans += d
+            start = (x, y)
+        return ans
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        def bfs(start, end):
+            queue = [start]
+            visited = set()
+            visited.add(start)
+            steps = 0
+            while queue:
+                size = len(queue)
+                for _ in range(size):
+                    x, y = queue.pop(0)
+                    if (x, y) == end:
+                        return steps
+                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < m and 0 <= ny < n and forest[nx][ny] != 0 and (nx, ny) not in visited:
+                            queue.append((nx, ny))
+                            visited.add((nx, ny))
+                steps += 1
+            return -1
+        m, n = len(forest), len(forest[0])
+        trees = []
+        for i in range(m):
+            for j in range(n):
+                if forest[i][j] > 1:
+                    trees.append((forest[i][j], i, j))
+        trees.sort()
+        start = (0, 0)
+        steps = 0
+        for tree in trees:
+            height, x, y = tree
+            step = bfs(start, (x, y))
+            if step == -1:
+                return -1
+            steps += step
+            start = (x, y)
+        return steps
+
+=======
+
+def cutOffTree(self, forest: List[List[int]]) -> int:
+        # 1. find all trees
+        # 2. find shortest path from start to each tree
+        # 3. repeat
+        # 4. return total steps
+        def find_trees():
+            trees = []
+            for i in range(len(forest)):
+                for j in range(len(forest[0])):
+                    if forest[i][j] > 1:
+                        trees.append((forest[i][j], i, j))
+            return sorted(trees)
+        
+        def find_shortest_path(start, end):
+            # BFS
+            queue = [(start[0], start[1], 0)]
+            visited = set()
+            while queue:
+                i, j, steps = queue.pop(0)
+                if (i, j) == end:
+                    return steps
+                visited.add((i, j))
+                for di, dj in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    ni, nj = i + di, j + dj
+                    if 0 <= ni < len(forest) and 0 <= nj < len(forest[0]) and forest[ni][nj] != 0 and (ni, nj) not in visited:
+                        queue.append((ni, nj, steps+1))
+            return -1
+        
+        trees = find_trees()
+        start = (0, 0)
+        total_steps = 0
+        for tree in trees:
+            steps = find_shortest_path(start, (tree[1], tree[2]))
+            if steps == -1:
+                return -1
+            total_steps += steps
+            start = (tree[1], tree[2])
+        return total_steps
